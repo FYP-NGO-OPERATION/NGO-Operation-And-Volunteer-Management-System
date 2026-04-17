@@ -4,9 +4,12 @@ class AppConstants {
 
   // ─── App Info ───
   static const String appName = 'NGO Volunteer App';
-  static const String appTagline = 'Empowering Communities Together';
+  static const String orgName = 'Hamesha Rahein Apke Saath';
+  static const String appTagline = 'One Society, One Heartbeat';
   static const String appVersion = '1.0.0';
-  static const String orgName = 'Aasra Foundation';
+
+  // ─── Assets ───
+  static const String logoPath = 'assets/images/logo.png';
 
   // ─── Firebase Collections ───
   static const String usersCollection = 'users';
@@ -32,13 +35,19 @@ class AppConstants {
   static const double horizontalPadding = 16.0;
   static const double verticalPadding = 16.0;
 
+  // ─── Responsive Breakpoints ───
+  static const double mobileBreakpoint = 600;
+  static const double tabletBreakpoint = 900;
+  static const double desktopBreakpoint = 1200;
+  static const double maxContentWidth = 500; // Max form width on large screens
+
   // ─── Image ───
   static const int maxImageSizeBytes = 5 * 1024 * 1024; // 5 MB
-  static const int compressedImageQuality = 70; // 70% quality
+  static const int compressedImageQuality = 70;
   static const double profileImageSize = 120.0;
 
   // ─── Pagination ───
-  static const int pageSize = 15; // Items per page
+  static const int pageSize = 15;
 
   // ─── Validation ───
   static const int minPasswordLength = 6;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../config/app_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
+import '../../utils/responsive.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
@@ -53,8 +55,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _emailSent ? _buildSuccessView() : _buildFormView(),
+            child: ResponsiveCenter(
+              maxWidth: 440,
+              child: _emailSent ? _buildSuccessView() : _buildFormView(),
+            ),
           ),
         ),
       ),
@@ -68,7 +72,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Icon(Icons.lock_reset, size: 80, color: AppColors.primary),
+          // Logo
+          Center(
+            child: SizedBox(
+              width: 80,
+              height: 80,
+              child: ClipOval(
+                child: Image.asset(AppConstants.logoPath, fit: BoxFit.contain),
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
           Text(
             'Forgot Password?',
@@ -88,7 +101,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 32),
           CustomTextField(
             controller: _emailController,
-            label: 'Email',
+            label: 'Email Address',
             hint: 'Enter your registered email',
             prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
@@ -113,7 +126,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.mark_email_read, size: 80, color: AppColors.success),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.success.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.mark_email_read, size: 64, color: AppColors.success),
+        ),
         const SizedBox(height: 24),
         Text(
           'Email Sent!',
@@ -122,9 +142,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             color: AppColors.success,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
-          'Check your inbox at\n${_emailController.text}\nand follow the link to reset your password.',
+          'Check your inbox at',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _emailController.text,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'and follow the link to reset your password.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,
           ),
