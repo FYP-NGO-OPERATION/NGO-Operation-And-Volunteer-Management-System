@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../config/app_colors.dart';
 
 /// Reusable primary button with loading state support.
 class CustomButton extends StatelessWidget {
