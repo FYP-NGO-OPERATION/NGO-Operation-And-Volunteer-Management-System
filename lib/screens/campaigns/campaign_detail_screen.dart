@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../models/campaign_model.dart';
 import '../../models/expense_model.dart';
+import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../services/campaign_service.dart';
+import '../../services/volunteer_service.dart';
 import '../../enums/app_enums.dart';
 import '../../utils/responsive.dart';
 import '../../utils/snackbar_helper.dart';
+import '../volunteers/volunteer_list_screen.dart';
 import 'create_campaign_screen.dart';
 
 /// Campaign Detail — Tabbed view (Info | Record | Highlights)
@@ -27,12 +30,29 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late CampaignModel _campaign;
+  final VolunteerService _volunteerService = VolunteerService();
+  VolunteerModel? _myVolunteerRecord;
+  bool _isJoining = false;
 
   @override
   void initState() {
     super.initState();
     _campaign = widget.campaign;
     _tabController = TabController(length: 3, vsync: this);
+    _checkJoinStatus();
+  }
+
+  /// Check if current user already joined this campaign
+  Future<void> _checkJoinStatus() async {
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    if (user == null) return;
+    final record = await _volunteerService.getUserVolunteerRecord(
+      _campaign.id,
+      user.uid,
+    );
+    if (mounted) {
+      setState(() => _myVolunteerRecord = record);
+    }
   }
 
   @override
@@ -40,6 +60,8 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     _tabController.dispose();
     super.dispose();
   }
+
+  bool get _hasJoined => _myVolunteerRecord != null;
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +103,38 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           _buildHighlightsTab(theme),
         ],
       ),
-      // Join Campaign button for volunteers (non-completed campaigns)
+      // Join / Leave Campaign button for volunteers
       floatingActionButton: (!isAdmin && !_campaign.isCompleted)
           ? FloatingActionButton.extended(
-              onPressed: () {
-                // Will be implemented in Phase 4
-                SnackbarHelper.showInfo(context, 'Volunteer joining coming in Phase 4');
-              },
-              icon: const Icon(Icons.how_to_reg),
-              label: Text(_campaign.isFull ? 'Campaign Full' : 'Join Campaign'),
-              backgroundColor: _campaign.isFull ? AppColors.lightTextHint : AppColors.primary,
+              onPressed: _isJoining
+                  ? null
+                  : _hasJoined
+                      ? _leaveCampaign
+                      : _joinCampaign,
+              icon: _isJoining
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Icon(_hasJoined ? Icons.exit_to_app : Icons.how_to_reg),
+              label: Text(
+                _isJoining
+                    ? 'Please wait...'
+                    : _hasJoined
+                        ? 'Leave Campaign'
+                        : _campaign.isFull
+                            ? 'Campaign Full'
+                            : 'Join Campaign',
+              ),
+              backgroundColor: _hasJoined
+                  ? AppColors.error
+                  : _campaign.isFull
+                      ? AppColors.lightTextHint
+                      : AppColors.primary,
               foregroundColor: Colors.white,
             )
           : null,
@@ -196,6 +240,38 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   _statCard('Expenses', 'Rs.${_campaign.totalExpenses.toStringAsFixed(0)}', Icons.receipt, AppColors.error),
                   _statCard('Remaining', 'Rs.${_campaign.remainingBudget.toStringAsFixed(0)}', Icons.savings, AppColors.success),
                 ],
+              ),
+              const SizedBox(height: 16),
+
+              // View Volunteers button (always visible)
+              Card(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.info.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.people, color: AppColors.info),
+                  ),
+                  title: Text(
+                    'View Volunteers (${_campaign.totalVolunteers})',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text('See who joined this campaign'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => VolunteerListScreen(
+                          campaignId: _campaign.id,
+                          campaignTitle: _campaign.title,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 20),
             ],
@@ -419,6 +495,89 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         ),
       ),
     );
+  }
+
+  // ═══════════════════════════════════════════
+  // VOLUNTEER JOIN / LEAVE
+  // ═══════════════════════════════════════════
+
+  Future<void> _joinCampaign() async {
+    if (_campaign.isFull) {
+      SnackbarHelper.showWarning(context, 'This campaign is full.');
+      return;
+    }
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    if (user == null) return;
+
+    setState(() => _isJoining = true);
+    try {
+      final record = await _volunteerService.joinCampaign(
+        campaignId: _campaign.id,
+        campaignTitle: _campaign.title,
+        userId: user.uid,
+        userName: user.name,
+        userEmail: user.email,
+        userPhone: user.phone,
+      );
+      if (mounted) {
+        setState(() {
+          _myVolunteerRecord = record;
+          _isJoining = false;
+        });
+        SnackbarHelper.showSuccess(context, 'You joined ${_campaign.title}! 🎉');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isJoining = false);
+        SnackbarHelper.showError(context, e.toString().replaceAll('Exception: ', ''));
+      }
+    }
+  }
+
+  Future<void> _leaveCampaign() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Campaign'),
+        content: Text('Are you sure you want to leave "${_campaign.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    if (user == null || _myVolunteerRecord == null) return;
+
+    setState(() => _isJoining = true);
+    try {
+      await _volunteerService.leaveCampaign(
+        volunteerId: _myVolunteerRecord!.id,
+        campaignId: _campaign.id,
+        userId: user.uid,
+      );
+      if (mounted) {
+        setState(() {
+          _myVolunteerRecord = null;
+          _isJoining = false;
+        });
+        SnackbarHelper.showInfo(context, 'You left the campaign.');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isJoining = false);
+        SnackbarHelper.showError(context, 'Failed: $e');
+      }
+    }
   }
 
   // ═══════════════════════════════════════════
