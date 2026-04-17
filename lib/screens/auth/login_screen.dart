@@ -65,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final logoSize = Responsive.logoSize(context) - 10;
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
