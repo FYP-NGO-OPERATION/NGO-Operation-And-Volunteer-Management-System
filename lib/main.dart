@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'config/app_theme.dart';
 import 'config/app_constants.dart';
 import 'providers/auth_provider.dart';
+import 'providers/campaign_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CampaignProvider()..init()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: Consumer<ThemeProvider>(

@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/campaign_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../utils/responsive.dart';
 import '../auth/login_screen.dart';
+import '../campaigns/campaign_list_screen.dart';
+import '../campaigns/create_campaign_screen.dart';
 
 /// Main home screen after login — shows dashboard with bottom navigation.
 class HomeScreen extends StatefulWidget {
@@ -20,6 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<AuthProvider>(context).user;
+    final isAdmin = user?.isAdmin == true;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -43,6 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          // Search (campaigns tab)
+          if (_currentIndex == 1)
+            IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: 'Search',
+              onPressed: () {},
+            ),
           // Dark Mode Toggle
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, _) {
@@ -65,6 +78,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: _buildBody(context),
+      // FAB for create campaign (Admin on Campaigns tab)
+      floatingActionButton: (_currentIndex == 1 && isAdmin)
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('New Campaign'),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -99,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return _buildDashboard(context);
       case 1:
-        return _buildPlaceholder('Campaigns', Icons.campaign, 'Coming in Phase 3');
+        return const CampaignListScreen();
       case 2:
         return _buildPlaceholder('Announcements', Icons.announcement, 'Coming in Phase 7');
       case 3:

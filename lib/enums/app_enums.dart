@@ -1,107 +1,171 @@
-/// User roles in the application.
+/// All app-wide enums with display labels.
+
+// ─── User Roles ───
 enum UserRole {
-  admin('admin', 'Admin'),
-  volunteer('volunteer', 'Volunteer');
+  admin('Admin'),
+  volunteer('Volunteer');
 
-  final String value;
   final String label;
-  const UserRole(this.value, this.label);
-
-  static UserRole fromString(String value) {
-    return UserRole.values.firstWhere(
-      (role) => role.value == value,
-      orElse: () => UserRole.volunteer,
-    );
-  }
+  const UserRole(this.label);
 }
 
-/// Campaign types supported by the NGO.
+// ─── Campaign Types ───
 enum CampaignType {
-  winterDrive('winter_drive', 'Winter Drive', '❄️'),
-  ramadan('ramadan', 'Ramadan', '🌙'),
-  eid('eid', 'Eid', '🎉'),
-  orphanage('orphanage', 'Orphanage', '🏠'),
-  custom('custom', 'Custom', '📋');
+  winterDrive('Winter Drive', '❄️'),
+  ramadan('Ramadan', '🌙'),
+  eid('Eid', '🎉'),
+  orphanage('Orphanage Visit', '🏠'),
+  medical('Medical Aid', '🏥'),
+  education('Education', '📚'),
+  ration('Ration Distribution', '🍚'),
+  plantation('Tree Plantation', '🌳'),
+  marriage('Marriage Support', '💒'),
+  waterBirds('Water for Birds', '🐦'),
+  custom('Custom Project', '📋');
 
-  final String value;
   final String label;
-  final String emoji;
-  const CampaignType(this.value, this.label, this.emoji);
+  final String icon;
+  const CampaignType(this.label, this.icon);
 
   static CampaignType fromString(String value) {
     return CampaignType.values.firstWhere(
-      (type) => type.value == value,
+      (e) => e.name == value,
       orElse: () => CampaignType.custom,
     );
   }
 }
 
-/// Campaign lifecycle statuses.
+// ─── Campaign Status ───
 enum CampaignStatus {
-  upcoming('upcoming', 'Upcoming'),
-  active('active', 'Active'),
-  completed('completed', 'Completed');
+  upcoming('Upcoming', '🔵'),
+  active('Active', '🟢'),
+  completed('Completed', '✅');
 
-  final String value;
   final String label;
-  const CampaignStatus(this.value, this.label);
+  final String icon;
+  const CampaignStatus(this.label, this.icon);
 
   static CampaignStatus fromString(String value) {
     return CampaignStatus.values.firstWhere(
-      (status) => status.value == value,
+      (e) => e.name == value,
       orElse: () => CampaignStatus.upcoming,
     );
   }
 }
 
-/// Volunteer participation statuses.
+// ─── Volunteer Status ───
 enum VolunteerStatus {
-  registered('registered', 'Registered'),
-  confirmed('confirmed', 'Confirmed'),
-  attended('attended', 'Attended'),
-  absent('absent', 'Absent');
+  registered('Registered'),
+  confirmed('Confirmed'),
+  attended('Attended'),
+  absent('Absent');
 
-  final String value;
   final String label;
-  const VolunteerStatus(this.value, this.label);
-
-  static VolunteerStatus fromString(String value) {
-    return VolunteerStatus.values.firstWhere(
-      (status) => status.value == value,
-      orElse: () => VolunteerStatus.registered,
-    );
-  }
+  const VolunteerStatus(this.label);
 }
 
-/// Donation categories.
+// ─── Donation Categories ───
 enum DonationCategory {
-  clothes('clothes', 'Clothes', '👕'),
-  money('money', 'Money', '💰'),
-  food('food', 'Food', '🍚'),
-  other('other', 'Other', '📦');
+  money('Money', '💰'),
+  clothes('Clothes', '👕'),
+  food('Food / Ration', '🍚'),
+  medicine('Medicine', '💊'),
+  blankets('Blankets', '🛏️'),
+  stationery('Stationery', '📝'),
+  other('Other', '📦');
 
-  final String value;
   final String label;
-  final String emoji;
-  const DonationCategory(this.value, this.label, this.emoji);
+  final String icon;
+  const DonationCategory(this.label, this.icon);
 
   static DonationCategory fromString(String value) {
     return DonationCategory.values.firstWhere(
-      (cat) => cat.value == value,
+      (e) => e.name == value,
       orElse: () => DonationCategory.other,
     );
   }
 }
 
-/// Activity log action types.
-enum ActivityAction {
-  created('created', 'Created'),
-  updated('updated', 'Updated'),
-  deleted('deleted', 'Deleted'),
-  joined('joined', 'Joined'),
-  left('left', 'Left');
+// ─── Payment Methods (from NGO leader transcript) ───
+enum PaymentMethod {
+  cash('Cash / By Hand', '💵'),
+  jazzCash('JazzCash', '📱'),
+  easyPaisa('EasyPaisa', '📱'),
+  meezanBank('Meezan Bank', '🏦'),
+  hblBank('HBL Bank', '🏦'),
+  ubLBank('UBL Bank', '🏦'),
+  otherBank('Other Bank', '🏦'),
+  online('Online Transfer', '💳');
 
-  final String value;
   final String label;
-  const ActivityAction(this.value, this.label);
+  final String icon;
+  const PaymentMethod(this.label, this.icon);
+
+  static PaymentMethod fromString(String value) {
+    return PaymentMethod.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => PaymentMethod.cash,
+    );
+  }
+}
+
+// ─── Expense Categories (from NGO leader transcript) ───
+enum ExpenseCategory {
+  purchase('Item Purchase', '🛒'),
+  transport('Transportation', '🚗'),
+  venue('Venue / Setup', '🏗️'),
+  printing('Printing / Poster', '🖨️'),
+  food('Food / Catering', '🍽️'),
+  utility('Utility Bills', '💡'),
+  medical('Medical', '🏥'),
+  other('Other Expense', '📋');
+
+  final String label;
+  final String icon;
+  const ExpenseCategory(this.label, this.icon);
+
+  static ExpenseCategory fromString(String value) {
+    return ExpenseCategory.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => ExpenseCategory.other,
+    );
+  }
+}
+
+// ─── Beneficiary Help Types (from NGO leader transcript) ───
+enum HelpType {
+  ration('Ration Distribution', '🍚'),
+  marriage('Marriage Support', '💒'),
+  medical('Medical / Operation', '🏥'),
+  education('Education Support', '📚'),
+  plantation('Plantation / Environment', '🌳'),
+  waterBirds('Bird Water Pots', '🐦'),
+  winterDrive('Winter Drive Items', '❄️'),
+  billPayment('Utility Bill Payment', '💡'),
+  custom('Other Help', '📋');
+
+  final String label;
+  final String icon;
+  const HelpType(this.label, this.icon);
+
+  static HelpType fromString(String value) {
+    return HelpType.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => HelpType.custom,
+    );
+  }
+}
+
+// ─── Activity Log Actions ───
+enum ActivityAction {
+  created('Created'),
+  updated('Updated'),
+  deleted('Deleted'),
+  joined('Joined'),
+  left('Left'),
+  donated('Donated'),
+  attended('Attended');
+
+  final String label;
+  const ActivityAction(this.label);
 }
