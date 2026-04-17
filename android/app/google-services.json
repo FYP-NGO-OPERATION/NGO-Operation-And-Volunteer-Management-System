@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "169049198995",
+    "project_id": "ngo-volunteer-app-6284b",
+    "storage_bucket": "ngo-volunteer-app-6284b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169049198995:android:8ee6f85e3050484a1a1866",
+        "android_client_info": {
+          "package_name": "com.ngo.ngo_volunteer_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169049198995-0pmgh8018upr0a1hvrqs3n85re81ed0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0zWvquO4G4OQbkL5CroOJe-UxQ0zcXuM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169049198995-0pmgh8018upr0a1hvrqs3n85re81ed0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
