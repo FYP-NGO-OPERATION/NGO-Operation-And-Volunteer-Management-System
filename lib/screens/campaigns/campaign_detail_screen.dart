@@ -81,6 +81,19 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           _buildHighlightsTab(theme),
         ],
       ),
+      // Join Campaign button for volunteers (non-completed campaigns)
+      floatingActionButton: (!isAdmin && !_campaign.isCompleted)
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                // Will be implemented in Phase 4
+                SnackbarHelper.showInfo(context, 'Volunteer joining coming in Phase 4');
+              },
+              icon: const Icon(Icons.how_to_reg),
+              label: Text(_campaign.isFull ? 'Campaign Full' : 'Join Campaign'),
+              backgroundColor: _campaign.isFull ? AppColors.lightTextHint : AppColors.primary,
+              foregroundColor: Colors.white,
+            )
+          : null,
     );
   }
 

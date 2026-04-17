@@ -238,8 +238,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: Responsive.isMobile(context) ? 1.4 : 1.6,
                 children: [
-                  _buildStatCard('Campaigns', '0', Icons.campaign, AppColors.primary),
-                  _buildStatCard('Volunteers', '0', Icons.people, AppColors.info),
+                  _buildStatCard('Campaigns',
+                      '${Provider.of<CampaignProvider>(context).totalCampaigns}',
+                      Icons.campaign, AppColors.primary),
+                  _buildStatCard('Active',
+                      '${Provider.of<CampaignProvider>(context).activeCampaigns}',
+                      Icons.people, AppColors.info),
                   _buildStatCard('Donations', '0', Icons.volunteer_activism, AppColors.warning),
                   _buildStatCard('Families', '0', Icons.family_restroom, AppColors.success),
                 ],
@@ -261,7 +265,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Start a new campaign',
                   Icons.add_circle_outline,
                   AppColors.primary,
-                  () {},
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+                  ),
                 ),
                 _buildActionTile(
                   'Add Donation',

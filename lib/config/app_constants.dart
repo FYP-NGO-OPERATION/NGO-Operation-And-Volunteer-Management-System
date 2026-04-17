@@ -19,6 +19,7 @@ class AppConstants {
   static const String announcementsCollection = 'announcements';
   static const String campaignPhotosCollection = 'campaign_photos';
   static const String beneficiariesCollection = 'beneficiaries';
+  static const String expensesCollection = 'expenses';
   static const String distributionsCollection = 'distributions';
   static const String feedbackCollection = 'feedback';
   static const String activityLogCollection = 'activity_log';
