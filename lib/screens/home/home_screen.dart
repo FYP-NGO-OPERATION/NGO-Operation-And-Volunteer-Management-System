@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
+import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../services/volunteer_service.dart';
 import '../../utils/responsive.dart';
 import '../auth/login_screen.dart';
 import '../campaigns/campaign_list_screen.dart';
+import '../campaigns/campaign_detail_screen.dart';
 import '../campaigns/create_campaign_screen.dart';
 
 /// Main home screen after login — shows dashboard with bottom navigation.
@@ -292,6 +295,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppColors.primaryLight,
                 () => setState(() => _currentIndex = 3),
               ),
+              const SizedBox(height: 24),
+
+              // ─── My Joined Campaigns (Volunteer view) ───
+              if (user != null && !user.isAdmin) ...[
+                Text(
+                  'My Campaigns',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildMyJoinedCampaigns(user.uid),
+              ],
             ],
           ),
         ),
@@ -356,6 +372,108 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: onTap,
       ),
     );
+  }
+
+  /// Shows list of campaigns the current volunteer has joined
+  Widget _buildMyJoinedCampaigns(String userId) {
+    return StreamBuilder<List<VolunteerModel>>(
+      stream: VolunteerService().getUserCampaignsStream(userId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final records = snapshot.data ?? [];
+
+        if (records.isEmpty) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Icon(Icons.campaign_outlined, size: 40, color: AppColors.lightTextHint),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Not joined any campaign yet',
+                    style: TextStyle(color: AppColors.lightTextSecondary),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => setState(() => _currentIndex = 1),
+                    child: const Text('Browse Campaigns →'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          children: records.take(5).map((record) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 6),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _volunteerStatusColor(record.status).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.campaign, color: _volunteerStatusColor(record.status)),
+                ),
+                title: Text(
+                  record.campaignTitle,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  'Status: ${record.status.label}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _volunteerStatusColor(record.status),
+                  ),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  // Navigate to campaign detail
+                  final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
+                  final campaign = campaignProvider.campaigns.firstWhere(
+                    (c) => c.id == record.campaignId,
+                    orElse: () => campaignProvider.campaigns.first,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CampaignDetailScreen(campaign: campaign),
+                    ),
+                  );
+                },
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Color _volunteerStatusColor(dynamic status) {
+    switch (status.toString()) {
+      case 'VolunteerStatus.registered':
+        return AppColors.info;
+      case 'VolunteerStatus.confirmed':
+        return AppColors.warning;
+      case 'VolunteerStatus.attended':
+        return AppColors.success;
+      case 'VolunteerStatus.absent':
+        return AppColors.error;
+      default:
+        return AppColors.info;
+    }
   }
 
   Widget _buildProfileTab(BuildContext context) {
