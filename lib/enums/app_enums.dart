@@ -1,4 +1,4 @@
-/// All app-wide enums with display labels.
+// All app-wide enums with display labels.
 
 // ─── User Roles ───
 enum UserRole {

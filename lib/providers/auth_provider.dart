@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -90,7 +92,10 @@ class AuthProvider extends ChangeNotifier {
 
       await _userService.createUser(newUser);
 
-      // 3. Set current user
+      // 3. Send email verification (do not await to not block UI)
+      credential.user?.sendEmailVerification();
+
+      // 4. Set current user
       _user = newUser;
 
       _setLoading(false);
@@ -191,6 +196,7 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> updateProfile({
     String? name,
     String? phone,
+    String? bio,
     String? address,
     List<String>? skills,
   }) async {
@@ -201,6 +207,7 @@ class AuthProvider extends ChangeNotifier {
       final updates = <String, dynamic>{};
       if (name != null) updates['name'] = name.trim();
       if (phone != null) updates['phone'] = phone.trim();
+      if (bio != null) updates['bio'] = bio.trim();
       if (address != null) updates['address'] = address.trim();
       if (skills != null) updates['skills'] = skills;
 
@@ -213,6 +220,40 @@ class AuthProvider extends ChangeNotifier {
         address: address,
         skills: skills,
       );
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  // ─── Upload Profile Picture ───
+  Future<bool> uploadProfilePicture(Uint8List imageBytes) async {
+    if (_user == null) return false;
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      // Upload to Firebase Storage
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_pictures')
+          .child('${_user!.uid}.jpg');
+
+      await storageRef.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'))
+          .timeout(const Duration(seconds: 15), onTimeout: () {
+        throw Exception("Upload timed out. (Web CORS or Network issue)");
+      });
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      // Update Firestore
+      await _userService.updateUser(_user!.uid, {'profileImageUrl': downloadUrl});
+
+      // Update local user
+      _user = _user!.copyWith(profileImageUrl: downloadUrl);
 
       _setLoading(false);
       return true;

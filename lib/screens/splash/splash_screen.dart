@@ -4,8 +4,11 @@ import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/responsive.dart';
-import '../auth/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../landing/landing_screen.dart';
 import '../home/home_screen.dart';
+import '../../widgets/admin/admin_layout.dart';
+import 'onboarding_screen.dart';
 
 /// Splash screen shown on app launch.
 /// Checks auth state and navigates accordingly.
@@ -52,12 +55,27 @@ class _SplashScreenState extends State<SplashScreen>
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = await authProvider.checkAuthState();
 
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+
     if (!mounted) return;
+
+    Widget nextScreen;
+    if (isLoggedIn) {
+      if (authProvider.isAdmin) {
+        nextScreen = const AdminLayout();
+      } else {
+        nextScreen = const HomeScreen();
+      }
+    } else if (!hasSeenOnboarding) {
+      nextScreen = const OnboardingScreen();
+    } else {
+      nextScreen = const LandingScreen();
+    }
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            isLoggedIn ? const HomeScreen() : const LoginScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

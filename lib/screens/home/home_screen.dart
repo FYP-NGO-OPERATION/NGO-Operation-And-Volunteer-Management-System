@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../models/volunteer_model.dart';
@@ -12,6 +13,17 @@ import '../auth/login_screen.dart';
 import '../campaigns/campaign_list_screen.dart';
 import '../campaigns/campaign_detail_screen.dart';
 import '../campaigns/create_campaign_screen.dart';
+import '../../widgets/common/custom_speed_dial.dart';
+import '../profile/change_password_screen.dart';
+import '../profile/user_list_screen.dart';
+import '../profile/edit_profile_screen.dart';
+import '../profile/about_us_screen.dart';
+import '../admin/analytics_screen.dart';
+import '../announcements/create_announcement_screen.dart';
+import '../announcements/announcement_list_screen.dart';
+import '../../models/announcement_model.dart';
+import '../../services/announcement_service.dart';
+import 'package:intl/intl.dart';
 
 /// Main home screen after login — shows dashboard with bottom navigation.
 class HomeScreen extends StatefulWidget {
@@ -56,8 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_currentIndex == 1)
             IconButton(
               icon: const Icon(Icons.search),
-              tooltip: 'Search',
-              onPressed: () {},
+              tooltip: 'Search Campaigns',
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: _CampaignSearchDelegate(
+                    Provider.of<CampaignProvider>(context, listen: false),
+                  ),
+                );
+              },
             ),
           // Dark Mode Toggle
           Consumer<ThemeProvider>(
@@ -81,19 +100,59 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: _buildBody(context),
-      // FAB for create campaign (Admin on Campaigns tab)
-      floatingActionButton: (_currentIndex == 1 && isAdmin)
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('New Campaign'),
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+      // FAB Speed Dial (Admin on Dashboard & Campaigns tab)
+      floatingActionButton: isAdmin
+          ? CustomSpeedDial(
+              actions: [
+                SpeedDialAction(
+                  icon: Icons.campaign,
+                  label: 'Add Campaign',
+                  backgroundColor: AppColors.primaryLight,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+                    );
+                  },
+                ),
+                SpeedDialAction(
+                  icon: Icons.announcement,
+                  label: 'Add Announcement',
+                  backgroundColor: AppColors.warning,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()),
+                    );
+                  },
+                ),
+                SpeedDialAction(
+                  icon: Icons.analytics,
+                  label: 'Analytics & Reports',
+                  backgroundColor: AppColors.info,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+                    );
+                  },
+                ),
+                SpeedDialAction(
+                  icon: Icons.manage_accounts,
+                  label: 'Manage Users',
+                  backgroundColor: AppColors.success,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UserListScreen()),
+                    );
+                  },
+                ),
+              ],
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
@@ -132,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return const CampaignListScreen();
       case 2:
-        return _buildPlaceholder('Announcements', Icons.announcement, 'Coming in Phase 7');
+        return const AnnouncementListScreen();
       case 3:
         return _buildProfileTab(context);
       default:
@@ -166,14 +225,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       CircleAvatar(
                         radius: Responsive.isMobile(context) ? 28 : 35,
                         backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        child: Text(
-                          (user?.name ?? 'U')[0].toUpperCase(),
-                          style: TextStyle(
-                            fontSize: Responsive.isMobile(context) ? 22 : 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                        backgroundImage: user?.profileImageUrl != null
+                            ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                            : null,
+                        child: user?.profileImageUrl == null
+                            ? Text(
+                                (user?.name ?? 'U')[0].toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: Responsive.isMobile(context) ? 22 : 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -241,16 +305,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: Responsive.isMobile(context) ? 1.4 : 1.6,
                 children: [
-                  _buildStatCard('Campaigns',
-                      '${Provider.of<CampaignProvider>(context).totalCampaigns}',
-                      Icons.campaign, AppColors.primary),
-                  _buildStatCard('Active',
+                  _buildStatCard('Active Campaigns',
                       '${Provider.of<CampaignProvider>(context).activeCampaigns}',
-                      Icons.people, AppColors.info),
-                  _buildStatCard('Donations', '0', Icons.volunteer_activism, AppColors.warning),
-                  _buildStatCard('Families', '0', Icons.family_restroom, AppColors.success),
+                      Icons.campaign, AppColors.info),
+                  _buildStatCard('Donations',
+                      'Rs.${Provider.of<CampaignProvider>(context).totalDonationsOverall.toStringAsFixed(0)}',
+                      Icons.volunteer_activism, AppColors.warning),
+                  _buildStatCard('Families Helped',
+                      '${Provider.of<CampaignProvider>(context).totalBeneficiariesOverall}',
+                      Icons.family_restroom, AppColors.success),
+                  _buildStatCard('Items Distributed',
+                      '${Provider.of<CampaignProvider>(context).totalItemsDistributedOverall}',
+                      Icons.inventory_2, AppColors.primary),
                 ],
               ),
+              const SizedBox(height: 24),
+
+              // ─── Latest Announcements ───
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Latest Updates',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
+                      );
+                    },
+                    child: const Text('See All'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _buildLatestAnnouncements(),
               const SizedBox(height: 24),
 
               // Quick Actions
@@ -272,13 +365,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
                   ),
-                ),
-                _buildActionTile(
-                  'Add Donation',
-                  'Record a new donation',
-                  Icons.card_giftcard,
-                  AppColors.warning,
-                  () {},
                 ),
               ],
               _buildActionTile(
@@ -461,6 +547,54 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildLatestAnnouncements() {
+    return StreamBuilder<List<AnnouncementModel>>(
+      stream: AnnouncementService().getLatestAnnouncements(2),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final announcements = snapshot.data ?? [];
+        if (announcements.isEmpty) {
+          return const Text('No recent announcements', style: TextStyle(color: AppColors.textHint));
+        }
+
+        return Column(
+          children: announcements.map((a) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              color: AppColors.warning.withValues(alpha: 0.1),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: AppColors.warning.withValues(alpha: 0.3)),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.campaign, color: AppColors.warning),
+                title: Text(a.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  a.message,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Text(
+                  DateFormat('MMM dd').format(a.createdAt),
+                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
+                  );
+                },
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
   Color _volunteerStatusColor(dynamic status) {
     switch (status.toString()) {
       case 'VolunteerStatus.registered':
@@ -494,14 +628,19 @@ class _HomeScreenState extends State<HomeScreen> {
               CircleAvatar(
                 radius: 50,
                 backgroundColor: AppColors.primarySurface,
-                child: Text(
-                  (user?.name ?? 'U')[0].toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
+                backgroundImage: user?.profileImageUrl != null
+                    ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                    : null,
+                child: user?.profileImageUrl == null
+                    ? Text(
+                        (user?.name ?? 'U')[0].toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(height: 16),
               Text(
@@ -524,15 +663,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: AppColors.primary,
                 side: BorderSide.none,
               ),
+              if (user?.bio != null && user!.bio!.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    user.bio!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
 
               // Info cards
               Card(
                 child: Column(
                   children: [
+                    _profileTile(Icons.email, 'Email', user?.email ?? 'N/A'),
+                    const Divider(height: 1),
                     _profileTile(Icons.phone, 'Phone', _formatPhone(user?.phone)),
                     const Divider(height: 1),
+                    _profileTile(Icons.info_outline, 'Bio', user?.bio != null && user!.bio!.isNotEmpty ? user.bio! : 'Not set'),
+                    const Divider(height: 1),
                     _profileTile(Icons.location_on, 'Address', user?.address ?? 'Not set'),
+                    const Divider(height: 1),
+                    _profileTile(Icons.star, 'Skills', user?.skills.isNotEmpty == true ? user!.skills.join(', ') : 'No skills listed'),
                     const Divider(height: 1),
                     _profileTile(Icons.campaign, 'Campaigns Joined', '${user?.campaignsJoined ?? 0}'),
                     const Divider(height: 1),
@@ -545,7 +704,66 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Logout
+              // Edit Profile
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit Profile'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // About Us
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.info_outline, color: AppColors.primary),
+                  label: const Text('About NGO', style: TextStyle(color: AppColors.primary)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Password and Logout
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.lock, color: AppColors.primary),
+                  label: const Text('Change Password', style: TextStyle(color: AppColors.primary)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
@@ -583,20 +801,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPlaceholder(String title, IconData icon, String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 80, color: AppColors.textHint),
-          const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text(message, style: const TextStyle(color: AppColors.textSecondary)),
-        ],
-      ),
-    );
-  }
+
 
   Future<void> _showLogoutDialog(BuildContext context) async {
     final result = await showDialog<bool>(
@@ -627,5 +832,76 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     }
+  }
+}
+
+/// Search delegate for campaigns — wired to the search icon on campaigns tab.
+class _CampaignSearchDelegate extends SearchDelegate<String> {
+  final CampaignProvider _provider;
+
+  _CampaignSearchDelegate(this._provider);
+
+  @override
+  String get searchFieldLabel => 'Search campaigns...';
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () => close(context, ''),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) => _buildSearchResults(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildSearchResults(context);
+
+  Widget _buildSearchResults(BuildContext context) {
+    final q = query.toLowerCase();
+    final results = _provider.allCampaigns.where((c) =>
+        c.title.toLowerCase().contains(q) ||
+        c.description.toLowerCase().contains(q) ||
+        c.location.toLowerCase().contains(q)).toList();
+
+    if (results.isEmpty) {
+      return const Center(
+        child: Text('No campaigns found', style: TextStyle(color: AppColors.textSecondary)),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final campaign = results[index];
+        return ListTile(
+          leading: Icon(Icons.campaign, color: AppColors.primary),
+          title: Text(campaign.title),
+          subtitle: Text(campaign.location, maxLines: 1, overflow: TextOverflow.ellipsis),
+          onTap: () {
+            close(context, '');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CampaignDetailScreen(campaign: campaign),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

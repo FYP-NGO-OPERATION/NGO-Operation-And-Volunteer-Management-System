@@ -8,6 +8,7 @@ class UserModel {
   final String phone;
   final String role; // 'admin' or 'volunteer'
   final String? profileImageUrl;
+  final String? bio;
   final String? address;
   final List<String> skills;
   final bool emailVerified;
@@ -23,6 +24,7 @@ class UserModel {
     required this.phone,
     this.role = 'volunteer',
     this.profileImageUrl,
+    this.bio,
     this.address,
     this.skills = const [],
     this.emailVerified = false,
@@ -41,6 +43,7 @@ class UserModel {
       phone: map['phone'] ?? '',
       role: map['role'] ?? 'volunteer',
       profileImageUrl: map['profileImageUrl'],
+      bio: map['bio'],
       address: map['address'],
       skills: List<String>.from(map['skills'] ?? []),
       emailVerified: map['emailVerified'] ?? false,
@@ -60,6 +63,7 @@ class UserModel {
       'phone': phone,
       'role': role,
       'profileImageUrl': profileImageUrl,
+      'bio': bio,
       'address': address,
       'skills': skills,
       'emailVerified': emailVerified,
@@ -76,6 +80,7 @@ class UserModel {
     String? phone,
     String? role,
     String? profileImageUrl,
+    String? bio,
     String? address,
     List<String>? skills,
     bool? emailVerified,
@@ -90,6 +95,7 @@ class UserModel {
       phone: phone ?? this.phone,
       role: role ?? this.role,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      bio: bio ?? this.bio,
       address: address ?? this.address,
       skills: skills ?? this.skills,
       emailVerified: emailVerified ?? this.emailVerified,

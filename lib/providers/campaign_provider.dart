@@ -31,6 +31,10 @@ class CampaignProvider extends ChangeNotifier {
   int get completedCampaigns => _campaigns.where((c) => c.isCompleted).length;
   int get upcomingCampaigns => _campaigns.where((c) => c.isUpcoming).length;
 
+  double get totalDonationsOverall => _campaigns.fold(0, (sum, c) => sum + c.totalDonationsAmount);
+  int get totalBeneficiariesOverall => _campaigns.fold(0, (sum, c) => sum + c.beneficiaryCount);
+  int get totalItemsDistributedOverall => _campaigns.fold(0, (sum, c) => sum + c.distributionCount);
+
   /// Filtered list based on status filter and search query
   List<CampaignModel> get _filteredCampaigns {
     var list = _campaigns.toList();
@@ -55,6 +59,7 @@ class CampaignProvider extends ChangeNotifier {
   // ─── Initialize — subscribe to real-time updates ───
   void init() {
     _setLoading(true);
+    _campaignsSubscription?.cancel();
     _campaignsSubscription = _campaignService.getCampaignsStream().listen(
       (campaigns) {
         _campaigns = campaigns;

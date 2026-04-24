@@ -3,16 +3,22 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../models/campaign_model.dart';
+import '../../models/donation_model.dart';
 import '../../models/expense_model.dart';
 import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../services/campaign_service.dart';
+import '../../services/donation_service.dart';
 import '../../services/volunteer_service.dart';
 import '../../enums/app_enums.dart';
 import '../../utils/responsive.dart';
 import '../../utils/snackbar_helper.dart';
+import 'photo_gallery_screen.dart';
+import '../donations/add_donation_screen.dart';
+import '../expenses/add_expense_screen.dart';
 import '../volunteers/volunteer_list_screen.dart';
+import '../beneficiaries/beneficiary_list_screen.dart';
 import 'create_campaign_screen.dart';
 
 /// Campaign Detail — Tabbed view (Info | Record | Highlights)
@@ -230,12 +236,14 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
+                crossAxisCount: Responsive.isMobile(context) ? 2 : 3,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
-                childAspectRatio: 1.5,
+                childAspectRatio: Responsive.isMobile(context) ? 1.5 : 2.0,
                 children: [
                   _statCard('Volunteers', '${_campaign.totalVolunteers}', Icons.people, AppColors.info),
+                  _statCard('Beneficiaries', '${_campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary),
+                  _statCard('Items Distributed', '${_campaign.distributionCount}', Icons.inventory_2, AppColors.success),
                   _statCard('Donations', 'Rs.${_campaign.totalDonationsAmount.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.warning),
                   _statCard('Expenses', 'Rs.${_campaign.totalExpenses.toStringAsFixed(0)}', Icons.receipt, AppColors.error),
                   _statCard('Remaining', 'Rs.${_campaign.remainingBudget.toStringAsFixed(0)}', Icons.savings, AppColors.success),
@@ -268,6 +276,67 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                           campaignId: _campaign.id,
                           campaignTitle: _campaign.title,
                         ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // View Beneficiaries button (always visible)
+              Card(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.handshake, color: AppColors.primary),
+                  ),
+                  title: const Text(
+                    'View Impact & Distribution',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text('See beneficiaries and distributed items'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BeneficiaryListScreen(
+                          campaignId: _campaign.id,
+                          campaignTitle: _campaign.title,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // View Photo Gallery button
+              Card(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.photo_library, color: AppColors.success),
+                  ),
+                  title: const Text(
+                    'Photo Gallery',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text('View and add campaign photos'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PhotoGalleryScreen(campaign: _campaign),
                       ),
                     );
                   },
@@ -312,17 +381,171 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
   }
 
   Widget _buildDonationsSubTab(ThemeData theme, bool isAdmin) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.volunteer_activism, size: 60, color: AppColors.lightTextHint),
-          const SizedBox(height: 12),
-          const Text('Donations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          const Text('Donation tracking coming in Phase 5', style: TextStyle(color: AppColors.lightTextSecondary)),
-        ],
-      ),
+    return StreamBuilder<List<DonationModel>>(
+      stream: DonationService().getDonationsStream(_campaign.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final donations = snapshot.data ?? [];
+
+        if (donations.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.volunteer_activism, size: 60, color: AppColors.lightTextHint),
+                const SizedBox(height: 12),
+                const Text('No Donations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                Text(
+                  isAdmin ? 'Tap + to record a donation.' : 'No donations recorded yet.',
+                  style: const TextStyle(color: AppColors.lightTextSecondary),
+                ),
+                if (isAdmin) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _navigateToAddDonation,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Donation'),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }
+
+        // Calculate totals
+        double totalCash = donations.fold(0, (s, d) => s + d.amountCash);
+        double totalOnline = donations.fold(0, (s, d) => s + d.amountOnline);
+        double totalAll = totalCash + totalOnline;
+
+        return Column(
+          children: [
+            // Summary banner
+            Container(
+              margin: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Donations', style: TextStyle(fontWeight: FontWeight.w600)),
+                      Text(
+                        'Rs. ${totalAll.toStringAsFixed(0)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.success),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('💵 Cash: Rs.${totalCash.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
+                      Text('💳 Online: Rs.${totalOnline.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
+                      Text('📦 Items: ${donations.length}', style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Add button for admin
+            if (isAdmin)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _navigateToAddDonation,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Donation'),
+                  ),
+                ),
+              ),
+
+            // List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                itemCount: donations.length,
+                itemBuilder: (_, i) {
+                  final d = donations[i];
+                  return Dismissible(
+                    key: Key(d.id),
+                    direction: isAdmin ? DismissDirection.endToStart : DismissDirection.none,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      color: AppColors.error,
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    confirmDismiss: (_) async {
+                      return await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Donation'),
+                          content: Text('Delete donation from ${d.donorName}?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    onDismissed: (_) async {
+                      await DonationService().deleteDonation(d);
+                      if (mounted) SnackbarHelper.showInfo(context, 'Donation deleted');
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(d.category.icon, style: const TextStyle(fontSize: 20)),
+                        ),
+                        title: Text(isAdmin ? d.donorName : 'Anonymous Donor', style: const TextStyle(fontWeight: FontWeight.w600)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${d.category.label} • ${d.quantity}', style: const TextStyle(fontSize: 12)),
+                            if (d.isMoney)
+                              Text(
+                                '${d.paymentMethod.icon} ${d.paymentMethod.label} • Rs.${d.totalAmount.toStringAsFixed(0)}',
+                                style: const TextStyle(fontSize: 12, color: AppColors.success),
+                              ),
+                          ],
+                        ),
+                        trailing: d.isMoney
+                            ? Text(
+                                'Rs.${d.totalAmount.toStringAsFixed(0)}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.success),
+                              )
+                            : Text(d.quantity, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
+                        isThreeLine: d.isMoney,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -346,9 +569,17 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 const Text('No Expenses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 6),
                 Text(
-                  isAdmin ? 'Add expenses to track purchases.' : 'No expenses recorded yet.',
+                  isAdmin ? 'Tap + to record an expense.' : 'No expenses recorded yet.',
                   style: const TextStyle(color: AppColors.lightTextSecondary),
                 ),
+                if (isAdmin) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _navigateToAddExpense,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Expense'),
+                  ),
+                ],
               ],
             ),
           );
@@ -377,6 +608,21 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 ],
               ),
             ),
+
+            // Add button for admin
+            if (isAdmin)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _navigateToAddExpense,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Expense'),
+                  ),
+                ),
+              ),
+
             // List
             Expanded(
               child: ListView.builder(
@@ -384,22 +630,53 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 itemCount: expenses.length,
                 itemBuilder: (_, i) {
                   final e = expenses[i];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                  return Dismissible(
+                    key: Key(e.id),
+                    direction: isAdmin ? DismissDirection.endToStart : DismissDirection.none,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      color: AppColors.error,
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    confirmDismiss: (_) async {
+                      return await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Expense'),
+                          content: Text('Delete expense "${e.itemName}"?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                              child: const Text('Delete'),
+                            ),
+                          ],
                         ),
-                        child: Text(e.category.icon, style: const TextStyle(fontSize: 20)),
-                      ),
-                      title: Text(e.itemName, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text('${e.quantity} × Rs.${e.unitPrice.toStringAsFixed(0)}'),
-                      trailing: Text(
-                        'Rs.${e.totalAmount.toStringAsFixed(0)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),
+                      );
+                    },
+                    onDismissed: (_) async {
+                      await CampaignService().deleteExpense(e.id, _campaign.id, e.totalAmount);
+                      if (mounted) SnackbarHelper.showInfo(context, 'Expense deleted');
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(e.category.icon, style: const TextStyle(fontSize: 20)),
+                        ),
+                        title: Text(e.itemName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        subtitle: Text('${e.quantity} × Rs.${e.unitPrice.toStringAsFixed(0)}'),
+                        trailing: Text(
+                          'Rs.${e.totalAmount.toStringAsFixed(0)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),
+                        ),
                       ),
                     ),
                   );
@@ -424,7 +701,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           const SizedBox(height: 12),
           const Text('Highlights', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
-          const Text('Photos & videos coming in Phase 8', style: TextStyle(color: AppColors.lightTextSecondary)),
+          const Text('No media uploaded yet', style: TextStyle(color: AppColors.lightTextSecondary)),
         ],
       ),
     );
@@ -492,6 +769,32 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
             const SizedBox(height: 2),
             Text(label, style: const TextStyle(fontSize: 10)),
           ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════
+  // DONATION NAVIGATION
+  // ═══════════════════════════════════════════
+  void _navigateToAddDonation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddDonationScreen(
+          campaignId: _campaign.id,
+          campaignTitle: _campaign.title,
+        ),
+      ),
+    );
+  }
+
+  void _navigateToAddExpense() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddExpenseScreen(
+          campaignId: _campaign.id,
         ),
       ),
     );
@@ -612,21 +915,22 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: CampaignStatus.values.map((status) {
-            return RadioListTile<CampaignStatus>(
+            final isSelected = _campaign.status == status;
+            return ListTile(
+              leading: Icon(
+                isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                color: AppColors.primary,
+              ),
               title: Text('${status.icon} ${status.label}'),
-              value: status,
-              groupValue: _campaign.status,
-              onChanged: (v) async {
+              onTap: () async {
                 Navigator.pop(ctx);
-                if (v != null) {
-                  final provider = Provider.of<CampaignProvider>(context, listen: false);
-                  final success = await provider.updateStatus(_campaign.id, v);
-                  if (mounted && success) {
-                    setState(() {
-                      _campaign = _campaign.copyWith(status: v);
-                    });
-                    SnackbarHelper.showSuccess(context, 'Status updated to ${v.label}');
-                  }
+                final provider = Provider.of<CampaignProvider>(context, listen: false);
+                final success = await provider.updateStatus(_campaign.id, status);
+                if (mounted && success) {
+                  setState(() {
+                    _campaign = _campaign.copyWith(status: status);
+                  });
+                  SnackbarHelper.showSuccess(context, 'Status updated to ${status.label}');
                 }
               },
             );

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../models/campaign_model.dart';
 import '../models/expense_model.dart';
 import '../enums/app_enums.dart';
@@ -98,17 +99,65 @@ class CampaignService {
     });
   }
 
-  /// Delete campaign and its subcollections
+  /// Delete campaign and its subcollections (Cascading Delete)
   Future<void> deleteCampaign(String campaignId) async {
-    // Delete related expenses
-    final expenseDocs = await _expenses
-        .where('campaignId', isEqualTo: campaignId)
-        .get();
+    final batch = _db.batch();
+
+    // 1. Delete related expenses
+    final expenseDocs = await _expenses.where('campaignId', isEqualTo: campaignId).get();
     for (var doc in expenseDocs.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
-    // Delete campaign
-    await _campaigns.doc(campaignId).delete();
+
+    // 2. Delete related donations
+    final donationDocs = await _db.collection('donations').where('campaignId', isEqualTo: campaignId).get();
+    for (var doc in donationDocs.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 3. Delete related volunteers and decrement their counters
+    final volunteerDocs = await _db.collection('campaign_volunteers').where('campaignId', isEqualTo: campaignId).get();
+    for (var doc in volunteerDocs.docs) {
+      final userId = doc.data()['userId'] as String?;
+      if (userId != null) {
+        batch.update(_db.collection('users').doc(userId), {
+          'campaignsJoined': FieldValue.increment(-1),
+        });
+      }
+      batch.delete(doc.reference);
+    }
+
+    // 4. Delete related beneficiaries
+    final beneficiaryDocs = await _db.collection('beneficiaries').where('campaignId', isEqualTo: campaignId).get();
+    for (var doc in beneficiaryDocs.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 5. Delete related distributions
+    final distributionDocs = await _db.collection('distributions').where('campaignId', isEqualTo: campaignId).get();
+    for (var doc in distributionDocs.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 6. Delete related photos (Firestore AND Storage)
+    final photoDocs = await _db.collection('campaign_photos').where('campaignId', isEqualTo: campaignId).get();
+    for (var doc in photoDocs.docs) {
+      final imageUrl = doc.data()['imageUrl'] as String?;
+      if (imageUrl != null && imageUrl.isNotEmpty) {
+        try {
+          await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+        } catch (e) {
+          // Ignore if file doesn't exist
+        }
+      }
+      batch.delete(doc.reference);
+    }
+
+    // 7. Delete campaign itself
+    batch.delete(_campaigns.doc(campaignId));
+
+    // Commit all deletions and updates atomically
+    await batch.commit();
   }
 
   /// Increment volunteer count

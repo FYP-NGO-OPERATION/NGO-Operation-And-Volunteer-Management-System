@@ -176,6 +176,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     Text('Campaign Type', style: Theme.of(context).textTheme.labelLarge),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<CampaignType>(
+                      // ignore: deprecated_member_use
                       value: _selectedType,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.category),
@@ -298,6 +299,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                       Text('Status', style: Theme.of(context).textTheme.labelLarge),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<CampaignStatus>(
+                        // ignore: deprecated_member_use
                         value: _selectedStatus,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.flag_circle),

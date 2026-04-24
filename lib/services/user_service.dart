@@ -50,6 +50,13 @@ class UserService {
     return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
   }
 
+  /// Stream all users (admin only)
+  Stream<List<UserModel>> getAllUsersStream() {
+    return _usersRef.orderBy('joinedAt', descending: true).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+    });
+  }
+
   /// Search users by name
   Future<List<UserModel>> searchUsers(String query) async {
     final snapshot = await _usersRef

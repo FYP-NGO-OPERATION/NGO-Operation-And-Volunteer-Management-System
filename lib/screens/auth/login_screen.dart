@@ -11,6 +11,7 @@ import '../../widgets/common/custom_text_field.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import '../home/home_screen.dart';
+import '../../widgets/admin/admin_layout.dart';
 
 /// Login screen with email and password.
 class LoginScreen extends StatefulWidget {
@@ -48,8 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success) {
       SnackbarHelper.showSuccess(context, 'Welcome back, ${authProvider.user?.name ?? ''}!');
+      Widget nextScreen = authProvider.isAdmin ? const AdminLayout() : const HomeScreen();
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => nextScreen),
         (route) => false,
       );
     } else {
