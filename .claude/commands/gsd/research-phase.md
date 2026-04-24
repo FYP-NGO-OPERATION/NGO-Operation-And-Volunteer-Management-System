@@ -61,7 +61,7 @@ PHASE_INFO=$(gsd-sdk query roadmap.get-phase "${phase_number}")
 ## 2. Check Existing Research
 
 ```bash
-ls .planning/phases/${PHASE}-*/RESEARCH.md 2>/dev/null
+ls .planning/phases/${phase_number}-*/RESEARCH.md 2>/dev/null
 ```
 
 **If exists:** Offer: 1) Update research, 2) View existing, 3) Skip. Wait for response.

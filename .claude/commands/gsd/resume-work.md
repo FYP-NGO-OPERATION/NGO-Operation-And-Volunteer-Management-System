@@ -19,14 +19,14 @@ Routes to the resume-project workflow which handles:
 - Incomplete work detection (PLAN without SUMMARY)
 - Status presentation
 - Context-aware next action routing
-  </objective>
+</objective>
 
 <execution_context>
-@E:/Fyp/ngo_volunteer_app/.claude/get-shit-done/workflows/resume-project.md
+@.claude/get-shit-done/workflows/resume-project.md
 </execution_context>
 
 <process>
-**Follow the resume-project workflow** from `@E:/Fyp/ngo_volunteer_app/.claude/get-shit-done/workflows/resume-project.md`.
+**Follow the resume-project workflow** from `@.claude/get-shit-done/workflows/resume-project.md`.
 
 The workflow handles all resumption logic including:
 
@@ -37,4 +37,4 @@ The workflow handles all resumption logic including:
 5. Context-aware option offering (checks CONTEXT.md before suggesting plan vs discuss)
 6. Routing to appropriate next command
 7. Session continuity updates
-   </process>
+</process>

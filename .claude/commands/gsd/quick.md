@@ -39,7 +39,7 @@ Granular flags are composable: `--discuss --research --validate` gives the same 
 </objective>
 
 <execution_context>
-@E:/Fyp/ngo_volunteer_app/.claude/get-shit-done/workflows/quick.md
+@.claude/get-shit-done/workflows/quick.md
 </execution_context>
 
 <context>
@@ -80,7 +80,11 @@ For each directory found:
   - SUMMARY.md missing, dir created <7 days ago → `in-progress`
   - SUMMARY.md missing, dir created ≥7 days ago → `abandoned? (>7 days, no summary)`
 
-**SECURITY:** Directory names are read from the filesystem. Before displaying any slug, sanitize: strip non-printable characters, ANSI escape sequences, and path separators using: `name.replace(/[^\x20-\x7E]/g, '').replace(/[/\\]/g, '')`. Never pass raw directory names to shell commands via string interpolation.
+**SECURITY:** Directory names are read from the filesystem. Before displaying any slug, sanitize it in bash and only use the sanitized value for output. For example:
+  ```bash
+  safe_slug="$(printf '%s' "$name" | perl -pe 's/\e\[[0-9;]*[[:alpha:]]//g; s/[^ -~]//g; s#[/\\\\]##g')"
+  ```
+This strips ANSI escape sequences, removes non-printable characters, and removes / and \ path separators. Never pass raw directory names to shell commands via string interpolation.
 
 Display format:
 ```
@@ -102,9 +106,9 @@ STOP after displaying the list. Do NOT proceed to further steps.
 
 When SUBCMD=status and SLUG is set (already sanitized):
 
-Find directory matching `*-{SLUG}` pattern:
+Find directory matching `*-${SLUG}` pattern:
 ```bash
-dir=$(ls -d .planning/quick/*-{SLUG}/ 2>/dev/null | head -1)
+dir=$(ls -d ".planning/quick/*-${SLUG}/" 2>/dev/null | head -1)
 ```
 
 If no directory found, print `No quick task found with slug: {SLUG}` and stop.
@@ -127,9 +131,9 @@ No agent spawn. STOP after printing.
 
 When SUBCMD=resume and SLUG is set (already sanitized):
 
-1. Find the directory matching `*-{SLUG}` pattern:
+1. Find the directory matching `*-${SLUG}` pattern:
    ```bash
-   dir=$(ls -d .planning/quick/*-{SLUG}/ 2>/dev/null | head -1)
+   dir=$(ls -d ".planning/quick/*-${SLUG}/" 2>/dev/null | head -1)
    ```
 2. If no directory found, print `No quick task found with slug: {SLUG}` and stop.
 
@@ -153,7 +157,7 @@ When SUBCMD=resume and SLUG is set (already sanitized):
 
 When SUBCMD=run:
 
-Execute the quick workflow from @E:/Fyp/ngo_volunteer_app/.claude/get-shit-done/workflows/quick.md end-to-end.
+Execute the quick workflow from @.claude/get-shit-done/workflows/quick.md end-to-end.
 Preserve all workflow gates (validation, task description, planning, execution, state updates, commits).
 
 </process>
