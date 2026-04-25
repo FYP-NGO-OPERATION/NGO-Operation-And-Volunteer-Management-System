@@ -88,65 +88,45 @@ This is a **unified full-stack ecosystem** — NOT separate projects. One codeba
 
 ---
 
-## 📁 Unified Repository Structure
+## 📁 Unified Monorepo Structure
 
 ```
-ngo_volunteer_app/
+ngo_fyp_system/
 │
-├── lib/                          # 🔥 SHARED CODEBASE (ALL PLATFORMS)
-│   ├── config/                   #    App colors, constants, theme config
-│   ├── enums/                    #    8 type-safe domain enums
-│   ├── models/                   #    9 Firestore data models
-│   ├── providers/                #    State: Auth, Campaign, Theme providers
-│   ├── screens/                  #    UI screens (25+ across 12 modules)
-│   │   ├── admin/                #      Admin dashboard + analytics
-│   │   ├── auth/                 #      Login, register, forgot password
-│   │   ├── campaigns/            #      Campaign list, detail, create
-│   │   ├── donations/            #      Donation form, payment
-│   │   ├── home/                 #      Volunteer home screen
-│   │   ├── landing/              #      Public web landing page
-│   │   ├── profile/              #      User profile, settings
-│   │   └── ...                   #      (+ beneficiaries, expenses, etc.)
-│   ├── services/                 #    10 Firebase service classes
-│   ├── theme/                    #    Design tokens (typography, spacing)
-│   ├── utils/                    #    Validators, responsive helpers
-│   └── widgets/                  #    Reusable components
-│       ├── admin/                #      AdminLayout, sidebar
-│       ├── common/               #      Buttons, text fields, loaders
-│       ├── premium/              #      Premium design components
-│       └── web/                  #      WebShell, PremiumDataTable
+├── app/                          # 🔥 FLUTTER (Mobile App + Admin Dashboard)
+│   ├── lib/                      #    Shared Dart codebase (Android/iOS/Web)
+│   ├── android/                  #    Android build configuration
+│   ├── ios/                      #    iOS build configuration
+│   └── web/                      #    Web build configuration
 │
-├── android/                      # 📱 Android build configuration
-├── ios/                          # 📱 iOS build configuration
-├── web/                          # 🌐 Web build configuration (index.html)
-├── test/                         # ✅ Unit tests (62 tests, 3 suites)
-├── assets/                       # 🎨 Images and branding assets
+├── website/                      # 🌐 NEXT.JS (Public Marketing & SEO Landing)
+│   ├── app/                      #    Next.js app router
+│   ├── components/               #    React components
+│   └── public/                   #    Static assets
 │
-├── firestore.rules               # 🔒 Server-side RBAC security rules
-├── firebase.json                 # ⚙️ Firebase project configuration
+├── backend/                      # ☁️ FIREBASE (Backend Logic)
+│   ├── firestore.rules           #    🔒 Server-side RBAC security rules
+│   ├── firestore.indexes.json    #    Database indexes
+│   └── firebase.json             #    Firebase project configuration
 │
-├── docs/                         # 📄 Academic documentation
+├── docs/                         # 📄 ACADEMIC DOCUMENTATION
 │   ├── FYP-01/                   #    Semester 1: Chapters 1-2, proposal
 │   ├── FYP-02/                   #    Semester 2: Chapters 3-4, research
 │   ├── FYP-03/                   #    Semester 3: Chapters 5-8, defense
-│   ├── diagrams/                 #    17 PNG diagrams + Mermaid source
+│   ├── diagrams/                 #    20+ PNG diagrams (Mermaid generated)
 │   ├── Thesis-FYP01/             #    DOCX thesis with embedded diagrams
-│   ├── screenshots/              #    App screenshots (mobile/web/admin)
 │   └── MASTER_ROADMAP.md         #    1.5-year academic timeline
 │
-├── pubspec.yaml                  # 📦 Flutter dependencies
-└── README.md                     # 📖 This file
+└── README.md                     # 📖 This architecture documentation
 ```
 
-### Why NOT Separate Folders?
+### Why Monorepo Architecture?
 
-| ❌ Wrong Approach | ✅ Our Approach |
-|-------------------|----------------|
-| `/mobile-app/` (separate project) | `lib/` shared code + `android/` + `ios/` build configs |
-| `/web-app/` (separate project) | `lib/` shared code + `web/` build config |
-| `/admin-panel/` (separate project) | `lib/screens/admin/` + `lib/widgets/admin/` (role-gated) |
-| 3 Firebase projects | 1 Firebase project, shared Auth + Firestore |
-| 3× duplicate models | 9 models used everywhere via `lib/models/` |
+| ❌ Wrong Approach | ✅ Our Approach (Industry Standard) |
+|-------------------|--------------------------------------|
+| Separate unlinked folders (`ngo_volunteer_app`, `ngo-website`) | One parent directory (`ngo_fyp_system`) |
+| Duplicate Firebase configs | Centralized `backend/` config |
+| Confusing for examiners | Examiner opens one repo, sees entire ecosystem |
 
 ---
 
