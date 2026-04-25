@@ -6,7 +6,6 @@ import '../../models/distribution_model.dart';
 import '../../services/distribution_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
-import '../../utils/snackbar_helper.dart';
 import 'add_beneficiary_screen.dart';
 import 'add_distribution_screen.dart';
 
@@ -128,8 +127,9 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                         );
                       },
                       onDismissed: (_) async {
+                        final messenger = ScaffoldMessenger.of(context);
                         await _distributionService.deleteDistribution(d.id, widget.campaignId, d.quantity);
-                        if (mounted) SnackbarHelper.showInfo(context, 'Record deleted');
+                        messenger.showSnackBar(const SnackBar(content: Text('Record deleted')));
                       },
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 8),
@@ -224,8 +224,9 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                         );
                       },
                       onDismissed: (_) async {
+                        final messenger = ScaffoldMessenger.of(context);
                         await _distributionService.deleteBeneficiary(b.id, widget.campaignId, b.familySize);
-                        if (mounted) SnackbarHelper.showInfo(context, 'Beneficiary deleted');
+                        messenger.showSnackBar(const SnackBar(content: Text('Beneficiary deleted')));
                       },
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 8),

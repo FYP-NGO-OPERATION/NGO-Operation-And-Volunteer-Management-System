@@ -1,75 +1,66 @@
 import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 
+/// Premium empty state with icon, title, subtitle, and optional action
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String message;
+  final String? subtitle;
   final String? actionLabel;
   final VoidCallback? onAction;
 
   const EmptyStateWidget({
     super.key,
-    required this.icon,
+    this.icon = Icons.inbox_outlined,
     required this.title,
-    required this.message,
+    String? subtitle,
+    String? message,
     this.actionLabel,
     this.onAction,
-  });
+  }) : subtitle = subtitle ?? message;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: AppSpacing.pagePaddingWide,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
-                color: AppColors.primarySurface,
+                color: (isDark ? AppColors.darkSurfaceVariant : AppColors.neutral100),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 80,
-                color: AppColors.primary.withValues(alpha: 0.5),
-              ),
+              child: Icon(icon, size: AppTokens.iconHero, color: AppColors.neutral400),
             ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
+            AppSpacing.vGapXl,
+            Text(title, style: AppTextStyles.titleMedium(
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ), textAlign: TextAlign.center),
+            if (subtitle != null) ...[
+              AppSpacing.vGapSm,
+              Text(subtitle!, style: AppTextStyles.bodyMedium(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+              ), textAlign: TextAlign.center),
+            ],
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
+              AppSpacing.vGapXl,
+              ElevatedButton(
                 onPressed: onAction,
-                icon: const Icon(Icons.add),
-                label: Text(actionLabel!),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
                 ),
+                child: Text(actionLabel!, style: AppTextStyles.button(color: Colors.white)),
               ),
-            ]
+            ],
           ],
         ),
       ),

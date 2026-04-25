@@ -5,6 +5,9 @@ import '../../models/announcement_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/announcement_service.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 import '../../widgets/common/empty_state_widget.dart';
 import 'create_announcement_screen.dart';
 
@@ -49,14 +52,14 @@ class AnnouncementListScreen extends StatelessWidget {
             return EmptyStateWidget(
               icon: Icons.campaign_outlined,
               title: 'No Announcements Yet',
-              message: isAdmin 
+              subtitle: isAdmin 
                   ? 'Tap the + button to post your first update.'
                   : 'There are no official updates from the NGO yet.',
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: announcements.length,
             itemBuilder: (context, index) {
               final announcement = announcements[index];
@@ -109,9 +112,9 @@ class _AnnouncementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -119,27 +122,22 @@ class _AnnouncementCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: AppColors.primarySurface,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.campaign, color: AppColors.primary, size: 24),
+                  child: Icon(Icons.campaign, color: AppColors.primary, size: AppTokens.iconMd),
                 ),
-                const SizedBox(width: 12),
+                AppSpacing.hGapMd,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        announcement.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Posted by ${announcement.authorName}',
-                        style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w500),
-                      ),
+                      Text(announcement.title, style: AppTextStyles.titleMedium()),
+                      AppSpacing.vGapXs,
+                      Text('Posted by ${announcement.authorName}',
+                        style: AppTextStyles.labelSmall(color: AppColors.primary)),
                     ],
                   ),
                 ),

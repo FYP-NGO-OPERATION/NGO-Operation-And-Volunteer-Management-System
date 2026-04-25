@@ -85,10 +85,13 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
       caption = captionResult;
     }
 
+    // Capture context-dependent values before async operations
+    // ignore: use_build_context_synchronously — user captured before async gap
+    final user = context.read<AuthProvider>().user!;
+
     setState(() => _isUploading = true);
 
     try {
-      final user = context.read<AuthProvider>().user!;
       await _galleryService.uploadPhoto(
         campaignId: widget.campaign.id,
         imageFile: File(pickedFile.path),
@@ -177,7 +180,7 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                   return EmptyStateWidget(
                     icon: Icons.photo_library_outlined,
                     title: 'No Photos Yet',
-                    message: isAdmin
+                    subtitle: isAdmin
                         ? 'Tap the camera button below to upload the first photo.'
                         : 'No photos have been uploaded for this campaign yet.',
                   );

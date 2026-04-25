@@ -16,6 +16,9 @@ class Responsive {
   static bool isDesktop(BuildContext context) =>
       MediaQuery.of(context).size.width >= AppConstants.desktopBreakpoint;
 
+  static bool isWideDesktop(BuildContext context) =>
+      MediaQuery.of(context).size.width >= 1440;
+
   /// Get screen width
   static double screenWidth(BuildContext context) =>
       MediaQuery.of(context).size.width;
@@ -31,6 +34,14 @@ class Responsive {
     if (width < AppConstants.tabletBreakpoint) return 40;
     if (width < AppConstants.desktopBreakpoint) return 80;
     return (width - AppConstants.maxContentWidth * 2) / 2; // Center content
+  }
+
+  /// Get max content width for centered layouts on web
+  static double contentMaxWidth(BuildContext context) {
+    final width = screenWidth(context);
+    if (width < AppConstants.mobileBreakpoint) return width;
+    if (width < AppConstants.desktopBreakpoint) return 800;
+    return 1100;
   }
 
   /// Get form width (constrained on large screens)

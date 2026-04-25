@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../providers/campaign_provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
+import '../../utils/responsive.dart';
 import '../../services/pdf_report_service.dart';
 
 class AnalyticsScreen extends StatelessWidget {
@@ -11,7 +15,7 @@ class AnalyticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: Responsive.isMobile(context) ? AppBar(
         title: const Text('Analytics & Reports'),
         actions: [
           Consumer<CampaignProvider>(
@@ -32,7 +36,7 @@ class AnalyticsScreen extends StatelessWidget {
             },
           ),
         ],
-      ),
+      ) : null,
       body: Consumer<CampaignProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -44,20 +48,50 @@ class AnalyticsScreen extends StatelessWidget {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(Responsive.isDesktop(context) ? AppSpacing.xl : AppSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSummaryCards(provider),
-                const SizedBox(height: 24),
-                const Text('Campaigns by Status', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                _buildCampaignStatusBarChart(provider),
-                const SizedBox(height: 32),
-                const Text('Donations Breakdown', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                _buildDonationsPieChart(provider),
-                const SizedBox(height: 40),
+                _buildSummaryCards(provider, context),
+                AppSpacing.vGapXl,
+                // Desktop: charts side by side
+                if (Responsive.isDesktop(context))
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
+                            AppSpacing.vGapLg,
+                            _buildCampaignStatusBarChart(provider),
+                          ],
+                        ),
+                      ),
+                      AppSpacing.hGapXl,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Donations Breakdown', style: AppTextStyles.titleLarge()),
+                            AppSpacing.vGapLg,
+                            _buildDonationsPieChart(provider),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else ...[
+                  Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
+                  AppSpacing.vGapLg,
+                  _buildCampaignStatusBarChart(provider),
+                  AppSpacing.vGapXxl,
+                  Text('Donations Breakdown', style: AppTextStyles.titleLarge()),
+                  AppSpacing.vGapLg,
+                  _buildDonationsPieChart(provider),
+                ],
+                AppSpacing.vGapXxl,
               ],
             ),
           );
@@ -66,34 +100,62 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(CampaignProvider provider) {
+  Widget _buildSummaryCards(CampaignProvider provider, BuildContext context) {
+    final isDesktop = Responsive.isDesktop(context);
+    final cards = [
+      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary),
+      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info),
+      _summaryCard('Funds Raised', 'Rs.${provider.totalDonationsOverall.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.success),
+      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, AppColors.accent),
+    ];
+
+    if (isDesktop) {
+      return Row(
+        children: cards.asMap().entries.map((e) {
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: e.key > 0 ? AppSpacing.md : 0),
+              child: e.value,
+            ),
+          );
+        }).toList(),
+      );
+    }
+
     return Row(
       children: [
-        Expanded(child: _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary)),
+        Expanded(child: cards[0]),
         const SizedBox(width: 12),
-        Expanded(child: _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info)),
+        Expanded(child: cards[1]),
         const SizedBox(width: 12),
-        Expanded(child: _summaryCard('Funds Raised', 'Rs.${provider.totalDonationsOverall.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.success)),
+        Expanded(child: cards[2]),
       ],
     );
   }
 
   Widget _summaryCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppTokens.borderRadiusMd,
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(title, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.xs + 2),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: AppTokens.borderRadiusSm,
+            ),
+            child: Icon(icon, color: color, size: AppTokens.iconMd),
+          ),
+          AppSpacing.vGapSm,
+          Text(value, style: AppTextStyles.statValue(color: color)),
+          AppSpacing.vGapXs,
+          Text(title, style: AppTextStyles.caption(color: color)),
         ],
       ),
     );

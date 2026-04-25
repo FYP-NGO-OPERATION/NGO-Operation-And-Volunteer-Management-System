@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/expense_model.dart';
-
 import '../../enums/app_enums.dart';
 import '../../services/campaign_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
@@ -92,16 +93,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Expense')),
+      appBar: AppBar(title: Text('Add Expense', style: AppTextStyles.titleLarge())),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Expense Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              Text('Expense Details', style: AppTextStyles.titleLarge()),
+              AppSpacing.vGapLg,
               
               CustomTextField(
                 controller: _itemNameController,

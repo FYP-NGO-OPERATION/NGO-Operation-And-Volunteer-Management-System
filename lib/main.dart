@@ -12,8 +12,22 @@ import 'widgets/common/no_internet_banner.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ─── Global Error Handling ───
+  // Catches unhandled Flutter framework errors (widget build failures, etc.)
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('⚠️ FlutterError: ${details.exceptionAsString()}');
+  };
+
+  // Catches unhandled async errors from platform channels, isolates, etc.
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('⚠️ PlatformError: $error');
+    return true; // Prevents app crash — logs instead
+  };
 
   // Initialize Firebase
   await Firebase.initializeApp(

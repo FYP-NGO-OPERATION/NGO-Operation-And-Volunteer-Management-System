@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper Functions ───
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isLoggedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isValidString(field) {
+      return field is string && field.size() > 0 && field.size() < 1000;
+    }
+
+    // ─── Users Collection ───
+    match /users/{userId} {
+      // Anyone logged in can read user profiles (needed for name display)
+      allow read: if isLoggedIn();
+      // Users can update their own profile; admins can update anyone
+      allow create: if isLoggedIn() && isOwner(userId);
+      allow update: if isLoggedIn() && (isOwner(userId) || isAdmin());
+      // Only admin can delete users
+      allow delete: if isAdmin();
+    }
+
+    // ─── Campaigns Collection ───
+    match /campaigns/{campaignId} {
+      // Anyone logged in can read campaigns
+      allow read: if isLoggedIn();
+      // Only admins can create, update, delete campaigns
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Donations Collection ───
+    match /donations/{donationId} {
+      // Admins can read all; volunteers see campaign-scoped via queries
+      allow read: if isLoggedIn();
+      // Only admins can create/delete donations
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Volunteers Collection ───
+    match /volunteers/{volunteerId} {
+      // Anyone logged in can read volunteer records
+      allow read: if isLoggedIn();
+      // Users can register themselves as volunteers
+      allow create: if isLoggedIn();
+      // Users can delete their own record (leave campaign); admin can update/delete any
+      allow update: if isAdmin();
+      allow delete: if isLoggedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ─── Beneficiaries Collection ───
+    match /beneficiaries/{beneficiaryId} {
+      allow read: if isLoggedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Distributions Collection ───
+    match /distributions/{distributionId} {
+      allow read: if isLoggedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Expenses Collection ───
+    match /expenses/{expenseId} {
+      allow read: if isLoggedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Announcements Collection ───
+    match /announcements/{announcementId} {
+      allow read: if isLoggedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Campaign Photos Collection ───
+    match /campaign_photos/{photoId} {
+      allow read: if isLoggedIn();
+      // Admin can upload/delete photos
+      allow create: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Activity Logs Collection ───
+    match /activity_log/{logId} {
+      allow read: if isAdmin();
+      allow create: if isLoggedIn();
+      // Logs are immutable — no update/delete
+      allow update, delete: if false;
+    }
+
+    // ─── Feedback Collection ───
+    match /feedback/{feedbackId} {
+      allow read: if isAdmin();
+      allow create: if isLoggedIn();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

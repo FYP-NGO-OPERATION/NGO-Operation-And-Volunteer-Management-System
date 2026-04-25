@@ -1,11 +1,11 @@
 {
-    "name": "HRAS NGO",
+    "name": "HRAS — Hamesha Rahein Apke Saath",
     "short_name": "HRAS NGO",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#2E7D32",
-    "theme_color": "#2E7D32",
-    "description": "HRAS NGO Volunteer Management Platform",
+    "background_color": "#0F1110",
+    "theme_color": "#1A6B3C",
+    "description": "Transparent NGO platform connecting volunteers and donors to deliver real community impact across Pakistan.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

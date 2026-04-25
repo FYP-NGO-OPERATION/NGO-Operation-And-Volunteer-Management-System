@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_tokens.dart';
 
-/// Reusable text field with consistent styling.
+/// Reusable text field — uses the premium design system theme.
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String label;
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
   final void Function(String)? onChanged;
   final List<TextInputFormatter>? inputFormatters;
   final bool autofocus;
+  final TextInputAction? textInputAction;
 
   const CustomTextField({
     super.key,
@@ -35,10 +37,12 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.inputFormatters,
     this.autofocus = false,
+    this.textInputAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -50,12 +54,13 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       autofocus: autofocus,
       inputFormatters: inputFormatters,
-      style: const TextStyle(fontSize: 15),
+      textInputAction: textInputAction,
+      style: AppTextStyles.bodyMedium(color: theme.colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: AppColors.textSecondary, size: 22)
+            ? Icon(prefixIcon, size: AppTokens.iconMd)
             : null,
         suffixIcon: suffixIcon,
       ),

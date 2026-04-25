@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../enums/app_enums.dart';
+import '../../utils/responsive.dart';
 import '../../widgets/campaign_card.dart';
 import 'campaign_detail_screen.dart';
 
@@ -77,30 +80,55 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
               ? const Center(child: CircularProgressIndicator())
               : campaignProvider.campaigns.isEmpty
                   ? _buildEmptyState(isAdmin)
-                  : RefreshIndicator(
-                      onRefresh: () async {
-                        campaignProvider.init();
-                      },
-                      child: ListView.builder(
-                        padding: const EdgeInsets.only(top: 4, bottom: 80),
-                        itemCount: campaignProvider.campaigns.length,
-                        itemBuilder: (context, index) {
-                          final campaign = campaignProvider.campaigns[index];
-                          return CampaignCard(
-                            campaign: campaign,
-                            onTap: () {
-                              campaignProvider.selectCampaign(campaign);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => CampaignDetailScreen(campaign: campaign),
-                                ),
+                  : Responsive.isDesktop(context)
+                      // ─── DESKTOP: Grid layout ───
+                      ? LayoutBuilder(
+                          builder: (context, constraints) {
+                            final crossAxisCount = constraints.maxWidth > 1200 ? 3 : 2;
+                            return GridView.builder(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                crossAxisSpacing: AppSpacing.lg,
+                                mainAxisSpacing: AppSpacing.lg,
+                                childAspectRatio: 1.6,
+                              ),
+                              itemCount: campaignProvider.campaigns.length,
+                              itemBuilder: (context, index) {
+                                final campaign = campaignProvider.campaigns[index];
+                                return CampaignCard(
+                                  campaign: campaign,
+                                  onTap: () {
+                                    campaignProvider.selectCampaign(campaign);
+                                    Navigator.push(context,
+                                      MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)));
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        )
+                      // ─── MOBILE: List layout ───
+                      : RefreshIndicator(
+                          onRefresh: () async {
+                            campaignProvider.init();
+                          },
+                          child: ListView.builder(
+                            padding: const EdgeInsets.only(top: 4, bottom: 80),
+                            itemCount: campaignProvider.campaigns.length,
+                            itemBuilder: (context, index) {
+                              final campaign = campaignProvider.campaigns[index];
+                              return CampaignCard(
+                                campaign: campaign,
+                                onTap: () {
+                                  campaignProvider.selectCampaign(campaign);
+                                  Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)));
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                    ),
+                          ),
+                        ),
         ),
       ],
     );
@@ -130,17 +158,12 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.campaign_outlined, size: 80, color: AppColors.lightTextHint),
-          const SizedBox(height: 16),
-          const Text(
-            'No Campaigns Yet',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
+          AppSpacing.vGapLg,
+          Text('No Campaigns Yet', style: AppTextStyles.titleLarge()),
+          AppSpacing.vGapSm,
           Text(
-            isAdmin
-                ? 'Tap + to create your first campaign.'
-                : 'No campaigns available right now.',
-            style: const TextStyle(color: AppColors.lightTextSecondary),
+            isAdmin ? 'Tap + to create your first campaign.' : 'No campaigns available right now.',
+            style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary),
           ),
         ],
       ),

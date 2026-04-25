@@ -1,45 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="HRAS NGO Volunteer Management Platform">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <title>HRAS — Hamesha Rahein Apke Saath | NGO Volunteer & Donation Platform</title>
+  <meta name="description" content="HRAS is a transparent NGO platform connecting volunteers and donors to deliver real impact. Manage campaigns, track donations, and volunteer for community causes across Pakistan.">
+  <meta name="keywords" content="HRAS, NGO, volunteer, donation, Pakistan, charity, community, social impact, Hamesha Rahein Apke Saath">
+  <meta name="author" content="HRAS NGO">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1A6B3C">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HRAS — Hamesha Rahein Apke Saath | NGO Platform">
+  <meta property="og:description" content="Join our community of volunteers and donors to deliver transparent, real impact where it matters most.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <meta property="og:url" content="https://hras-ngo.web.app">
+  <meta property="og:site_name" content="HRAS NGO">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HRAS — Hamesha Rahein Apke Saath">
+  <meta name="twitter:description" content="Transparent NGO platform for volunteering and donations across Pakistan.">
+  <meta name="twitter:image" content="icons/Icon-512.png">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="HRAS NGO">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-  <title>HRAS NGO</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Cropper.js for image editing -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* Premium loading screen */
+    body { margin: 0; background: #0F1110; }
+    .loading-container {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .loading-logo { width: 64px; height: 64px; border-radius: 50%; margin-bottom: 24px; }
+    .loading-text { color: #9CA3AF; font-size: 14px; letter-spacing: 1px; }
+    .loading-bar {
+      width: 180px; height: 3px; background: #252926;
+      border-radius: 4px; margin-top: 20px; overflow: hidden;
+    }
+    .loading-bar::after {
+      content: ''; display: block;
+      width: 60px; height: 100%; background: #1A6B3C;
+      border-radius: 4px; animation: slide 1.2s ease-in-out infinite;
+    }
+    @keyframes slide { 0% { transform: translateX(-60px); } 100% { transform: translateX(180px); } }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <!-- Premium loading indicator while Flutter initializes -->
+  <div class="loading-container" id="loading">
+    <img class="loading-logo" src="icons/Icon-192.png" alt="HRAS Logo" onerror="this.style.display='none'">
+    <div class="loading-text">HRAS NGO</div>
+    <div class="loading-bar"></div>
+  </div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

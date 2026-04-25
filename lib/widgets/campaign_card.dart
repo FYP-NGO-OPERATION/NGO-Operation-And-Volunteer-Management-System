@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
+import '../theme/app_spacing.dart';
 import '../models/campaign_model.dart';
 import '../enums/app_enums.dart';
 
@@ -21,7 +22,7 @@ class CampaignCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs + 2),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

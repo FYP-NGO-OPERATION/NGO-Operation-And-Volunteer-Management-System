@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
+import '../../config/app_constants.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -14,110 +18,110 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('About Us'),
-      ),
+      appBar: AppBar(title: Text('About Us', style: AppTextStyles.titleLarge())),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Logo / Icon Placeholder
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.primarySurface,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.volunteer_activism,
-                size: 80,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            Text(
-              'HRAS',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Hamesha Rahein Apke Saath',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Vision / Mission
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(color: Colors.grey),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Our Mission',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'To bring hope, aid, and sustainable change to communities in need. We believe in the power of collective volunteerism to transform lives and build a better future for everyone.',
-                      style: TextStyle(height: 1.5, color: AppColors.textSecondary),
-                    ),
-                  ],
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Logo
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySurface,
+                    shape: BoxShape.circle,
+                    boxShadow: AppTokens.shadowGlow(AppColors.primary),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(AppConstants.logoPath, width: 72, height: 72, fit: BoxFit.contain),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 32),
+                AppSpacing.vGapXl,
+                Text('HRAS', style: AppTextStyles.displayMedium(color: AppColors.primary)),
+                AppSpacing.vGapSm,
+                Text(AppConstants.appTagline,
+                  style: AppTextStyles.bodyLarge(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                AppSpacing.vGapXxl,
 
-            // Social Links
-            const Text(
-              'Connect With Us',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            
-            _SocialButton(
-              icon: Icons.camera_alt,
-              label: 'Instagram',
-              color: const Color(0xFFE1306C),
-              onTap: () => _launchUrl('https://www.instagram.com/hras_hamesharaheinapkesaath?igsh=eWRhdzBld2tnMXRk'),
-            ),
-            const SizedBox(height: 12),
-            _SocialButton(
-              icon: Icons.facebook,
-              label: 'Facebook',
-              color: const Color(0xFF1877F2),
-              onTap: () => _launchUrl('https://www.facebook.com/share/18JqaHAKdM/'),
-            ),
-            const SizedBox(height: 12),
-            _SocialButton(
-              icon: Icons.music_note,
-              label: 'TikTok',
-              color: Colors.black,
-              onTap: () => _launchUrl('https://www.tiktok.com/@hras_official?_r=1&_t=ZS-95mfeOBr0tt'),
-            ),
+                // Mission Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkCardBg : Colors.white,
+                    borderRadius: AppTokens.borderRadiusMd,
+                    border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                    boxShadow: AppTokens.shadowSoft,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(AppSpacing.sm),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: AppTokens.borderRadiusSm,
+                            ),
+                            child: Icon(Icons.flag_rounded, color: AppColors.primary, size: AppTokens.iconMd),
+                          ),
+                          AppSpacing.hGapMd,
+                          Text('Our Mission', style: AppTextStyles.titleMedium()),
+                        ],
+                      ),
+                      AppSpacing.vGapMd,
+                      Text(
+                        'To bring hope, aid, and sustainable change to communities in need. '
+                        'We believe in the power of collective volunteerism to transform lives '
+                        'and build a better future for everyone.',
+                        style: AppTextStyles.bodyMedium(
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                AppSpacing.vGapXxl,
 
-            const SizedBox(height: 40),
-            const Text(
-              'Version 1.0.0\nNGO Operations Platform',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textHint, fontSize: 12),
+                // Social Links
+                Text('Connect With Us', style: AppTextStyles.titleLarge()),
+                AppSpacing.vGapLg,
+                _SocialButton(
+                  icon: Icons.camera_alt,
+                  label: 'Instagram',
+                  color: const Color(0xFFE1306C),
+                  onTap: () => _launchUrl('https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                ),
+                AppSpacing.vGapMd,
+                _SocialButton(
+                  icon: Icons.facebook,
+                  label: 'Facebook',
+                  color: const Color(0xFF1877F2),
+                  onTap: () => _launchUrl('https://www.facebook.com/share/18JqaHAKdM/'),
+                ),
+                AppSpacing.vGapMd,
+                _SocialButton(
+                  icon: Icons.music_note,
+                  label: 'TikTok',
+                  color: isDark ? Colors.white : Colors.black,
+                  onTap: () => _launchUrl('https://www.tiktok.com/@hras_official'),
+                ),
+
+                AppSpacing.vGapXxl,
+                AppSpacing.vGapLg,
+                Text(
+                  'Version ${AppConstants.appVersion}\n${AppConstants.appName}',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.caption(color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -139,25 +143,24 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppTokens.borderRadiusMd,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+          borderRadius: AppTokens.borderRadiusMd,
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(width: 16),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
+            Icon(icon, color: color, size: AppTokens.iconLg),
+            AppSpacing.hGapLg,
+            Text(label, style: AppTextStyles.titleMedium()),
             const Spacer(),
-            Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textHint),
+            Icon(Icons.arrow_forward_ios, size: AppTokens.iconXs,
+              color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
           ],
         ),
       ),

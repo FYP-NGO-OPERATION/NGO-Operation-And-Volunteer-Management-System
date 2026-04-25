@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +6,10 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
 import '../../widgets/common/custom_text_field.dart';
+import '../../widgets/common/custom_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -29,35 +31,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
+    // Capture ALL context-dependent values before any awaits
+    final scaffoldContext = context;
+    final uiSettings = <PlatformUiSettings>[
+      AndroidUiSettings(
+        toolbarTitle: 'Crop Profile Picture',
+        toolbarColor: AppColors.primary,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.square,
+        lockAspectRatio: true,
+      ),
+      IOSUiSettings(
+        title: 'Crop Profile Picture',
+        aspectRatioLockEnabled: true,
+      ),
+      if (kIsWeb) WebUiSettings(
+        context: scaffoldContext,
+        presentStyle: WebPresentStyle.page,
+      ),
+    ];
+
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Profile Picture',
-            toolbarColor: AppColors.primary,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(
-            title: 'Crop Profile Picture',
-            aspectRatioLockEnabled: true,
-          ),
-          WebUiSettings(
-            context: context,
-            presentStyle: WebPresentStyle.page,
-          ),
-        ],
+        uiSettings: uiSettings,
       );
 
       if (croppedFile != null) {
         final bytes = await croppedFile.readAsBytes();
-        setState(() {
-          _selectedImageBytes = bytes;
-        });
+        if (mounted) {
+          setState(() {
+            _selectedImageBytes = bytes;
+          });
+        }
       }
     }
   }
@@ -141,9 +149,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(title: Text('Edit Profile', style: AppTextStyles.titleLarge())),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
           key: _formKey,
           child: Column(
@@ -182,14 +190,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.vGapXl,
               CustomTextField(
                 controller: _nameController,
                 label: 'Full Name',
                 prefixIcon: Icons.person,
                 validator: (val) => val == null || val.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               // Read-only email display
               InputDecorator(
                 decoration: const InputDecoration(
@@ -202,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   style: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               CustomTextField(
                 controller: _phoneController,
                 label: 'Phone Number',
@@ -210,7 +218,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.phone,
                 validator: (val) => val == null || val.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               CustomTextField(
                 controller: _bioController,
                 label: 'Bio / About',
@@ -219,30 +227,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 maxLines: 3,
                 hint: 'Tell us about yourself...',
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               CustomTextField(
                 controller: _addressController,
                 label: 'Address (City, Area)',
                 prefixIcon: Icons.location_on,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               CustomTextField(
                 controller: _skillsController,
                 label: 'Skills (comma separated)',
                 hint: 'e.g., Photography, Driving, Medical',
                 prefixIcon: Icons.star,
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading 
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white))
-                    : const Text('SAVE CHANGES'),
+              AppSpacing.vGapXxl,
+              CustomButton(
+                text: 'SAVE CHANGES',
+                isLoading: _isLoading,
+                onPressed: _submit,
               ),
             ],
           ),

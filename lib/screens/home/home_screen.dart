@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
@@ -23,6 +26,7 @@ import '../announcements/create_announcement_screen.dart';
 import '../announcements/announcement_list_screen.dart';
 import '../../models/announcement_model.dart';
 import '../../services/announcement_service.dart';
+import '../../widgets/web/web_shell.dart';
 import 'package:intl/intl.dart';
 
 /// Main home screen after login — shows dashboard with bottom navigation.
@@ -40,7 +44,31 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
     final isAdmin = user?.isAdmin == true;
+    final isDesktopOrTablet = !Responsive.isMobile(context);
 
+    // ─── DESKTOP / TABLET: Use WebShell sidebar ───
+    if (isDesktopOrTablet) {
+      // Build all possible tabs for desktop
+      final desktopTabs = <Widget>[
+        _buildDashboard(context),           // 0
+        const CampaignListScreen(),         // 1
+        if (isAdmin) const UserListScreen(),// 2 (admin only)
+        _buildProfileTab(context),          // 3 (or 2 for non-admin)
+        if (isAdmin) const AnalyticsScreen(), // 4 (admin only)
+      ];
+
+      return WebShell(
+        currentIndex: _currentIndex,
+        onIndexChanged: (i) => setState(() => _currentIndex = i),
+        tabs: desktopTabs,
+        isAdmin: isAdmin,
+        userName: user?.name ?? 'User',
+        userImageUrl: user?.profileImageUrl,
+        onLogout: () => _showLogoutDialog(context),
+      );
+    }
+
+    // ─── MOBILE: Original bottom nav layout ───
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -99,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: _buildBody(context),
+      body: _buildMobileBody(context),
       // FAB Speed Dial (Admin on Dashboard & Campaigns tab)
       floatingActionButton: isAdmin
           ? CustomSpeedDial(
@@ -184,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildMobileBody(BuildContext context) {
     switch (_currentIndex) {
       case 0:
         return _buildDashboard(context);
@@ -205,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.isMobile(context) ? 16 : 24,
-        vertical: 16,
+        horizontal: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
+        vertical: AppSpacing.lg,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -214,88 +242,62 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Card
-              Card(
-                color: AppColors.primary,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      // Avatar
-                      CircleAvatar(
-                        radius: Responsive.isMobile(context) ? 28 : 35,
-                        backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        backgroundImage: user?.profileImageUrl != null
-                            ? CachedNetworkImageProvider(user!.profileImageUrl!)
-                            : null,
-                        child: user?.profileImageUrl == null
-                            ? Text(
-                                (user?.name ?? 'U')[0].toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: Responsive.isMobile(context) ? 22 : 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : null,
+              // Welcome Card — Premium gradient
+              Container(
+                decoration: BoxDecoration(
+                  gradient: AppColors.heroGradient,
+                  borderRadius: AppTokens.borderRadiusLg,
+                  boxShadow: AppTokens.shadowGlow(AppColors.primary),
+                ),
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: Responsive.isMobile(context) ? 28 : 35,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      backgroundImage: user?.profileImageUrl != null
+                          ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                          : null,
+                      child: user?.profileImageUrl == null
+                          ? Text(
+                              (user?.name ?? 'U')[0].toUpperCase(),
+                              style: AppTextStyles.headlineMedium(color: Colors.white),
+                            )
+                          : null,
+                    ),
+                    AppSpacing.hGapLg,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Welcome back,', style: AppTextStyles.bodySmall(color: Colors.white.withValues(alpha: 0.8))),
+                          AppSpacing.vGapXs,
+                          Text(user?.name ?? 'User',
+                            style: AppTextStyles.headlineMedium(color: Colors.white),
+                            overflow: TextOverflow.ellipsis),
+                          AppSpacing.vGapSm,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm + 2, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: AppTokens.borderRadiusPill,
+                            ),
+                            child: Text(
+                              user?.isAdmin == true ? '👑 Admin' : '🤝 Volunteer',
+                              style: AppTextStyles.labelSmall(color: Colors.white),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              user?.name ?? 'User',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: Responsive.isMobile(context) ? 20 : 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                user?.isAdmin == true ? '👑 Admin' : '🤝 Volunteer',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+              AppSpacing.vGapXl,
 
               // Stats Grid
-              Text(
-                'Overview',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Text('Overview', style: AppTextStyles.titleLarge()),
+              AppSpacing.vGapMd,
 
               GridView.count(
                 shrinkWrap: true,
@@ -319,18 +321,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       Icons.inventory_2, AppColors.primary),
                 ],
               ),
-              const SizedBox(height: 24),
+              AppSpacing.vGapXl,
 
               // ─── Latest Announcements ───
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Latest Updates',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text('Latest Updates', style: AppTextStyles.titleLarge()),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -342,18 +339,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              AppSpacing.vGapSm,
               _buildLatestAnnouncements(),
-              const SizedBox(height: 24),
+              AppSpacing.vGapXl,
 
               // Quick Actions
-              Text(
-                'Quick Actions',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Text('Quick Actions', style: AppTextStyles.titleLarge()),
+              AppSpacing.vGapMd,
 
               if (user?.isAdmin == true) ...[
                 _buildActionTile(
@@ -402,34 +394,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(icon, color: color, size: 26),
-            const Spacer(),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md + 2),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
+        borderRadius: AppTokens.borderRadiusMd,
+        border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+        boxShadow: AppTokens.shadowSoft,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: isDark ? 0.15 : 0.1),
+              borderRadius: AppTokens.borderRadiusSm,
             ),
-            const SizedBox(height: 2),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+            child: Icon(icon, color: color, size: AppTokens.iconMd),
+          ),
+          const Spacer(),
+          Text(value, style: AppTextStyles.statValue(color: color)),
+          AppSpacing.vGapXs,
+          Text(title, style: AppTextStyles.caption(
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+          ), overflow: TextOverflow.ellipsis),
+        ],
       ),
     );
   }
@@ -441,20 +433,28 @@ class _HomeScreenState extends State<HomeScreen> {
     Color color,
     VoidCallback onTap,
   ) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
+        borderRadius: AppTokens.borderRadiusMd,
+        border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+      ),
       child: ListTile(
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppTokens.borderRadiusSm,
           ),
-          child: Icon(icon, color: color, size: 24),
+          child: Icon(icon, color: color, size: AppTokens.iconMd),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-        trailing: const Icon(Icons.chevron_right),
+        title: Text(title, style: AppTextStyles.titleSmall()),
+        subtitle: Text(subtitle, style: AppTextStyles.caption(
+          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+        )),
+        trailing: Icon(Icons.chevron_right, color: isDark ? AppColors.neutral500 : AppColors.neutral400),
         onTap: onTap,
       ),
     );
@@ -612,89 +612,93 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildProfileTab(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.isMobile(context) ? 16 : 24,
-        vertical: 16,
+        horizontal: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
+        vertical: AppSpacing.lg,
       ),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              // Profile Avatar
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: AppColors.primarySurface,
-                backgroundImage: user?.profileImageUrl != null
-                    ? CachedNetworkImageProvider(user!.profileImageUrl!)
-                    : null,
-                child: user?.profileImageUrl == null
-                    ? Text(
-                        (user?.name ?? 'U')[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                user?.name ?? 'User',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+              // ─── Premium Avatar Header ───
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl, horizontal: AppSpacing.xl),
+                decoration: BoxDecoration(
+                  gradient: AppColors.heroGradient,
+                  borderRadius: AppTokens.borderRadiusLg,
+                  boxShadow: AppTokens.shadowGlow(AppColors.primary),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user?.email ?? '',
-                style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
-              ),
-              const SizedBox(height: 6),
-              Chip(
-                label: Text(
-                  user?.isAdmin == true ? 'Admin' : 'Volunteer',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                backgroundColor: AppColors.primary,
-                side: BorderSide.none,
-              ),
-              if (user?.bio != null && user!.bio!.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    user.bio!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: AppColors.textSecondary,
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3),
+                      ),
+                      child: CircleAvatar(
+                        radius: 48,
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
+                        backgroundImage: user?.profileImageUrl != null
+                            ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                            : null,
+                        child: user?.profileImageUrl == null
+                            ? Text((user?.name ?? 'U')[0].toUpperCase(),
+                                style: AppTextStyles.displayMedium(color: Colors.white))
+                            : null,
+                      ),
                     ),
-                  ),
+                    AppSpacing.vGapLg,
+                    Text(user?.name ?? 'User', style: AppTextStyles.headlineMedium(color: Colors.white)),
+                    AppSpacing.vGapXs,
+                    Text(user?.email ?? '', style: AppTextStyles.bodySmall(color: Colors.white.withValues(alpha: 0.7))),
+                    AppSpacing.vGapSm,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: AppTokens.borderRadiusPill,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                      ),
+                      child: Text(
+                        user?.isAdmin == true ? '👑 Admin' : '🤝 Volunteer',
+                        style: AppTextStyles.labelSmall(color: Colors.white),
+                      ),
+                    ),
+                    if (user?.bio != null && user!.bio!.isNotEmpty) ...[
+                      AppSpacing.vGapMd,
+                      Text(user.bio!, textAlign: TextAlign.center,
+                        style: AppTextStyles.bodySmall(color: Colors.white.withValues(alpha: 0.8))),
+                    ],
+                  ],
                 ),
-              ],
-              const SizedBox(height: 24),
+              ),
+              AppSpacing.vGapXl,
 
-              // Info cards
-              Card(
+              // ─── Info Card ───
+              Container(
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkCardBg : Colors.white,
+                  borderRadius: AppTokens.borderRadiusMd,
+                  border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                  boxShadow: AppTokens.shadowSoft,
+                ),
                 child: Column(
                   children: [
                     _profileTile(Icons.email, 'Email', user?.email ?? 'N/A'),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                     _profileTile(Icons.phone, 'Phone', _formatPhone(user?.phone)),
-                    const Divider(height: 1),
-                    _profileTile(Icons.info_outline, 'Bio', user?.bio != null && user!.bio!.isNotEmpty ? user.bio! : 'Not set'),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                     _profileTile(Icons.location_on, 'Address', user?.address ?? 'Not set'),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                     _profileTile(Icons.star, 'Skills', user?.skills.isNotEmpty == true ? user!.skills.join(', ') : 'No skills listed'),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                     _profileTile(Icons.campaign, 'Campaigns Joined', '${user?.campaignsJoined ?? 0}'),
-                    const Divider(height: 1),
+                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                     _profileTile(Icons.calendar_today, 'Member Since',
                         user?.joinedAt != null
                             ? '${user!.joinedAt.day}/${user.joinedAt.month}/${user.joinedAt.year}'
@@ -702,81 +706,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              AppSpacing.vGapXl,
 
-              // Edit Profile
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.edit),
-                  label: const Text('Edit Profile'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // About Us
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AboutUsScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.info_outline, color: AppColors.primary),
-                  label: const Text('About NGO', style: TextStyle(color: AppColors.primary)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primary),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Password and Logout
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.lock, color: AppColors.primary),
-                  label: const Text('Change Password', style: TextStyle(color: AppColors.primary)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primary),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () => _showLogoutDialog(context),
-                  icon: const Icon(Icons.logout, color: AppColors.error),
-                  label: const Text('Logout', style: TextStyle(color: AppColors.error)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.error),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+              // ─── Action Buttons ───
+              _profileActionBtn(Icons.edit, 'Edit Profile', AppColors.primary, Colors.white,
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()))),
+              AppSpacing.vGapMd,
+              _profileActionBtn(Icons.info_outline, 'About NGO', isDark ? AppColors.darkCardBg : Colors.white, AppColors.primary,
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
+                outlined: true),
+              AppSpacing.vGapMd,
+              _profileActionBtn(Icons.lock, 'Change Password', isDark ? AppColors.darkCardBg : Colors.white, AppColors.primary,
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
+                outlined: true),
+              AppSpacing.vGapMd,
+              _profileActionBtn(Icons.logout, 'Logout', isDark ? AppColors.darkCardBg : Colors.white, AppColors.error,
+                () => _showLogoutDialog(context),
+                outlined: true),
+              AppSpacing.vGapXl,
             ],
           ),
         ),
@@ -784,7 +731,32 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Format phone: 03001234567 → 0300-1234567
+  Widget _profileActionBtn(IconData icon, String label, Color bg, Color fg, VoidCallback onTap, {bool outlined = false}) {
+    return SizedBox(
+      width: double.infinity,
+      height: AppTokens.buttonHeightLg,
+      child: outlined
+          ? OutlinedButton.icon(
+              onPressed: onTap,
+              icon: Icon(icon, color: fg, size: AppTokens.iconSm),
+              label: Text(label, style: AppTextStyles.button(color: fg)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: fg.withValues(alpha: 0.4)),
+                shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+              ),
+            )
+          : ElevatedButton.icon(
+              onPressed: onTap,
+              icon: Icon(icon, color: fg, size: AppTokens.iconSm),
+              label: Text(label, style: AppTextStyles.button(color: fg)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bg, foregroundColor: fg,
+                shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+              ),
+            ),
+    );
+  }
+
   String _formatPhone(String? phone) {
     if (phone == null || phone.isEmpty) return 'N/A';
     if (phone.length == 11 && !phone.contains('-')) {
@@ -794,16 +766,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _profileTile(IconData icon, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color)),
-      subtitle: Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
+      leading: Container(
+        padding: const EdgeInsets.all(AppSpacing.xs + 2),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: isDark ? 0.15 : 0.08),
+          borderRadius: AppTokens.borderRadiusSm,
+        ),
+        child: Icon(icon, color: AppColors.primary, size: AppTokens.iconSm),
+      ),
+      title: Text(label, style: AppTextStyles.caption(
+        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+      subtitle: Text(value, style: AppTextStyles.bodyMedium()),
     );
   }
 
 
 
   Future<void> _showLogoutDialog(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -823,10 +807,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    if (result == true && mounted) {
-      await Provider.of<AuthProvider>(context, listen: false).logout();
+    if (result == true) {
+      await authProvider.logout();
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
+        navigator.pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
         );

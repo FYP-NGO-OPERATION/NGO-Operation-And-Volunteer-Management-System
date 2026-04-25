@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
 import '../../models/campaign_model.dart';
 import '../../models/donation_model.dart';
 import '../../models/expense_model.dart';
@@ -101,13 +103,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildInfoTab(theme),
-          _buildRecordTab(theme, isAdmin),
-          _buildHighlightsTab(theme),
-        ],
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: Responsive.isDesktop(context) ? 1100 : double.infinity),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildInfoTab(theme),
+              _buildRecordTab(theme, isAdmin),
+              _buildHighlightsTab(theme),
+            ],
+          ),
+        ),
       ),
       // Join / Leave Campaign button for volunteers
       floatingActionButton: (!isAdmin && !_campaign.isCompleted)
@@ -154,7 +161,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
@@ -165,22 +172,16 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               Row(
                 children: [
                   _chip('${_campaign.type.icon} ${_campaign.type.label}', AppColors.primary),
-                  const SizedBox(width: 8),
+                  AppSpacing.hGapSm,
                   _statusBadge(),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              // Title
-              Text(
-                _campaign.title,
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              // Description
-              Text(_campaign.description, style: theme.textTheme.bodyMedium),
-              const SizedBox(height: 20),
+              AppSpacing.vGapLg,
+              Text(_campaign.title, style: AppTextStyles.headlineMedium()),
+              AppSpacing.vGapMd,
+              Text(_campaign.description, style: AppTextStyles.bodyMedium(
+                color: theme.brightness == Brightness.dark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+              AppSpacing.vGapXl,
 
               // Info Grid
               Card(
@@ -231,8 +232,8 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               ],
 
               // Stats Cards
-              Text('Statistics', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
+              Text('Statistics', style: AppTextStyles.titleLarge()),
+              AppSpacing.vGapMd,
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -504,8 +505,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                       );
                     },
                     onDismissed: (_) async {
+                      final messenger = ScaffoldMessenger.of(context);
                       await DonationService().deleteDonation(d);
-                      if (mounted) SnackbarHelper.showInfo(context, 'Donation deleted');
+                      messenger.showSnackBar(const SnackBar(content: Text('Donation deleted')));
                     },
                     child: Card(
                       margin: const EdgeInsets.only(bottom: 8),
@@ -657,8 +659,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                       );
                     },
                     onDismissed: (_) async {
+                      final messenger = ScaffoldMessenger.of(context);
                       await CampaignService().deleteExpense(e.id, _campaign.id, e.totalAmount);
-                      if (mounted) SnackbarHelper.showInfo(context, 'Expense deleted');
+                      messenger.showSnackBar(const SnackBar(content: Text('Expense deleted')));
                     },
                     child: Card(
                       margin: const EdgeInsets.only(bottom: 8),

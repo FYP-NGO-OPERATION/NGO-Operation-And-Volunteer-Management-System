@@ -110,7 +110,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 children: [
                   const SizedBox(height: 20),
                   CircleAvatar(
-                    backgroundColor: theme.primaryColor.withOpacity(0.2),
+                    backgroundColor: theme.primaryColor.withValues(alpha: 0.2),
                     radius: 25,
                     child: Icon(Icons.admin_panel_settings, color: theme.primaryColor),
                   ),

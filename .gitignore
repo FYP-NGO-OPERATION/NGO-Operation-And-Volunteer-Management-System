@@ -43,3 +43,16 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Project-specific
+.claude/
+.planning/
+.metadata
+.flutter-plugins
+*.iml
+docs/generate_thesis.py
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini

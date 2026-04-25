@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
+import '../../widgets/common/custom_button.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -44,13 +48,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed successfully')),
+        SnackBar(
+          content: const Text('Password changed successfully'),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+        ),
       );
       Navigator.pop(context);
     } else {
       final error = context.read<AuthProvider>().error ?? 'Failed to change password';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: AppColors.error),
+        SnackBar(
+          content: Text(error),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+        ),
       );
     }
   }
@@ -58,16 +72,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-      ),
+      appBar: AppBar(title: Text('Change Password', style: AppTextStyles.titleLarge())),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Security icon header
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.shield_outlined, size: 48, color: AppColors.primary),
+                ),
+              ),
+              AppSpacing.vGapLg,
+              Center(
+                child: Text('Keep your account secure',
+                  style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary)),
+              ),
+              AppSpacing.vGapXxl,
               TextFormField(
                 controller: _currentPasswordController,
                 obscureText: _obscureCurrent,
@@ -81,7 +110,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 validator: (val) => val == null || val.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: _obscureNew,
@@ -95,7 +124,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 validator: (val) => val != null && val.length < 6 ? 'Min 6 chars' : null,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapLg,
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureNew,
@@ -108,17 +137,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading 
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white))
-                    : const Text('UPDATE PASSWORD'),
+              AppSpacing.vGapXxl,
+              CustomButton(
+                text: 'UPDATE PASSWORD',
+                isLoading: _isLoading,
+                onPressed: _submit,
               ),
             ],
           ),

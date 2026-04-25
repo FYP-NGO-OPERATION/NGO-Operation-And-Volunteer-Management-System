@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 import '../../models/donation_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/donation_service.dart';
@@ -152,15 +155,13 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
     final isMoney = _selectedCategory == DonationCategory.money;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Donation'),
-      ),
+      appBar: AppBar(title: Text('Add Donation', style: AppTextStyles.titleLarge())),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: ResponsiveCenter(
               maxWidth: 520,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -168,10 +169,11 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                   children: [
                     // Campaign name badge
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppTokens.borderRadiusMd,
+                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
                       ),
                       child: Row(
                         children: [
@@ -205,7 +207,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       }).toList(),
                       onChanged: (v) => setState(() => _selectedCategory = v!),
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Donor Name ───
                     CustomTextField(
@@ -216,7 +218,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? 'Donor name required' : null,
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Donor Phone (optional) ───
                     CustomTextField(
@@ -226,7 +228,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       prefixIcon: Icons.phone,
                       keyboardType: TextInputType.phone,
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Quantity ───
                     CustomTextField(
@@ -239,7 +241,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? 'Quantity required' : null,
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Money Fields (only for money category) ───
                     if (isMoney) ...[
@@ -261,7 +263,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         onChanged: (v) =>
                             setState(() => _selectedPaymentMethod = v!),
                       ),
-                      const SizedBox(height: 16),
+                      AppSpacing.vGapLg,
 
                       // Cash Amount
                       CustomTextField(
@@ -271,7 +273,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         prefixIcon: Icons.money,
                         keyboardType: TextInputType.number,
                       ),
-                      const SizedBox(height: 16),
+                      AppSpacing.vGapLg,
 
                       // Online Amount
                       CustomTextField(
@@ -281,7 +283,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         prefixIcon: Icons.account_balance,
                         keyboardType: TextInputType.number,
                       ),
-                      const SizedBox(height: 16),
+                      AppSpacing.vGapLg,
                     ],
 
                     // ─── Purpose (optional) ───
@@ -291,7 +293,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       hint: 'e.g., For ration distribution',
                       prefixIcon: Icons.flag,
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Description (optional) ───
                     CustomTextField(
@@ -301,7 +303,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       prefixIcon: Icons.note,
                       maxLines: 3,
                     ),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapLg,
 
                     // ─── Received Date ───
                     Text('Received Date', style: Theme.of(context).textTheme.labelLarge),

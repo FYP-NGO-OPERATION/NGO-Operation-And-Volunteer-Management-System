@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 import '../../enums/app_enums.dart';
 
 class PaymentProcessingScreen extends StatefulWidget {
@@ -25,40 +28,32 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> with 
   bool _isSuccess = false;
   late String _transactionId;
 
+  late AnimationController _pulseCtrl;
+
   @override
   void initState() {
     super.initState();
     _transactionId = 'TXN-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+    _pulseCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(reverse: true);
     _simulatePaymentFlow();
   }
 
+  @override
+  void dispose() { _pulseCtrl.dispose(); super.dispose(); }
+
   Future<void> _simulatePaymentFlow() async {
-    // 1. Initialize
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
-    setState(() {
-      _progress = 0.3;
-      _statusMessage = 'Connecting to ${widget.paymentMethod.label} Gateway...';
-    });
+    setState(() { _progress = 0.3; _statusMessage = 'Connecting to ${widget.paymentMethod.label} Gateway...'; });
 
-    // 2. Process
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
-    setState(() {
-      _progress = 0.7;
-      _statusMessage = 'Processing payment for Rs.${widget.amount.toStringAsFixed(0)}...';
-    });
+    setState(() { _progress = 0.7; _statusMessage = 'Processing payment for Rs.${widget.amount.toStringAsFixed(0)}...'; });
 
-    // 3. Complete
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
-    setState(() {
-      _progress = 1.0;
-      _isSuccess = true;
-      _statusMessage = 'Payment Successful!';
-    });
+    setState(() { _progress = 1.0; _isSuccess = true; _statusMessage = 'Payment Successful!'; });
 
-    // 4. Return to previous screen with TXN ID
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
     Navigator.pop(context, _transactionId);
@@ -66,48 +61,72 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> with 
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.darkScaffoldBg : Colors.white,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(AppSpacing.xxl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon
+              // Animated icon
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 child: _isSuccess
-                    ? const Icon(Icons.check_circle, color: AppColors.success, size: 100, key: ValueKey('success'))
-                    : Stack(
-                        alignment: Alignment.center,
+                    ? Container(
+                        key: const ValueKey('success'),
+                        width: 110, height: 110,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.success.withValues(alpha: 0.1),
+                          boxShadow: AppTokens.shadowGlow(AppColors.success),
+                        ),
+                        child: const Icon(Icons.check_circle, color: AppColors.success, size: 80),
+                      )
+                    : FadeTransition(
                         key: const ValueKey('loading'),
-                        children: [
-                          SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: CircularProgressIndicator(
-                              value: _progress,
-                              color: AppColors.primary,
-                              strokeWidth: 8,
+                        opacity: Tween(begin: 0.6, end: 1.0).animate(_pulseCtrl),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 110, height: 110,
+                              child: CircularProgressIndicator(
+                                value: _progress,
+                                color: AppColors.primary,
+                                strokeWidth: 6,
+                                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                              ),
                             ),
-                          ),
-                          Text(widget.paymentMethod.icon, style: const TextStyle(fontSize: 40)),
-                        ],
+                            Text(widget.paymentMethod.icon, style: const TextStyle(fontSize: 40)),
+                          ],
+                        ),
                       ),
               ),
-              const SizedBox(height: 32),
-              Text(
-                _statusMessage,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
+              AppSpacing.vGapXxl,
+              Text(_statusMessage,
+                style: _isSuccess
+                    ? AppTextStyles.titleLarge(color: AppColors.success)
+                    : AppTextStyles.titleLarge(),
+                textAlign: TextAlign.center),
+              AppSpacing.vGapLg,
               if (!_isSuccess)
-                const Text(
-                  'Please do not close this window or press back.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                Text('Please do not close this window or press back.',
+                  style: AppTextStyles.bodySmall(color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                  textAlign: TextAlign.center),
+              if (_isSuccess) ...[
+                AppSpacing.vGapSm,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.1),
+                    borderRadius: AppTokens.borderRadiusPill,
+                  ),
+                  child: Text('ID: $_transactionId',
+                    style: AppTextStyles.labelSmall(color: AppColors.success)),
                 ),
+              ],
             ],
           ),
         ),

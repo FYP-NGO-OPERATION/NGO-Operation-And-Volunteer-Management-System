@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import '../../theme/app_tokens.dart';
 import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/volunteer_service.dart';
@@ -116,11 +119,11 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
     int absent = volunteers.where((v) => v.isAbsent).length;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      margin: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppTokens.borderRadiusMd,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -138,16 +141,10 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
   Widget _statBadge(String label, String count, Color color) {
     return Column(
       children: [
-        Text(
-          count,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 10)),
+        Text(count, style: AppTextStyles.titleMedium(color: color)),
+        AppSpacing.vGapXs,
+        Text(label, style: AppTextStyles.labelSmall(
+          color: color.withValues(alpha: 0.8))),
       ],
     );
   }
@@ -288,16 +285,11 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.people_outline, size: 70, color: AppColors.lightTextHint),
-          const SizedBox(height: 12),
-          const Text(
-            'No Volunteers Yet',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'No one has joined this campaign yet.',
-            style: TextStyle(color: AppColors.lightTextSecondary),
-          ),
+          AppSpacing.vGapMd,
+          Text('No Volunteers Yet', style: AppTextStyles.titleLarge()),
+          AppSpacing.vGapSm,
+          Text('No one has joined this campaign yet.',
+            style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary)),
         ],
       ),
     );
