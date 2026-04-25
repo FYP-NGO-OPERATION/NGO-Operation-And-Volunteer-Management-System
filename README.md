@@ -124,7 +124,7 @@ ngo_fyp_system/
 
 | ❌ Wrong Approach | ✅ Our Approach (Industry Standard) |
 |-------------------|--------------------------------------|
-| Separate unlinked folders (`ngo_volunteer_app`, `ngo-website`) | One parent directory (`ngo_fyp_system`) |
+| Separate unlinked folders | One parent directory (`ngo_fyp_system`) |
 | Duplicate Firebase configs | Centralized `backend/` config |
 | Confusing for examiners | Examiner opens one repo, sees entire ecosystem |
 
