@@ -261,11 +261,11 @@ firebase deploy --only hosting
 
 | | |
 |---|---|
-| **Student** | [Your Name] |
-| **Registration** | [Your Reg Number] |
+| **Student** | Muhammad Maauz Mansoor |
+| **Registration** | 233599 |
 | **Program** | BS Computer Science |
-| **Supervisor** | [Supervisor Name] |
-| **University** | [University Name] |
+| **Supervisor** | Miss Fatima Yousuf |
+| **University** | Air University Multan Campus |
 
 ---
 

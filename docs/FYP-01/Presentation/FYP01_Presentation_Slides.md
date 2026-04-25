@@ -13,10 +13,10 @@ HRAS — Hamesha Rahein Apke Saath
 
 *One Society, One Heartbeat*
 
-- Student: [Your Name] | Reg: [Number]
+- Student: Muhammad Maauz Mansoor | Reg: [Number]
 - Supervisor: [Name]
 - BS Computer Science — 6th Semester
-- Date: [Defense Date]
+- Date: June 2026
 
 ---
 

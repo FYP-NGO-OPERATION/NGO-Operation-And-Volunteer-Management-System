@@ -4,11 +4,11 @@
 NGO Operation and Volunteer Management System (HRAS)
 
 ## Student Information
-- **Name**: [Your Name]
-- **Registration Number**: [Your Reg No]
+- **Name**: Muhammad Maauz Mansoor
+- **Registration Number**: 233599
 - **Program**: BS Computer Science
 - **Semester**: 6th (FYP-01)
-- **Supervisor**: [Supervisor Name]
+- **Supervisor**: Miss Fatima Yousuf
 
 ---
 

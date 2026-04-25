@@ -1,7 +1,7 @@
 # FYP-01 Progress Report
 
-## Student: [Your Name] | Reg: [Number]
-## Supervisor: [Supervisor Name]
+## Student: Muhammad Maauz Mansoor | Reg: [Number]
+## Supervisor: Miss Fatima Yousuf
 ## Project: NGO Operation & Volunteer Management System (HRAS)
 
 ---

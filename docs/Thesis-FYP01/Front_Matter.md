@@ -8,8 +8,8 @@
 
 ---
 
-## [UNIVERSITY NAME]
-### [DEPARTMENT OF COMPUTER SCIENCE]
+## Air University Multan Campus
+### Department of Computer Science
 
 ---
 
@@ -28,8 +28,8 @@
 
 | | |
 |---|---|
-| **Student Name** | [Your Full Name] |
-| **Registration No.** | [Your Registration Number] |
+| **Student Name** | Muhammad Maauz Mansoor |
+| **Registration No.** | 233599 |
 | **Session** | [2022–2026] |
 
 ---
@@ -38,14 +38,14 @@
 
 | | |
 |---|---|
-| **Supervisor** | [Supervisor Full Name] |
-| **Designation** | [Lecturer / Assistant Professor / etc.] |
+| **Supervisor** | Miss Fatima Yousuf |
+| **Designation** | Lecturer |
 
 ---
 
-**[Month] 2027**
+**June 2026**
 
-**[City, Pakistan]**
+**Multan, Pakistan**
 
 ---
 ---
@@ -56,7 +56,7 @@
 
 ## CERTIFICATE OF APPROVAL
 
-This is to certify that the project titled **"NGO Operation and Volunteer Management System (HRAS)"** submitted by **[Your Name]** bearing Registration No. **[Reg No.]** is accepted in partial fulfillment of the requirements for the degree of **Bachelor of Science in Computer Science**.
+This is to certify that the project titled **"NGO Operation and Volunteer Management System (HRAS)"** submitted by **Muhammad Maauz Mansoor** bearing Registration No. **233599** is accepted in partial fulfillment of the requirements for the degree of **Bachelor of Science in Computer Science**.
 
 ---
 
@@ -91,7 +91,7 @@ This is to certify that the project titled **"NGO Operation and Volunteer Manage
 
 First and foremost, I am grateful to **Almighty Allah** for giving me the strength, knowledge, and perseverance to complete this project.
 
-I extend my sincere gratitude to my supervisor, **[Supervisor Name]**, whose expert guidance, constructive feedback, and continuous encouragement were instrumental throughout this project. Their mentorship helped shape not only this system but also my growth as a software engineer.
+I extend my sincere gratitude to my supervisor, **Miss Fatima Yousuf**, whose expert guidance, constructive feedback, and continuous encouragement were instrumental throughout this project. Their mentorship helped shape not only this system but also my growth as a software engineer.
 
 I am deeply thankful to the **HRAS NGO leadership and volunteers** who provided valuable domain insights, real operational challenges, and feedback that grounded this project in practical reality.
 
