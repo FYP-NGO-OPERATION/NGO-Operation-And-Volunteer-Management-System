@@ -1,6 +1,6 @@
 # FYP-01 Progress Report
 
-## Student: Muhammad Maauz Mansoor | Reg: [Number]
+## Student: Muhammad Maauz Mansoor | Reg: 233599
 ## Supervisor: Miss Fatima Yousuf
 ## Project: NGO Operation & Volunteer Management System (HRAS)
 
@@ -22,7 +22,7 @@ The HRAS NGO Management System is a cross-platform ecosystem built with Flutter 
 | 6 | Campaign management (CRUD) | ✅ Complete | Create, edit, status tracking |
 | 7 | Donation tracking + receipts | ✅ Complete | PDF receipt generation |
 | 8 | Volunteer management | ✅ Complete | Join/leave + tracking |
-| 9 | Analytics dashboard | ✅ Complete | Bar + pie charts |
+| 9 | Analytics dashboard | 🔲 Planned for FYP-02 | Bar + pie charts (gated by feature flag) |
 | 10 | Design system | ✅ Complete | 12 typography, 8 spacing tokens |
 | 11 | Security rules (RBAC) | ✅ Complete | Server-side Firestore rules |
 | 12 | Unit tests | ✅ Complete | 62 tests, 3 suites, all passing |
