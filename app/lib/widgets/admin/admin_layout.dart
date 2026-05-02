@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/feature_flags.dart';
 import '../../providers/auth_provider.dart';
 import '../../screens/admin/analytics_screen.dart';
 
@@ -15,8 +16,10 @@ class AdminLayout extends StatefulWidget {
 class _AdminLayoutState extends State<AdminLayout> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const AnalyticsScreen(),
+  late final List<Widget> _pages = [
+    FeatureFlags.isAnalyticsEnabled
+        ? const AnalyticsScreen()
+        : const AdminDonationsScreen(), // FYP1: show donations as default dashboard
     const Center(child: Text('User Management (Coming Soon)')),
     const Center(child: Text('Campaign Management (Coming Soon)')),
     const AdminDonationsScreen(),

@@ -113,6 +113,51 @@ class AboutUsScreen extends StatelessWidget {
                 ),
 
                 AppSpacing.vGapXxl,
+
+                // ─── Planned Features Roadmap ───
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkCardBg : Colors.white,
+                    borderRadius: AppTokens.borderRadiusMd,
+                    border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                    boxShadow: AppTokens.shadowSoft,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(AppSpacing.sm),
+                            decoration: BoxDecoration(
+                              color: AppColors.info.withValues(alpha: 0.1),
+                              borderRadius: AppTokens.borderRadiusSm,
+                            ),
+                            child: Icon(Icons.rocket_launch_rounded, color: AppColors.info, size: AppTokens.iconMd),
+                          ),
+                          AppSpacing.hGapMd,
+                          Text('Upcoming Features', style: AppTextStyles.titleMedium()),
+                        ],
+                      ),
+                      AppSpacing.vGapMd,
+                      _roadmapItem('Smart Volunteer-Campaign Matching', 'FYP-02', AppColors.warning, isDark),
+                      AppSpacing.vGapSm,
+                      _roadmapItem('Push Notifications (FCM)', 'FYP-02', AppColors.warning, isDark),
+                      AppSpacing.vGapSm,
+                      _roadmapItem('QR Attendance System', 'FYP-02', AppColors.warning, isDark),
+                      AppSpacing.vGapSm,
+                      _roadmapItem('Analytics Dashboard', 'FYP-02', AppColors.warning, isDark),
+                      AppSpacing.vGapSm,
+                      _roadmapItem('CSV/Excel Export', 'FYP-03', AppColors.primary, isDark),
+                      AppSpacing.vGapSm,
+                      _roadmapItem('Urdu Language Support', 'FYP-03', AppColors.primary, isDark),
+                    ],
+                  ),
+                ),
+
+                AppSpacing.vGapXxl,
                 AppSpacing.vGapLg,
                 Text(
                   'Version ${AppConstants.appVersion}\n${AppConstants.appName}',
@@ -124,6 +169,31 @@ class AboutUsScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _roadmapItem(String title, String phase, Color color, bool isDark) {
+    return Row(
+      children: [
+        Container(
+          width: 8, height: 8,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
+        AppSpacing.hGapMd,
+        Expanded(
+          child: Text(title, style: AppTextStyles.bodyMedium(
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+          )),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: AppTokens.borderRadiusPill,
+          ),
+          child: Text(phase, style: AppTextStyles.labelSmall(color: color)),
+        ),
+      ],
     );
   }
 }
