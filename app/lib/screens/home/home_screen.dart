@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/feature_flags.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../config/app_colors.dart';
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const CampaignListScreen(),         // 1
         if (isAdmin) const UserListScreen(),// 2 (admin only)
         _buildProfileTab(context),          // 3 (or 2 for non-admin)
-        if (isAdmin) const AnalyticsScreen(), // 4 (admin only)
+        if (isAdmin && FeatureFlags.isAnalyticsEnabled) const AnalyticsScreen(), // 4 (admin only, FYP2+)
       ];
 
       return WebShell(
@@ -156,18 +157,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                SpeedDialAction(
-                  icon: Icons.analytics,
-                  label: 'Analytics & Reports',
-                  backgroundColor: AppColors.info,
-                  foregroundColor: Colors.white,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
-                    );
-                  },
-                ),
+                if (FeatureFlags.isAnalyticsEnabled)
+                  SpeedDialAction(
+                    icon: Icons.analytics,
+                    label: 'Analytics & Reports',
+                    backgroundColor: AppColors.info,
+                    foregroundColor: Colors.white,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+                      );
+                    },
+                  ),
                 SpeedDialAction(
                   icon: Icons.manage_accounts,
                   label: 'Manage Users',

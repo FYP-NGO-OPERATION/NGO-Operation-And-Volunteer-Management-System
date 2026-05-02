@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/feature_flags.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../theme/app_text_styles.dart';
@@ -40,7 +41,7 @@ class _WebShellState extends State<WebShell> {
       _SidebarItem(icon: Icons.campaign_rounded, label: 'Campaigns', index: 1),
       if (widget.isAdmin) _SidebarItem(icon: Icons.people_rounded, label: 'Users', index: 2),
       _SidebarItem(icon: Icons.person_rounded, label: 'Profile', index: 3),
-      if (widget.isAdmin) _SidebarItem(icon: Icons.analytics_rounded, label: 'Analytics', index: 4),
+      if (widget.isAdmin && FeatureFlags.isAnalyticsEnabled) _SidebarItem(icon: Icons.analytics_rounded, label: 'Analytics', index: 4),
     ];
   }
 
