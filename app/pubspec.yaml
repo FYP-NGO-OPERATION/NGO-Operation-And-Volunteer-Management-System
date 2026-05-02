@@ -54,6 +54,11 @@ dependencies:
   pdf: ^3.11.1
   printing: ^5.13.0
   image_cropper: ^12.2.1
+  # FYP-02: QR Attendance System
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.2
+  # FYP-02: Push Notifications
+  firebase_messaging: ^16.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

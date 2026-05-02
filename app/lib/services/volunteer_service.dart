@@ -193,4 +193,20 @@ class VolunteerService {
       'total': registered + confirmed + attended + absent,
     };
   }
+
+  /// Fetch all registrations for a user as a one-time list (for matching algorithm).
+  Future<List<VolunteerModel>> fetchUserRegistrations(String userId) async {
+    final snapshot = await _volunteers
+        .where('userId', isEqualTo: userId)
+        .get();
+    return snapshot.docs
+        .map((doc) => VolunteerModel.fromMap(doc.data()))
+        .toList();
+  }
+
+  /// Update volunteer status (alias used by QR service).
+  Future<void> updateVolunteerStatus(
+      String volunteerId, VolunteerStatus status) async {
+    await markAttendance(volunteerId, status);
+  }
 }

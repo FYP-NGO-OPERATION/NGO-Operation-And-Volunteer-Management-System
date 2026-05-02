@@ -29,6 +29,9 @@ import '../../models/announcement_model.dart';
 import '../../services/announcement_service.dart';
 import '../../widgets/web/web_shell.dart';
 import 'package:intl/intl.dart';
+// FYP-02 screens
+import '../campaigns/recommended_campaigns_screen.dart';
+import '../campaigns/qr_scan_screen.dart';
 
 /// Main home screen after login — shows dashboard with bottom navigation.
 class HomeScreen extends StatefulWidget {
@@ -184,7 +187,61 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             )
-          : null,
+          // ─── Volunteer FAB (FYP-02 features) ───
+          : (FeatureFlags.isSmartMatchingEnabled || FeatureFlags.isQrAttendanceEnabled)
+              ? Builder(
+                  builder: (context) {
+                    final auth = Provider.of<AuthProvider>(context, listen: false);
+                    return CustomSpeedDial(
+                      mainIcon: Icons.auto_awesome,
+                      activeIcon: Icons.close,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      actions: [
+                        if (FeatureFlags.isSmartMatchingEnabled)
+                          SpeedDialAction(
+                            icon: Icons.recommend,
+                            label: 'Recommended Campaigns',
+                            backgroundColor: AppColors.info,
+                            foregroundColor: Colors.white,
+                            onTap: () {
+                              final user = auth.user;
+                              if (user != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => RecommendedCampaignsScreen(user: user),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        if (FeatureFlags.isQrAttendanceEnabled)
+                          SpeedDialAction(
+                            icon: Icons.qr_code_scanner,
+                            label: 'Scan QR Attendance',
+                            backgroundColor: AppColors.success,
+                            foregroundColor: Colors.white,
+                            onTap: () {
+                              final user = auth.user;
+                              if (user != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => QrScanScreen(
+                                      userId: user.uid,
+                                      userName: user.name,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                      ],
+                    );
+                  },
+                )
+              : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

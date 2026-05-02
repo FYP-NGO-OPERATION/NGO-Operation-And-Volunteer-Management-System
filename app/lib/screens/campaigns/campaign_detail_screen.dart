@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
+import '../../config/feature_flags.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/campaign_model.dart';
@@ -17,6 +18,7 @@ import '../../enums/app_enums.dart';
 import '../../utils/responsive.dart';
 import '../../utils/snackbar_helper.dart';
 import 'photo_gallery_screen.dart';
+import 'qr_generate_screen.dart';
 import '../donations/add_donation_screen.dart';
 import '../expenses/add_expense_screen.dart';
 import '../volunteers/volunteer_list_screen.dart';
@@ -87,6 +89,8 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               itemBuilder: (_) => [
                 const PopupMenuItem(value: 'edit', child: Text('✏️ Edit Campaign')),
                 const PopupMenuItem(value: 'status', child: Text('🔄 Change Status')),
+                if (FeatureFlags.isQrAttendanceEnabled)
+                  const PopupMenuItem(value: 'qr', child: Text('📱 Generate QR Code')),
                 const PopupMenuItem(
                   value: 'delete',
                   child: Text('🗑️ Delete', style: TextStyle(color: AppColors.error)),
@@ -902,6 +906,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
 
       case 'status':
         _showStatusDialog();
+        break;
+
+      case 'qr':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => QrGenerateScreen(
+              campaignId: _campaign.id,
+              campaignTitle: _campaign.title,
+            ),
+          ),
+        );
         break;
 
       case 'delete':

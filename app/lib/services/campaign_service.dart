@@ -270,4 +270,10 @@ class CampaignService {
     final snapshot = await _campaigns.count().get();
     return snapshot.count ?? 0;
   }
+
+  /// Fetch all campaigns as a one-time Future (for matching algorithm).
+  Future<List<CampaignModel>> fetchAllCampaigns() async {
+    final snapshot = await _campaigns.orderBy('createdAt', descending: true).get();
+    return snapshot.docs.map((doc) => CampaignModel.fromMap(doc.data())).toList();
+  }
 }

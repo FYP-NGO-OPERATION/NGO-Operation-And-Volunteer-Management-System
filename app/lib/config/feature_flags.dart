@@ -4,11 +4,11 @@
 ///   FYP-01 Safe Mode (DEFAULT — examiner-safe):
 ///     flutter run --dart-define=APP_PHASE=FYP1
 ///
-///   Full System Mode (all features):
-///     flutter run --dart-define=APP_PHASE=FULL
-///
-///   FYP-02 Dev Mode:
+///   FYP-02 Dev Mode (all FYP-02 features):
 ///     flutter run --dart-define=APP_PHASE=FYP2
+///
+///   Full System Mode (everything unlocked):
+///     flutter run --dart-define=APP_PHASE=FULL
 ///
 /// If no --dart-define is passed, defaults to FYP1 (safe for defense).
 class FeatureFlags {
@@ -42,16 +42,16 @@ class FeatureFlags {
   static bool get isAdvancedAdminEnabled => isFyp2 || isFull;
 
   /// Push notifications (FCM).
-  /// Available in: FULL only (FYP-03 feature)
-  static bool get isPushNotificationsEnabled => isFull;
+  /// Available in: FYP2, FULL
+  static bool get isPushNotificationsEnabled => isFyp2 || isFull;
 
   /// Smart volunteer-campaign matching algorithm.
-  /// Available in: FULL only (FYP-03 feature)
-  static bool get isSmartMatchingEnabled => isFull;
+  /// Available in: FYP2, FULL
+  static bool get isSmartMatchingEnabled => isFyp2 || isFull;
 
   /// QR-based attendance system.
-  /// Available in: FULL only (FYP-03 feature)
-  static bool get isQrAttendanceEnabled => isFull;
+  /// Available in: FYP2, FULL
+  static bool get isQrAttendanceEnabled => isFyp2 || isFull;
 
   // ─── Convenience ────────────────────────────────────────────
 

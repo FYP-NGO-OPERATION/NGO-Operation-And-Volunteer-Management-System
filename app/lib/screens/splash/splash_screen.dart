@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
+import '../../config/feature_flags.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_tokens.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/responsive.dart';
+import '../../services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../landing/landing_screen.dart';
 import '../home/home_screen.dart';
@@ -81,6 +83,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     Widget nextScreen;
     if (isLoggedIn) {
+      // Initialize FCM push notifications (FYP-02+ only)
+      if (FeatureFlags.isPushNotificationsEnabled && authProvider.userId != null) {
+        NotificationService().initialize(authProvider.userId!);
+      }
       nextScreen = authProvider.isAdmin ? const AdminLayout() : const HomeScreen();
     } else if (!hasSeenOnboarding) {
       nextScreen = const OnboardingScreen();
