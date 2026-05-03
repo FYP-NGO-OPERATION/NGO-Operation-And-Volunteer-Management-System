@@ -71,6 +71,13 @@ body(f"Submitted by: {STUDENT} ({REG})").alignment = WD_ALIGN_PARAGRAPH.CENTER
 body(f"Supervised by: {SUPERVISOR}").alignment = WD_ALIGN_PARAGRAPH.CENTER
 doc.add_page_break()
 
+# =================== CHAPTER 7 COVER PAGE ===================
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 7'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('Software Testing'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
+doc.add_page_break()
+
 # =================== CHAPTER 7: SOFTWARE TESTING ===================
 h1("Chapter 7: Software Testing")
 body("To ensure quality of the product, both automated unit testing and black box testing were performed on the final product to make sure there are no errors left. This chapter presents the testing strategy, test cases, and results.")
@@ -155,6 +162,14 @@ add_table(["Input", "Expected Output", "Actual Output", "Status"],
 
 h2("7.8 Summary")
 body("All 62 automated unit tests pass with 100% success rate. Manual black box testing confirmed that all 15 functional requirements meet their specifications. The QR attendance and smart matching features (FYP-02) function correctly under test conditions.")
+doc.add_page_break()
+
+# =================== CHAPTER 8 COVER PAGE ===================
+for _ in range(6): doc.add_paragraph()
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 8'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('Conclusion'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
 doc.add_page_break()
 
 # =================== CHAPTER 8: CONCLUSION ===================

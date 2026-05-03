@@ -95,6 +95,13 @@ body(f"Session: {SESSION} | Semester: {SEMESTER}").alignment = WD_ALIGN_PARAGRAP
 body(f"Supervised by: {SUPERVISOR}").alignment = WD_ALIGN_PARAGRAPH.CENTER
 doc.add_page_break()
 
+# =================== CHAPTER 3 COVER PAGE ===================
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 3'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('Planning and Methodology'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
+doc.add_page_break()
+
 # =================== CHAPTER 3: PLANNING AND METHODOLOGY ===================
 h1("Chapter 3: Planning and Methodology")
 body("This chapter describes the project planning, deliverables, scheduling, and the development methodology adopted for the HRAS NGO Volunteer Management System.")
@@ -150,6 +157,14 @@ body("This architecture allows simultaneous development of FYP-02 features witho
 
 h2("3.7 Summary")
 body("This chapter established the Agile Iterative methodology, described the Work Breakdown Structure spanning three FYP semesters, and presented the feature flag architecture ensuring backward compatibility. The phased approach ensures each FYP defense demonstrates only the features relevant to that phase.")
+doc.add_page_break()
+
+# =================== CHAPTER 4 COVER PAGE ===================
+for _ in range(6): doc.add_paragraph()
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 4'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('System Specification'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
 doc.add_page_break()
 
 # =================== CHAPTER 4: SYSTEM SPECIFICATION ===================
@@ -280,6 +295,14 @@ h2("4.10 Summary")
 body("This chapter specified 15 functional requirements and 6 non-functional requirements across FYP-01 and FYP-02 phases. Use cases were defined for core system interactions, and a traceability matrix links requirements to test cases for verification in Chapter 7.")
 doc.add_page_break()
 
+# =================== CHAPTER 5 COVER PAGE ===================
+for _ in range(6): doc.add_paragraph()
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 5'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('System Design'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
+doc.add_page_break()
+
 # =================== CHAPTER 5: SYSTEM DESIGN ===================
 h1("Chapter 5: System Design")
 body("This chapter presents the architectural design of the HRAS system including system architecture, data models, flow diagrams, and the design of advanced FYP-02 features.")
@@ -372,6 +395,14 @@ body("6. System parses the JSON, verifies registration, and marks attendance in 
 
 h2("5.11 Summary")
 body("This chapter presented the four-layer system architecture, data models (ER diagram and data dictionary), behavioral models (sequence and activity diagrams), and the design of FYP-02 innovation features. All diagrams follow UML 2.0 notation standards.")
+doc.add_page_break()
+
+# =================== CHAPTER 6 COVER PAGE ===================
+for _ in range(6): doc.add_paragraph()
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 6'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('Coding'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
 doc.add_page_break()
 
 # =================== CHAPTER 6: CODING ===================
