@@ -3,10 +3,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'volunteer_service.dart';
 import '../enums/app_enums.dart';
 
-/// QR Code service for campaign attendance tracking.
+/// QR Code Attendance Service (FYP-02 Feature Module).
 ///
-/// Generates QR payloads with campaign data and processes scanned
-/// QR codes to mark volunteer attendance in Firestore.
+/// ARCHITECTURE: Generate → Scan → Verify → Mark
+///
+/// Flow:
+///   1. ADMIN generates a QR code for a campaign (QrGenerateScreen)
+///   2. QR encodes a JSON payload: {type, campaignId, campaignTitle, generatedAt}
+///   3. VOLUNTEER scans the QR using device camera (mobile_scanner package)
+///   4. System parses payload, validates 'hras_attendance' type marker
+///   5. System queries Firestore for volunteer's registration record
+///   6. If registered → marks status as 'attended' with timestamp
+///   7. If not registered / already attended → shows appropriate error
+///
+/// Security:
+///   - QR payloads include a 'type' field to reject non-HRAS QR codes
+///   - Volunteer must be pre-registered for the campaign
+///   - Duplicate attendance is prevented by status check
+///
+/// Platform Support:
+///   - Mobile: Uses mobile_scanner for native camera QR scanning
+///   - Web: Fallback message shown (camera scanning not supported)
 class QrService {
   QrService._();
 

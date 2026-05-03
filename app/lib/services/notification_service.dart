@@ -2,15 +2,29 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-/// Firebase Cloud Messaging (FCM) notification service.
+/// Firebase Cloud Messaging (FCM) Notification Service (FYP-02 Feature Module).
 ///
-/// Handles:
-/// - Permission requests
-/// - FCM token registration (stored in user's Firestore doc)
-/// - Topic subscriptions (campaign alerts)
-/// - Foreground message handling
+/// ARCHITECTURE: Token-Based + Topic-Based Push Notifications
 ///
-/// Only initialized when FeatureFlags.isPushNotificationsEnabled is true.
+/// Initialization Flow (called from SplashScreen after auth):
+///   1. Request notification permission from the OS
+///   2. Obtain unique FCM device token from Firebase
+///   3. Store token in user's Firestore document (for targeted notifications)
+///   4. Subscribe to 'campaigns' topic (for broadcast notifications)
+///   5. Register foreground message handler
+///
+/// Notification Types:
+///   - TOPIC-BASED: All users subscribed to 'campaigns' topic receive
+///     broadcast notifications (e.g., new campaign created)
+///   - TOKEN-BASED: Individual notifications using stored FCM token
+///     (e.g., volunteer assigned to campaign)
+///
+/// Server-Side (Future Enhancement):
+///   - Firebase Cloud Functions would trigger notifications on Firestore events
+///   - Currently, token registration and topic subscription are implemented
+///   - Server-side message sending requires Cloud Functions deployment
+///
+/// Feature Gate: Only initialized when FeatureFlags.isPushNotificationsEnabled == true
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
   factory NotificationService() => _instance;

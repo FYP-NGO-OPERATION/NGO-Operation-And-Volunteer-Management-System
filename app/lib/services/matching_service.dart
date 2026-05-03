@@ -4,14 +4,34 @@ import '../models/match_result_model.dart';
 import '../models/volunteer_model.dart';
 import '../enums/app_enums.dart';
 
-/// Smart Volunteer-Campaign Matching Service.
+/// Smart Volunteer-Campaign Matching Service (FYP-02 Innovation Module).
 ///
-/// Uses a weighted scoring algorithm to recommend campaigns to volunteers:
-///   - Skills match (50%): Maps user skills to campaign types
-///   - Location match (30%): Compares user address with campaign location
-///   - Availability (20%): Bonus if not already registered
+/// ALGORITHM: Weighted Multi-Factor Scoring Model
 ///
-/// This is a real, explainable algorithm — not fake AI.
+/// Formula:
+///   Total Score = (Skill Score × 0.50) + (Location Score × 0.30) + (Availability Score × 0.20)
+///
+/// Factor Details:
+///   1. SKILLS (50% weight):
+///      - Maps 20+ skill keywords to CampaignType enums
+///      - Score: 1.0 (multiple matches), 0.7 (one match), 0.3 (no skills), 0.1 (no match)
+///
+///   2. LOCATION (30% weight):
+///      - String-based city comparison across 15 Pakistani cities
+///      - Score: 1.0 (same city), 0.8 (partial match), 0.3 (unknown), 0.1 (different)
+///
+///   3. AVAILABILITY (20% weight):
+///      - Checks if user is already registered for the campaign
+///      - Score: 1.0 (available), 0.0 (already registered)
+///
+/// Quality Labels:
+///   ≥80% → Excellent Match | ≥60% → Good Match | ≥40% → Fair Match | <40% → Low Match
+///
+/// Design Decision: Chose rule-based weighted scoring over ML/AI because:
+///   - Fully explainable in a viva (no black-box)
+///   - Works without training data (cold-start problem solved)
+///   - Transparent scoring breakdown shown in UI
+///   - Academically rigorous with verifiable formula
 class MatchingService {
   MatchingService._();
 

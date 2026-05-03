@@ -12,13 +12,13 @@
 |---------|-------|-----------|--------|
 | 1 | Introduction | FYP-01 | ✅ Completed |
 | 2 | Literature Review | FYP-01 | ✅ Completed |
-| 3 | Planning and Methodology | FYP-02 | 🔲 Planned |
-| 4 | System Specification | FYP-02 | 🔲 Planned |
-| 5 | System Design | FYP-02 | 🔲 Planned |
-| 6 | Coding | FYP-03 | 🔲 Planned |
-| 7 | Testing | FYP-03 | 🔲 Planned |
-| 8 | Conclusion | FYP-03 | 🔲 Planned |
-| — | User Guide | FYP-03 | 🔲 Planned |
+| 3 | Planning and Methodology | FYP-02 | ✅ Completed |
+| 4 | System Specification | FYP-02 | ✅ Completed |
+| 5 | System Design | FYP-02 | ✅ Completed |
+| 6 | Coding | FYP-02 | ✅ Completed |
+| 7 | Software Testing | FYP-03 | 🔲 Draft Ready |
+| 8 | Conclusion | FYP-03 | 🔲 Draft Ready |
+| — | User Guide | FYP-03 | 🔲 Draft Ready |
 | — | References | All Phases | 🔄 Ongoing |
 | — | Glossary | FYP-03 | 🔲 Planned |
 
@@ -68,10 +68,12 @@ ngo_volunteer_app/
 ├── backend/          # Firebase Config (Rules, Indexes)
 ├── docs/             # Academic Documentation
 │   ├── FYP-01/       # Chapters 1-2, Proposal, Presentation
-│   ├── FYP-02/       # Chapters 3-5 (Planned)
-│   ├── FYP-03/       # Chapters 6-8 (Planned)
+│   ├── FYP-02/       # Chapters 3-6, Innovation Module Docs
+│   ├── FYP-03/       # Chapters 7-8 (Draft Ready)
 │   ├── diagrams/     # 28 PNG diagrams
-│   └── Thesis-FYP01/ # Generated DOCX thesis
+│   ├── Thesis-FYP01/ # Generated DOCX (Chapters 1-2)
+│   ├── Thesis-FYP02/ # Generated DOCX (Chapters 3-6)
+│   └── Thesis-FYP03/ # Generated DOCX (Chapters 7-8 Draft)
 └── README.md         # Architecture documentation
 ```
 
@@ -147,9 +149,9 @@ ngo_volunteer_app/
 
 | Feature | Phase | Status |
 |---------|-------|--------|
-| Push Notifications (FCM) | FYP-02 | 🔲 Planned |
-| QR Volunteer Attendance | FYP-02 | 🔲 Planned |
-| Volunteer-Campaign Matching Algorithm | FYP-02 | 🔲 Planned |
+| Push Notifications (FCM) | FYP-02 | ✅ Implemented |
+| QR Volunteer Attendance | FYP-02 | ✅ Implemented |
+| Volunteer-Campaign Matching Algorithm | FYP-02 | ✅ Implemented |
 | CSV/Excel Export | FYP-03 | 🔲 Planned |
 | Urdu Language Support | FYP-03 | 🔲 Planned |
 | GIS Campaign Map | FYP-03 | 🟡 Optional |
@@ -178,7 +180,8 @@ flutter run --dart-define=APP_PHASE=FULL
 | Donation Recording | ✅ | ✅ | ✅ |
 | Volunteer Management | ✅ | ✅ | ✅ |
 | User Management | ✅ | ✅ | ✅ |
-| Analytics Dashboard | ❌ | ✅ | ✅ |
-| PDF Report Export | ❌ | ✅ | ✅ |
-| Push Notifications | ❌ | ❌ | ✅ |
-| Smart Matching | ❌ | ❌ | ✅ |
+| Analytics Dashboard | ✅ | ✅ | ✅ |
+| PDF Report Export | ✅ | ✅ | ✅ |
+| Push Notifications | ❌ | ✅ | ✅ |
+| Smart Matching | ❌ | ✅ | ✅ |
+| QR Attendance | ❌ | ✅ | ✅ |
