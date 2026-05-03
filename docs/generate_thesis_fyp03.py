@@ -1,10 +1,32 @@
 """Generate FYP-03 Thesis DOCX (Chapters 7–8) — Air University Multan Campus."""
-import os
+import os, zipfile, tempfile, shutil
 import docx
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement, ns
+
+def inject_update_fields(docx_path):
+    temp_dir = tempfile.mkdtemp()
+    try:
+        with zipfile.ZipFile(docx_path, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
+        settings_path = os.path.join(temp_dir, 'word', 'settings.xml')
+        if os.path.exists(settings_path):
+            with open(settings_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            if '<w:updateFields w:val="true"/>' not in content:
+                import re
+                content = re.sub(r'(<w:settings[^>]*>)', r'\1<w:updateFields w:val="true"/>', content, count=1)
+                with open(settings_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+        with zipfile.ZipFile(docx_path, 'w', zipfile.ZIP_DEFLATED) as zip_out:
+            for root, _, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    zip_out.write(file_path, os.path.relpath(file_path, temp_dir))
+    finally:
+        shutil.rmtree(temp_dir)
 
 STUDENT = "Muhammad Maauz Mansoor"
 REG = "233599"
@@ -204,4 +226,5 @@ for term, defn in [
 out = os.path.join(os.path.dirname(__file__), 'Thesis-FYP03', 'FYP_03_Thesis.docx')
 os.makedirs(os.path.dirname(out), exist_ok=True)
 doc.save(out)
+inject_update_fields(out)
 print(f"FYP-03 Thesis saved: {out}")
