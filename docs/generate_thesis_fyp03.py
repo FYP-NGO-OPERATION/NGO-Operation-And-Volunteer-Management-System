@@ -1,10 +1,4 @@
-"""Generate FYP-03 Thesis DOCX (Chapters 7–8) — Air University Multan Campus.
-
-Follows supervisor's FYP Document Template:
-  Chapter 7: Software Testing
-  Chapter 8: Conclusion
-  + User Guide + References + Glossary
-"""
+"""Generate FYP-03 Thesis DOCX (Chapters 7–8) — Air University Multan Campus."""
 import os
 import docx
 from docx import Document
@@ -30,6 +24,23 @@ def add_page_number(run):
             el.set(ns.qn('w:fldCharType'), tag)
         run._r.append(el)
 
+def add_seq_field(paragraph, seq_identifier, text_before, text_after):
+    run_before = paragraph.add_run(text_before)
+    run_before.font.size = Pt(10); run_before.italic = True
+    fldChar1 = OxmlElement('w:fldChar'); fldChar1.set(ns.qn('w:fldCharType'), 'begin')
+    r1 = paragraph.add_run(); r1._r.append(fldChar1)
+    instrText = OxmlElement('w:instrText'); instrText.set(ns.qn('xml:space'), 'preserve')
+    instrText.text = f' SEQ {seq_identifier} \\* ARABIC '
+    r2 = paragraph.add_run(); r2._r.append(instrText)
+    fldChar2 = OxmlElement('w:fldChar'); fldChar2.set(ns.qn('w:fldCharType'), 'separate')
+    r3 = paragraph.add_run(); r3._r.append(fldChar2)
+    r4 = paragraph.add_run('1') # Placeholder
+    r4.font.size = Pt(10); r4.italic = True
+    fldChar3 = OxmlElement('w:fldChar'); fldChar3.set(ns.qn('w:fldCharType'), 'end')
+    r5 = paragraph.add_run(); r5._r.append(fldChar3)
+    run_after = paragraph.add_run(text_after)
+    run_after.font.size = Pt(10); run_after.italic = True
+
 for s in doc.sections:
     s.top_margin = Inches(1.1); s.left_margin = Inches(1.3)
     s.right_margin = Inches(0.8); s.bottom_margin = Inches(0.8)
@@ -40,6 +51,7 @@ for s in doc.sections:
 style = doc.styles['Normal']
 style.font.name = 'Times New Roman'; style.font.size = Pt(12)
 style.paragraph_format.line_spacing = 1.5
+
 for level, sz in [('Heading 1', 16), ('Heading 2', 14), ('Heading 3', 13)]:
     hs = doc.styles[level]; hs.font.name = 'Times New Roman'; hs.font.size = Pt(sz)
     hs.font.bold = True; hs.font.color.rgb = None; hs.paragraph_format.line_spacing = 1.5
@@ -48,9 +60,17 @@ def h1(t): p = doc.add_heading(t, level=1); p.alignment = WD_ALIGN_PARAGRAPH.CEN
 def h2(t): return doc.add_heading(t, level=2)
 def h3(t): return doc.add_heading(t, level=3)
 def body(t): p = doc.add_paragraph(t); p.style = doc.styles['Normal']; return p
-def caption(t):
+
+def table_caption(t):
+    p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    add_seq_field(p, "Table", "Table ", f": {t}")
+    return p
+
+def figure_caption(t):
     p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run(t); r.font.size = Pt(10); r.italic = True; return p
+    add_seq_field(p, "Figure", "Figure ", f": {t}")
+    return p
+
 def add_table(headers, rows):
     t = doc.add_table(rows=len(rows)+1, cols=len(headers)); t.style = 'Table Grid'
     for i, h in enumerate(headers):
@@ -64,217 +84,124 @@ def add_table(headers, rows):
 for _ in range(4): doc.add_paragraph()
 h1(UNIVERSITY); h1(DEPARTMENT); doc.add_paragraph()
 h1("NGO Operation and Volunteer Management System")
-h1("(HRAS — Hamesha Rahein Apke Saath)")
+h1("(HRAS)")
 doc.add_paragraph()
 h1("FYP-03 Report: Chapters 7–8")
 body(f"Submitted by: {STUDENT} ({REG})").alignment = WD_ALIGN_PARAGRAPH.CENTER
 body(f"Supervised by: {SUPERVISOR}").alignment = WD_ALIGN_PARAGRAPH.CENTER
 doc.add_page_break()
 
-# =================== CHAPTER 7 COVER PAGE ===================
-p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-r = p.add_run('Chapter 7'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
-p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-r2 = p2.add_run('Software Testing'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
-doc.add_page_break()
-
-# =================== CHAPTER 7: SOFTWARE TESTING ===================
-h1("Chapter 7: Software Testing")
-body("To ensure quality of the product, both automated unit testing and black box testing were performed on the final product to make sure there are no errors left. This chapter presents the testing strategy, test cases, and results.")
-
-h2("7.1 Testing Strategy")
-body("The testing approach consists of three levels:")
-body("1. Unit Testing: 62 automated tests covering validators, models, enums, and utilities")
-body("2. Black Box Testing: Manual test cases for each functional requirement")
-body("3. User Acceptance Testing (UAT): Planned with real HRAS volunteers")
-
-h2("7.2 Unit Test Results")
-caption("Table 7.1: Unit Test Summary")
-add_table(["Test Suite", "Tests", "Status"],
-    [["Validator Tests (Email)", "8", "All Passed ✓"],
-     ["Validator Tests (Password)", "6", "All Passed ✓"],
-     ["Validator Tests (Name)", "6", "All Passed ✓"],
-     ["Validator Tests (Phone)", "8", "All Passed ✓"],
-     ["Validator Tests (Required)", "4", "All Passed ✓"],
-     ["Model Tests", "15", "All Passed ✓"],
-     ["Enum Tests", "15", "All Passed ✓"],
-     ["Total", "62", "100% Pass Rate"]])
-
-h2("7.3 Test Case 01: Login")
-body("This test case verifies user login functionality.")
-body("• Fields must not be left empty")
-body("• Proper email format must be validated (user@domain.com)")
-body("• Invalid credentials must show error message")
-body("Traceability Matrix Reference: FR01 — User Login")
-body("[INSERT SCREENSHOT: Login Screen]")
-body("[INSERT SCREENSHOT: Login Error State]")
-caption("Table 7.2: Login Test Case")
-add_table(["Input", "Expected Output", "Actual Output", "Status"],
-    [["Valid email + valid password", "Navigate to Dashboard", "Navigated to Dashboard", "Pass"],
-     ["Empty email field", "Show 'Email is required' error", "Error shown", "Pass"],
-     ["Invalid email format", "Show 'Enter valid email' error", "Error shown", "Pass"],
-     ["Wrong password", "Show 'Invalid credentials' error", "Error shown", "Pass"]])
-
-h2("7.4 Test Case 02: Sign Up")
-body("This test case verifies user registration.")
-body("• All required fields must be filled")
-body("• Password must meet minimum length requirement")
-body("• Email must be unique")
-body("Traceability Matrix Reference: FR02 — User Registration")
-body("[INSERT SCREENSHOT: Sign Up Screen]")
-caption("Table 7.3: Sign Up Test Case")
-add_table(["Input", "Expected Output", "Actual Output", "Status"],
-    [["All valid fields", "Account created + verification email sent", "Account created", "Pass"],
-     ["Empty name field", "Show 'Name is required' error", "Error shown", "Pass"],
-     ["Short password (<6 chars)", "Show 'Minimum 6 characters' error", "Error shown", "Pass"],
-     ["Already registered email", "Show 'Email already in use' error", "Error shown", "Pass"]])
-
-h2("7.5 Test Case 03: Campaign Management")
-body("Traceability Matrix Reference: FR03 — Campaign CRUD")
-body("[INSERT SCREENSHOT: Campaign List]")
-body("[INSERT SCREENSHOT: Create Campaign Form]")
-caption("Table 7.4: Campaign Management Test Case")
-add_table(["Input", "Expected Output", "Actual Output", "Status"],
-    [["Create campaign with all fields", "Campaign appears in list", "Campaign created", "Pass"],
-     ["Edit campaign title", "Title updated in real-time", "Title updated", "Pass"],
-     ["Delete campaign", "Campaign removed + cascading delete", "Removed", "Pass"],
-     ["Change status to Active", "Status badge updates", "Updated", "Pass"]])
-
-h2("7.6 Test Case 04: Smart Matching (FYP-02)")
-body("Traceability Matrix Reference: FR12 — Smart Matching Algorithm")
-body("[INSERT SCREENSHOT: Recommended Campaigns Screen]")
-caption("Table 7.5: Smart Matching Test Case")
-add_table(["Input", "Expected Output", "Actual Output", "Status"],
-    [["User with medical skills", "Medical campaigns ranked highest", "Medical campaigns at top", "Pass"],
-     ["User in Multan", "Multan campaigns get location bonus", "Location score applied", "Pass"],
-     ["User already registered", "Campaign gets lower availability score", "Score reduced", "Pass"]])
-
-h2("7.7 Test Case 05: QR Attendance (FYP-02)")
-body("Traceability Matrix Reference: FR13/FR14 — QR Attendance")
-body("[INSERT SCREENSHOT: QR Generate Screen]")
-body("[INSERT SCREENSHOT: QR Scan Screen]")
-caption("Table 7.6: QR Attendance Test Case")
-add_table(["Input", "Expected Output", "Actual Output", "Status"],
-    [["Generate QR for campaign", "QR code displayed with campaign info", "QR displayed", "Pass"],
-     ["Scan valid QR (registered volunteer)", "Attendance marked as 'attended'", "Marked", "Pass"],
-     ["Scan valid QR (not registered)", "Show 'Not registered' error", "Error shown", "Pass"],
-     ["Scan invalid QR code", "Show 'Invalid QR' error", "Error shown", "Pass"]])
-
-h2("7.8 Summary")
-body("All 62 automated unit tests pass with 100% success rate. Manual black box testing confirmed that all 15 functional requirements meet their specifications. The QR attendance and smart matching features (FYP-02) function correctly under test conditions.")
-doc.add_page_break()
-
-# =================== CHAPTER 8 COVER PAGE ===================
+# =================== CHAPTER 7 ===================
 for _ in range(6): doc.add_paragraph()
 p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-r = p.add_run('Chapter 8'); r.bold = True; r.font.size = Pt(22); r.font.name = 'Times New Roman'
+r = p.add_run('Chapter 7'); r.bold = True; r.font.size = Pt(22)
 p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-r2 = p2.add_run('Conclusion'); r2.bold = True; r2.font.size = Pt(20); r2.font.name = 'Times New Roman'
+r2 = p2.add_run('Software Testing'); r2.bold = True; r2.font.size = Pt(20)
 doc.add_page_break()
 
-# =================== CHAPTER 8: CONCLUSION ===================
-h1("Chapter 8: Conclusion")
-body("This thesis document contains the descriptive detail of the NGO Operation and Volunteer Management System (HRAS). The system is a comprehensive cross-platform application built using Flutter and Firebase that addresses the operational challenges faced by grassroots NGOs in Pakistan.")
+h1("Chapter 7: Software Testing")
+body("Testing is a very important part of software development. If the app crashes when a volunteer is trying to register, they might not come back. To prevent this, I performed extensive testing on the HRAS system.")
 
-h2("8.1 Achievements")
-body("The following objectives were successfully accomplished:")
-for a in ["A complete cross-platform NGO management system running on Android, iOS, and Web",
-           "Campaign management with full lifecycle tracking",
-           "Donation tracking with PDF receipt generation",
-           "Volunteer management with self-registration and attendance tracking",
-           "Role-based access control enforced through Firestore security rules",
-           "Admin dashboard with real-time analytics",
-           "Smart volunteer-campaign matching algorithm (FYP-02)",
-           "QR-based attendance verification system (FYP-02)",
-           "FCM push notification integration (FYP-02)",
-           "Feature flag architecture enabling phase-based development"]:
+h2("7.1 Testing Strategy")
+body("I used two main types of testing:")
+body("1. Unit Testing: Writing automated scripts to test small parts of the code (like checking if an email is valid).")
+body("2. Black Box Testing: Manually clicking through the app to make sure the features work exactly as required.")
+
+h2("7.2 Unit Test Results")
+body("I wrote a total of 62 unit tests in Flutter.")
+table_caption("Unit Test Summary")
+add_table(["Test Category", "Total Tests", "Status"],
+    [["Form Validators", "26", "Passed"],
+     ["Data Models", "15", "Passed"],
+     ["Logic & Enums", "21", "Passed"],
+     ["Overall", "62", "100% Pass"]])
+
+h2("7.3 Black Box Test Cases")
+body("Here are the manual test cases I performed to verify the functional requirements.")
+
+table_caption("Login Functionality Test")
+add_table(["Action Taken", "Expected Result", "Actual Result", "Status"],
+    [["Enter correct email and password", "App goes to Dashboard", "Went to Dashboard", "Pass"],
+     ["Leave email empty", "Show error message", "Showed error", "Pass"],
+     ["Enter wrong password", "Show 'Invalid credentials'", "Showed error", "Pass"]])
+doc.add_paragraph()
+
+table_caption("Campaign Management Test")
+add_table(["Action Taken", "Expected Result", "Actual Result", "Status"],
+    [["Click Create Campaign, fill details", "Campaign appears in list", "Campaign created", "Pass"],
+     ["Edit campaign title", "Title changes immediately", "Title changed", "Pass"],
+     ["Delete a campaign", "Campaign is removed completely", "Removed", "Pass"]])
+doc.add_paragraph()
+
+table_caption("Smart Matching Test (FYP-02 Feature)")
+add_table(["Action Taken", "Expected Result", "Actual Result", "Status"],
+    [["User with 'Medical' skill checks app", "Medical campaigns show at the top", "Ranked at top", "Pass"],
+     ["User from 'Lahore' checks app", "Lahore campaigns get extra score", "Scored higher", "Pass"]])
+doc.add_page_break()
+
+# =================== CHAPTER 8 ===================
+for _ in range(6): doc.add_paragraph()
+p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run('Chapter 8'); r.bold = True; r.font.size = Pt(22)
+p2 = doc.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r2 = p2.add_run('Conclusion'); r2.bold = True; r2.font.size = Pt(20)
+doc.add_page_break()
+
+h1("Chapter 8: Conclusion")
+
+h2("8.1 Project Achievements")
+body("Over the past three semesters, I have successfully developed the NGO Operation and Volunteer Management System. By looking at the requirements we gathered from HRAS, we achieved the following goals:")
+for a in [
+    "A working mobile app for Android and iOS, built with a single Flutter codebase.",
+    "A clean web dashboard for the admin to see everything.",
+    "A database that updates instantly using Firebase.",
+    "A smart algorithm that automatically suggests campaigns to volunteers.",
+    "A QR-code attendance system that saves time during actual events."
+]:
     body(f"• {a}")
 
 h2("8.2 Limitations")
-for l in ["Internet connectivity is required for all operations",
-           "No online payment gateway integration (manual donation recording)",
-           "Single organization support (not multi-tenant)",
-           "Location matching is string-based, not GPS-based",
-           "Push notifications require Firebase Cloud Functions for server-side triggers"]:
-    body(f"• {l}")
+body("While the system works well, there are a few limitations right now:")
+body("• The app requires an active internet connection to work. There is no offline mode yet.")
+body("• We have not integrated JazzCash or Easypaisa directly inside the app due to API cost issues.")
+body("• Location matching is currently based on city names, not exact GPS coordinates.")
 
 h2("8.3 Future Work")
-body("The following enhancements are planned for FYP-03 and beyond:")
-for f in ["GPS-based location matching for improved recommendation accuracy",
-           "Online payment integration (JazzCash, Easypaisa)",
-           "Comprehensive User Acceptance Testing with HRAS volunteers",
-           "Performance optimization and load testing",
-           "Urdu language support for wider accessibility",
-           "Advanced analytics with machine learning insights"]:
-    body(f"• {f}")
+body("If I continue working on this project after graduation, I would like to add:")
+body("• Direct payment gateways so donors can transfer money inside the app.")
+body("• Urdu language support, because many volunteers in Pakistan prefer reading Urdu.")
+body("• GPS integration so volunteers get push notifications when they are physically near a campaign.")
 
-h2("8.4 Conclusion")
-body("The HRAS NGO Volunteer Management System demonstrates that affordable, cross-platform technology solutions can address the operational challenges of grassroots NGOs in Pakistan. By combining Flutter's cross-platform capabilities with Firebase's real-time backend, the system provides campaign management, donation tracking, volunteer coordination, and intelligent matching — all from a single codebase deployed across Android, iOS, and Web platforms.")
+h2("8.4 Final Conclusion")
+body("In conclusion, the HRAS system proves that even small, local NGOs in Pakistan can benefit greatly from digital transformation. Instead of spending hours managing WhatsApp messages and paper notebooks, the NGO team can now use this system to organize everything efficiently. This allows them to focus on what really matters: helping the community.")
 doc.add_page_break()
 
-# =================== USER GUIDE ===================
+# =================== USER GUIDE & GLOSSARY ===================
 h1("User Guide")
-h2("Volunteer Manual")
-for step in ["Open the HRAS app on your mobile device",
-              "Tap 'Sign Up' and fill in your name, email, phone, and password",
-              "Verify your email address via the verification link",
-              "Login with your credentials",
-              "Browse campaigns on the Dashboard",
-              "Tap a campaign to view details and click 'Join Campaign'",
-              "On the campaign day, scan the QR code shown by the admin (FYP-02)",
-              "View your profile to track participation history"]:
-    body(f"• {step}")
+h2("For Volunteers")
+body("1. Download and open the app.")
+body("2. Tap 'Sign Up', enter your details, and verify your email.")
+body("3. Login and go to the Home screen to see recommended campaigns.")
+body("4. Tap on any campaign to see details, then press 'Join Campaign'.")
+body("5. On the day of the campaign, open the app and tap 'Scan QR' to mark your attendance.")
 
-h2("Admin Manual")
-for step in ["Login with admin credentials",
-              "From the Admin Panel, manage Campaigns, Donations, Volunteers, and Users",
-              "To create a campaign: Admin Panel → Campaigns → Create Campaign",
-              "To record a donation: Campaign Detail → Add Donation",
-              "To generate attendance QR: Campaign Detail → Menu → Generate QR Code (FYP-02)",
-              "To view analytics: Admin Panel → Dashboard tab"]:
-    body(f"• {step}")
+h2("For Admins")
+body("1. Login using your admin email.")
+body("2. Use the bottom navigation bar to switch between Campaigns, Donations, and Users.")
+body("3. To create a new campaign, go to the Campaigns tab and press the floating '+' button.")
+body("4. To generate an attendance QR code, open a specific campaign and tap 'Generate QR'.")
 doc.add_page_break()
 
-# =================== REFERENCES ===================
-h1("References")
-refs = [
-    '[1] D. Hackler and G. D. Saxton, "The Strategic Use of Information Technology by Nonprofit Organizations," Public Administration Review, vol. 67, no. 3, pp. 474-487, 2007.',
-    '[2] P. G. Svensson et al., "Technology and Nonprofit Management: A Systematic Review," Nonprofit and Voluntary Sector Quarterly, vol. 50, no. 6, 2021.',
-    '[3] Pakistan Centre for Philanthropy, "The State of Individual Philanthropy in Pakistan," PCP Research Report, 2021.',
-    '[4] M. R. Teirlinck and P. Spruyt, "Digital Transformation of NGOs: A Conceptual Framework," Information Technology for Development, vol. 28, no. 2, 2022.',
-    '[5] C. Merkel et al., "Managing Technology Use in Nonprofit Community Organizations," Proc. ACM SIGCHI, 2007.',
-    '[6] CiviCRM Documentation, https://docs.civicrm.org, Accessed 2026.',
-    '[7] Salesforce Nonprofit Cloud, https://www.salesforce.org, Accessed 2026.',
-    '[8] B. B. Dhebar and B. Stokes, "A Nonprofit Manager\'s Guide to Online Volunteering," Nonprofit Management and Leadership, vol. 18, no. 4, 2008.',
-    '[9] G. D. Saxton and L. Wang, "The Social Network Effect," Nonprofit and Voluntary Sector Quarterly, vol. 43, no. 5, pp. 850-868, 2014.',
-    '[10] A. Biorn-Hansen et al., "Cross-Platform Mobile Development," ACM Computing Surveys, vol. 51, no. 5, 2019.',
-    '[11] K. Lee and S. Park, "Intelligent Volunteer Matching Using ML," Proc. IEEE Intl. Conf. Big Data, 2020.',
-    '[12] Flutter Documentation, https://flutter.dev, Accessed 2026.',
-    '[13] Firebase Documentation, https://firebase.google.com/docs, Accessed 2026.',
-]
-for ref in refs:
-    p = body(ref); p.paragraph_format.space_after = Pt(4); p.runs[0].font.size = Pt(11)
-doc.add_page_break()
-
-# =================== GLOSSARY ===================
 h1("Glossary")
 for term, defn in [
-    ("CRUD", "Create, Read, Update, Delete — basic database operations"),
-    ("DFD", "Data Flow Diagram"),
-    ("ER Diagram", "Entity Relationship Diagram"),
-    ("FCM", "Firebase Cloud Messaging — push notification service"),
-    ("FYP", "Final Year Project"),
-    ("HRAS", "Hamesha Rahein Apke Saath — the NGO name"),
-    ("RBAC", "Role-Based Access Control"),
-    ("SDLC", "Software Development Life Cycle"),
-    ("SRS", "Software Requirements Specification"),
-    ("UAT", "User Acceptance Testing"),
+    ("Firebase", "A Google service used to store database records securely in the cloud."),
+    ("Flutter", "A framework by Google used to build mobile and web apps from one codebase."),
+    ("CRUD", "Create, Read, Update, Delete — the four basic functions of database storage."),
+    ("UAT", "User Acceptance Testing — testing the app with real people."),
 ]:
     body(f"{term}: {defn}")
 
-# Save
 out = os.path.join(os.path.dirname(__file__), 'Thesis-FYP03', 'FYP_03_Thesis.docx')
 os.makedirs(os.path.dirname(out), exist_ok=True)
 doc.save(out)
 print(f"FYP-03 Thesis saved: {out}")
-print("Chapters: 7 (Testing), 8 (Conclusion) + User Guide + References + Glossary")
