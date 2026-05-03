@@ -179,7 +179,7 @@ img(os.path.join(diagram_dir, 'gantt_chart_1777123236084.png'), 'Project Timelin
 h2("3.4 Software Development Life Cycle (SDLC) Model")
 body("The architectural approach was governed by the Agile Iterative Software Development Life Cycle. In the context of NGO operations, stakeholder requirements are notoriously fluid. A traditional, monolithic Waterfall approach—where testing only occurs after full development—was deemed a critical risk. If the NGO management realized a feature did not fit their field workflow at the end of the year, pivoting would be impossible.")
 body("By utilizing an Agile Iterative model, the software was developed in functional sprints. The first iteration delivered a Minimum Viable Product (MVP) containing just the authentication and basic campaign viewing modules. This was deployed to a test group of NGO administrators. Their feedback was immediately integrated into the second iteration, which introduced the complex QR attendance logic and the Smart Matching algorithm. This continuous feedback loop guaranteed that the final software architecture perfectly mirrored the real-world operational demands of the organization.")
-img(os.path.join(diagram_dir, 'sdlc_model_1777123350385.png'), 'Agile Iterative SDLC Process Model')
+img(os.path.join(diagram_dir, 'ch3_agile_sdlc.png'), 'Agile Iterative SDLC Process Model')
 
 h2("3.5 FYP Phase Submissions and Deliverables")
 body("To align the Agile iterations with the university's evaluation matrix, the project was mapped to three distinct submission gateways. This structured the development velocity to meet specific academic milestones.")
@@ -328,7 +328,7 @@ img(os.path.join(diagram_dir, 'system_architecture_1777123050441.png'), 'High-Le
 
 h2("5.3 Database Schema and Entity Relationships")
 body("While Firebase Firestore operates as a document-based NoSQL database, mapping the conceptual relationships between entities remains crucial for structuring the nested collections. The system fundamentally revolves around three primary entities: Users, Campaigns, and Donations. The ER diagram illustrates how a singular Campaign document contains sub-collections referencing multiple Volunteer documents (a one-to-many relationship) to track attendance states efficiently without duplicating heavy profile data across the network.")
-img(os.path.join(diagram_dir, 'er_diagram_1777123063920.png'), 'Conceptual Entity Relationship Schema')
+img(os.path.join(diagram_dir, 'ch5_erd_concept.png'), 'Conceptual Entity Relationship Schema')
 
 h2("5.4 Exhaustive Data Dictionary")
 body("To ensure consistent data typing across the Dart frontend and the Firestore backend, a rigid data dictionary was established across all major collections. This strictly prevents fatal type-casting errors during network serialization.")
@@ -386,7 +386,7 @@ img(os.path.join(diagram_dir, 'class_diagram_1777123296381.png'), 'Frontend Clas
 
 h2("5.9 Component and Physical Deployment Architecture")
 body("The Component Architecture reflects the implementation of the Provider State Management pattern. It shows how UI widgets listen to central Provider classes, ensuring that when data mutates in the database, only the specific widgets relying on that data rebuild, preventing UI frame drops.")
-img(os.path.join(diagram_dir, 'component_diagram_1777123363771.png'), 'State Management Component Integration')
+img(os.path.join(diagram_dir, 'ch5_component_arch.png'), 'State Management Component Integration')
 body("The Deployment Diagram maps the physical infrastructure. It illustrates the distribution of the compiled binary (.apk / .ipa) to the end-user's physical hardware, operating over HTTPS protocols to interface with Google's globally distributed Firebase server infrastructure.")
 img(os.path.join(diagram_dir, 'deployment_diagram_1777123140325.png'), 'Physical Hardware and Cloud Deployment')
 
@@ -414,6 +414,7 @@ body("The translation of the architectural blueprints into executable software w
 h2("6.2 Engineering the Smart Matching Algorithm")
 body("A significant technical milestone achieved during the FYP-02 iteration was the development of the Smart Matching Engine. Historically, volunteers at HRAS manually scrolled through lists to find relevant campaigns, often missing events where their specialized skills (e.g., paramedical training) were desperately needed.")
 body("The implemented algorithm executes a complex intersection sequence on the client side to minimize server database reads, operating roughly at O(N*M) complexity where N is active campaigns and M is user skills. Upon application launch, the system queries the user's document to retrieve their `skills` array. Simultaneously, it fetches the list of active campaigns, each possessing a `tags` array. The algorithm performs a highly optimized iterative comparison; for every intersection found between the user's skills and a campaign's tags, an internal weighting metric is incremented. The array of campaigns is subsequently dynamically sorted via the Dart `sort()` method based on this computed weight, ensuring the UI rendering engine instantly displays the most relevant humanitarian events at the apex of the volunteer's feed.")
+img(os.path.join(diagram_dir, 'ch6_smart_matching.png'), 'Algorithmic Execution Flow for Smart Matching')
 
 table_caption("Algorithmic Flow: Smart Matching Logic")
 add_table(["Execution Step", "Technical Description", "Time Complexity"],

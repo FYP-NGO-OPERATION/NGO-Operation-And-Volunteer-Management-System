@@ -61,7 +61,7 @@ def merge():
     composer.append(doc_fyp03)
 
     # Save
-    out = os.path.join(BASE, 'FINAL_THESIS_COMPLETE_EXTREME.docx')
+    out = os.path.join(BASE, 'FINAL_THESIS_COMPLETE_V3_WITH_DIAGRAMS.docx')
     composer.save(out)
     
     # Inject auto-update tag

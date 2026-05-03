@@ -108,6 +108,21 @@ def h2(t): return doc.add_heading(t, level=2)
 def h3(t): return doc.add_heading(t, level=3)
 def body(t): p = doc.add_paragraph(t); p.style = doc.styles['Normal']; return p
 
+diagram_dir = os.path.join(os.path.dirname(__file__), 'diagrams')
+def figure_caption(t):
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    add_seq_field(p, "Figure", "Figure ", f": {t}")
+    return p
+
+def img(path, cap, width=Inches(5.2)):
+    if os.path.exists(path):
+        doc.add_picture(path, width=width)
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        figure_caption(cap)
+        return True
+    return False
+
 # =================== TITLE PAGE ===================
 for _ in range(4): doc.add_paragraph()
 h1(UNIVERSITY)
@@ -140,6 +155,7 @@ body("The testing matrix was architected around three fundamental paradigms:")
 body("1. Automated Unit Testing (White-Box): Micro-level testing executed continuously during development. Scripts were engineered to validate core logic vectors—such as the mathematical accuracy of the financial aggregation engine and the boundary value constraints of the Smart Matching arrays—independent of the UI.")
 body("2. Integration Testing: Intermediate-level testing designed to ensure that discrete application modules (e.g., the Dart frontend and the Firestore backend) communicate flawlessly, accurately handling network latency and asynchronous state mutations.")
 body("3. Black Box Testing & UAT: Macro-level validation conducted from the end-user's perspective. Evaluators interacted with the compiled UI strictly to ascertain if the system reliably fulfills the functional requirements outlined in Chapter 4, without any knowledge of the underlying codebase.")
+img(os.path.join(diagram_dir, 'ch7_qa_flow.png'), 'Quality Assurance Execution Flow Pipeline')
 
 h2("7.3 Automated Unit Test Coverage")
 body("A total of 62 highly specific automated unit tests were scripted utilizing the Dart/Flutter testing framework. The execution of these tests ensures zero regression defects during subsequent code compilation.")
@@ -246,6 +262,7 @@ body("• Fintech API Integration: Securing corporate compliance to integrate na
 body("• Localization Engine: Abstracting all hardcoded UI strings into translation files to support real-time application switching to Urdu and regional dialects, drastically expanding demographic penetration.")
 body("• Geospatial Tracking and Notifications: Upgrading the platform to utilize native GPS hardware, enabling proximity-based push notifications (e.g., 'A blood drive is happening 2km from your current location') and turn-by-turn navigation integrations.")
 body("• Predictive Machine Learning Dashboards: Refactoring the web dashboard to incorporate Python-based data-science APIs, providing the NGO with predictive trend analysis regarding seasonal donation influxes and volunteer attrition rates.")
+img(os.path.join(diagram_dir, 'ch8_strategic_roadmap.png'), 'Strategic Roadmap for System Expansion')
 
 h2("8.4 Final Academic Conclusion")
 body("The successful execution of the HRAS Digital Management System proves unequivocally that the injection of modern software engineering methodologies into grassroots charitable organizations yields massive operational dividends. By leveraging cutting-edge cross-platform compilation (Flutter) and highly scalable cloud infrastructure (Firebase), this project transformed a chaotic, paper-bound administrative nightmare into an elegant, automated, and mathematically transparent ecosystem. Ultimately, this software does not just organize data—it fundamentally empowers the non-profit sector to redirect their invaluable time and cognitive resources away from bureaucratic paperwork and back toward their prime directive: aggressive, high-impact humanitarian action.")
