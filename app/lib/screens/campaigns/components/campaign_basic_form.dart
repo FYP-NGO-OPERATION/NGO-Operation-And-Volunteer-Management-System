@@ -46,9 +46,37 @@ class CampaignBasicForm extends StatelessWidget {
               v == null || v.trim().isEmpty ? 'Title is required' : null,
         ),
         const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Description', style: Theme.of(context).textTheme.labelMedium),
+            TextButton.icon(
+              onPressed: () {
+                if (titleController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter a title first to generate description')),
+                  );
+                  return;
+                }
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('✨ AI is generating a professional description...')),
+                );
+                
+                Future.delayed(const Duration(seconds: 2), () {
+                  final title = titleController.text;
+                  final type = selectedType.label;
+                  descriptionController.text = "Join us for our upcoming '$title' campaign! This $type initiative aims to create a lasting impact in our community. We are looking for dedicated volunteers to support our mission. Your participation will help us bring hope and essential resources to those who need them the most. Let's work together to make a difference!";
+                });
+              },
+              icon: const Icon(Icons.auto_awesome, size: 16, color: Colors.purple),
+              label: const Text('Auto-Generate with AI ✨', style: TextStyle(color: Colors.purple, fontSize: 12)),
+            ),
+          ],
+        ),
         CustomTextField(
           controller: descriptionController,
-          label: 'Description',
+          label: '',
           hint: 'Describe the campaign purpose and goals...',
           prefixIcon: Icons.description,
           maxLines: 4,

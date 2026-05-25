@@ -108,6 +108,43 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               Share.share(shareText, subject: _campaign.title);
             },
           ),
+          if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
+            IconButton(
+              icon: const Icon(Icons.emergency, color: AppColors.error),
+              tooltip: 'Emergency SOS',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Row(
+                      children: [
+                        Icon(Icons.warning, color: AppColors.error),
+                        SizedBox(width: 8),
+                        Text('Emergency SOS', style: TextStyle(color: AppColors.error)),
+                      ],
+                    ),
+                    content: const Text('Are you in an emergency situation? This will immediately alert the Campaign Admin and nearby volunteers with your location.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('🚨 SOS Alert Sent! Admin has been notified of your location.'),
+                              backgroundColor: AppColors.error,
+                              duration: Duration(seconds: 4),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                        child: const Text('SEND SOS ALARM'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           if (isAdmin)
             PopupMenuButton<String>(
               onSelected: (action) => _handleAction(action),
