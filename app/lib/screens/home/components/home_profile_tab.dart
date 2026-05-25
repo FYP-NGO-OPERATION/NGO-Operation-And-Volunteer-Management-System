@@ -1,237 +1,193 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../config/app_colors.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_tokens.dart';
-import '../../../../config/app_colors.dart';
-import '../../../../utils/responsive.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../profile/edit_profile_screen.dart';
-import '../../profile/about_us_screen.dart';
 import '../../profile/change_password_screen.dart';
+import '../../profile/about_us_screen.dart';
 import '../../ngos/ngo_selection_screen.dart';
 import '../../ngos/create_ngo_screen.dart';
+import '../../../../services/certificate_service.dart';
+import '../../../../providers/ngo_provider.dart';
 
 class HomeProfileTab extends StatelessWidget {
   final VoidCallback onLogout;
 
-  const HomeProfileTab({Key? key, required this.onLogout}) : super(key: key);
+  const HomeProfileTab({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-      padding: EdgeInsets.only(
-        left: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
-        right: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
+      padding: const EdgeInsets.only(
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
         top: AppSpacing.lg,
         bottom: 100, // Extra padding so FAB doesn't overlap Logout
       ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Column(
-            children: [
-              // ─── Premium Avatar Header ───
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl, horizontal: AppSpacing.xl),
-                decoration: BoxDecoration(
-                  gradient: AppColors.heroGradient,
-                  borderRadius: AppTokens.borderRadiusLg,
-                  boxShadow: AppTokens.shadowGlow(AppColors.primary),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.3), width: 3),
-                      ),
-                      child: CircleAvatar(
-                        radius: 48,
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        backgroundImage: user?.profileImageUrl != null
-                            ? CachedNetworkImageProvider(user!.profileImageUrl!)
-                            : null,
-                        child: user?.profileImageUrl == null
-                            ? Text((user?.name ?? 'U')[0].toUpperCase(),
-                                style: AppTextStyles.displayMedium(color: Colors.white))
-                            : null,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(user?.name ?? 'User', style: AppTextStyles.headlineMedium(color: Colors.white)),
-                        if ((user?.campaignsJoined ?? 0) >= 3) ...[
-                          AppSpacing.hGapSm,
-                          const Tooltip(
-                            message: 'Top Volunteer',
-                            child: Icon(Icons.stars, color: Colors.amber, size: 28),
-                          ),
-                        ],
-                      ],
-                    ),
-                    Text(user?.email ?? '', style: AppTextStyles.bodySmall(color: Colors.white.withOpacity(0.7))),
-                    AppSpacing.vGapSm,
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: AppTokens.borderRadiusPill,
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
-                      ),
-                      child: Text(
-                        user?.isAdmin == true ? '👑 Admin' : '🤝 Volunteer',
-                        style: AppTextStyles.labelSmall(color: Colors.white),
-                      ),
-                    ),
-                    if (user?.bio != null && user!.bio!.isNotEmpty) ...[
-                      AppSpacing.vGapMd,
-                      Text(user.bio!, textAlign: TextAlign.center,
-                        style: AppTextStyles.bodySmall(color: Colors.white.withOpacity(0.8))),
-                    ],
-                  ],
-                ),
-              ),
-              AppSpacing.vGapXl,
-
-              _buildAchievementsSection(context, user),
-              AppSpacing.vGapXl,
-
-              // ─── Info Card ───
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkCardBg : Colors.white,
-                  borderRadius: AppTokens.borderRadiusMd,
-                  border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                  boxShadow: AppTokens.shadowSoft,
-                ),
-                child: Column(
-                  children: [
-                    _profileTile(context, Icons.email, 'Email', user?.email ?? 'N/A', isDark),
-                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                    _profileTile(context, Icons.phone, 'Phone', _formatPhone(user?.phone), isDark),
-                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                    _profileTile(context, Icons.location_on, 'Address', user?.address ?? 'Not set', isDark),
-                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                    _profileTile(context, Icons.star, 'Skills', user?.skills.isNotEmpty == true ? user!.skills.join(', ') : 'No skills listed', isDark),
-                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                    _profileTile(context, Icons.campaign, 'Campaigns Joined', '${user?.campaignsJoined ?? 0}', isDark),
-                    Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-                    _profileTile(context, Icons.calendar_today, 'Member Since',
-                        user?.joinedAt != null
-                            ? '${user!.joinedAt.day}/${user.joinedAt.month}/${user.joinedAt.year}'
-                            : 'N/A', isDark),
-                  ],
-                ),
-              ),
-              AppSpacing.vGapXl,
-
-              // ─── Action Buttons ───
-              _profileActionBtn(Icons.edit, 'Edit Profile', AppColors.primary, Colors.white,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => EditProfileScreen()))),
-              AppSpacing.vGapMd,
-              _profileActionBtn(Icons.swap_horiz, 'Switch Workspace', isDark ? AppColors.darkCardBg : Colors.white, AppColors.info,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NgoSelectionScreen())),
-                outlined: true),
-              AppSpacing.vGapMd,
-              _profileActionBtn(Icons.business_center, 'Partner your NGO', isDark ? AppColors.darkCardBg : Colors.white, AppColors.success,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateNgoScreen())),
-                outlined: true),
-              AppSpacing.vGapMd,
-              _profileActionBtn(Icons.info_outline, 'About NGO', isDark ? AppColors.darkCardBg : Colors.white, AppColors.primary,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
-                outlined: true),
-              AppSpacing.vGapMd,
-              _profileActionBtn(Icons.lock, 'Change Password', isDark ? AppColors.darkCardBg : Colors.white, AppColors.primary,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChangePasswordScreen())),
-                outlined: true),
-              AppSpacing.vGapMd,
-              _profileActionBtn(
-                Icons.language,
-                'language'.tr() + ' / زبان',
-                isDark ? AppColors.darkCardBg : Colors.white,
-                Colors.deepPurple,
-                () {
-                  if (context.locale.languageCode == 'en') {
-                    context.setLocale(const Locale('ur'));
-                  } else {
-                    context.setLocale(const Locale('en'));
-                  }
-                },
-                outlined: true,
-              ),
-              AppSpacing.vGapMd,
-              _profileActionBtn(Icons.logout, 'Logout', isDark ? AppColors.darkCardBg : Colors.white, AppColors.error,
-                onLogout,
-                outlined: true),
-              AppSpacing.vGapXl,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _profileActionBtn(IconData icon, String label, Color bg, Color fg, VoidCallback onTap, {bool outlined = false}) {
-    return SizedBox(
-      width: double.infinity,
-      height: AppTokens.buttonHeightLg,
-      child: outlined
-          ? OutlinedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, color: fg, size: AppTokens.iconSm),
-              label: Text(label, style: AppTextStyles.button(color: fg)),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: fg.withOpacity(0.4)),
-                shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
-              ),
-            )
-          : ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, color: fg, size: AppTokens.iconSm),
-              label: Text(label, style: AppTextStyles.button(color: fg)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: bg, foregroundColor: fg,
-                shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
-              ),
+      child: Column(
+        children: [
+          // Profile Header
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: AppTokens.borderRadiusLg,
+              boxShadow: AppTokens.shadowSoft,
             ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 35,
+                  backgroundColor: AppColors.primarySurface,
+                  backgroundImage: user?.profileImageUrl != null
+                      ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                      : null,
+                  child: user?.profileImageUrl == null
+                      ? Text(
+                          (user?.name ?? 'U')[0].toUpperCase(),
+                          style: AppTextStyles.headlineMedium(color: AppColors.primary),
+                        )
+                      : null,
+                ),
+                AppSpacing.hGapLg,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user?.name ?? 'User', style: AppTextStyles.titleLarge()),
+                      AppSpacing.vGapXs,
+                      Text(user?.email ?? '', style: AppTextStyles.bodyMedium(color: Theme.of(context).hintColor)),
+                      AppSpacing.vGapSm,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: user?.isAdmin == true ? AppColors.primary.withOpacity(0.1) : AppColors.info.withOpacity(0.1),
+                          borderRadius: AppTokens.borderRadiusPill,
+                        ),
+                        child: Text(
+                          user?.isAdmin == true ? '👑 Admin' : '🤝 Volunteer',
+                          style: AppTextStyles.labelSmall(
+                            color: user?.isAdmin == true ? AppColors.primary : AppColors.info,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.vGapXl,
+
+          // Achievements Section
+          if (user != null && user.isAdmin != true) _buildAchievementsSection(context, user),
+          if (user != null && user.isAdmin != true) AppSpacing.vGapXl,
+
+          // Settings Section
+          _buildSettingsTile(
+            context,
+            title: 'edit_profile'.tr(),
+            subtitle: 'update_name_photo'.tr(),
+            icon: Icons.person_outline,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen())),
+          ),
+          _buildSettingsTile(
+            context,
+            title: 'change_password'.tr(),
+            subtitle: 'update_login_password'.tr(),
+            icon: Icons.lock_outline,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
+          ),
+          const Divider(height: 32),
+          _buildSettingsTile(
+            context,
+            title: 'switch_workspace'.tr(),
+            subtitle: 'access_another_ngo'.tr(),
+            icon: Icons.swap_horiz,
+            color: AppColors.info,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NgoSelectionScreen())),
+          ),
+          _buildSettingsTile(
+            context,
+            title: 'partner_ngo'.tr(),
+            subtitle: 'partner_ngo_desc'.tr(),
+            icon: Icons.business_center,
+            color: AppColors.success,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateNgoScreen())),
+          ),
+          const Divider(height: 32),
+          _buildSettingsTile(
+            context,
+            title: 'language'.tr() + ' / زبان',
+            subtitle: context.locale.languageCode == 'en' ? 'switch_to_urdu'.tr() : 'switch_to_english'.tr(),
+            icon: Icons.language,
+            onTap: () {
+              if (context.locale.languageCode == 'en') {
+                context.setLocale(const Locale('ur'));
+              } else {
+                context.setLocale(const Locale('en'));
+              }
+            },
+          ),
+          const Divider(height: 32),
+          _buildSettingsTile(
+            context,
+            title: 'about_hras'.tr(),
+            subtitle: 'about_hras_desc'.tr(),
+            icon: Icons.info_outline,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
+          ),
+          const Divider(height: 32),
+          _buildSettingsTile(
+            context,
+            title: 'logout'.tr(),
+            subtitle: 'Sign out of your account',
+            icon: Icons.logout,
+            color: AppColors.error,
+            onTap: onLogout,
+          ),
+        ],
+      ),
     );
   }
 
-  String _formatPhone(String? phone) {
-    if (phone == null || phone.isEmpty) return 'N/A';
-    if (phone.length == 11 && !phone.contains('-')) {
-      return '${phone.substring(0, 4)}-${phone.substring(4)}';
-    }
-    return phone;
-  }
-
-  Widget _profileTile(BuildContext context, IconData icon, String label, String value, bool isDark) {
+  Widget _buildSettingsTile(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    final theme = Theme.of(context);
+    final iconColor = color ?? AppColors.primary;
+    
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       leading: Container(
-        padding: const EdgeInsets.all(AppSpacing.xs + 2),
+        padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(isDark ? 0.15 : 0.08),
-          borderRadius: AppTokens.borderRadiusSm,
+          color: iconColor.withOpacity(0.1),
+          borderRadius: AppTokens.borderRadiusMd,
         ),
-        child: Icon(icon, color: AppColors.primary, size: AppTokens.iconSm),
+        child: Icon(icon, color: iconColor),
       ),
-      title: Text(label, style: AppTextStyles.caption(
-        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
-      subtitle: Text(value, style: AppTextStyles.bodyMedium()),
+      title: Text(title, style: AppTextStyles.titleSmall(color: color)),
+      subtitle: Text(subtitle, style: AppTextStyles.caption(color: theme.hintColor)),
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+      onTap: onTap,
     );
   }
 
   Widget _buildAchievementsSection(BuildContext context, user) {
-    int attended = user?.campaignsJoined ?? 0;
+    int attended = user.campaignsJoined ?? 0;
     String badgeText = "no_badges".tr();
     Color badgeColor = Colors.grey;
 
@@ -248,18 +204,58 @@ class HomeProfileTab extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: AppTokens.borderRadiusMd,
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+        color: badgeColor.withOpacity(0.1),
+        borderRadius: AppTokens.borderRadiusLg,
+        border: Border.all(color: badgeColor.withOpacity(0.3)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.military_tech, color: badgeColor, size: 48),
+          Row(
+            children: [
+              Icon(Icons.emoji_events, color: badgeColor, size: 32),
+              AppSpacing.hGapSm,
+              Text('achievements'.tr(), style: AppTextStyles.titleLarge(color: badgeColor)),
+            ],
+          ),
+          AppSpacing.vGapMd,
+          Text('${'campaigns_completed'.tr()}: $attended', style: AppTextStyles.bodyLarge()),
           AppSpacing.vGapSm,
-          Text(badgeText, style: AppTextStyles.titleMedium(color: badgeColor)),
-          Text('Campaigns Attended: $attended', style: AppTextStyles.bodySmall()),
+          Row(
+            children: [
+              Text('${'current_badge'.tr()}: ', style: AppTextStyles.bodyMedium()),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: badgeColor, borderRadius: BorderRadius.circular(12)),
+                child: Text(badgeText, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          if (attended >= 5) ...[
+            AppSpacing.vGapLg,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF...')));
+                  await CertificateService.generateAndDownloadCertificate(
+                    volunteerName: user.name,
+                    campaignsAttended: attended,
+                    ngoName: ngoProvider.currentNgo?.name ?? 'HRAS Platform',
+                  );
+                },
+                icon: const Icon(Icons.download, color: Colors.white),
+                label: Text('download_certificate'.tr(), style: const TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: badgeColor),
+              ),
+            ),
+          ] else ...[
+            AppSpacing.vGapLg,
+            Text('no_campaigns_joined'.tr(), style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+          ],
         ],
       ),
     );
