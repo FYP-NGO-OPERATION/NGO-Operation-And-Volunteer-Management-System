@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -66,10 +67,10 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             children: [
-              _buildFilterChip(null, 'All (${campaignProvider.totalCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.active, '🟢 Active (${campaignProvider.activeCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.upcoming, '🔵 Upcoming (${campaignProvider.upcomingCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.completed, '✅ Completed (${campaignProvider.completedCampaigns})', campaignProvider),
+              _buildFilterChip(null, '${'all'.tr()} (${campaignProvider.totalCampaigns})', campaignProvider),
+              _buildFilterChip(CampaignStatus.active, '🟢 ${'active'.tr()} (${campaignProvider.activeCampaigns})', campaignProvider),
+              _buildFilterChip(CampaignStatus.upcoming, '🔵 ${'upcoming'.tr()} (${campaignProvider.upcomingCampaigns})', campaignProvider),
+              _buildFilterChip(CampaignStatus.completed, '✅ ${'completed_status'.tr()} (${campaignProvider.completedCampaigns})', campaignProvider),
             ],
           ),
         ),

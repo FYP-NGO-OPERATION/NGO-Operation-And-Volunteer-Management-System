@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../announcements/announcement_list_screen.dart';
 import 'session_list_screen.dart';
 import '../../config/app_colors.dart';
@@ -14,13 +15,13 @@ class EngagementTabScreen extends StatelessWidget {
         children: [
           Container(
             color: Theme.of(context).cardColor,
-            child: const TabBar(
+            child: TabBar(
               labelColor: AppColors.primary,
               unselectedLabelColor: AppColors.textSecondary,
               indicatorColor: AppColors.primary,
               tabs: [
-                Tab(icon: Icon(Icons.announcement), text: 'Announcements'),
-                Tab(icon: Icon(Icons.videocam), text: 'Virtual Sessions'),
+                Tab(icon: const Icon(Icons.announcement), text: 'announcements'.tr()),
+                Tab(icon: const Icon(Icons.videocam), text: 'virtual_sessions'.tr()),
               ],
             ),
           ),

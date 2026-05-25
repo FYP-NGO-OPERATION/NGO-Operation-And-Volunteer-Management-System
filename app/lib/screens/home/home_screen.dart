@@ -496,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   currentNgo?.welcomeText?.isNotEmpty == true
                                       ? currentNgo!.welcomeText!
-                                      : 'Welcome back,',
+                                      : 'welcome_back'.tr(),
                                   style: AppTextStyles.bodySmall(color: Colors.white.withOpacity(0.8)),
                                 ),
                                 AppSpacing.vGapXs,
@@ -556,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
               AppSpacing.vGapXl,
 
               // Stats Grid
-              Text('Overview', style: AppTextStyles.titleLarge()),
+              Text('overview'.tr(), style: AppTextStyles.titleLarge()),
               AppSpacing.vGapMd,
 
               GridView.count(
@@ -567,16 +567,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: Responsive.isMobile(context) ? 1.15 : 1.6,
                 children: [
-                  _buildStatCard('Active Campaigns',
+                  _buildStatCard('active_campaigns'.tr(),
                       '${Provider.of<CampaignProvider>(context).activeCampaigns}',
                       Icons.campaign, AppColors.info),
-                  _buildStatCard('Donations',
+                  _buildStatCard('donations'.tr(),
                       'Rs.${_formatCompact(Provider.of<CampaignProvider>(context).totalDonationsOverall)}',
                       Icons.volunteer_activism, AppColors.warning),
-                  _buildStatCard('Families Helped',
+                  _buildStatCard('families_helped'.tr(),
                       '${Provider.of<CampaignProvider>(context).totalBeneficiariesOverall}',
                       Icons.family_restroom, AppColors.success),
-                  _buildStatCard('Items Distributed',
+                  _buildStatCard('items_distributed'.tr(),
                       '${Provider.of<CampaignProvider>(context).totalItemsDistributedOverall}',
                       Icons.inventory_2, AppColors.primary),
                 ],
@@ -587,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Latest Updates', style: AppTextStyles.titleLarge()),
+                  Text('latest_updates'.tr(), style: AppTextStyles.titleLarge()),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -595,7 +595,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
                       );
                     },
-                    child: const Text('See All'),
+                    child: Text('see_all'.tr()),
                   ),
                 ],
               ),

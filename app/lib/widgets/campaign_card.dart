@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
@@ -112,18 +113,25 @@ class CampaignCard extends StatelessWidget {
                     children: [
                       Icon(Icons.calendar_today, size: 14, color: AppColors.primaryLight),
                       const SizedBox(width: 4),
-                      Text(
-                        DateFormat('MMM dd, yyyy').format(campaign.startDate),
-                        style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
+                      Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Text(
+                          DateFormat('MMM dd, yyyy').format(campaign.startDate),
+                          style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Icon(Icons.location_on_outlined, size: 14, color: AppColors.primaryLight),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: Text(
-                          campaign.location,
-                          style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
-                          overflow: TextOverflow.ellipsis,
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text(
+                            campaign.location,
+                            style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.start,
+                          ),
                         ),
                       ),
                     ],
@@ -153,6 +161,7 @@ class CampaignCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: AppColors.primary,
                           ),
+                          textDirection: TextDirection.ltr,
                         ),
                       ],
                     ),
@@ -165,15 +174,15 @@ class CampaignCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStat(Icons.people_outline, '${campaign.totalVolunteers}', 'Volunteers'),
+                      _buildStat(Icons.people_outline, '${campaign.totalVolunteers}', 'volunteers'.tr()),
                       _buildStat(
                         Icons.volunteer_activism, 
                         campaign.totalDonationsAmount > 0 
                             ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
                             : '${campaign.totalDonationsCount}', 
-                        'Donations'
+                        'donations'.tr()
                       ),
-                      _buildStat(Icons.family_restroom, '${campaign.beneficiaryCount}', 'Helped'),
+                      _buildStat(Icons.family_restroom, '${campaign.beneficiaryCount}', 'helped'.tr()),
                     ],
                   ),
                   const SizedBox(height: 4),

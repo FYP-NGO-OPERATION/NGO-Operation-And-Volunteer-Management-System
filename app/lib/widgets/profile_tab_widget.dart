@@ -88,23 +88,23 @@ class ProfileTab extends StatelessWidget {
           // Settings Section
           _buildSettingsTile(
             context,
-            title: 'Edit Profile',
-            subtitle: 'Update your name and photo',
+            title: 'edit_profile'.tr(),
+            subtitle: 'update_name_photo'.tr(),
             icon: Icons.person_outline,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen())),
           ),
           _buildSettingsTile(
             context,
-            title: 'Change Password',
-            subtitle: 'Update your login password',
+            title: 'change_password'.tr(),
+            subtitle: 'update_login_password'.tr(),
             icon: Icons.lock_outline,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
           ),
           const Divider(height: 32),
           _buildSettingsTile(
             context,
-            title: 'Switch Workspace',
-            subtitle: 'Access another registered NGO',
+            title: 'switch_workspace'.tr(),
+            subtitle: 'access_another_ngo'.tr(),
             icon: Icons.swap_horiz,
             color: AppColors.info,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NgoSelectionScreen())),
@@ -142,7 +142,7 @@ class ProfileTab extends StatelessWidget {
           const Divider(height: 32),
           _buildSettingsTile(
             context,
-            title: 'Logout',
+            title: 'logout'.tr(),
             subtitle: 'Sign out of your account',
             icon: Icons.logout,
             color: AppColors.error,
