@@ -162,12 +162,14 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               icon: const Icon(Icons.qr_code),
               tooltip: 'Generate Attendance QR',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => QrGenerateScreen(campaign: _campaign),
-                  ),
-                );
+                if (FeatureFlags.isQrAttendanceEnabled && isAdmin) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QrGenerateScreen(campaignId: _campaign.id, campaignTitle: _campaign.title),
+                    ),
+                  );
+                }
               },
             ),
           if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
@@ -217,7 +219,6 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 const PopupMenuItem(value: 'pdf_report', child: Text('📄 Download PDF Report')),
                 const PopupMenuItem(value: 'offline_mesh', child: Text('📡 Offline Mesh Chat')),
                 const PopupMenuItem(value: 'scan_inventory', child: Text('📦 Scan Inventory')),
-                if (_campaign.isCompleted) const PopupMenuItem(value: 'feedback', child: Text('⭐ View Feedback')),
                 const PopupMenuItem(value: 'status', child: Text('🔄 Change Status')),
                 if (FeatureFlags.isQrAttendanceEnabled)
                   const PopupMenuItem(value: 'qr', child: Text('📱 Generate QR Code')),
@@ -474,13 +475,13 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           const SnackBar(content: Text('Generating PDF Report... Please wait.')),
         );
         try {
-          final donations = await DonationService().getDonations(_campaign.id);
-          final expenses = await FirebaseFirestore.instance.collection('campaigns').doc(_campaign.id).collection('expenses').get().then((s) => s.docs.map((d) => ExpenseModel.fromMap(d.data(), d.id)).toList());
+          final donationsSnap = await FirebaseFirestore.instance.collection('campaigns').doc(_campaign.id).collection('donations').get();
+          final donationsAmount = donationsSnap.docs.fold(0.0, (sum, d) => sum + ((d.data()['amount'] as num?)?.toDouble() ?? 0.0));
           await PdfReportService.generateAndPrintCampaignReport(
             campaigns: [_campaign],
             totalBeneficiaries: 0,
             totalItems: 0,
-            totalDonations: donations.fold(0, (sum, d) => sum + d.amount),
+            totalDonations: donationsAmount,
           );
         } catch (e) {
           SnackbarHelper.showError(context, 'Failed to generate PDF: $e');
@@ -512,13 +513,6 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => ExpenseTrackingScreen(campaign: _campaign)),
-        );
-        break;
-
-      case 'feedback':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => FeedbackListScreen(campaign: _campaign)),
         );
         break;
 
@@ -604,86 +598,5 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     }
   }
 
-  void _showFeedbackDialog(BuildContext context) async {
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
-    if (user == null) return;
-
-    final feedbackService = FeedbackService();
-    final hasSubmitted = await feedbackService.hasUserSubmittedFeedback(_campaign.id, user.uid);
-
-    if (hasSubmitted && mounted) {
-      SnackbarHelper.showError(context, 'You have already submitted feedback for this campaign.');
-      return;
-    }
-
-    if (!mounted) return;
-
-    double rating = 5.0;
-    final commentCtrl = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Rate Your Experience'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (index) {
-                      return IconButton(
-                        icon: Icon(
-                          index < rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 32,
-                        ),
-                        onPressed: () => setState(() => rating = index + 1.0),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: commentCtrl,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      hintText: 'Share your thoughts about this campaign...',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (commentCtrl.text.trim().isEmpty) return;
-
-                    final feedback = FeedbackModel(
-                      id: feedbackService.generateId(),
-                      campaignId: _campaign.id,
-                      volunteerId: user.uid,
-                      volunteerName: user.name,
-                      rating: rating,
-                      comment: commentCtrl.text.trim(),
-                      createdAt: DateTime.now(),
-                    );
-
-                    await feedbackService.submitFeedback(feedback);
-                    if (mounted) {
-                      Navigator.pop(ctx);
-                      SnackbarHelper.showSuccess(context, 'Thank you for your feedback!');
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            );
-          }
-        );
-      },
-    );
   }
 }

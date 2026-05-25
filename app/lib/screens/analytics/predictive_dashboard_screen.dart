@@ -248,9 +248,9 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.grey300),
+        color: isDark ? const Color(0xFF161B22) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[300]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

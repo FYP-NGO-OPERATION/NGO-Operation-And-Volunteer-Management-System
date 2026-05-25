@@ -261,10 +261,10 @@ class HomeSpeedDial extends StatelessWidget {
                     final user = auth.user;
                     if (user != null) {
                       try {
-                        SnackbarHelper.showSuccess(context, 'Sending SOS Alert...', duration: const Duration(seconds: 1));
+                        SnackbarHelper.showSuccess(context, 'Sending SOS Alert...');
                         await SosService.sendSosAlert(user.uid, user.name);
                         if (context.mounted) {
-                          SnackbarHelper.showSuccess(context, 'SOS Alert Sent Successfully! Help is on the way.', duration: const Duration(seconds: 4));
+                          SnackbarHelper.showSuccess(context, 'SOS Alert Sent Successfully! Help is on the way.');
                         }
                       } catch (e) {
                         if (context.mounted) {

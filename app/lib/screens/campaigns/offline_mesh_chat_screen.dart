@@ -245,7 +245,7 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
             bottomRight: Radius.circular(isMe ? 0 : 16),
           ),
           border: Border.all(
-            color: isMe ? Colors.transparent : (isDark ? AppColors.grey800 : AppColors.grey300),
+            color: isMe ? Colors.transparent : (isDark ? Colors.grey[800]! : Colors.grey[300]!),
           ),
         ),
         child: Column(
@@ -304,7 +304,7 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: isDark ? AppColors.backgroundDark : AppColors.grey100,
+                fillColor: isDark ? const Color(0xFF161B22) : Colors.grey[100],
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
               onSubmitted: (_) => _sendMessage(),

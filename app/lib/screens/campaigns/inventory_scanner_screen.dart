@@ -149,10 +149,12 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
                   child: Container(
                     width: 230,
                     height: 2,
-                    color: Colors.redAccent,
-                    boxShadow: [
-                      BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
-                    ],
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      boxShadow: [
+                        BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
+                      ],
+                    ),
                   ),
                 );
               },

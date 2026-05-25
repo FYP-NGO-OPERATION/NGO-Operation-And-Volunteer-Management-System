@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/app_colors.dart';
 
@@ -22,11 +23,12 @@ class LiveMissionMapScreen extends StatefulWidget {
 }
 
 class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
-  GoogleMapController? _mapController;
-  final Map<String, Marker> _markers = {};
-
   @override
   Widget build(BuildContext context) {
+    final initialCenter = widget.initialLat != null && widget.initialLng != null
+        ? LatLng(widget.initialLat!, widget.initialLng!)
+        : const LatLng(31.5204, 74.3587); // Default Lahore
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Live Mission: ${widget.campaignTitle}'),
@@ -40,25 +42,62 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
             .collection('live_tracking')
             .snapshots(),
         builder: (context, snapshot) {
+          List<Marker> markers = [];
           if (snapshot.hasData) {
-            _updateMarkers(snapshot.data!.docs);
-          }
+            markers = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              final double lat = data['lat'] ?? 0.0;
+              final double lng = data['lng'] ?? 0.0;
+              final bool isFatigued = data['isFatigued'] ?? false;
+              final String name = data['userName'] ?? 'Volunteer';
 
-          final initialCameraPosition = CameraPosition(
-            target: widget.initialLat != null && widget.initialLng != null
-                ? LatLng(widget.initialLat!, widget.initialLng!)
-                : const LatLng(31.5204, 74.3587), // Default Lahore
-            zoom: 12,
-          );
+              return Marker(
+                point: LatLng(lat, lng),
+                width: 60,
+                height: 60,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: isFatigued ? AppColors.error : AppColors.primary),
+                      ),
+                      child: Text(
+                        name.split(' ').first,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isFatigued ? AppColors.error : AppColors.primary,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.person_pin_circle,
+                      color: isFatigued ? AppColors.error : AppColors.primary,
+                      size: 40,
+                    ),
+                  ],
+                ),
+              );
+            }).toList();
+          }
 
           return Stack(
             children: [
-              GoogleMap(
-                initialCameraPosition: initialCameraPosition,
-                onMapCreated: (controller) => _mapController = controller,
-                markers: Set<Marker>.of(_markers.values),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: initialCenter,
+                  initialZoom: 12,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.hras.volunteer',
+                  ),
+                  MarkerLayer(markers: markers),
+                ],
               ),
               if (snapshot.connectionState == ConnectionState.waiting)
                 const Center(child: CircularProgressIndicator()),
@@ -80,7 +119,7 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                       const Icon(Icons.satellite_alt, color: AppColors.error),
                       const SizedBox(width: 8),
                       Text(
-                        'Active Volunteers: ${_markers.length}',
+                        'Active Volunteers: ${markers.length}',
                         style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                       ),
                     ],
@@ -92,49 +131,5 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
         },
       ),
     );
-  }
-
-  void _updateMarkers(List<QueryDocumentSnapshot> docs) {
-    final newMarkers = <String, Marker>{};
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final lat = data['latitude'] as double?;
-      final lng = data['longitude'] as double?;
-      final userName = data['userName'] as String? ?? 'Volunteer';
-      
-      DateTime startTime = DateTime.now();
-      if (data['startTime'] != null) {
-        startTime = (data['startTime'] as Timestamp).toDate();
-      } else if (data['timestamp'] != null) {
-        startTime = (data['timestamp'] as Timestamp).toDate();
-      }
-
-      final hoursActive = DateTime.now().difference(startTime).inHours;
-      bool isFatigued = hoursActive >= 8; // Assuming 8 hours shift
-
-      if (lat != null && lng != null) {
-        final markerId = MarkerId(doc.id);
-        newMarkers[doc.id] = Marker(
-          markerId: markerId,
-          position: LatLng(lat, lng),
-          infoWindow: InfoWindow(
-            title: '$userName ${isFatigued ? "⚠️ FATIGUED" : ""}', 
-            snippet: 'Active for $hoursActive hours',
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            isFatigued ? BitmapDescriptor.hueRed : BitmapDescriptor.hueAzure
-          ),
-        );
-      }
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _markers.clear();
-          _markers.addAll(newMarkers);
-        });
-      }
-    });
   }
 }

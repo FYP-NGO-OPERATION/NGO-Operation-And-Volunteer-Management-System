@@ -1,9 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:csv/csv.dart';
-import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:convert';
-import 'dart:typed_data';
+import 'package:csv/csv.dart';
 import '../models/campaign_model.dart';
 import '../utils/snackbar_helper.dart';
 
@@ -14,7 +13,7 @@ class CsvExportService {
       
       // Headers
       rows.add([
-        'Campaign ID',
+        'ID',
         'Title',
         'Type',
         'Status',
@@ -22,46 +21,44 @@ class CsvExportService {
         'Start Date',
         'End Date',
         'Target Goal',
+        'Total Volunteers',
         'Total Donations (Rs)',
-        'Volunteers Registered',
-        'Created At'
+        'Total Expenses (Rs)',
+        'Created By'
       ]);
 
-      // Data Rows
+      // Data
       for (var campaign in campaigns) {
         rows.add([
           campaign.id,
           campaign.title,
-          campaign.type.name,
-          campaign.status.name,
+          campaign.type.label,
+          campaign.status.label,
           campaign.location,
-          DateFormat('yyyy-MM-dd').format(campaign.startDate),
-          campaign.endDate != null ? DateFormat('yyyy-MM-dd').format(campaign.endDate!) : 'N/A',
+          campaign.startDate.toIso8601String(),
+          campaign.endDate?.toIso8601String() ?? 'N/A',
           campaign.targetGoal,
+          campaign.totalVolunteers,
           campaign.totalDonationsAmount,
-          campaign.registeredVolunteersCount,
-          DateFormat('yyyy-MM-dd HH:mm').format(campaign.createdAt),
+          campaign.totalExpenses,
+          campaign.createdByName,
         ]);
       }
 
       String csvData = const ListToCsvConverter().convert(rows);
-      final Uint8List bytes = utf8.encoder.convert(csvData);
 
-      final XFile file = XFile.fromData(
-        bytes,
-        mimeType: 'text/csv',
-        name: 'campaigns_export_${DateFormat('yyyyMMdd').format(DateTime.now())}.csv',
-      );
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/campaigns_export_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final file = File(path);
+      await file.writeAsString(csvData);
 
-      await Share.shareXFiles(
-        [file],
-        subject: 'Campaigns Export Data',
-        text: 'Here is the exported CSV data of all campaigns.',
-      );
-
+      if (context.mounted) {
+        SnackbarHelper.showSuccess(context, 'Data exported successfully!');
+        Share.shareXFiles([XFile(path)], text: 'Campaigns Export CSV');
+      }
     } catch (e) {
       if (context.mounted) {
-        SnackBarHelper.showError(context, 'Failed to export data: $e');
+        SnackbarHelper.showError(context, 'Failed to export data: $e');
       }
     }
   }
