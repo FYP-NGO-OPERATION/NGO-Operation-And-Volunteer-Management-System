@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
       Provider.of<VirtualSessionProvider>(context, listen: false).init(ngoId);
       
       if (authProvider.isAdmin) {
-        nextScreen = AdminLayout(ngoId: ngoId);
+        nextScreen = const AdminLayout();
       } else {
         nextScreen = const HomeScreen();
       }

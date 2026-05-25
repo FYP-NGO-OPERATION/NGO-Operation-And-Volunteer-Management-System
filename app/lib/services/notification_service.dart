@@ -63,7 +63,7 @@ class NotificationService {
       const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
       const darwinInit = DarwinInitializationSettings();
       const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
-      await _localNotifications.initialize(settings: initSettings);
+      await _localNotifications.initialize(initSettings);
 
       // Create a high importance channel for Android
       const channel = AndroidNotificationChannel(
@@ -122,10 +122,10 @@ class NotificationService {
 
     if (notification != null && android != null) {
       _localNotifications.show(
-        id: notification.hashCode,
-        title: notification.title,
-        body: notification.body,
-        notificationDetails: const NotificationDetails(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'High Importance Notifications',

@@ -12,6 +12,7 @@ import '../../theme/app_spacing.dart';
 import '../../models/campaign_model.dart';
 import '../../models/donation_model.dart';
 import '../../models/expense_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
@@ -275,7 +276,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                       width: double.infinity,
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       child: FloatingActionButton.extended(
-                        onPressed: () => _showFeedbackDialog(context),
+                        onPressed: () {
+                          SnackbarHelper.showSuccess(context, 'Feedback received! (Simulated)');
+                        },
                         icon: const Icon(Icons.star),
                         label: Text('leave_feedback'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         backgroundColor: Colors.amber[700],
@@ -596,7 +599,5 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         Navigator.pop(context);
       }
     }
-  }
-
   }
 }

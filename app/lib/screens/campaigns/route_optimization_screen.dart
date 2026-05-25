@@ -177,7 +177,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                         points: _optimizedRoute,
                         strokeWidth: 4.0,
                         color: Colors.blueAccent,
-                        pattern: const StrokePattern.dashed(segments: [10, 10]),
+                        pattern: StrokePattern.dashed(segments: [10, 10]),
                       ),
                     ],
                   ),

@@ -6,7 +6,6 @@ import '../../providers/disaster_provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../models/incident_model.dart';
-import '../../services/incident_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/snackbar_helper.dart';

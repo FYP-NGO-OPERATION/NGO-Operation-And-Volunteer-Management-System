@@ -45,7 +45,11 @@ class CsvExportService {
         ]);
       }
 
-      String csvData = const ListToCsvConverter().convert(rows);
+      final StringBuffer sb = StringBuffer();
+      for (var row in rows) {
+        sb.writeln(row.map((e) => '"${e.toString().replaceAll('"', '""')}"').join(','));
+      }
+      String csvData = sb.toString();
 
       final directory = await getApplicationDocumentsDirectory();
       final path = '${directory.path}/campaigns_export_${DateTime.now().millisecondsSinceEpoch}.csv';

@@ -215,10 +215,10 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             Row(
               children: [
                 if (data['recommendedTents'] > 0)
-                  _buildResourceBadge(Icons.home_filled, '${data['recommendedTents']} Tents'),
+                  _buildResourceBadge(Icons.home_filled, '${data['recommendedTents']} Tents', context),
                 const SizedBox(width: 8),
                 if (data['recommendedFoodKits'] > 0)
-                  _buildResourceBadge(Icons.fastfood, '${data['recommendedFoodKits']} Food Kits'),
+                  _buildResourceBadge(Icons.fastfood, '${data['recommendedFoodKits']} Food Kits', context),
               ],
             ),
             const SizedBox(height: 16),
@@ -244,7 +244,8 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
     );
   }
 
-  Widget _buildResourceBadge(IconData icon, String text) {
+  Widget _buildResourceBadge(IconData icon, String text, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(

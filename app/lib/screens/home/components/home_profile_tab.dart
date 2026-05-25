@@ -6,6 +6,8 @@ import '../../../../config/app_colors.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_tokens.dart';
+import '../../../../services/certificate_service.dart';
+import '../../../../services/auth_service.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../profile/edit_profile_screen.dart';
 import '../../profile/change_password_screen.dart';
