@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
 import 'campaign_detail_screen.dart';
 import 'package:intl/intl.dart';
+import '../../services/location_service.dart';
 
 class CampaignMapScreen extends StatefulWidget {
   const CampaignMapScreen({super.key});
@@ -21,7 +22,28 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
   final MapController _mapController = MapController();
 
   // Multan, Pakistan (Default Center for HRAS)
-  final LatLng _defaultCenter = const LatLng(30.1984, 71.4687);
+  LatLng _currentCenter = const LatLng(30.1984, 71.4687);
+
+  @override
+  void initState() {
+    super.initState();
+    _initLocation();
+  }
+
+  Future<void> _initLocation() async {
+    final pos = await LocationService.getCurrentLocation();
+    if (pos != null && mounted) {
+      setState(() {
+        _currentCenter = LatLng(pos.latitude, pos.longitude);
+      });
+      // Move map if it is already built
+      try {
+        _mapController.move(_currentCenter, 13.0);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +54,14 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
       appBar: AppBar(
         title: const Text('Live Campaign Map'),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            onPressed: () {
+              _initLocation();
+            },
+          )
+        ],
       ),
       body: StreamBuilder<List<CampaignModel>>(
         stream: _campaignService.getCampaignsStream(ngoId),
@@ -47,7 +77,7 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
           return FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _defaultCenter,
+              initialCenter: _currentCenter,
               initialZoom: 12.0,
               maxZoom: 18.0,
             ),
@@ -57,7 +87,14 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                 userAgentPackageName: 'com.example.ngo_volunteer_app',
               ),
               MarkerLayer(
-                markers: mappedCampaigns.map((campaign) {
+                markers: [
+                  Marker(
+                    point: _currentCenter,
+                    width: 50,
+                    height: 50,
+                    child: const Icon(Icons.person_pin_circle, color: Colors.blue, size: 40),
+                  ),
+                  ...mappedCampaigns.map((campaign) {
                   return Marker(
                     point: LatLng(campaign.latitude!, campaign.longitude!),
                     width: 50,
@@ -71,7 +108,8 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
+                ],
               ),
             ],
           );
