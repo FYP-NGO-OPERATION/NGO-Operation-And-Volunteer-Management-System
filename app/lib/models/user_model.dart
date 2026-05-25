@@ -19,6 +19,7 @@ class UserModel {
   final int campaignsJoined;
   final DateTime? lastActiveAt;
   final List<String> badges;
+  final String? fcmToken;
 
   UserModel({
     required this.uid,
@@ -38,6 +39,7 @@ class UserModel {
     this.campaignsJoined = 0,
     this.lastActiveAt,
     this.badges = const [],
+    this.fcmToken,
   });
 
   /// Create UserModel from Firestore document snapshot
@@ -60,6 +62,7 @@ class UserModel {
       campaignsJoined: map['campaignsJoined'] ?? 0,
       lastActiveAt: (map['lastActiveAt'] as Timestamp?)?.toDate(),
       badges: List<String>.from(map['badges'] ?? []),
+      fcmToken: map['fcmToken'],
     );
   }
 
@@ -83,6 +86,7 @@ class UserModel {
       'campaignsJoined': campaignsJoined,
       'lastActiveAt': lastActiveAt != null ? Timestamp.fromDate(lastActiveAt!) : null,
       'badges': badges,
+      'fcmToken': fcmToken,
     };
   }
 
@@ -102,6 +106,7 @@ class UserModel {
     int? campaignsJoined,
     DateTime? lastActiveAt,
     List<String>? badges,
+    String? fcmToken,
   }) {
     return UserModel(
       uid: uid,
@@ -121,6 +126,7 @@ class UserModel {
       campaignsJoined: campaignsJoined ?? this.campaignsJoined,
       lastActiveAt: lastActiveAt ?? this.lastActiveAt,
       badges: badges ?? this.badges,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 
