@@ -33,6 +33,7 @@ import 'tabs/campaign_chat_tab.dart';
 import 'tabs/campaign_highlights_tab.dart';
 import 'components/campaign_info_tab.dart';
 import 'components/campaign_record_tab.dart';
+import '../../widgets/campaigns/weather_warning_card.dart';
 import '../admin/expense_tracking_screen.dart';
 import '../admin/feedback_list_screen.dart';
 import '../../services/feedback_service.dart';
@@ -218,16 +219,25 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: Responsive.isDesktop(context) ? 1100 : double.infinity),
-          child: TabBarView(
-            controller: _tabController,
+          child: Column(
             children: [
-              CampaignInfoTab(campaign: _campaign),
-              CampaignTasksTab(campaign: _campaign, isAdmin: isAdmin),
-              (!isAdmin && !_hasJoined) 
-                  ? const Center(child: Text('You must join this campaign to access the chat room.')) 
-                  : CampaignChatTab(campaign: _campaign),
-              CampaignRecordTab(campaign: _campaign, isAdmin: isAdmin),
-              CampaignHighlightsTab(campaign: _campaign),
+              // Mock weather hazard only if campaign is active and has certain keywords
+              if (_campaign.status == CampaignStatus.active)
+                const WeatherWarningCard(isHazardous: true),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    CampaignInfoTab(campaign: _campaign),
+                    CampaignTasksTab(campaign: _campaign, isAdmin: isAdmin),
+                    (!isAdmin && !_hasJoined) 
+                        ? const Center(child: Text('You must join this campaign to access the chat room.')) 
+                        : CampaignChatTab(campaign: _campaign),
+                    CampaignRecordTab(campaign: _campaign, isAdmin: isAdmin),
+                    CampaignHighlightsTab(campaign: _campaign),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

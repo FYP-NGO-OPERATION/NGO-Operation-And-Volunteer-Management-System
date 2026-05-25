@@ -10,6 +10,7 @@ import '../../utils/responsive.dart';
 import '../../widgets/web/premium_data_table.dart';
 import '../../services/pdf_report_service.dart';
 import '../donations/donation_tracker_screen.dart';
+import '../donations/smart_contract_screen.dart';
 
 class AdminDonationsScreen extends StatefulWidget {
   const AdminDonationsScreen({super.key});
@@ -145,6 +146,13 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            icon: const Icon(Icons.currency_bitcoin, size: 18, color: Colors.orange),
+                            tooltip: 'Web3 Explorer',
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => SmartContractScreen(amountCrypto: '${(d.amount / 300000).toStringAsFixed(4)} ETH')));
+                            },
+                          ),
+                          IconButton(
                             icon: const Icon(Icons.track_changes, size: 18),
                             tooltip: 'Track Donation',
                             onPressed: () {
@@ -209,6 +217,12 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                       Text(
                         donation.isMoney ? _currencyFormat.format(donation.amount) : donation.quantity,
                         style: AppTextStyles.titleMedium(color: AppColors.success),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.currency_bitcoin, size: 20, color: Colors.orange),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => SmartContractScreen(amountCrypto: '${(donation.amount / 300000).toStringAsFixed(4)} ETH')));
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.track_changes, size: 20),

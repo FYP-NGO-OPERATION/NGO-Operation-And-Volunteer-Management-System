@@ -12,6 +12,7 @@ import '../../screens/campaigns/create_campaign_screen.dart';
 import '../../screens/announcements/create_announcement_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
 import '../../screens/admin/blood_emergency_screen.dart';
+import '../../screens/admin/sentiment_analysis_screen.dart';
 import '../../screens/campaigns/route_optimization_screen.dart';
 import '../../screens/disaster/disaster_map_screen.dart';
 import '../../providers/disaster_provider.dart';
@@ -235,6 +236,15 @@ class _AdminLayoutState extends State<AdminLayout> {
             foregroundColor: Colors.white,
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.pie_chart,
+            label: 'AI Sentiment',
+            backgroundColor: Colors.purple.shade600,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SentimentAnalysisScreen()));
             },
           ),
         ],
