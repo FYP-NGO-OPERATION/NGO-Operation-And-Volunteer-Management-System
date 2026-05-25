@@ -82,7 +82,11 @@ class CampaignInfoTab extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Progress
+              // Donation Goal Progress Card
+              _buildDonationGoalCard(context),
+              const SizedBox(height: 16),
+
+              // Campaign Progress
               if (campaign.progressPercent > 0) ...[
                 Text('progress'.tr(), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
@@ -286,6 +290,152 @@ class CampaignInfoTab extends StatelessWidget {
             Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 14), overflow: TextOverflow.ellipsis),
             const SizedBox(height: 2),
             Text(label, style: const TextStyle(fontSize: 10)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDonationGoalCard(BuildContext context) {
+    // Try to parse targetGoal as a number for the progress bar
+    final goalAmount = double.tryParse(campaign.targetGoal.replaceAll(RegExp(r'[^0-9.]'), ''));
+    final collected = campaign.totalDonationsAmount;
+
+    // If targetGoal is not a number, skip this card
+    if (goalAmount == null || goalAmount <= 0) return const SizedBox.shrink();
+
+    final progress = (collected / goalAmount).clamp(0.0, 1.0);
+    final percentage = (progress * 100).toInt();
+    final remaining = (goalAmount - collected).clamp(0.0, goalAmount);
+
+    Color progressColor;
+    IconData goalIcon;
+    String goalMessage;
+
+    if (percentage >= 100) {
+      progressColor = AppColors.success;
+      goalIcon = Icons.celebration;
+      goalMessage = '🎉 Goal Achieved!';
+    } else if (percentage >= 75) {
+      progressColor = const Color(0xFF43A047);
+      goalIcon = Icons.trending_up;
+      goalMessage = 'Almost there! Keep going!';
+    } else if (percentage >= 50) {
+      progressColor = const Color(0xFFFFA726);
+      goalIcon = Icons.auto_graph;
+      goalMessage = 'Halfway there!';
+    } else {
+      progressColor = const Color(0xFF42A5F5);
+      goalIcon = Icons.flag;
+      goalMessage = 'Help us reach the goal!';
+    }
+
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              progressColor.withOpacity(0.08),
+              progressColor.withOpacity(0.02),
+            ],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(goalIcon, color: progressColor, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Donation Goal',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: progressColor),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: progressColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$percentage%',
+                    style: TextStyle(color: progressColor, fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Progress Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Stack(
+                children: [
+                  Container(
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: progressColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: progress,
+                    child: Container(
+                      height: 18,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [progressColor.withOpacity(0.7), progressColor],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Amount Labels
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Collected', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    Text(
+                      'Rs. ${NumberFormat('#,###').format(collected)}',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: progressColor),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('Goal', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    Text(
+                      'Rs. ${NumberFormat('#,###').format(goalAmount)}',
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (percentage < 100) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Rs. ${NumberFormat('#,###').format(remaining)} more needed • $goalMessage',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+              ),
+            ] else ...[
+              const SizedBox(height: 8),
+              Text(goalMessage, style: TextStyle(fontSize: 13, color: progressColor, fontWeight: FontWeight.bold)),
+            ],
           ],
         ),
       ),

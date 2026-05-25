@@ -14,6 +14,7 @@ import '../../ngos/ngo_selection_screen.dart';
 import '../../ngos/create_ngo_screen.dart';
 import '../../../../services/certificate_service.dart';
 import '../../../../providers/ngo_provider.dart';
+import '../../profile/activity_timeline_screen.dart';
 
 class HomeProfileTab extends StatelessWidget {
   final VoidCallback onLogout;
@@ -89,6 +90,18 @@ class HomeProfileTab extends StatelessWidget {
           // Achievements Section
           if (user != null && user.isAdmin != true) _buildAchievementsSection(context, user),
           if (user != null && user.isAdmin != true) AppSpacing.vGapXl,
+
+          // Activity Timeline (Volunteers only)
+          if (user != null && user.isAdmin != true)
+            _buildSettingsTile(
+              context,
+              title: 'Activity Timeline',
+              subtitle: 'View your campaign participation history',
+              icon: Icons.timeline,
+              color: AppColors.info,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivityTimelineScreen())),
+            ),
+          if (user != null && user.isAdmin != true) const Divider(height: 32),
 
           // Settings Section
           _buildSettingsTile(

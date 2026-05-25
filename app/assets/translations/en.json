@@ -144,5 +144,6 @@
   "quantity": "Quantity",
   "unit": "Unit",
   "saved_successfully": "Saved successfully",
-  "are_you_sure": "Are you sure you want to proceed?"
+  "are_you_sure": "Are you sure you want to proceed?",
+  "activity_timeline": "Activity Timeline"
 }
