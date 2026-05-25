@@ -11,6 +11,7 @@ import '../../campaigns/create_campaign_screen.dart';
 import '../../inventory/inventory_list_screen.dart';
 import '../../profile/leaderboard_screen.dart';
 import '../../admin/reports_screen.dart';
+import '../../analytics/analytics_dashboard_screen.dart';
 
 class HomeQuickActions extends StatelessWidget {
   final UserModel? user;
@@ -41,6 +42,17 @@ class HomeQuickActions extends StatelessWidget {
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+            ),
+          ),
+          _buildActionTile(
+            context,
+            'Impact Metrics',
+            'View NGO analytics & charts',
+            Icons.bar_chart,
+            Colors.blue,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AnalyticsDashboardScreen()),
             ),
           ),
           _buildActionTile(
