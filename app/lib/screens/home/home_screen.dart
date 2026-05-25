@@ -26,6 +26,7 @@ import 'components/campaign_search_delegate.dart';
 import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
+import '../chatbot/chatbot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

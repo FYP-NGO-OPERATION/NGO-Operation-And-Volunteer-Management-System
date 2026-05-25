@@ -9,6 +9,7 @@ import 'providers/campaign_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/ngo_provider.dart';
 import 'providers/virtual_session_provider.dart';
+import 'providers/disaster_provider.dart';
 import 'screens/splash/splash_screen.dart';
 import 'widgets/common/no_internet_banner.dart';
 import 'package:flutter/foundation.dart';
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CampaignProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => VirtualSessionProvider()),
+        ChangeNotifierProvider(create: (_) => DisasterProvider()),
       ],
       child: Consumer2<ThemeProvider, NgoProvider>(
         builder: (context, themeProvider, ngoProvider, _) {

@@ -12,6 +12,9 @@ import '../../screens/campaigns/create_campaign_screen.dart';
 import '../../screens/announcements/create_announcement_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
 import '../../screens/admin/blood_emergency_screen.dart';
+import '../../screens/campaigns/route_optimization_screen.dart';
+import '../../screens/disaster/disaster_map_screen.dart';
+import '../../providers/disaster_provider.dart';
 import '../../widgets/common/custom_speed_dial.dart';
 import '../profile_tab_widget.dart';
 
@@ -88,6 +91,7 @@ class _AdminLayoutState extends State<AdminLayout> {
           ? null
           : AppBar(
               title: const Text('Admin Panel'),
+              backgroundColor: Provider.of<DisasterProvider>(context).isEmergencyMode ? Colors.red : null,
               actions: [
                 Consumer<ThemeProvider>(
                   builder: (context, themeProvider, _) {
@@ -97,6 +101,13 @@ class _AdminLayoutState extends State<AdminLayout> {
                       onPressed: () => themeProvider.toggleTheme(),
                     );
                   },
+                ),
+                Consumer<DisasterProvider>(
+                  builder: (context, dp, _) => IconButton(
+                    icon: Icon(dp.isEmergencyMode ? Icons.warning : Icons.health_and_safety, color: dp.isEmergencyMode ? Colors.yellow : null),
+                    tooltip: 'Toggle Disaster Mode',
+                    onPressed: () => dp.toggleEmergencyMode(),
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.logout),
@@ -206,6 +217,24 @@ class _AdminLayoutState extends State<AdminLayout> {
             foregroundColor: Colors.white,
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const BloodEmergencyScreen()));
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.map,
+            label: 'Disaster Map',
+            backgroundColor: Colors.orange.shade800,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.route,
+            label: 'Optimize Routes',
+            backgroundColor: Colors.blue.shade700,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
             },
           ),
         ],

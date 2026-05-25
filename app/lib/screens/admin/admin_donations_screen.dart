@@ -9,6 +9,7 @@ import '../../theme/app_tokens.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/web/premium_data_table.dart';
 import '../../services/pdf_report_service.dart';
+import '../donations/donation_tracker_screen.dart';
 
 class AdminDonationsScreen extends StatefulWidget {
   const AdminDonationsScreen({super.key});
@@ -140,21 +141,32 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                     PremiumColumn<DonationModel>(
                       header: 'ACTIONS',
                       flex: 1,
-                      builder: (d) => IconButton(
-                        icon: const Icon(Icons.receipt_outlined, size: 18),
-                        tooltip: 'Download Receipt',
-                        onPressed: d.isMoney ? () {
-                          PdfReportService.generateDonationReceipt(
-                            donorName: d.donorName,
-                            donorPhone: d.donorPhone ?? '',
-                            amount: d.amount,
-                            campaignTitle: d.campaignTitle,
-                            paymentMethod: d.paymentMethod.name,
-                            date: d.receivedAt,
-                            receiptId: d.id,
-                          );
-                        } : null,
-                        iconSize: 18,
+                      builder: (d) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.track_changes, size: 18),
+                            tooltip: 'Track Donation',
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => DonationTrackerScreen(donationId: d.id, amount: d.amount)));
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.receipt_outlined, size: 18),
+                            tooltip: 'Download Receipt',
+                            onPressed: d.isMoney ? () {
+                              PdfReportService.generateDonationReceipt(
+                                donorName: d.donorName,
+                                donorPhone: d.donorPhone ?? '',
+                                amount: d.amount,
+                                campaignTitle: d.campaignTitle,
+                                paymentMethod: d.paymentMethod.name,
+                                date: d.receivedAt,
+                                receiptId: d.id,
+                              );
+                            } : null,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -191,9 +203,20 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                     style: AppTextStyles.caption(
                       color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                   ),
-                  trailing: Text(
-                    donation.isMoney ? _currencyFormat.format(donation.amount) : donation.quantity,
-                    style: AppTextStyles.titleMedium(color: AppColors.success),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        donation.isMoney ? _currencyFormat.format(donation.amount) : donation.quantity,
+                        style: AppTextStyles.titleMedium(color: AppColors.success),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.track_changes, size: 20),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => DonationTrackerScreen(donationId: donation.id, amount: donation.amount)));
+                        },
+                      ),
+                    ],
                   ),
                   isThreeLine: true,
                 );
