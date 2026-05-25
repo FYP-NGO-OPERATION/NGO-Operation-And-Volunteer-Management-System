@@ -35,8 +35,8 @@ import 'components/campaign_info_tab.dart';
 import 'components/campaign_record_tab.dart';
 import '../admin/expense_tracking_screen.dart';
 import '../admin/feedback_list_screen.dart';
-import '../../models/feedback_model.dart';
 import '../../services/feedback_service.dart';
+import 'live_stream_screen.dart';
 
 /// Campaign Detail — Tabbed view (Info | Record | Highlights)
 /// As per NGO leader: "Click project → Record + Highlights"
@@ -138,10 +138,17 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   "${_campaign.description}\n\n"
                   "📍 Location: ${_campaign.location}\n"
                   "🎯 Goal: ${_campaign.targetGoal}\n\n"
-                  "📱 Download the HRAS App now to join as a volunteer or donate!";
               Share.share(shareText, subject: _campaign.title);
             },
           ),
+          if (_campaign.status == CampaignStatus.active)
+            IconButton(
+              icon: const Icon(Icons.live_tv, color: Colors.red),
+              tooltip: 'Join Live Stream',
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => LiveStreamScreen(campaign: _campaign, isHost: isAdmin)));
+              },
+            ),
           if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
             IconButton(
               icon: const Icon(Icons.emergency, color: AppColors.error),

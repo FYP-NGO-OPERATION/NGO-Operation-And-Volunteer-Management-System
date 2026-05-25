@@ -25,6 +25,7 @@ import 'components/home_profile_tab.dart';
 import 'components/campaign_search_delegate.dart';
 import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
+import '../profile/leaderboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -80,6 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
       'icon': Icons.shopping_bag_outlined,
       'activeIcon': Icons.shopping_bag,
       'screen': const ShopListScreen(),
+    });
+
+    activeTabs.add({
+      'label': 'Leaderboard',
+      'icon': Icons.emoji_events_outlined,
+      'activeIcon': Icons.emoji_events,
+      'screen': const LeaderboardScreen(),
     });
 
     activeTabs.add({
