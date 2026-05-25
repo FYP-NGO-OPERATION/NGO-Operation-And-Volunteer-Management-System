@@ -113,7 +113,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: const [
+          tabs: [
             Tab(icon: const Icon(Icons.info_outline), text: 'info'.tr()),
             Tab(icon: const Icon(Icons.assignment), text: 'tasks'.tr()),
             Tab(icon: const Icon(Icons.forum), text: 'chat'.tr()),
