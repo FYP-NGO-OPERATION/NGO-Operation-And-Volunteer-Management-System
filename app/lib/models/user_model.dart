@@ -20,6 +20,7 @@ class UserModel {
   final DateTime? lastActiveAt;
   final List<String> badges;
   final String? fcmToken;
+  final bool isIdVerified; // Phase 7: e-KYC
 
   UserModel({
     required this.uid,
@@ -40,6 +41,7 @@ class UserModel {
     this.lastActiveAt,
     this.badges = const [],
     this.fcmToken,
+    this.isIdVerified = false,
   });
 
   /// Create UserModel from Firestore document snapshot
@@ -63,6 +65,7 @@ class UserModel {
       lastActiveAt: (map['lastActiveAt'] as Timestamp?)?.toDate(),
       badges: List<String>.from(map['badges'] ?? []),
       fcmToken: map['fcmToken'],
+      isIdVerified: map['isIdVerified'] ?? false,
     );
   }
 
@@ -87,6 +90,7 @@ class UserModel {
       'lastActiveAt': lastActiveAt != null ? Timestamp.fromDate(lastActiveAt!) : null,
       'badges': badges,
       'fcmToken': fcmToken,
+      'isIdVerified': isIdVerified,
     };
   }
 
@@ -107,6 +111,7 @@ class UserModel {
     DateTime? lastActiveAt,
     List<String>? badges,
     String? fcmToken,
+    bool? isIdVerified,
   }) {
     return UserModel(
       uid: uid,
@@ -127,6 +132,7 @@ class UserModel {
       lastActiveAt: lastActiveAt ?? this.lastActiveAt,
       badges: badges ?? this.badges,
       fcmToken: fcmToken ?? this.fcmToken,
+      isIdVerified: isIdVerified ?? this.isIdVerified,
     );
   }
 

@@ -298,6 +298,25 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // ─── Update Verification Status (e-KYC) ───
+  Future<bool> updateVerificationStatus(bool status) async {
+    if (_user == null) return false;
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      await _userService.updateUser(_user!.uid, {'isIdVerified': status});
+      _user = _user!.copyWith(isIdVerified: status);
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
   // ─── Upload Profile Picture ───
   Future<bool> uploadProfilePicture(Uint8List imageBytes) async {
     if (_user == null) return false;

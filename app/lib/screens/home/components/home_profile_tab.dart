@@ -12,10 +12,10 @@ import '../../profile/change_password_screen.dart';
 import '../../profile/about_us_screen.dart';
 import '../../ngos/ngo_selection_screen.dart';
 import '../../ngos/create_ngo_screen.dart';
-import '../../../../services/certificate_service.dart';
 import '../../../../providers/ngo_provider.dart';
 import '../../../../providers/theme_provider.dart';
 import '../../profile/activity_timeline_screen.dart';
+import '../../profile/volunteer_kyc_screen.dart';
 
 class HomeProfileTab extends StatelessWidget {
   final VoidCallback onLogout;
@@ -63,7 +63,15 @@ class HomeProfileTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user?.name ?? 'User', style: AppTextStyles.titleLarge()),
+                      Row(
+                        children: [
+                          Text(user?.name ?? 'User', style: AppTextStyles.titleLarge()),
+                          if (user?.isIdVerified == true) ...[
+                            AppSpacing.hGapXs,
+                            const Icon(Icons.verified, color: Colors.blue, size: 20),
+                          ]
+                        ],
+                      ),
                       AppSpacing.vGapXs,
                       Text(user?.email ?? '', style: AppTextStyles.bodyMedium(color: Theme.of(context).hintColor)),
                       AppSpacing.vGapSm,
@@ -87,6 +95,26 @@ class HomeProfileTab extends StatelessWidget {
             ),
           ),
           AppSpacing.vGapXl,
+
+          // Verify Identity Prompt
+          if (user != null && user.isAdmin != true && user.isIdVerified != true)
+            Container(
+              margin: const EdgeInsets.only(bottom: AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: AppTokens.borderRadiusLg,
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 30),
+                title: const Text('Verify Identity', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+                subtitle: const Text('Complete e-KYC to get verified.'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.orange),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const VolunteerKycScreen()));
+                },
+              ),
+            ),
 
           // Achievements Section
           if (user != null && user.isAdmin != true) _buildAchievementsSection(context, user),
