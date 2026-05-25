@@ -136,7 +136,7 @@ class PdfGeneratorService {
                 data: [
                   ['Date', 'Item Name', 'Category', 'Total Cost'],
                   ...expenses.take(20).map((e) => [
-                    dateFormat.format(e.date),
+                    dateFormat.format(e.createdAt),
                     e.itemName,
                     e.category.name,
                     'Rs. ${e.totalAmount.toStringAsFixed(0)}',
