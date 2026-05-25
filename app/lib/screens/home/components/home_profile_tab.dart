@@ -25,9 +25,11 @@ class HomeProfileTab extends StatelessWidget {
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-      padding: EdgeInsets.symmetric(
-        horizontal: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
-        vertical: AppSpacing.lg,
+      padding: EdgeInsets.only(
+        left: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
+        right: Responsive.isMobile(context) ? AppSpacing.lg : AppSpacing.xl,
+        top: AppSpacing.lg,
+        bottom: 100, // Extra padding so FAB doesn't overlap Logout
       ),
       child: Center(
         child: ConstrainedBox(
