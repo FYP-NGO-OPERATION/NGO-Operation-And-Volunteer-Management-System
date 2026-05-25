@@ -224,12 +224,15 @@ class HomeProfileTab extends StatelessWidget {
           Text('${'campaigns_completed'.tr()}: $attended', style: AppTextStyles.bodyLarge()),
           AppSpacing.vGapSm,
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('${'current_badge'.tr()}: ', style: AppTextStyles.bodyMedium()),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: badgeColor, borderRadius: BorderRadius.circular(12)),
-                child: Text(badgeText, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(color: badgeColor, borderRadius: BorderRadius.circular(12)),
+                  child: Text(badgeText, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
               ),
             ],
           ),
