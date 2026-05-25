@@ -232,5 +232,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+      if (authProvider.user != null) {
+        await ngoProvider.clearNgo(authProvider.user!);
+      }
+      await authProvider.logout();
+      if (mounted) {
+        navigator.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  Future<void> _switchNgo(BuildContext context) async {
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    if (user == null) return;
+
+    final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+    await ngoProvider.clearNgo(user);
+
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const NgoSelectionScreen()),
+        (route) => false,
+      );
+    }
   }
 }
