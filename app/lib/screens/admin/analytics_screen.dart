@@ -12,6 +12,7 @@ import '../../enums/app_enums.dart';
 import '../../models/campaign_model.dart';
 import '../../providers/ngo_provider.dart';
 import '../../services/csv_export_service.dart';
+import 'components/ai_insights_card.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
@@ -67,6 +68,12 @@ class AnalyticsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSummaryCards(provider, context),
+                AppSpacing.vGapXl,
+                AiInsightsCard(
+                  totalCampaigns: provider.totalCampaigns,
+                  totalVolunteers: provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers),
+                  totalFunds: provider.totalDonationsOverall,
+                ),
                 AppSpacing.vGapXl,
                 // Desktop: charts side by side
                 if (Responsive.isDesktop(context))

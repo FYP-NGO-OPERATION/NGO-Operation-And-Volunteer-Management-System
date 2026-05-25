@@ -11,7 +11,8 @@ import '../../utils/snackbar_helper.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'dart:typed_data';
 
 class AddExpenseScreen extends StatefulWidget {
   final String campaignId;
@@ -56,38 +57,36 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     setState(() => _isLoading = true);
     
     try {
-      final inputImage = InputImage.fromFilePath(image.path);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      final bytes = await image.readAsBytes();
       
-      String extractedText = recognizedText.text.replaceAll(',', '');
+      const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw'; // Real API Key
+      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
       
-      // Simple regex to find amounts
-      RegExp exp = RegExp(r'(?:total|amount|rs|pkr|sum)?\s*[:\-\=]?\s*(\d+(?:\.\d{1,2})?)', caseSensitive: false);
-      Iterable<RegExpMatch> matches = exp.allMatches(extractedText);
-      
-      double maxAmount = 0.0;
-      for (final m in matches) {
-        if (m.group(1) != null) {
-          double val = double.tryParse(m.group(1)!) ?? 0.0;
-          if (val > maxAmount) maxAmount = val;
-        }
-      }
-      
-      await textRecognizer.close();
+      final prompt = TextPart("Analyze this receipt. Extract the final TOTAL amount. Respond ONLY with the numeric value (no currency symbols, no text).");
+      final imagePart = DataPart('image/jpeg', bytes);
 
-      if (maxAmount > 0) {
+      final response = await model.generateContent([
+        Content.multi([prompt, imagePart])
+      ]);
+      
+      final extractedText = response.text?.trim() ?? '';
+      
+      // Clean up the text to extract just the number
+      final numberStr = extractedText.replaceAll(RegExp(r'[^0-9.]'), '');
+      final amount = double.tryParse(numberStr) ?? 0.0;
+
+      if (amount > 0) {
         if (mounted) {
           setState(() {
-            _unitPriceController.text = maxAmount.toString();
+            _unitPriceController.text = amount.toString();
           });
-          SnackbarHelper.showSuccess(context, 'Extracted Amount: $maxAmount');
+          SnackbarHelper.showSuccess(context, 'Extracted Amount via AI: $amount');
         }
       } else {
         if (mounted) SnackbarHelper.showError(context, 'Could not detect an amount clearly.');
       }
     } catch (e) {
-      if (mounted) SnackbarHelper.showError(context, 'OCR Failed: $e');
+      if (mounted) SnackbarHelper.showError(context, 'AI OCR Failed: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -117,6 +116,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
         addedBy: user.uid,
         addedByName: user.name,
+        status: user.isAdmin ? 'approved' : 'pending',
         createdAt: DateTime.now(),
       );
 

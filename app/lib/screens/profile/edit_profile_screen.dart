@@ -26,7 +26,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _skillsController = TextEditingController();
   
   String? _selectedBloodGroup;
-  final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Not Sure'];
+  bool _isBloodDonor = false;
   
   bool _isLoading = false;
   Uint8List? _selectedImageBytes;
@@ -58,6 +59,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _addressController.text = user.address ?? '';
       _skillsController.text = user.skills.join(', ');
       _selectedBloodGroup = user.bloodGroup;
+      _isBloodDonor = user.isBloodDonor;
     }
   }
 
@@ -111,6 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       address: data['address'] as String?,
       skills: data['skills'] as List<String>?,
       bloodGroup: _selectedBloodGroup,
+      isBloodDonor: _isBloodDonor,
     );
     
     // Refresh user state
@@ -231,6 +234,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return DropdownMenuItem(value: bg, child: Text(bg));
                 }).toList(),
                 onChanged: (val) => setState(() => _selectedBloodGroup = val),
+              ),
+              AppSpacing.vGapLg,
+              SwitchListTile(
+                title: const Text('Register as Blood Donor'),
+                subtitle: const Text('You will be notified during blood emergencies.'),
+                value: _isBloodDonor,
+                onChanged: (val) => setState(() => _isBloodDonor = val),
+                secondary: const Icon(Icons.favorite, color: Colors.red),
               ),
               AppSpacing.vGapXxl,
               CustomButton(

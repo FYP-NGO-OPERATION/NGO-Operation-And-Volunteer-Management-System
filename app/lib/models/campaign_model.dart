@@ -21,6 +21,7 @@ class CampaignModel {
   final String targetGoal;
   final String? achievedGoal;
   final String? itemsNeeded;
+  final List<String> requiredSkills;
   final int totalVolunteers;
   final int? volunteerLimit;
   final double totalDonationsAmount;
@@ -55,6 +56,7 @@ class CampaignModel {
     required this.targetGoal,
     this.achievedGoal,
     this.itemsNeeded,
+    this.requiredSkills = const [],
     this.totalVolunteers = 0,
     this.volunteerLimit,
     this.totalDonationsAmount = 0.0,
@@ -92,6 +94,7 @@ class CampaignModel {
       targetGoal: map['targetGoal'] ?? '',
       achievedGoal: map['achievedGoal'],
       itemsNeeded: map['itemsNeeded'],
+      requiredSkills: List<String>.from(map['requiredSkills'] ?? []),
       totalVolunteers: map['totalVolunteers'] ?? 0,
       volunteerLimit: map['volunteerLimit'],
       totalDonationsAmount: (map['totalDonationsAmount'] ?? 0).toDouble(),
@@ -130,6 +133,7 @@ class CampaignModel {
       'targetGoal': targetGoal,
       'achievedGoal': achievedGoal,
       'itemsNeeded': itemsNeeded,
+      'requiredSkills': requiredSkills,
       'totalVolunteers': totalVolunteers,
       'volunteerLimit': volunteerLimit,
       'totalDonationsAmount': totalDonationsAmount,

@@ -11,6 +11,10 @@ import '../../../../utils/responsive.dart';
 import '../../volunteers/volunteer_list_screen.dart';
 import '../../beneficiaries/beneficiary_list_screen.dart';
 import '../photo_gallery_screen.dart';
+import '../../../../services/live_tracking_service.dart';
+import 'package:provider/provider.dart';
+import '../../../../providers/auth_provider.dart';
+import '../live_mission_map_screen.dart';
 
 class CampaignInfoTab extends StatelessWidget {
   final CampaignModel campaign;
@@ -224,6 +228,11 @@ class CampaignInfoTab extends StatelessWidget {
                   },
                 ),
               ),
+              const SizedBox(height: 12),
+              
+              // Live Mission Tracking Card
+              _LiveTrackingCard(campaign: campaign),
+              
               const SizedBox(height: 80),
             ],
           ),
@@ -438,6 +447,98 @@ class CampaignInfoTab extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _LiveTrackingCard extends StatefulWidget {
+  final CampaignModel campaign;
+  const _LiveTrackingCard({required this.campaign});
+
+  @override
+  State<_LiveTrackingCard> createState() => _LiveTrackingCardState();
+}
+
+class _LiveTrackingCardState extends State<_LiveTrackingCard> {
+  bool _isTracking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isTracking = LiveTrackingService().isTracking;
+  }
+
+  void _toggleTracking() async {
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    if (user == null) return;
+
+    if (_isTracking) {
+      await LiveTrackingService().stopTracking();
+      setState(() => _isTracking = false);
+    } else {
+      try {
+        await LiveTrackingService().startTracking(widget.campaign.id, user.uid, user.name);
+        setState(() => _isTracking = true);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not start tracking: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<AuthProvider>(context).user;
+    final isAdmin = user?.isAdmin == true;
+
+    if (isAdmin) {
+      return Card(
+        color: AppColors.error.withValues(alpha: 0.1),
+        child: ListTile(
+          leading: const Icon(Icons.satellite_alt, color: AppColors.error),
+          title: const Text('Live Mission Map', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error)),
+          subtitle: const Text('View real-time volunteer locations'),
+          trailing: const Icon(Icons.chevron_right, color: AppColors.error),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LiveMissionMapScreen(
+                  campaignId: widget.campaign.id,
+                  campaignTitle: widget.campaign.title,
+                  initialLat: widget.campaign.latitude,
+                  initialLng: widget.campaign.longitude,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    return Card(
+      color: _isTracking ? AppColors.error.withValues(alpha: 0.1) : null,
+      child: SwitchListTile(
+        secondary: Icon(
+          _isTracking ? Icons.my_location : Icons.location_disabled,
+          color: _isTracking ? AppColors.error : Colors.grey,
+        ),
+        title: Text(
+          'Live Mission Tracking',
+          style: TextStyle(fontWeight: FontWeight.bold, color: _isTracking ? AppColors.error : null),
+        ),
+        subtitle: Text(
+          _isTracking
+              ? 'Your location is being shared with Admins'
+              : 'Share location during active mission',
+        ),
+        value: _isTracking,
+        activeColor: AppColors.error,
+        onChanged: (val) => _toggleTracking(),
       ),
     );
   }

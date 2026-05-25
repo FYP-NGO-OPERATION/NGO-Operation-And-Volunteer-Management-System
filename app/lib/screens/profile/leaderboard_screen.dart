@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
 import '../../config/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/certificate_service.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -125,6 +126,25 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           ],
                         ),
                       ],
+                    ),
+                  ),
+                if (_currentUser != null && _currentUserRank > 0 && _currentUser!.campaignsJoined >= 5)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.download),
+                      label: const Text('Download Certificate'),
+                      onPressed: () {
+                        CertificateService.generateAndDownloadCertificate(
+                          volunteerName: _currentUser!.name,
+                          campaignsAttended: _currentUser!.campaignsJoined,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 45),
+                      ),
                     ),
                   ),
                 Expanded(

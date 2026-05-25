@@ -23,6 +23,7 @@ class CampaignTasksTab extends StatelessWidget {
     final user = Provider.of<AuthProvider>(context).user;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: StreamBuilder<List<TaskModel>>(
         stream: taskService.streamCampaignTasks(campaign.id),
         builder: (context, snapshot) {
@@ -35,73 +36,117 @@ class CampaignTasksTab extends StatelessWidget {
             );
           }
 
-          var tasks = snapshot.data!;
-          if (!isAdmin) {
-            // Volunteer only sees tasks assigned to them
-            tasks = tasks.where((t) => t.assignedToId == user?.uid).toList();
-            if (tasks.isEmpty) {
-              return const Center(child: Text('You have no assigned tasks.'));
-            }
-          }
+          var allTasks = snapshot.data!;
+          var openTasks = allTasks.where((t) => !t.isCompleted).toList();
+          var completedTasks = allTasks.where((t) => t.isCompleted).toList();
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              final isMe = task.assignedToId == user?.uid;
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                color: task.isCompleted ? AppColors.success.withValues(alpha: 0.1) : null,
-                child: ListTile(
-                  leading: Checkbox(
-                    value: task.isCompleted,
-                    onChanged: (isAdmin || isMe) ? (bool? value) async {
-                      if (value != null) {
-                        await taskService.updateTask(task.copyWith(isCompleted: value));
-                      }
-                    } : null,
-                  ),
-                  title: Text(
-                    task.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(task.description),
-                      const SizedBox(height: 4),
-                      if (isAdmin)
-                        Text(
-                          'Assigned to: ${task.assignedToName}',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
-                        ),
-                    ],
-                  ),
-                  trailing: isAdmin
-                      ? IconButton(
-                          icon: const Icon(Icons.delete, color: AppColors.error),
-                          onPressed: () => taskService.deleteTask(campaign.id, task.id),
-                        )
-                      : null,
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('To Do (${openTasks.length})', style: AppTextStyles.titleLarge(color: AppColors.primary)),
                 ),
-              );
-            },
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _buildTaskCard(context, openTasks[index], taskService, user, isAdmin),
+                  childCount: openTasks.length,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Done (${completedTasks.length})', style: AppTextStyles.titleLarge(color: AppColors.success)),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _buildTaskCard(context, completedTasks[index], taskService, user, isAdmin),
+                  childCount: completedTasks.length,
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            ],
           );
         },
       ),
       floatingActionButton: isAdmin
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
               onPressed: () => _showAddTaskSheet(context),
               backgroundColor: AppColors.primary,
-              child: const Icon(Icons.add),
+              icon: const Icon(Icons.add),
+              label: const Text('Add Task'),
             )
           : null,
+    );
+  }
+
+  Widget _buildTaskCard(BuildContext context, TaskModel task, TaskService taskService, user, bool isAdmin) {
+    final isMe = task.assignedToId == user?.uid;
+    final isUnassigned = task.assignedToId.isEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      color: task.isCompleted ? (isDark ? Colors.green.withOpacity(0.1) : Colors.green.shade50) : (isDark ? Colors.grey[800] : Colors.white),
+      elevation: task.isCompleted ? 0 : 2,
+      child: ListTile(
+        leading: Checkbox(
+          value: task.isCompleted,
+          onChanged: (isAdmin || isMe) ? (bool? value) async {
+            if (value != null) {
+              await taskService.updateTask(task.copyWith(isCompleted: value));
+            }
+          } : null,
+        ),
+        title: Text(
+          task.title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(task.description),
+            const SizedBox(height: 8),
+            if (isUnassigned)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.2), borderRadius: BorderRadius.circular(4)),
+                child: const Text('Unassigned', style: TextStyle(color: AppColors.warning, fontSize: 12, fontWeight: FontWeight.bold)),
+              )
+            else
+              Text(
+                'Assigned to: ${task.assignedToName}',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 12),
+              ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isAdmin && isUnassigned)
+              TextButton(
+                onPressed: () async {
+                  if (user != null) {
+                    await taskService.updateTask(task.copyWith(assignedToId: user.uid, assignedToName: user.name));
+                    if (context.mounted) SnackbarHelper.showSuccess(context, 'Task Claimed!');
+                  }
+                },
+                child: const Text('Claim'),
+              ),
+            if (isAdmin)
+              IconButton(
+                icon: const Icon(Icons.delete, color: AppColors.error),
+                onPressed: () => taskService.deleteTask(campaign.id, task.id),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -154,22 +199,25 @@ class CampaignTasksTab extends StatelessWidget {
                           child: Text('No registered volunteers to assign tasks to.', style: TextStyle(color: AppColors.error)),
                         )
                       else
-                        DropdownButtonFormField<VolunteerModel>(
-                          decoration: const InputDecoration(labelText: 'Assign To'),
-                          value: selectedVolunteer,
-                          items: eligibleVolunteers.map((v) {
+                      DropdownButtonFormField<VolunteerModel?>(
+                        decoration: const InputDecoration(labelText: 'Assign To (Optional)'),
+                        value: selectedVolunteer,
+                        items: [
+                          const DropdownMenuItem<VolunteerModel?>(value: null, child: Text('Leave Unassigned')),
+                          ...eligibleVolunteers.map((v) {
                             return DropdownMenuItem(
                               value: v,
                               child: Text(v.userName),
                             );
-                          }).toList(),
-                          onChanged: (val) => setState(() => selectedVolunteer = val),
-                        ),
+                          }),
+                        ],
+                        onChanged: (val) => setState(() => selectedVolunteer = val),
+                      ),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (selectedVolunteer == null) ? null : () async {
+                          onPressed: () async {
                             if (titleCtrl.text.isEmpty || descCtrl.text.isEmpty) return;
 
                             final taskService = TaskService();
@@ -178,8 +226,8 @@ class CampaignTasksTab extends StatelessWidget {
                               campaignId: campaign.id,
                               title: titleCtrl.text,
                               description: descCtrl.text,
-                              assignedToId: selectedVolunteer!.userId,
-                              assignedToName: selectedVolunteer!.userName,
+                              assignedToId: selectedVolunteer?.userId ?? '',
+                              assignedToName: selectedVolunteer?.userName ?? '',
                               createdAt: DateTime.now(),
                             );
 

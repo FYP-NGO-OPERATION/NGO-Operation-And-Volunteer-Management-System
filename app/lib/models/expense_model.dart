@@ -17,6 +17,7 @@ class ExpenseModel {
   final String? notes;
   final String addedBy;
   final String addedByName;
+  final String status; // 'pending', 'approved', 'rejected'
   final DateTime createdAt;
 
   ExpenseModel({
@@ -33,6 +34,7 @@ class ExpenseModel {
     this.notes,
     required this.addedBy,
     required this.addedByName,
+    this.status = 'approved',
     required this.createdAt,
   });
 
@@ -51,6 +53,7 @@ class ExpenseModel {
       notes: map['notes'],
       addedBy: map['addedBy'] ?? '',
       addedByName: map['addedByName'] ?? '',
+      status: map['status'] ?? 'approved',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -70,10 +73,11 @@ class ExpenseModel {
       'notes': notes,
       'addedBy': addedBy,
       'addedByName': addedByName,
+      'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
   @override
-  String toString() => 'ExpenseModel(item: $itemName, qty: $quantity × Rs.$unitPrice = Rs.$totalAmount)';
+  String toString() => 'ExpenseModel(item: $itemName, qty: $quantity × Rs.$unitPrice = Rs.$totalAmount, status: $status)';
 }

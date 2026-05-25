@@ -6,6 +6,7 @@ import '../../../../widgets/common/custom_text_field.dart';
 class CampaignBasicForm extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController descriptionController;
+  final TextEditingController requiredSkillsController;
   final CampaignType selectedType;
   final Function(CampaignType?) onTypeChanged;
 
@@ -13,6 +14,7 @@ class CampaignBasicForm extends StatelessWidget {
     Key? key,
     required this.titleController,
     required this.descriptionController,
+    required this.requiredSkillsController,
     required this.selectedType,
     required this.onTypeChanged,
   }) : super(key: key);
@@ -83,6 +85,13 @@ class CampaignBasicForm extends StatelessWidget {
           maxLines: 4,
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'Description is required' : null,
+        ),
+        const SizedBox(height: 16),
+        CustomTextField(
+          controller: requiredSkillsController,
+          label: 'Required Skills (Optional)',
+          hint: 'e.g., medical, teaching, driving (comma-separated)',
+          prefixIcon: Icons.psychology,
         ),
       ],
     );

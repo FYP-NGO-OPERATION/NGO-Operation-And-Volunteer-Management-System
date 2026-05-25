@@ -73,7 +73,7 @@ class MatchingService {
       if (campaign.status != CampaignStatus.active) continue;
       if (campaign.isFull) continue;
 
-      double skillScore = _calculateSkillScore(user.skills, campaign.type);
+      double skillScore = _calculateSkillScore(user.skills, campaign);
       double locationScore = _calculateLocationScore(user.address, campaign.location);
       double activityScore = _calculatePastActivityScore(pastCampaignTypes, campaign);
       double availabilityScore = registeredCampaignIds.contains(campaign.id) ? 0.0 : 1.0;
@@ -98,13 +98,27 @@ class MatchingService {
     return results.take(10).toList();
   }
 
-  static double _calculateSkillScore(List<String> userSkills, CampaignType type) {
+  static double _calculateSkillScore(List<String> userSkills, CampaignModel campaign) {
     if (userSkills.isEmpty) return 0.3; 
+    
+    // Exact match based on required skills
+    if (campaign.requiredSkills.isNotEmpty) {
+      int matches = 0;
+      for (String req in campaign.requiredSkills) {
+        if (userSkills.any((s) => s.toLowerCase() == req.toLowerCase())) {
+          matches++;
+        }
+      }
+      if (matches >= campaign.requiredSkills.length && campaign.requiredSkills.isNotEmpty) return 1.0;
+      if (matches > 0) return 0.8;
+    }
+
+    // Fallback to type mapping
     int matches = 0;
     for (String skill in userSkills) {
       final s = skill.toLowerCase().trim();
       final mappedTypes = _skillCampaignMap[s] ?? [CampaignType.custom];
-      if (mappedTypes.contains(type)) matches++;
+      if (mappedTypes.contains(campaign.type)) matches++;
     }
     if (matches > 1) return 1.0;
     if (matches == 1) return 0.7;

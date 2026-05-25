@@ -10,7 +10,7 @@ import '../../utils/responsive.dart';
 import '../../widgets/web/premium_data_table.dart';
 import '../../services/pdf_report_service.dart';
 import '../donations/donation_tracker_screen.dart';
-import '../donations/smart_contract_screen.dart';
+import '../donations/donation_ledger_screen.dart';
 
 class AdminDonationsScreen extends StatefulWidget {
   const AdminDonationsScreen({super.key});
@@ -149,7 +149,7 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                             icon: const Icon(Icons.currency_bitcoin, size: 18, color: Colors.orange),
                             tooltip: 'Web3 Explorer',
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => SmartContractScreen(amountCrypto: '${(d.amount / 300000).toStringAsFixed(4)} ETH')));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationLedgerScreen()));
                             },
                           ),
                           IconButton(
@@ -221,7 +221,7 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                       IconButton(
                         icon: const Icon(Icons.currency_bitcoin, size: 20, color: Colors.orange),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => SmartContractScreen(amountCrypto: '${(donation.amount / 300000).toStringAsFixed(4)} ETH')));
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationLedgerScreen()));
                         },
                       ),
                       IconButton(

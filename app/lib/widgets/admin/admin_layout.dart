@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/feature_flags.dart';
 import '../../config/app_colors.dart';
 import '../../providers/auth_provider.dart';
@@ -42,6 +43,64 @@ class _AdminLayoutState extends State<AdminLayout> {
     const PlatformRequestsScreen(),
     _buildAdminProfile(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _listenForSosAlerts();
+  }
+
+  void _listenForSosAlerts() {
+    FirebaseFirestore.instance
+        .collection('sos_alerts')
+        .where('status', isEqualTo: 'active')
+        .snapshots()
+        .listen((snapshot) {
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          final data = change.doc.data()!;
+          _showSosEmergencyDialog(data['userName'] ?? 'A Volunteer', change.doc.id);
+        }
+      }
+    });
+  }
+
+  void _showSosEmergencyDialog(String userName, String docId) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.red.shade900,
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.white, size: 40),
+            SizedBox(width: 10),
+            Text('EMERGENCY SOS!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text('$userName has triggered an SOS Alert! They need immediate assistance.', style: const TextStyle(color: Colors.white, fontSize: 16)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              FirebaseFirestore.instance.collection('sos_alerts').doc(docId).update({'status': 'resolved'});
+              Navigator.pop(context);
+            },
+            child: const Text('MARK RESOLVED', style: TextStyle(color: Colors.white70)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.red.shade900),
+            onPressed: () {
+              Navigator.pop(context);
+              // In real app, open DisasterMapScreen and zoom to their location
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+            },
+            child: const Text('VIEW ON MAP', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildAdminProfile() {
     return ProfileTab(

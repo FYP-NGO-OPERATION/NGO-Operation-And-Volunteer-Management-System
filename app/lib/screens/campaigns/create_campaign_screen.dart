@@ -28,6 +28,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _requiredSkillsController = TextEditingController();
   final _locationController = TextEditingController();
   final _targetGoalController = TextEditingController();
   final _itemsNeededController = TextEditingController();
@@ -87,6 +88,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       _locationController.text = c.location;
       _latitudeController.text = c.latitude?.toString() ?? '';
       _longitudeController.text = c.longitude?.toString() ?? '';
+      _requiredSkillsController.text = c.requiredSkills.join(', ');
       _targetGoalController.text = c.targetGoal;
       _itemsNeededController.text = c.itemsNeeded ?? '';
       _volunteerLimitController.text =
@@ -102,6 +104,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _requiredSkillsController.dispose();
     _locationController.dispose();
     _targetGoalController.dispose();
     _itemsNeededController.dispose();
@@ -143,6 +146,10 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         ? int.tryParse(_volunteerLimitController.text)
         : null;
 
+    final reqSkills = _requiredSkillsController.text.trim().isEmpty 
+        ? <String>[] 
+        : _requiredSkillsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+
     bool success;
 
     if (!_isEditing) {
@@ -171,6 +178,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         itemsNeeded: _itemsNeededController.text.trim().isEmpty
             ? null
             : _itemsNeededController.text.trim(),
+        requiredSkills: reqSkills,
         volunteerLimit: volunteerLimit,
       );
       success = await campaignProvider.updateCampaign(updated);
@@ -191,6 +199,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         itemsNeeded: _itemsNeededController.text.trim().isEmpty
             ? null
             : _itemsNeededController.text.trim(),
+        requiredSkills: reqSkills,
         volunteerLimit: volunteerLimit,
         createdBy: user.uid,
         createdByName: user.name,
@@ -241,6 +250,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     CampaignBasicForm(
                       titleController: _titleController,
                       descriptionController: _descriptionController,
+                      requiredSkillsController: _requiredSkillsController,
                       selectedType: _selectedType,
                       onTypeChanged: (v) => setState(() => _selectedType = v!),
                     ),

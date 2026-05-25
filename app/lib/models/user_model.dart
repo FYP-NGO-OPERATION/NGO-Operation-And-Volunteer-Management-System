@@ -22,6 +22,7 @@ class UserModel {
   final String? fcmToken;
   final bool isIdVerified; // Phase 7: e-KYC
   final String? bloodGroup; // Phase 7: Blood Network
+  final bool isBloodDonor;
 
   UserModel({
     required this.uid,
@@ -44,6 +45,7 @@ class UserModel {
     this.fcmToken,
     this.isIdVerified = false,
     this.bloodGroup,
+    this.isBloodDonor = false,
   });
 
   /// Create UserModel from Firestore document snapshot
@@ -69,6 +71,7 @@ class UserModel {
       fcmToken: map['fcmToken'],
       isIdVerified: map['isIdVerified'] ?? false,
       bloodGroup: map['bloodGroup'],
+      isBloodDonor: map['isBloodDonor'] ?? false,
     );
   }
 
@@ -95,6 +98,7 @@ class UserModel {
       'fcmToken': fcmToken,
       'isIdVerified': isIdVerified,
       'bloodGroup': bloodGroup,
+      'isBloodDonor': isBloodDonor,
     };
   }
 
@@ -117,6 +121,7 @@ class UserModel {
     String? fcmToken,
     bool? isIdVerified,
     String? bloodGroup,
+    bool? isBloodDonor,
   }) {
     return UserModel(
       uid: uid,
@@ -139,6 +144,7 @@ class UserModel {
       fcmToken: fcmToken ?? this.fcmToken,
       isIdVerified: isIdVerified ?? this.isIdVerified,
       bloodGroup: bloodGroup ?? this.bloodGroup,
+      isBloodDonor: isBloodDonor ?? this.isBloodDonor,
     );
   }
 

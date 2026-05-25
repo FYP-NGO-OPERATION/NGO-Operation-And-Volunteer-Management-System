@@ -38,6 +38,11 @@ import '../admin/expense_tracking_screen.dart';
 import '../admin/feedback_list_screen.dart';
 import '../../services/feedback_service.dart';
 import 'live_stream_screen.dart';
+import '../donations/transparency_ledger_screen.dart';
+import '../../services/pdf_report_service.dart';
+import '../../models/user_model.dart';
+import 'offline_mesh_chat_screen.dart';
+import 'inventory_scanner_screen.dart';
 
 /// Campaign Detail — Tabbed view (Info | Record | Highlights)
 /// As per NGO leader: "Click project → Record + Highlights"
@@ -135,10 +140,12 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
             icon: const Icon(Icons.share),
             tooltip: 'share_campaign'.tr(),
             onPressed: () {
+              final String deepLink = "https://hras.org/campaign/${_campaign.id}";
               final String shareText = "🌟 Join this amazing campaign: ${_campaign.title}!\n\n"
                   "${_campaign.description}\n\n"
                   "📍 Location: ${_campaign.location}\n"
                   "🎯 Goal: ${_campaign.targetGoal}\n\n"
+                  "🔗 Tap here to open in app: $deepLink";
               Share.share(shareText, subject: _campaign.title);
             },
           ),
@@ -148,6 +155,19 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               tooltip: 'Join Live Stream',
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => LiveStreamScreen(campaign: _campaign, isHost: isAdmin)));
+              },
+            ),
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.qr_code),
+              tooltip: 'Generate Attendance QR',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => QrGenerateScreen(campaign: _campaign),
+                  ),
+                );
               },
             ),
           if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
@@ -192,7 +212,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               onSelected: (action) => _handleAction(action),
               itemBuilder: (_) => [
                 const PopupMenuItem(value: 'edit', child: Text('✏️ Edit Campaign')),
+                const PopupMenuItem(value: 'ledger', child: Text('⛓️ Transparency Ledger')),
                 const PopupMenuItem(value: 'expenses', child: Text('💸 Expense Log')),
+                const PopupMenuItem(value: 'pdf_report', child: Text('📄 Download PDF Report')),
+                const PopupMenuItem(value: 'offline_mesh', child: Text('📡 Offline Mesh Chat')),
+                const PopupMenuItem(value: 'scan_inventory', child: Text('📦 Scan Inventory')),
                 if (_campaign.isCompleted) const PopupMenuItem(value: 'feedback', child: Text('⭐ View Feedback')),
                 const PopupMenuItem(value: 'status', child: Text('🔄 Change Status')),
                 if (FeatureFlags.isQrAttendanceEnabled)
@@ -442,6 +466,45 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           MaterialPageRoute(
             builder: (_) => CreateCampaignScreen(campaign: _campaign),
           ),
+        );
+        break;
+
+      case 'pdf_report':
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Generating PDF Report... Please wait.')),
+        );
+        try {
+          final donations = await DonationService().getDonations(_campaign.id);
+          final expenses = await FirebaseFirestore.instance.collection('campaigns').doc(_campaign.id).collection('expenses').get().then((s) => s.docs.map((d) => ExpenseModel.fromMap(d.data(), d.id)).toList());
+          await PdfReportService.generateAndPrintCampaignReport(
+            campaigns: [_campaign],
+            totalBeneficiaries: 0,
+            totalItems: 0,
+            totalDonations: donations.fold(0, (sum, d) => sum + d.amount),
+          );
+        } catch (e) {
+          SnackbarHelper.showError(context, 'Failed to generate PDF: $e');
+        }
+        break;
+
+      case 'offline_mesh':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OfflineMeshChatScreen(campaignId: _campaign.id)),
+        );
+        break;
+
+      case 'scan_inventory':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => InventoryScannerScreen(campaignId: _campaign.id)),
+        );
+        break;
+
+      case 'ledger':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => TransparencyLedgerScreen(campaignId: _campaign.id)),
         );
         break;
 

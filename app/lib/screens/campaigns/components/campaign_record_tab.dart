@@ -285,19 +285,15 @@ class CampaignRecordTab extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text('no_expenses'.tr(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
                   color: theme.brightness == Brightness.dark ? AppColors.darkTextPrimary : null)),
-                const SizedBox(height: 6),
                 Text(
-                  isAdmin ? 'Tap + to record an expense.' : 'No expenses recorded yet.',
+                  isAdmin ? 'Tap + to record an expense.' : 'Tap + to request a reimbursement.',
                   style: TextStyle(color: theme.brightness == Brightness.dark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                 ),
-                if (isAdmin) ...[
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _navigateToAddExpense(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Expense'),
-                  ),
-                ],
+                ElevatedButton.icon(
+                  onPressed: () => _navigateToAddExpense(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Expense / Reimbursement'),
+                ),
               ],
             ),
           );
@@ -452,7 +448,27 @@ class CampaignRecordTab extends StatelessWidget {
                           child: Text(e.category.icon, style: const TextStyle(fontSize: 20)),
                         ),
                         title: Text(e.itemName, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        subtitle: Text('${e.quantity} × Rs.${e.unitPrice.toStringAsFixed(0)}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${e.quantity} × Rs.${e.unitPrice.toStringAsFixed(0)}'),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text('• By ${e.addedByName}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                if (e.status == 'pending')
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.2), borderRadius: BorderRadius.circular(4)),
+                                      child: const Text('Pending', style: TextStyle(color: AppColors.warning, fontSize: 10, fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
                         trailing: Text(
                           'Rs.${e.totalAmount.toStringAsFixed(0)}',
                           style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),

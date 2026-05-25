@@ -55,7 +55,7 @@ class _NoInternetWrapperState extends State<NoInternetWrapper> {
           color: AppColors.error,
           alignment: Alignment.center,
           child: const Text(
-            'No Internet Connection',
+            'Working Offline - Syncing automatically when connected',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,

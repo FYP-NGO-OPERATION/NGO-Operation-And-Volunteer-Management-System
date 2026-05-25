@@ -302,6 +302,52 @@ class PdfReportService {
     required int totalItems,
     required double totalDonations,
   }) async {
-    print('Stub for generateAndPrintCampaignReport');
+    final pdf = pw.Document();
+    final campaign = campaigns.first;
+    final dateStr = DateFormat('MMMM yyyy').format(DateTime.now());
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        build: (pw.Context context) {
+          return [
+            pw.Text('CAMPAIGN IMPACT REPORT', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
+            pw.SizedBox(height: 10),
+            pw.Text('Campaign: ${campaign.title}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+            pw.Text('Organization: ${campaign.ngoName}'),
+            pw.Text('Generated: ${DateTime.now().toLocal().toString().split('.')[0]}'),
+            pw.SizedBox(height: 20),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                _summaryBox('Total Donations', 'Rs. ${NumberFormat('#,##0').format(totalDonations)}'),
+                _summaryBox('Active Volunteers', campaign.totalVolunteers.toString()),
+                _summaryBox('Goal Status', campaign.isCompleted ? 'Completed' : 'Active'),
+              ],
+            ),
+            pw.SizedBox(height: 30),
+            pw.Text('Description', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+            pw.SizedBox(height: 8),
+            pw.Text(campaign.description),
+            pw.SizedBox(height: 30),
+            _buildFooter(),
+          ];
+        },
+      ),
+    );
+
+    try {
+      final bytes = await pdf.save();
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf');
+      await file.writeAsBytes(bytes);
+      await OpenFile.open(file.path);
+    } catch (e) {
+      await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => pdf.save(),
+        name: 'CampaignReport_$dateStr.pdf',
+      );
+    }
   }
 }

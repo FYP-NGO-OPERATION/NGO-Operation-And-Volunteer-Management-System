@@ -268,6 +268,7 @@ class AuthProvider extends ChangeNotifier {
     String? address,
     List<String>? skills,
     String? bloodGroup,
+    bool? isBloodDonor,
   }) async {
     try {
       _setLoading(true);
@@ -280,6 +281,7 @@ class AuthProvider extends ChangeNotifier {
       if (address != null) updates['address'] = address.trim();
       if (skills != null) updates['skills'] = skills;
       if (bloodGroup != null) updates['bloodGroup'] = bloodGroup;
+      if (isBloodDonor != null) updates['isBloodDonor'] = isBloodDonor;
 
       await _userService.updateUser(_user!.uid, updates);
 
@@ -290,6 +292,7 @@ class AuthProvider extends ChangeNotifier {
         address: address,
         skills: skills,
         bloodGroup: bloodGroup,
+        isBloodDonor: isBloodDonor,
       );
 
       _setLoading(false);

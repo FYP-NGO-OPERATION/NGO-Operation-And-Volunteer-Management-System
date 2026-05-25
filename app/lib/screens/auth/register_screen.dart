@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _referralCodeController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
@@ -50,6 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _referralCodeController.dispose();
     super.dispose();
   }
 
@@ -125,6 +127,8 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly, PhoneInputFormatter()]),
                       AppSpacing.vGapMd,
                       
+                      CustomTextField(controller: _referralCodeController, label: 'Referral Code (Optional)', hint: 'e.g., VOL2026',
+                        prefixIcon: Icons.card_giftcard, textInputAction: TextInputAction.next),
                       AppSpacing.vGapMd,
 
                       CustomTextField(controller: _passwordController, label: 'Password', hint: 'Minimum 6 characters',

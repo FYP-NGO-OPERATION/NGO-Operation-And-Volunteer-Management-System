@@ -12,9 +12,15 @@ import '../../campaigns/qr_scan_screen.dart';
 import '../../announcements/create_announcement_screen.dart';
 import '../../sessions/create_session_screen.dart';
 import '../../admin/analytics_screen.dart';
+import '../../analytics/predictive_dashboard_screen.dart';
 import '../../profile/user_list_screen.dart';
 import '../../admin/workspace_settings_screen.dart';
 import '../../admin/manage_ngos_screen.dart';
+import '../ai_assistant_screen.dart';
+import '../../donations/blood_donation_screen.dart';
+import '../../donations/needs_marketplace_screen.dart';
+import '../../../../services/sos_service.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class HomeSpeedDial extends StatelessWidget {
   final bool isAdmin;
@@ -85,6 +91,18 @@ class HomeSpeedDial extends StatelessWidget {
               },
             ),
           SpeedDialAction(
+            icon: Icons.psychology,
+            label: 'AI Resource Engine',
+            backgroundColor: AppColors.error,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PredictiveDashboardScreen()),
+              );
+            },
+          ),
+          SpeedDialAction(
             icon: Icons.manage_accounts,
             label: 'Manage Users',
             backgroundColor: AppColors.success,
@@ -122,6 +140,30 @@ class HomeSpeedDial extends StatelessWidget {
                 );
               },
             ),
+          SpeedDialAction(
+            icon: Icons.bloodtype,
+            label: 'Blood Emergency',
+            backgroundColor: AppColors.error,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BloodDonationScreen()),
+              );
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.store,
+            label: 'Needs Marketplace',
+            backgroundColor: Colors.indigo,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NeedsMarketplaceScreen()),
+              );
+            },
+          ),
         ],
       );
     } else {
@@ -135,6 +177,30 @@ class HomeSpeedDial extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               actions: [
+                SpeedDialAction(
+                  icon: Icons.bloodtype,
+                  label: 'Blood Emergency',
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BloodDonationScreen()),
+                    );
+                  },
+                ),
+                SpeedDialAction(
+                  icon: Icons.store,
+                  label: 'Needs Marketplace',
+                  backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NeedsMarketplaceScreen()),
+                    );
+                  },
+                ),
                 if (FeatureFlags.isSmartMatchingEnabled)
                   SpeedDialAction(
                     icon: Icons.recommend,
@@ -174,6 +240,40 @@ class HomeSpeedDial extends StatelessWidget {
                       }
                     },
                   ),
+                SpeedDialAction(
+                  icon: Icons.smart_toy,
+                  label: 'AI Assistant',
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AiAssistantScreen()),
+                    );
+                  },
+                ),
+                SpeedDialAction(
+                  icon: Icons.sos,
+                  label: 'EMERGENCY SOS',
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                  onTap: () async {
+                    final user = auth.user;
+                    if (user != null) {
+                      try {
+                        SnackbarHelper.showSuccess(context, 'Sending SOS Alert...', duration: const Duration(seconds: 1));
+                        await SosService.sendSosAlert(user.uid, user.name);
+                        if (context.mounted) {
+                          SnackbarHelper.showSuccess(context, 'SOS Alert Sent Successfully! Help is on the way.', duration: const Duration(seconds: 4));
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          SnackbarHelper.showError(context, 'Failed to send SOS: $e');
+                        }
+                      }
+                    }
+                  },
+                ),
               ],
             );
           },
