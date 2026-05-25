@@ -26,6 +26,7 @@ import '../profile/about_us_screen.dart';
 import '../profile/change_password_screen.dart';
 import '../profile/user_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
+import '../inventory/inventory_list_screen.dart';
 import '../../services/certificate_service.dart';
 import '../../widgets/profile_tab_widget.dart';
 import '../ngos/ngo_selection_screen.dart';
@@ -616,6 +617,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+                  ),
+                ),
+                _buildActionTile(
+                  'inventory'.tr(),
+                  'Manage NGO stock and resources',
+                  Icons.inventory,
+                  AppColors.success,
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const InventoryListScreen()),
                   ),
                 ),
                 if (FeatureFlags.isFyp2 || FeatureFlags.isFull)

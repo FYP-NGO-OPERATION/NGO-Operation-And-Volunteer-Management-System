@@ -134,5 +134,15 @@
   "silver_badge": "Silver (10+ Campaigns)",
   "gold_badge": "Gold (20+ Campaigns)",
   "no_badges": "No badges earned yet. Keep volunteering!",
-  "current_badge": "Current Badge"
+  "current_badge": "Current Badge",
+  "inventory": "Inventory",
+  "no_inventory": "No items in inventory",
+  "add_item": "Add Item",
+  "edit_item": "Edit Item",
+  "delete_item": "Delete Item",
+  "item_name": "Item Name",
+  "quantity": "Quantity",
+  "unit": "Unit",
+  "saved_successfully": "Saved successfully",
+  "are_you_sure": "Are you sure you want to proceed?"
 }
