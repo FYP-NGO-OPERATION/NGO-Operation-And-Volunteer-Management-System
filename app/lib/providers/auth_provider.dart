@@ -267,6 +267,7 @@ class AuthProvider extends ChangeNotifier {
     String? bio,
     String? address,
     List<String>? skills,
+    String? bloodGroup,
   }) async {
     try {
       _setLoading(true);
@@ -278,6 +279,7 @@ class AuthProvider extends ChangeNotifier {
       if (bio != null) updates['bio'] = bio.trim();
       if (address != null) updates['address'] = address.trim();
       if (skills != null) updates['skills'] = skills;
+      if (bloodGroup != null) updates['bloodGroup'] = bloodGroup;
 
       await _userService.updateUser(_user!.uid, updates);
 
@@ -287,6 +289,7 @@ class AuthProvider extends ChangeNotifier {
         phone: phone,
         address: address,
         skills: skills,
+        bloodGroup: bloodGroup,
       );
 
       _setLoading(false);

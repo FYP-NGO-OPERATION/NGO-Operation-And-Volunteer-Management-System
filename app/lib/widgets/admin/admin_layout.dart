@@ -11,6 +11,7 @@ import '../../screens/campaigns/campaign_list_screen.dart';
 import '../../screens/campaigns/create_campaign_screen.dart';
 import '../../screens/announcements/create_announcement_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
+import '../../screens/admin/blood_emergency_screen.dart';
 import '../../widgets/common/custom_speed_dial.dart';
 import '../profile_tab_widget.dart';
 
@@ -196,6 +197,15 @@ class _AdminLayoutState extends State<AdminLayout> {
             foregroundColor: Colors.white,
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()));
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.bloodtype,
+            label: 'Blood Emergency',
+            backgroundColor: Colors.red.shade700,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const BloodEmergencyScreen()));
             },
           ),
         ],

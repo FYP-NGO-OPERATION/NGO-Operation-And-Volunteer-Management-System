@@ -25,6 +25,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _addressController = TextEditingController();
   final _skillsController = TextEditingController();
   
+  String? _selectedBloodGroup;
+  final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  
   bool _isLoading = false;
   Uint8List? _selectedImageBytes;
   final ImagePicker _picker = ImagePicker();
@@ -54,6 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _bioController.text = user.bio ?? '';
       _addressController.text = user.address ?? '';
       _skillsController.text = user.skills.join(', ');
+      _selectedBloodGroup = user.bloodGroup;
     }
   }
 
@@ -106,6 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       bio: data['bio'] as String?,
       address: data['address'] as String?,
       skills: data['skills'] as List<String>?,
+      bloodGroup: _selectedBloodGroup,
     );
     
     // Refresh user state
@@ -213,6 +218,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 label: 'Skills (comma separated)',
                 hint: 'e.g., Photography, Driving, Medical',
                 prefixIcon: Icons.star,
+              ),
+              AppSpacing.vGapLg,
+              DropdownButtonFormField<String>(
+                value: _selectedBloodGroup,
+                decoration: const InputDecoration(
+                  labelText: 'Blood Group',
+                  prefixIcon: Icon(Icons.bloodtype, color: Colors.red),
+                  border: OutlineInputBorder(),
+                ),
+                items: _bloodGroups.map((bg) {
+                  return DropdownMenuItem(value: bg, child: Text(bg));
+                }).toList(),
+                onChanged: (val) => setState(() => _selectedBloodGroup = val),
               ),
               AppSpacing.vGapXxl,
               CustomButton(

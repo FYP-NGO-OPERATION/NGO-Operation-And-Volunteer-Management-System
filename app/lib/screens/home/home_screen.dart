@@ -24,6 +24,7 @@ import 'components/home_dashboard_tab.dart';
 import 'components/home_profile_tab.dart';
 import 'components/campaign_search_delegate.dart';
 import 'components/home_speed_dial.dart';
+import '../shop/shop_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -73,6 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
         'screen': isAdmin ? UserListScreen() : const EngagementTabScreen(),
       });
     }
+
+    activeTabs.add({
+      'label': 'E-Store',
+      'icon': Icons.shopping_bag_outlined,
+      'activeIcon': Icons.shopping_bag,
+      'screen': const ShopListScreen(),
+    });
 
     activeTabs.add({
       'label': 'profile'.tr(),

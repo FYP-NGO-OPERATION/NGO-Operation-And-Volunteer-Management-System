@@ -10,6 +10,7 @@ import '../../enums/app_enums.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/campaign_card.dart';
 import 'campaign_detail_screen.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// Shows all campaigns with search, filter, and FAB for admin.
 class CampaignListScreen extends StatefulWidget {
@@ -22,11 +23,43 @@ class CampaignListScreen extends StatefulWidget {
 class _CampaignListScreenState extends State<CampaignListScreen> {
   final _searchController = TextEditingController();
   bool _showSearch = false;
+  
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _listen(CampaignProvider provider) async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => debugPrint('onStatus: $val'),
+        onError: (val) => debugPrint('onError: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) {
+            setState(() {
+              _searchController.text = val.recognizedWords;
+              provider.setSearchQuery(val.recognizedWords);
+            });
+          },
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
   }
 
   @override
@@ -47,13 +80,26 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
               decoration: InputDecoration(
                 hintText: 'Search campaigns...',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    _searchController.clear();
-                    campaignProvider.setSearchQuery('');
-                    setState(() => _showSearch = false);
-                  },
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? AppColors.error : null),
+                      onPressed: () => _listen(campaignProvider),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        _searchController.clear();
+                        campaignProvider.setSearchQuery('');
+                        setState(() {
+                          _showSearch = false;
+                          _isListening = false;
+                        });
+                        _speech.stop();
+                      },
+                    ),
+                  ],
                 ),
               ),
               onChanged: (value) => campaignProvider.setSearchQuery(value),
