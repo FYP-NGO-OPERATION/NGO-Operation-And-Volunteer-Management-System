@@ -13,6 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../config/app_colors.dart';
 
+import 'package:easy_localization/easy_localization.dart';
+
 class CreateNgoScreen extends StatefulWidget {
   const CreateNgoScreen({super.key});
 
@@ -136,7 +138,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
     final isLoading = Provider.of<NgoProvider>(context).isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Register New NGO')),
+      appBar: AppBar(title: Text('register_new_ngo'.tr())),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -144,14 +146,14 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Set up your NGO Profile', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              Text('setup_ngo_profile'.tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const Text('This will create a dedicated workspace for your organization with your custom colors.', style: TextStyle(color: Colors.grey)),
+              Text('setup_ngo_desc'.tr(), style: const TextStyle(color: Colors.grey)),
               const SizedBox(height: 24),
 
               CustomTextField(
                 controller: _nameCtrl,
-                label: 'NGO Name',
+                label: 'ngo_name'.tr(),
                 prefixIcon: Icons.business,
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
@@ -159,7 +161,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
               
               CustomTextField(
                 controller: _descCtrl,
-                label: 'Description',
+                label: 'description'.tr(),
                 prefixIcon: Icons.description,
                 maxLines: 3,
                 validator: (v) => v!.isEmpty ? 'Required' : null,
@@ -172,7 +174,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                   Expanded(
                     child: CustomTextField(
                       controller: _logoCtrl,
-                      label: 'Logo Image URL',
+                      label: 'logo_url'.tr(),
                       hint: 'https://... or Pick Image',
                       prefixIcon: Icons.image,
                     ),
@@ -223,7 +225,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
               ],
               const SizedBox(height: 24),
 
-              const Text('Select Theme Color', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('select_theme_color'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 12,
@@ -254,7 +256,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
               ),
               const SizedBox(height: 24),
               
-              const Text('Select Features', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('select_features'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               ..._selectedFeatures.keys.map((feature) {
                 return CheckboxListTile(
@@ -275,7 +277,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(
-                  text: _isUploadingLogo ? 'Uploading...' : 'Register NGO',
+                  text: _isUploadingLogo ? 'please_wait'.tr() : 'register_ngo'.tr(),
                   isLoading: Provider.of<NgoProvider>(context).isLoading || _isUploadingLogo,
                   onPressed: _isUploadingLogo ? () {} : _registerNgo,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
@@ -113,11 +114,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           controller: _tabController,
           isScrollable: true,
           tabs: const [
-            Tab(icon: Icon(Icons.info_outline), text: 'Info'),
-            Tab(icon: Icon(Icons.assignment), text: 'Tasks'),
-            Tab(icon: Icon(Icons.forum), text: 'Chat'),
-            Tab(icon: Icon(Icons.receipt_long), text: 'Record'),
-            Tab(icon: Icon(Icons.photo_library), text: 'Highlights'),
+            Tab(icon: const Icon(Icons.info_outline), text: 'info'.tr()),
+            Tab(icon: const Icon(Icons.assignment), text: 'tasks'.tr()),
+            Tab(icon: const Icon(Icons.forum), text: 'chat'.tr()),
+            Tab(icon: const Icon(Icons.receipt_long), text: 'record'.tr()),
+            Tab(icon: const Icon(Icons.photo_library), text: 'highlights'.tr()),
           ],
         ),
       ),
@@ -148,7 +149,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                       child: FloatingActionButton.extended(
                         onPressed: () => _showFeedbackDialog(context),
                         icon: const Icon(Icons.star),
-                        label: const Text('Leave Feedback', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        label: Text('leave_feedback'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         backgroundColor: Colors.amber[700],
                         foregroundColor: Colors.white,
                         elevation: 8,
@@ -165,7 +166,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                                 ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                                 : const Icon(Icons.history_edu),
                             label: Text(
-                              _isJoining ? 'Please wait...' : 'I Participated',
+                              _isJoining ? 'please_wait'.tr() : 'i_participated'.tr(),
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
                             ),
                             backgroundColor: AppColors.primary,
@@ -184,7 +185,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                                     : const Icon(Icons.cancel_schedule_send),
                                 label: Text(
-                                  _isJoining ? 'Please wait...' : 'Cancel Request',
+                                  _isJoining ? 'please_wait'.tr() : 'cancel_request'.tr(),
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
                                 ),
                                 backgroundColor: AppColors.warning,
@@ -212,12 +213,12 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                         : Icon(_hasJoined ? Icons.exit_to_app : (_campaign.status == CampaignStatus.upcoming ? Icons.notifications_active : Icons.how_to_reg)),
                     label: Text(
                       _isJoining
-                          ? 'Please wait...'
+                          ? 'please_wait'.tr()
                           : _hasJoined
-                              ? (_campaign.status == CampaignStatus.upcoming ? 'Cancel Interest' : 'Leave Campaign')
+                              ? (_campaign.status == CampaignStatus.upcoming ? 'cancel_request'.tr() : 'leave_campaign'.tr())
                               : _campaign.isFull
-                                  ? 'Campaign Full'
-                                  : (_campaign.status == CampaignStatus.upcoming ? 'Pre-Register / Notify Me' : 'Join Campaign'),
+                                  ? 'campaign_full'.tr()
+                                  : (_campaign.status == CampaignStatus.upcoming ? 'pre_register'.tr() : 'join_campaign'.tr()),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
                     ),
                     backgroundColor: _hasJoined
@@ -270,16 +271,16 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      _infoRow(Icons.calendar_today, 'Start Date', dateFormat.format(_campaign.startDate)),
+                      _infoRow(Icons.calendar_today, 'start_date'.tr(), dateFormat.format(_campaign.startDate)),
                       if (_campaign.endDate != null)
-                        _infoRow(Icons.event, 'End Date', dateFormat.format(_campaign.endDate!)),
-                      _infoRow(Icons.location_on, 'Location', _campaign.location),
-                      _infoRow(Icons.flag, 'Target', _campaign.targetGoal),
+                        _infoRow(Icons.event, 'end_date'.tr(), dateFormat.format(_campaign.endDate!)),
+                      _infoRow(Icons.location_on, 'location'.tr(), _campaign.location),
+                      _infoRow(Icons.flag, 'target'.tr(), _campaign.targetGoal),
                       if (_campaign.achievedGoal != null)
-                        _infoRow(Icons.check_circle, 'Achieved', _campaign.achievedGoal!),
+                        _infoRow(Icons.check_circle, 'achieved'.tr(), _campaign.achievedGoal!),
                       if (_campaign.itemsNeeded != null)
-                        _infoRow(Icons.list, 'Items Needed', _campaign.itemsNeeded!),
-                      _infoRow(Icons.person, 'Created By', _campaign.createdByName),
+                        _infoRow(Icons.list, 'items_needed'.tr(), _campaign.itemsNeeded!),
+                      _infoRow(Icons.person, 'created_by'.tr(), _campaign.createdByName),
                       if (_campaign.latitude != null && _campaign.longitude != null) ...[
                         const Divider(),
                         ListTile(
@@ -303,7 +304,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
 
               // Progress
               if (_campaign.progressPercent > 0) ...[
-                Text('Progress', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('progress'.tr(), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
@@ -328,7 +329,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               ],
 
               // Stats Cards
-              Text('Statistics', style: AppTextStyles.titleLarge()),
+              Text('statistics'.tr(), style: AppTextStyles.titleLarge()),
               AppSpacing.vGapMd,
               GridView.count(
                 shrinkWrap: true,
@@ -338,12 +339,12 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 crossAxisSpacing: 10,
                 childAspectRatio: Responsive.isMobile(context) ? 1.5 : 2.0,
                 children: [
-                  _statCard('Volunteers', '${_campaign.totalVolunteers}', Icons.people, AppColors.info),
-                  _statCard('Beneficiaries', '${_campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary),
-                  _statCard('Items Distributed', '${_campaign.distributionCount}', Icons.inventory_2, AppColors.success),
-                  _statCard('Donations', 'Rs.${_campaign.totalDonationsAmount.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.warning),
-                  _statCard('Expenses', 'Rs.${_campaign.totalExpenses.toStringAsFixed(0)}', Icons.receipt, AppColors.error),
-                  _statCard('Remaining', 'Rs.${_campaign.remainingBudget.toStringAsFixed(0)}', Icons.savings, AppColors.success),
+                  _statCard('volunteers'.tr(), '${_campaign.totalVolunteers}', Icons.people, AppColors.info),
+                  _statCard('beneficiaries'.tr(), '${_campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary),
+                  _statCard('items_distributed'.tr(), '${_campaign.distributionCount}', Icons.inventory_2, AppColors.success),
+                  _statCard('donations'.tr(), 'Rs.${_campaign.totalDonationsAmount.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.warning),
+                  _statCard('expenses'.tr(), 'Rs.${_campaign.totalExpenses.toStringAsFixed(0)}', Icons.receipt, AppColors.error),
+                  _statCard('remaining'.tr(), 'Rs.${_campaign.remainingBudget.toStringAsFixed(0)}', Icons.savings, AppColors.success),
                 ],
               ),
               const SizedBox(height: 16),
@@ -360,10 +361,10 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                     child: const Icon(Icons.people, color: AppColors.info),
                   ),
                   title: Text(
-                    'View Volunteers (${_campaign.totalVolunteers})',
+                    '${'view_volunteers'.tr()} (${_campaign.totalVolunteers})',
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text('See who joined this campaign'),
+                  subtitle: Text('view_volunteers_desc'.tr()),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.push(
@@ -391,11 +392,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                     ),
                     child: const Icon(Icons.handshake, color: AppColors.primary),
                   ),
-                  title: const Text(
-                    'View Impact & Distribution',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  title: Text(
+                    'view_impact'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text('See beneficiaries and distributed items'),
+                  subtitle: Text('view_impact_desc'.tr()),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.push(
@@ -423,11 +424,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                     ),
                     child: const Icon(Icons.photo_library, color: AppColors.success),
                   ),
-                  title: const Text(
-                    'Photo Gallery',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  title: Text(
+                    'photo_gallery'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text('View and add campaign photos'),
+                  subtitle: Text('photo_gallery_desc'.tr()),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.push(
@@ -459,9 +460,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           Material(
             child: TabBar(
               labelColor: AppColors.primary,
-              tabs: const [
-                Tab(text: '💰 Donations'),
-                Tab(text: '🧾 Expenses'),
+              tabs: [
+                Tab(text: '💰 ${'donations'.tr()}'),
+                Tab(text: '🧾 ${'expenses'.tr()}'),
               ],
             ),
           ),
@@ -495,18 +496,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               children: [
                 Icon(Icons.volunteer_activism, size: 60, color: theme.brightness == Brightness.dark ? AppColors.darkTextHint : AppColors.lightTextHint),
                 const SizedBox(height: 12),
-                Text('No Donations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                Text('no_donations'.tr(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
                   color: theme.brightness == Brightness.dark ? AppColors.darkTextPrimary : null)),
                 const SizedBox(height: 6),
                 Text(
-                  'No donations recorded yet. Be the first!',
+                  'no_donations_desc'.tr(),
                   style: TextStyle(color: theme.brightness == Brightness.dark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _navigateToAddDonation,
                   icon: const Icon(Icons.add),
-                  label: Text(isAdmin ? 'Add Donation' : 'Donate Now'),
+                  label: Text(isAdmin ? 'add_donation'.tr() : 'donate_now'.tr()),
                 ),
               ],
             ),
@@ -533,7 +534,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Total Donations', style: TextStyle(fontWeight: FontWeight.w600)),
+                      Text('total_donations'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                       Text(
                         'Rs. ${totalAll.toStringAsFixed(0)}',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.success),
@@ -544,9 +545,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('💵 Cash: Rs.${totalCash.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
-                      Text('💳 Online: Rs.${totalOnline.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
-                      Text('📦 Items: ${donations.length}', style: const TextStyle(fontSize: 12)),
+                      Text('💵 ${'cash'.tr()}: Rs.${totalCash.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
+                      Text('💳 ${'online'.tr()}: Rs.${totalOnline.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
+                      Text('📦 ${'items'.tr()}: ${donations.length}', style: const TextStyle(fontSize: 12)),
                     ],
                   ),
                 ],
@@ -561,7 +562,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                 child: OutlinedButton.icon(
                   onPressed: _navigateToAddDonation,
                   icon: const Icon(Icons.add),
-                  label: Text(isAdmin ? 'Add Donation' : 'Donate Now'),
+                  label: Text(isAdmin ? 'add_donation'.tr() : 'donate_now'.tr()),
                 ),
               ),
             ),
@@ -620,9 +621,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                             Expanded(
                               child: Text(
                                 (!isAdmin && d.isAnonymous) 
-                                    ? 'Anonymous Volunteer' 
+                                    ? 'anonymous_volunteer'.tr() 
                                     : (isAdmin && d.isAnonymous) 
-                                        ? '${d.donorName} (Anon)' 
+                                        ? '${d.donorName} (${'anonymous_volunteer'.tr()})' 
                                         : d.donorName, 
                                 style: const TextStyle(fontWeight: FontWeight.w600)
                               ),
@@ -634,7 +635,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                                   color: AppColors.warning.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text('Pending', style: TextStyle(color: AppColors.warning, fontSize: 10, fontWeight: FontWeight.bold)),
+                                child: Text('pending'.tr(), style: const TextStyle(color: AppColors.warning, fontSize: 10, fontWeight: FontWeight.bold)),
                               ),
                           ],
                         ),
@@ -710,7 +711,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               children: [
                 Icon(Icons.receipt_long, size: 60, color: theme.brightness == Brightness.dark ? AppColors.darkTextHint : AppColors.lightTextHint),
                 const SizedBox(height: 12),
-                Text('No Expenses', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                Text('no_expenses'.tr(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
                   color: theme.brightness == Brightness.dark ? AppColors.darkTextPrimary : null)),
                 const SizedBox(height: 6),
                 Text(
@@ -745,7 +746,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Total Expenses', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('total_expenses'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text(
                     'Rs. ${total.toStringAsFixed(0)}',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.error),
