@@ -72,7 +72,12 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
 
           final allCampaigns = snapshot.data ?? [];
           // Filter campaigns that have valid coordinates
-          final mappedCampaigns = allCampaigns.where((c) => c.latitude != null && c.longitude != null).toList();
+          final mappedCampaigns = allCampaigns.where((c) => 
+            c.latitude != null && 
+            c.longitude != null && 
+            !c.latitude!.isNaN && 
+            !c.longitude!.isNaN
+          ).toList();
 
           return FlutterMap(
             mapController: _mapController,
