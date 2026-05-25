@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_tokens.dart';
@@ -101,6 +102,9 @@ class HomeProfileTab extends StatelessWidget {
               ),
               AppSpacing.vGapXl,
 
+              _buildAchievementsSection(context, user),
+              AppSpacing.vGapXl,
+
               // ─── Info Card ───
               Container(
                 decoration: BoxDecoration(
@@ -149,6 +153,21 @@ class HomeProfileTab extends StatelessWidget {
               _profileActionBtn(Icons.lock, 'Change Password', isDark ? AppColors.darkCardBg : Colors.white, AppColors.primary,
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChangePasswordScreen())),
                 outlined: true),
+              AppSpacing.vGapMd,
+              _profileActionBtn(
+                Icons.language,
+                'language'.tr() + ' / زبان',
+                isDark ? AppColors.darkCardBg : Colors.white,
+                Colors.deepPurple,
+                () {
+                  if (context.locale.languageCode == 'en') {
+                    context.setLocale(const Locale('ur'));
+                  } else {
+                    context.setLocale(const Locale('en'));
+                  }
+                },
+                outlined: true,
+              ),
               AppSpacing.vGapMd,
               _profileActionBtn(Icons.logout, 'Logout', isDark ? AppColors.darkCardBg : Colors.white, AppColors.error,
                 onLogout,
@@ -208,6 +227,41 @@ class HomeProfileTab extends StatelessWidget {
       title: Text(label, style: AppTextStyles.caption(
         color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
       subtitle: Text(value, style: AppTextStyles.bodyMedium()),
+    );
+  }
+
+  Widget _buildAchievementsSection(BuildContext context, user) {
+    int attended = user?.campaignsJoined ?? 0;
+    String badgeText = "no_badges".tr();
+    Color badgeColor = Colors.grey;
+
+    if (attended >= 20) {
+      badgeText = "gold_badge".tr();
+      badgeColor = Colors.amber;
+    } else if (attended >= 10) {
+      badgeText = "silver_badge".tr();
+      badgeColor = Colors.blueGrey;
+    } else if (attended >= 5) {
+      badgeText = "bronze_badge".tr();
+      badgeColor = Colors.brown[400]!;
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: badgeColor.withValues(alpha: 0.1),
+        borderRadius: AppTokens.borderRadiusMd,
+        border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.military_tech, color: badgeColor, size: 48),
+          AppSpacing.vGapSm,
+          Text(badgeText, style: AppTextStyles.titleMedium(color: badgeColor)),
+          Text('Campaigns Attended: $attended', style: AppTextStyles.bodySmall()),
+        ],
+      ),
     );
   }
 }
