@@ -124,5 +124,15 @@
   "logo_url": "لوگو امیج کا یو آر ایل",
   "select_theme_color": "تھیم کا رنگ منتخب کریں",
   "select_features": "خصوصیات منتخب کریں",
-  "register_ngo": "این جی او رجسٹر کریں"
+  "register_ngo": "این جی او رجسٹر کریں",
+  "leaderboard": "لیڈر بورڈ",
+  "badges": "بیجز",
+  "download_certificate": "سرٹیفکیٹ ڈاؤن لوڈ کریں",
+  "rank": "رینک",
+  "points": "پوائنٹس",
+  "bronze_badge": "کانسی (5+ مہمات)",
+  "silver_badge": "چاندی (10+ مہمات)",
+  "gold_badge": "سونا (20+ مہمات)",
+  "no_badges": "ابھی تک کوئی بیج نہیں ملا۔ رضاکارانہ کام جاری رکھیں!",
+  "current_badge": "موجودہ بیج"
 }

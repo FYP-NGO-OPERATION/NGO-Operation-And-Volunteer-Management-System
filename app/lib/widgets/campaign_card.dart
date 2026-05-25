@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -114,7 +115,7 @@ class CampaignCard extends StatelessWidget {
                       Icon(Icons.calendar_today, size: 14, color: AppColors.primaryLight),
                       const SizedBox(width: 4),
                       Directionality(
-                        textDirection: TextDirection.ltr,
+                        textDirection: ui.TextDirection.ltr,
                         child: Text(
                           DateFormat('MMM dd, yyyy').format(campaign.startDate),
                           style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
@@ -125,7 +126,7 @@ class CampaignCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Directionality(
-                          textDirection: TextDirection.ltr,
+                          textDirection: ui.TextDirection.ltr,
                           child: Text(
                             campaign.location,
                             style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
@@ -161,7 +162,7 @@ class CampaignCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: AppColors.primary,
                           ),
-                          textDirection: TextDirection.ltr,
+                          textDirection: ui.TextDirection.ltr,
                         ),
                       ],
                     ),

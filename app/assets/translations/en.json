@@ -124,5 +124,15 @@
   "logo_url": "Logo Image URL",
   "select_theme_color": "Select Theme Color",
   "select_features": "Select Features",
-  "register_ngo": "Register NGO"
+  "register_ngo": "Register NGO",
+  "leaderboard": "Leaderboard",
+  "badges": "Badges",
+  "download_certificate": "Download Certificate",
+  "rank": "Rank",
+  "points": "Points",
+  "bronze_badge": "Bronze (5+ Campaigns)",
+  "silver_badge": "Silver (10+ Campaigns)",
+  "gold_badge": "Gold (20+ Campaigns)",
+  "no_badges": "No badges earned yet. Keep volunteering!",
+  "current_badge": "Current Badge"
 }

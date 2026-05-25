@@ -17,12 +17,15 @@ class CertificateService {
     // Determine badge text
     String badgeText = "BRONZE BADGE";
     PdfColor badgeColor = PdfColor.fromHex('#CD7F32'); // Bronze
-    if (campaignsAttended >= 5) {
+    if (campaignsAttended >= 20) {
       badgeText = "GOLD BADGE";
       badgeColor = PdfColor.fromHex('#FFD700'); // Gold
-    } else if (campaignsAttended >= 3) {
+    } else if (campaignsAttended >= 10) {
       badgeText = "SILVER BADGE";
       badgeColor = PdfColor.fromHex('#C0C0C0'); // Silver
+    } else if (campaignsAttended >= 5) {
+      badgeText = "BRONZE BADGE";
+      badgeColor = PdfColor.fromHex('#CD7F32'); // Bronze
     }
 
     final dateStr = DateFormat('MMMM dd, yyyy').format(DateTime.now());

@@ -183,16 +183,16 @@ class ProfileTab extends StatelessWidget {
 
   Widget _buildAchievementsSection(BuildContext context, user) {
     int attended = user.campaignsJoined ?? 0;
-    String badgeText = "locked".tr();
+    String badgeText = "no_badges".tr();
     Color badgeColor = Colors.grey;
 
-    if (attended >= 5) {
+    if (attended >= 20) {
       badgeText = "gold_badge".tr();
       badgeColor = Colors.amber;
-    } else if (attended >= 3) {
+    } else if (attended >= 10) {
       badgeText = "silver_badge".tr();
       badgeColor = Colors.blueGrey;
-    } else if (attended >= 1) {
+    } else if (attended >= 5) {
       badgeText = "bronze_badge".tr();
       badgeColor = Colors.brown[400]!;
     }
@@ -220,7 +220,7 @@ class ProfileTab extends StatelessWidget {
           AppSpacing.vGapSm,
           Row(
             children: [
-              Text('Current Badge: ', style: AppTextStyles.bodyMedium()),
+              Text('${'current_badge'.tr()}: ', style: AppTextStyles.bodyMedium()),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(color: badgeColor, borderRadius: BorderRadius.circular(12)),
@@ -228,7 +228,7 @@ class ProfileTab extends StatelessWidget {
               ),
             ],
           ),
-          if (attended >= 1) ...[
+          if (attended >= 5) ...[
             AppSpacing.vGapLg,
             SizedBox(
               width: double.infinity,

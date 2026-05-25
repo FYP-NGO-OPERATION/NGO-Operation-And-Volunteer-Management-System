@@ -1,103 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../config/app_colors.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
+import '../../config/app_colors.dart';
+import '../../providers/auth_provider.dart';
 
-/// Top Volunteers Leaderboard (Viva Rescue Feature)
-///
-/// VIVA PREP EXPLANATION:
-/// Q: Where is the Top Volunteer Leaderboard?
-/// A: Sir, it is right here. It queries the 'users' collection, filters out 
-///    admins, and orders volunteers by the number of campaigns they have joined.
-class LeaderboardScreen extends StatelessWidget {
+class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
 
   @override
+  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+}
+
+class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  bool _isLoading = true;
+  List<UserModel> _topVolunteers = [];
+  UserModel? _currentUser;
+  int _currentUserRank = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLeaderboard();
+  }
+
+  Future<void> _fetchLeaderboard() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'volunteer')
+          .get();
+
+      final users = querySnapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
+      users.sort((a, b) => b.campaignsJoined.compareTo(a.campaignsJoined));
+      
+      int currentRank = 0;
+      for (int i = 0; i < users.length; i++) {
+        if (users[i].uid == authProvider.user?.uid) {
+          currentRank = i + 1;
+          _currentUser = users[i];
+          break;
+        }
+      }
+
+      setState(() {
+        _topVolunteers = users.take(50).toList();
+        _currentUserRank = currentRank;
+      });
+    } catch (e) {
+      debugPrint('Error fetching leaderboard: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Widget _buildBadge(int campaignsJoined) {
+    if (campaignsJoined >= 20) {
+      return Tooltip(
+        message: 'gold_badge'.tr(),
+        child: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
+      );
+    } else if (campaignsJoined >= 10) {
+      return Tooltip(
+        message: 'silver_badge'.tr(),
+        child: const Icon(Icons.workspace_premium, color: Colors.grey, size: 28),
+      );
+    } else if (campaignsJoined >= 5) {
+      return Tooltip(
+        message: 'bronze_badge'.tr(),
+        child: const Icon(Icons.workspace_premium, color: Colors.brown, size: 28),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Top Volunteers'),
-        backgroundColor: AppColors.primary,
+        title: Text('leaderboard'.tr()),
+        centerTitle: true,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        // Query users where isAdmin == false, ordered by campaignsJoined descending
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where('role', isEqualTo: 'volunteer')
-            .limit(20)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error loading leaderboard: ${snapshot.error}'));
-          }
-
-          final rawDocs = snapshot.data?.docs ?? [];
-          if (rawDocs.isEmpty) {
-            return const Center(child: Text('No volunteers found yet.'));
-          }
-          // Sort client-side by campaignsJoined descending, take top 10
-          final users = rawDocs
-              .map((d) => UserModel.fromMap(d.data() as Map<String, dynamic>))
-              .toList()
-            ..sort((a, b) => b.campaignsJoined.compareTo(a.campaignsJoined));
-          final topUsers = users.take(10).toList();
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: topUsers.length,
-            itemBuilder: (context, index) {
-              final user = topUsers[index];
-              
-              // Top 3 get special colors
-              Color medalColor;
-              if (index == 0) medalColor = Colors.amber; // Gold
-              else if (index == 1) medalColor = Colors.grey.shade400; // Silver
-              else if (index == 2) medalColor = Colors.brown.shade300; // Bronze
-              else medalColor = Colors.transparent;
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                elevation: index < 3 ? 4 : 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: index < 3 
-                    ? BorderSide(color: medalColor, width: 2) 
-                    : BorderSide.none,
-                ),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: index < 3 ? medalColor.withValues(alpha: 0.2) : AppColors.primaryLight.withValues(alpha: 0.1),
-                    child: Text(
-                      '#${index + 1}',
-                      style: TextStyle(
-                        color: index < 3 ? medalColor : AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                if (_currentUser != null && _currentUserRank > 0)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    color: isDark ? AppColors.darkSurface : AppColors.primaryLight.withValues(alpha: 0.1),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: AppColors.primary,
+                          backgroundImage: _currentUser!.profileImageUrl != null
+                              ? NetworkImage(_currentUser!.profileImageUrl!)
+                              : null,
+                          child: _currentUser!.profileImageUrl == null
+                              ? Text(_currentUser!.name.isNotEmpty ? _currentUser!.name.substring(0, 1).toUpperCase() : 'U', style: const TextStyle(color: Colors.white, fontSize: 24))
+                              : null,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(_currentUser!.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('${'rank'.tr()}: #$_currentUserRank', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            _buildBadge(_currentUser!.campaignsJoined),
+                            Text('${_currentUser!.campaignsJoined} ${'points'.tr()}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  title: Row(
-                    children: [
-                      Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      if (user.campaignsJoined >= 3) ...[
-                        const SizedBox(width: 4),
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                      ],
-                    ],
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _topVolunteers.length,
+                    itemBuilder: (context, index) {
+                      final user = _topVolunteers[index];
+                      final isMe = user.uid == _currentUser?.uid;
+                      
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: index < 3 ? Colors.amber : (isDark ? Colors.grey[800] : Colors.grey[200]),
+                          child: Text('#${index + 1}', style: TextStyle(color: index < 3 ? Colors.white : (isDark ? Colors.white : Colors.black))),
+                        ),
+                        title: Text(
+                          user.name, 
+                          style: TextStyle(fontWeight: isMe ? FontWeight.bold : FontWeight.normal, color: isMe ? AppColors.primary : null)
+                        ),
+                        subtitle: Text('${user.campaignsJoined} ${'points'.tr()}'),
+                        trailing: _buildBadge(user.campaignsJoined),
+                        tileColor: isMe ? (isDark ? AppColors.primary.withValues(alpha: 0.1) : AppColors.primaryLight.withValues(alpha: 0.1)) : null,
+                      );
+                    },
                   ),
-                  subtitle: Text('${user.campaignsJoined} Campaigns Joined'),
-                  trailing: index == 0 
-                    ? const Icon(Icons.workspace_premium, color: Colors.amber, size: 32)
-                    : null,
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ],
+            ),
     );
   }
 }
