@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../config/app_colors.dart';
 import '../../config/feature_flags.dart';
 import '../../theme/app_text_styles.dart';
@@ -95,6 +96,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       appBar: AppBar(
         title: Text(_campaign.title, overflow: TextOverflow.ellipsis),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Share Campaign',
+            onPressed: () {
+              final String shareText = "🌟 Join this amazing campaign: ${_campaign.title}!\n\n"
+                  "${_campaign.description}\n\n"
+                  "📍 Location: ${_campaign.location}\n"
+                  "🎯 Goal: ${_campaign.targetGoal}\n\n"
+                  "📱 Download the HRAS App now to join as a volunteer or donate!";
+              Share.share(shareText, subject: _campaign.title);
+            },
+          ),
           if (isAdmin)
             PopupMenuButton<String>(
               onSelected: (action) => _handleAction(action),

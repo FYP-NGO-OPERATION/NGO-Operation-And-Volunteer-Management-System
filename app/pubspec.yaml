@@ -73,6 +73,9 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   easy_localization: ^3.0.3
   geolocator: ^14.0.1
+  share_plus: any
+  table_calendar: any
+  csv: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

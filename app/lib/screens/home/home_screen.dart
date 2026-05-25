@@ -14,6 +14,7 @@ import '../../utils/responsive.dart';
 import '../auth/login_screen.dart';
 import '../campaigns/campaign_list_screen.dart';
 import '../campaigns/campaign_map_screen.dart';
+import '../campaigns/campaign_calendar_screen.dart';
 import '../profile/user_list_screen.dart';
 import '../ngos/ngo_selection_screen.dart';
 import '../admin/analytics_screen.dart';
@@ -177,7 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           actions: [
-            if (_currentIndex == 1)
+            if (_currentIndex == 1) ...[
+              IconButton(
+                icon: const Icon(Icons.calendar_month),
+                tooltip: 'Calendar View',
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CampaignCalendarScreen()));
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.search),
                 tooltip: 'Search Campaigns',
@@ -190,6 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+            ],
             Consumer<ThemeProvider>(
               builder: (context, themeProvider, _) {
                 return IconButton(

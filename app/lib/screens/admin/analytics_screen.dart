@@ -11,6 +11,8 @@ import '../../services/pdf_report_service.dart';
 import '../../enums/app_enums.dart';
 import '../../models/campaign_model.dart';
 import '../../providers/ngo_provider.dart';
+import '../../services/csv_export_service.dart';
+
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
 
@@ -22,16 +24,28 @@ class AnalyticsScreen extends StatelessWidget {
         actions: [
           Consumer<CampaignProvider>(
             builder: (context, provider, child) {
-              return IconButton(
-                icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
-                tooltip: 'Download PDF Report',
-                onPressed: () {
-                  final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-                  final ngoId = ngoProvider.currentNgo?.id;
-                  if (ngoId != null) {
-                    PdfReportService.generateAndDownloadReport(ngoId: ngoId);
-                  }
-                },
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.table_chart, color: AppColors.success),
+                    tooltip: 'Export CSV Data',
+                    onPressed: () {
+                      CsvExportService.exportCampaignsToCsv(context, provider.allCampaigns);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
+                    tooltip: 'Download PDF Report',
+                    onPressed: () {
+                      final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+                      final ngoId = ngoProvider.currentNgo?.id;
+                      if (ngoId != null) {
+                        PdfReportService.generateAndDownloadReport(ngoId: ngoId);
+                      }
+                    },
+                  ),
+                ],
               );
             },
           ),
