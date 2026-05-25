@@ -111,8 +111,8 @@ class ProfileTab extends StatelessWidget {
           ),
           _buildSettingsTile(
             context,
-            title: 'Partner your NGO',
-            subtitle: 'Register your own organization',
+            title: 'partner_ngo'.tr(),
+            subtitle: 'partner_ngo_desc'.tr(),
             icon: Icons.business_center,
             color: AppColors.success,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateNgoScreen())),
@@ -121,7 +121,7 @@ class ProfileTab extends StatelessWidget {
           _buildSettingsTile(
             context,
             title: 'language'.tr() + ' / زبان',
-            subtitle: context.locale.languageCode == 'en' ? 'Switch to Urdu' : 'Switch to English',
+            subtitle: context.locale.languageCode == 'en' ? 'switch_to_urdu'.tr() : 'switch_to_english'.tr(),
             icon: Icons.language,
             onTap: () {
               if (context.locale.languageCode == 'en') {
@@ -134,8 +134,8 @@ class ProfileTab extends StatelessWidget {
           const Divider(height: 32),
           _buildSettingsTile(
             context,
-            title: 'About HRAS',
-            subtitle: 'Learn more about the NGO',
+            title: 'about_hras'.tr(),
+            subtitle: 'about_hras_desc'.tr(),
             icon: Icons.info_outline,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
           ),

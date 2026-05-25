@@ -270,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (currentNgo?.features.contains('campaigns') ?? true)
                   SpeedDialAction(
                     icon: Icons.campaign,
-                    label: 'Add Campaign',
+                    label: 'add_campaign'.tr(),
                     backgroundColor: AppColors.primaryLight,
                     foregroundColor: Colors.white,
                     onTap: () {
@@ -282,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 SpeedDialAction(
                   icon: Icons.announcement,
-                  label: 'Add Announcement',
+                  label: 'add_announcement'.tr(),
                   backgroundColor: AppColors.warning,
                   foregroundColor: Colors.white,
                   onTap: () {
@@ -295,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (currentNgo?.features.contains('virtual_sessions') ?? false)
                   SpeedDialAction(
                     icon: Icons.videocam,
-                    label: 'Schedule Session',
+                    label: 'schedule_session'.tr(),
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     onTap: () {
@@ -372,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (FeatureFlags.isSmartMatchingEnabled)
                           SpeedDialAction(
                             icon: Icons.recommend,
-                            label: 'Recommended Campaigns',
+                            label: 'recommended_campaigns'.tr(),
                             backgroundColor: AppColors.info,
                             foregroundColor: Colors.white,
                             onTap: () {
@@ -390,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (FeatureFlags.isQrAttendanceEnabled)
                           SpeedDialAction(
                             icon: Icons.qr_code_scanner,
-                            label: 'Scan QR Attendance',
+                            label: 'scan_qr_attendance'.tr(),
                             backgroundColor: AppColors.success,
                             foregroundColor: Colors.white,
                             onTap: () {
@@ -604,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
               AppSpacing.vGapXl,
 
               // Quick Actions
-              Text('Quick Actions', style: AppTextStyles.titleLarge()),
+              Text('quick_actions'.tr(), style: AppTextStyles.titleLarge()),
               AppSpacing.vGapMd,
 
               if (user?.isAdmin == true) ...[
@@ -642,8 +642,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
               ],
               _buildActionTile(
-                'Top Volunteers',
-                'View volunteer leaderboard',
+                'top_volunteers'.tr(),
+                'top_volunteers_desc'.tr(),
                 Icons.emoji_events,
                 Colors.amber,
                 () => Navigator.push(
@@ -653,15 +653,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               if (ngoProvider.currentNgo?.features.contains('campaigns') ?? true)
                 _buildActionTile(
-                  'View Campaigns',
-                  'Browse all campaigns',
+                  'view_campaigns'.tr(),
+                  'view_campaigns_desc'.tr(),
                   Icons.list_alt,
                   AppColors.info,
                   () => setState(() => _currentIndex = 1),
                 ),
               _buildActionTile(
-                'My Profile',
-                'View and edit your profile',
+                'my_profile'.tr(),
+                'my_profile_desc'.tr(),
                 Icons.person_outline,
                 AppColors.primaryLight,
                 () => setState(() => _currentIndex = 3),
@@ -671,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // ─── My Joined Campaigns (Volunteer view) ───
               if (user != null && !user.isAdmin) ...[
                 Text(
-                  'My Campaigns',
+                  'my_campaigns'.tr(),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -793,14 +793,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Icon(Icons.campaign_outlined, size: 40, color: AppColors.lightTextHint),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Not joined any campaign yet',
-                    style: TextStyle(color: AppColors.lightTextSecondary),
+                  Text(
+                    'not_joined_campaign'.tr(),
+                    style: const TextStyle(color: AppColors.lightTextSecondary),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => setState(() => _currentIndex = 1),
-                    child: const Text('Browse Campaigns →'),
+                    child: Text('${'browse_campaigns'.tr()} →'),
                   ),
                 ],
               ),
