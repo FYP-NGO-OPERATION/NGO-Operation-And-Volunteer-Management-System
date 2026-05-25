@@ -55,6 +55,7 @@ enum CampaignStatus {
 
 // ─── Volunteer Status ───
 enum VolunteerStatus {
+  pending('Pending Approval'),
   registered('Registered'),
   confirmed('Confirmed'),
   attended('Attended'),
@@ -62,6 +63,24 @@ enum VolunteerStatus {
 
   final String label;
   const VolunteerStatus(this.label);
+}
+
+// ─── Donation Status ───
+enum DonationStatus {
+  pending('Pending Verification', '⏳'),
+  approved('Approved', '✅'),
+  rejected('Rejected', '❌');
+
+  final String label;
+  final String icon;
+  const DonationStatus(this.label, this.icon);
+
+  static DonationStatus fromString(String value) {
+    return DonationStatus.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => DonationStatus.approved,
+    );
+  }
 }
 
 // ─── Donation Categories ───

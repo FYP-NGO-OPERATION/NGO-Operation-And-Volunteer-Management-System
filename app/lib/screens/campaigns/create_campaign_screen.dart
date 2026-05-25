@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../models/campaign_model.dart';
 import '../../providers/auth_provider.dart';
@@ -28,12 +31,50 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   final _targetGoalController = TextEditingController();
   final _itemsNeededController = TextEditingController();
   final _volunteerLimitController = TextEditingController();
+  final _latitudeController = TextEditingController();
+  final _longitudeController = TextEditingController();
 
   CampaignType _selectedType = CampaignType.custom;
   CampaignStatus _selectedStatus = CampaignStatus.upcoming;
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
   bool get _isEditing => widget.campaign != null;
+
+  File? _highlightVideo;
+  List<File> _galleryImages = [];
+  File? _projectRecordPdf;
+  final ImagePicker _imagePicker = ImagePicker();
+
+  Future<void> _pickVideo() async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'videos',
+      extensions: <String>['mp4', 'mov', 'avi'],
+    );
+    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file != null) {
+      setState(() => _highlightVideo = File(file.path));
+    }
+  }
+
+  Future<void> _pickGalleryImages() async {
+    final pickedFiles = await _imagePicker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
+      setState(() {
+        _galleryImages.addAll(pickedFiles.map((x) => File(x.path)));
+      });
+    }
+  }
+
+  Future<void> _pickPdf() async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'pdfs',
+      extensions: <String>['pdf'],
+    );
+    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file != null) {
+      setState(() => _projectRecordPdf = File(file.path));
+    }
+  }
 
   @override
   void initState() {
@@ -43,6 +84,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       _titleController.text = c.title;
       _descriptionController.text = c.description;
       _locationController.text = c.location;
+      _latitudeController.text = c.latitude?.toString() ?? '';
+      _longitudeController.text = c.longitude?.toString() ?? '';
       _targetGoalController.text = c.targetGoal;
       _itemsNeededController.text = c.itemsNeeded ?? '';
       _volunteerLimitController.text =
@@ -62,6 +105,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     _targetGoalController.dispose();
     _itemsNeededController.dispose();
     _volunteerLimitController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
   }
 
@@ -99,6 +144,17 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
     bool success;
 
+    if (!_isEditing) {
+      if (_endDate != null && _endDate!.isBefore(DateTime.now())) {
+        _selectedStatus = CampaignStatus.completed;
+      } else if (_endDate == null && _startDate.isBefore(DateTime.now().subtract(const Duration(days: 7)))) {
+        // If no end date but started more than 7 days ago, assume completed for historical entry
+        _selectedStatus = CampaignStatus.completed;
+      } else if (_startDate.isBefore(DateTime.now())) {
+        _selectedStatus = CampaignStatus.active;
+      }
+    }
+
     if (_isEditing) {
       final updated = widget.campaign!.copyWith(
         title: _titleController.text.trim(),
@@ -108,6 +164,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         startDate: _startDate,
         endDate: _endDate,
         location: _locationController.text.trim(),
+        latitude: double.tryParse(_latitudeController.text.trim()),
+        longitude: double.tryParse(_longitudeController.text.trim()),
         targetGoal: _targetGoalController.text.trim(),
         itemsNeeded: _itemsNeededController.text.trim().isEmpty
             ? null
@@ -118,6 +176,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     } else {
       final newCampaign = CampaignModel(
         id: '',
+        ngoId: user.currentNgoId ?? 'HRAS_DEFAULT_ID',
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         type: _selectedType,
@@ -125,6 +184,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         startDate: _startDate,
         endDate: _endDate,
         location: _locationController.text.trim(),
+        latitude: double.tryParse(_latitudeController.text.trim()),
+        longitude: double.tryParse(_longitudeController.text.trim()),
         targetGoal: _targetGoalController.text.trim(),
         itemsNeeded: _itemsNeededController.text.trim().isEmpty
             ? null
@@ -132,9 +193,15 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         volunteerLimit: volunteerLimit,
         createdBy: user.uid,
         createdByName: user.name,
+        ngoName: user.ngoName,
         createdAt: DateTime.now(),
       );
-      success = await campaignProvider.createCampaign(newCampaign);
+      success = await campaignProvider.createCampaign(
+        newCampaign,
+        videoFile: _highlightVideo,
+        galleryFiles: _galleryImages,
+        documentFile: _projectRecordPdf,
+      );
     }
 
     if (!mounted) return;
@@ -217,11 +284,36 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     // ─── Location ───
                     CustomTextField(
                       controller: _locationController,
-                      label: 'Location',
+                      label: 'Location Name',
                       hint: 'e.g., Lahore, Gulberg',
                       prefixIcon: Icons.location_on,
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? 'Location is required' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _latitudeController,
+                            label: 'Lat (Optional)',
+                            hint: 'e.g. 24.8607',
+                            prefixIcon: Icons.map,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _longitudeController,
+                            label: 'Lng (Optional)',
+                            hint: 'e.g. 67.0011',
+                            prefixIcon: Icons.map,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
@@ -312,6 +404,81 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                         }).toList(),
                         onChanged: (v) => setState(() => _selectedStatus = v!),
                       ),
+                      const SizedBox(height: 24),
+                    ],
+
+                    // ─── Multimedia Upload Section (Create Only) ───
+                    if (!_isEditing) ...[
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      Text('Multimedia (Optional)', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
+                      
+                      // Highlight Video
+                      ListTile(
+                        leading: const Icon(Icons.video_library),
+                        title: const Text('Highlight Video (MP4)'),
+                        subtitle: Text(_highlightVideo != null ? _highlightVideo!.path.split('\\').last.split('/').last : 'No video selected'),
+                        trailing: OutlinedButton(
+                          onPressed: _pickVideo,
+                          child: const Text('Pick Video'),
+                        ),
+                      ),
+                      
+                      // Project Record PDF
+                      ListTile(
+                        leading: const Icon(Icons.picture_as_pdf),
+                        title: const Text('Project Record (PDF)'),
+                        subtitle: Text(_projectRecordPdf != null ? _projectRecordPdf!.path.split('\\').last.split('/').last : 'No PDF selected'),
+                        trailing: OutlinedButton(
+                          onPressed: _pickPdf,
+                          child: const Text('Pick PDF'),
+                        ),
+                      ),
+
+                      // Gallery Images
+                      ListTile(
+                        leading: const Icon(Icons.photo_library),
+                        title: const Text('Gallery Images'),
+                        subtitle: Text('${_galleryImages.length} images selected'),
+                        trailing: OutlinedButton(
+                          onPressed: _pickGalleryImages,
+                          child: const Text('Pick Images'),
+                        ),
+                      ),
+                      if (_galleryImages.isNotEmpty)
+                        SizedBox(
+                          height: 80,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _galleryImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(_galleryImages[index], width: 70, height: 70, fit: BoxFit.cover),
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: InkWell(
+                                        onTap: () => setState(() => _galleryImages.removeAt(index)),
+                                        child: const CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.red,
+                                          child: Icon(Icons.close, size: 12, color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       const SizedBox(height: 24),
                     ],
 

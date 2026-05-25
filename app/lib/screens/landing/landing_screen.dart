@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
@@ -452,11 +453,11 @@ class _Footer extends StatelessWidget {
                               AppSpacing.vGapLg,
                               Row(
                                 children: [
-                                  _SocialBtn(Icons.camera_alt, 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                                  _SocialBtn(FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 20), 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
                                   AppSpacing.hGapMd,
-                                  _SocialBtn(Icons.facebook, 'https://www.facebook.com/share/18JqaHAKdM/'),
+                                  _SocialBtn(const Icon(Icons.facebook, color: Colors.white, size: 20), 'https://www.facebook.com/share/18JqaHAKdM/'),
                                   AppSpacing.hGapMd,
-                                  _SocialBtn(Icons.music_note, 'https://www.tiktok.com/@hras_official'),
+                                  _SocialBtn(FaIcon(FontAwesomeIcons.tiktok, color: Colors.white, size: 20), 'https://www.tiktok.com/@hras_official'),
                                 ],
                               ),
                             ],
@@ -514,11 +515,11 @@ class _Footer extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _SocialBtn(Icons.camera_alt, 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                            _SocialBtn(FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 20), 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
                             AppSpacing.hGapLg,
-                            _SocialBtn(Icons.facebook, 'https://www.facebook.com/share/18JqaHAKdM/'),
+                            _SocialBtn(const Icon(Icons.facebook, color: Colors.white, size: 20), 'https://www.facebook.com/share/18JqaHAKdM/'),
                             AppSpacing.hGapLg,
-                            _SocialBtn(Icons.music_note, 'https://www.tiktok.com/@hras_official'),
+                            _SocialBtn(FaIcon(FontAwesomeIcons.tiktok, color: Colors.white, size: 20), 'https://www.tiktok.com/@hras_official'),
                           ],
                         ),
                       ],
@@ -559,9 +560,9 @@ class _Footer extends StatelessWidget {
 }
 
 class _SocialBtn extends StatelessWidget {
-  final IconData icon;
+  final Widget iconWidget;
   final String url;
-  const _SocialBtn(this.icon, this.url);
+  const _SocialBtn(this.iconWidget, this.url);
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +579,7 @@ class _SocialBtn extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
-        child: Icon(icon, color: Colors.white, size: AppTokens.iconMd),
+        child: iconWidget,
       ),
     );
   }

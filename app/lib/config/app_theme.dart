@@ -9,16 +9,18 @@ class AppTheme {
   AppTheme._();
 
   // ─── LIGHT THEME ───
-  static ThemeData get lightTheme {
+  static ThemeData getLightTheme([Color? primaryColor, Color? secondaryColor]) {
+    final primary = primaryColor ?? AppColors.primary;
+    final secondary = secondaryColor ?? AppColors.secondary;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      primaryColor: AppColors.primary,
+      primaryColor: primary,
       scaffoldBackgroundColor: AppColors.lightScaffoldBg,
       colorScheme: ColorScheme.light(
-        primary: AppColors.primary,
+        primary: primary,
         onPrimary: Colors.white,
-        secondary: AppColors.secondary,
+        secondary: secondary,
         onSecondary: Colors.white,
         tertiary: AppColors.accent,
         surface: AppColors.lightSurface,
@@ -33,23 +35,23 @@ class AppTheme {
       // AppBar — clean white on light, dark header on dark
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.lightAppBarBg,
-        foregroundColor: AppColors.primary,
+        foregroundColor: primary,
         elevation: 0,
         scrolledUnderElevation: 1,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: AppTextStyles.titleLarge(color: AppColors.lightTextPrimary),
-        iconTheme: const IconThemeData(color: AppColors.primary),
+        iconTheme: IconThemeData(color: primary),
       ),
 
       // Bottom Nav
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightNavBarBg,
-        selectedItemColor: AppColors.primary,
+        selectedItemColor: primary,
         unselectedItemColor: AppColors.neutral400,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.primary),
+        selectedLabelStyle: AppTextStyles.labelSmall(color: primary),
         unselectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.neutral400),
       ),
 
@@ -68,10 +70,9 @@ class AppTheme {
       // ElevatedButton
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: primary,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size(double.infinity, AppTokens.buttonHeightMd),
           shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
           textStyle: AppTextStyles.button(),
         ),
@@ -80,9 +81,8 @@ class AppTheme {
       // OutlinedButton
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary, width: 1.5),
-          minimumSize: const Size(double.infinity, AppTokens.buttonHeightMd),
+          foregroundColor: primary,
+          side: BorderSide(color: primary, width: 1.5),
           shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
           textStyle: AppTextStyles.button(),
         ),
@@ -91,7 +91,7 @@ class AppTheme {
       // TextButton
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: primary,
           textStyle: AppTextStyles.button(),
         ),
       ),
@@ -111,7 +111,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppTokens.borderRadiusMd,
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppTokens.borderRadiusMd,
@@ -127,8 +127,8 @@ class AppTheme {
 
       // Chip
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.primarySurface,
-        labelStyle: AppTextStyles.labelMedium(color: AppColors.primary),
+        backgroundColor: primary.withOpacity(0.1),
+        labelStyle: AppTextStyles.labelMedium(color: primary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTokens.radiusPill)),
         side: BorderSide.none,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
@@ -152,12 +152,12 @@ class AppTheme {
 
       // TabBar
       tabBarTheme: TabBarThemeData(
-        labelColor: AppColors.primary,
+        labelColor: primary,
         unselectedLabelColor: AppColors.neutral400,
         labelStyle: AppTextStyles.labelLarge(),
         unselectedLabelStyle: AppTextStyles.labelLarge(),
         indicator: UnderlineTabIndicator(
-          borderSide: const BorderSide(color: AppColors.primary, width: 2.5),
+          borderSide: BorderSide(color: primary, width: 2.5),
           borderRadius: BorderRadius.circular(AppTokens.radiusPill),
         ),
       ),
@@ -169,36 +169,38 @@ class AppTheme {
       ),
 
       // FloatingActionButton
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primary,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
       ),
 
       // NavigationRail
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.lightSurface,
-        selectedIconTheme: const IconThemeData(color: AppColors.primary),
+        selectedIconTheme: IconThemeData(color: primary),
         unselectedIconTheme: const IconThemeData(color: AppColors.neutral400),
-        selectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.primary),
+        selectedLabelTextStyle: AppTextStyles.labelMedium(color: primary),
         unselectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.neutral400),
-        indicatorColor: AppColors.primarySurface,
+        indicatorColor: primary.withOpacity(0.1),
       ),
     );
   }
 
   // ─── DARK THEME ───
-  static ThemeData get darkTheme {
+  static ThemeData getDarkTheme([Color? primaryColor, Color? secondaryColor]) {
+    final primaryLight = primaryColor ?? AppColors.primaryLight;
+    final secondaryLight = secondaryColor ?? AppColors.secondaryLight;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primaryColor: AppColors.primaryLight,
+      primaryColor: primaryLight,
       scaffoldBackgroundColor: AppColors.darkScaffoldBg,
       colorScheme: ColorScheme.dark(
-        primary: AppColors.primaryLight,
+        primary: primaryLight,
         onPrimary: Colors.white,
-        secondary: AppColors.secondaryLight,
+        secondary: secondaryLight,
         onSecondary: Colors.white,
         tertiary: AppColors.accentLight,
         surface: AppColors.darkSurface,
@@ -222,11 +224,11 @@ class AppTheme {
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkNavBarBg,
-        selectedItemColor: AppColors.primaryLight,
+        selectedItemColor: primaryLight,
         unselectedItemColor: AppColors.neutral500,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.primaryLight),
+        selectedLabelStyle: AppTextStyles.labelSmall(color: primaryLight),
         unselectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.neutral500),
       ),
 
@@ -243,10 +245,9 @@ class AppTheme {
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryLight,
+          backgroundColor: primaryLight,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size(double.infinity, AppTokens.buttonHeightMd),
           shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
           textStyle: AppTextStyles.button(),
         ),
@@ -254,9 +255,8 @@ class AppTheme {
 
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryLight,
-          side: const BorderSide(color: AppColors.primaryLight, width: 1.5),
-          minimumSize: const Size(double.infinity, AppTokens.buttonHeightMd),
+          foregroundColor: primaryLight,
+          side: BorderSide(color: primaryLight, width: 1.5),
           shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
           textStyle: AppTextStyles.button(),
         ),
@@ -264,7 +264,7 @@ class AppTheme {
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryLight,
+          foregroundColor: primaryLight,
           textStyle: AppTextStyles.button(),
         ),
       ),
@@ -283,7 +283,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppTokens.borderRadiusMd,
-          borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
+          borderSide: BorderSide(color: primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppTokens.borderRadiusMd,
@@ -298,9 +298,9 @@ class AppTheme {
 
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        labelStyle: AppTextStyles.labelMedium(color: AppColors.primaryLight),
+        labelStyle: AppTextStyles.labelMedium(color: primaryLight),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTokens.radiusPill)),
-        side: BorderSide(color: AppColors.darkDivider),
+        side: const BorderSide(color: AppColors.darkDivider),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
       ),
 
@@ -319,12 +319,12 @@ class AppTheme {
       ),
 
       tabBarTheme: TabBarThemeData(
-        labelColor: AppColors.primaryLight,
+        labelColor: primaryLight,
         unselectedLabelColor: AppColors.neutral500,
         labelStyle: AppTextStyles.labelLarge(),
         unselectedLabelStyle: AppTextStyles.labelLarge(),
         indicator: UnderlineTabIndicator(
-          borderSide: const BorderSide(color: AppColors.primaryLight, width: 2.5),
+          borderSide: BorderSide(color: primaryLight, width: 2.5),
           borderRadius: BorderRadius.circular(AppTokens.radiusPill),
         ),
       ),
@@ -334,20 +334,20 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
       ),
 
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryLight,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryLight,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
       ),
 
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.darkSurface,
-        selectedIconTheme: const IconThemeData(color: AppColors.primaryLight),
+        selectedIconTheme: IconThemeData(color: primaryLight),
         unselectedIconTheme: const IconThemeData(color: AppColors.neutral500),
-        selectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.primaryLight),
+        selectedLabelTextStyle: AppTextStyles.labelMedium(color: primaryLight),
         unselectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.neutral500),
-        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.15),
+        indicatorColor: primaryLight.withOpacity(0.15),
       ),
     );
   }

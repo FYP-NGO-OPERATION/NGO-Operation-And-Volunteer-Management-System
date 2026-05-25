@@ -10,14 +10,20 @@ import '../../providers/auth_provider.dart';
 import '../../utils/responsive.dart';
 import '../../services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/ngo_service.dart';
 import '../landing/landing_screen.dart';
 import '../home/home_screen.dart';
 import '../../widgets/admin/admin_layout.dart';
 import 'onboarding_screen.dart';
 
+import '../../providers/ngo_provider.dart';
+import '../../providers/campaign_provider.dart';
+import '../../providers/virtual_session_provider.dart';
+
 /// Premium splash screen with cinematic logo reveal
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final String? inviteNgoId;
+  const SplashScreen({super.key, this.inviteNgoId});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -75,6 +81,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkAuth() async {
     if (!mounted) return;
+
+    if (widget.inviteNgoId != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('pending_invite_ngo_id', widget.inviteNgoId!);
+    }
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = await authProvider.checkAuthState();
     final prefs = await SharedPreferences.getInstance();
@@ -83,10 +95,30 @@ class _SplashScreenState extends State<SplashScreen>
 
     Widget nextScreen;
     if (isLoggedIn) {
-      // Initialize FCM push notifications (FYP-02+ only)
       if (FeatureFlags.isPushNotificationsEnabled && authProvider.userId != null) {
         NotificationService().initialize(authProvider.userId!);
       }
+      
+      final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+      final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
+      
+      // Handle Deep Link Auto-Join
+      if (widget.inviteNgoId != null) {
+        final ngoService = NgoService();
+        final targetNgo = await ngoService.getNgo(widget.inviteNgoId!);
+        if (targetNgo != null) {
+          await ngoProvider.selectNgo(authProvider.user!, targetNgo);
+          await prefs.remove('pending_invite_ngo_id');
+        }
+      }
+
+      await ngoProvider.loadNgoForUser(authProvider.user!);
+      if (!mounted) return;
+      
+      final ngoId = authProvider.user!.currentNgoId ?? 'HRAS_DEFAULT_ID';
+      campaignProvider.init(ngoId);
+      Provider.of<VirtualSessionProvider>(context, listen: false).init(ngoId);
+      
       nextScreen = authProvider.isAdmin ? const AdminLayout() : const HomeScreen();
     } else if (!hasSeenOnboarding) {
       nextScreen = const OnboardingScreen();
@@ -94,6 +126,8 @@ class _SplashScreenState extends State<SplashScreen>
       nextScreen = const LandingScreen();
     }
 
+    if (!mounted) return;
+    
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => nextScreen,

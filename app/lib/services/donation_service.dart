@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/donation_model.dart';
+import '../enums/app_enums.dart';
 
 /// Service for donation CRUD operations.
 class DonationService {
@@ -35,22 +36,59 @@ class DonationService {
       receivedBy: donation.receivedBy,
       receivedByName: donation.receivedByName,
       receivedAt: donation.receivedAt,
+      transactionId: donation.transactionId,
+      status: donation.status,
+      isAnonymous: donation.isAnonymous,
     );
 
-    // Use batch to save donation + update campaign counters
+    // Use batch to save donation + conditionally update campaign counters
     final batch = _db.batch();
     batch.set(docRef, donationWithId.toMap());
 
-    // Update campaign donation counters
-    final totalMoney = donation.amountCash + donation.amountOnline;
-    batch.update(_campaigns.doc(donation.campaignId), {
-      'totalDonationsCount': FieldValue.increment(1),
-      'totalDonationsAmount': FieldValue.increment(totalMoney),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    // Update campaign donation counters ONLY if approved
+    if (donationWithId.status == DonationStatus.approved) {
+      final totalMoney = donation.amountCash + donation.amountOnline;
+      batch.update(_campaigns.doc(donation.campaignId), {
+        'totalDonationsCount': FieldValue.increment(1),
+        'totalDonationsAmount': FieldValue.increment(totalMoney),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
 
     await batch.commit();
     return donationWithId;
+  }
+
+  /// Update donation status (approve/reject)
+  Future<void> updateDonationStatus(DonationModel donation, DonationStatus newStatus) async {
+    if (donation.status == newStatus) return;
+
+    final batch = _db.batch();
+    batch.update(_donations.doc(donation.id), {
+      'status': newStatus.name,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    // If changing to approved from anything else -> INCREMENT counters
+    if (newStatus == DonationStatus.approved) {
+      final totalMoney = donation.amountCash + donation.amountOnline;
+      batch.update(_campaigns.doc(donation.campaignId), {
+        'totalDonationsCount': FieldValue.increment(1),
+        'totalDonationsAmount': FieldValue.increment(totalMoney),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+    // If changing from approved to something else (e.g., rejected) -> DECREMENT counters
+    else if (donation.status == DonationStatus.approved) {
+      final totalMoney = donation.amountCash + donation.amountOnline;
+      batch.update(_campaigns.doc(donation.campaignId), {
+        'totalDonationsCount': FieldValue.increment(-1),
+        'totalDonationsAmount': FieldValue.increment(-totalMoney),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
   }
 
   // ═══════════════════════════════════════════
@@ -61,11 +99,14 @@ class DonationService {
   Stream<List<DonationModel>> getDonationsStream(String campaignId) {
     return _donations
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('receivedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => DonationModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => DonationModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+          return list;
+        });
   }
 
   /// Get all donations (admin)
@@ -94,13 +135,15 @@ class DonationService {
     final batch = _db.batch();
     batch.delete(_donations.doc(donation.id));
 
-    // Decrement campaign counters
-    final totalMoney = donation.amountCash + donation.amountOnline;
-    batch.update(_campaigns.doc(donation.campaignId), {
-      'totalDonationsCount': FieldValue.increment(-1),
-      'totalDonationsAmount': FieldValue.increment(-totalMoney),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    // Decrement campaign counters ONLY if it was approved
+    if (donation.status == DonationStatus.approved) {
+      final totalMoney = donation.amountCash + donation.amountOnline;
+      batch.update(_campaigns.doc(donation.campaignId), {
+        'totalDonationsCount': FieldValue.increment(-1),
+        'totalDonationsAmount': FieldValue.increment(-totalMoney),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
 
     await batch.commit();
   }

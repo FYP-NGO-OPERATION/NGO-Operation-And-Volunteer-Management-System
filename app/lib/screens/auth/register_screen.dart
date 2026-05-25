@@ -59,8 +59,10 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     authProvider.clearError();
     final cleanPhone = _phoneController.text.replaceAll('-', '');
     final success = await authProvider.register(
-      name: _nameController.text, email: _emailController.text,
-      password: _passwordController.text, phone: cleanPhone,
+      name: _nameController.text, 
+      email: _emailController.text,
+      password: _passwordController.text, 
+      phone: cleanPhone,
     );
     if (!mounted) return;
     if (success) {
@@ -122,6 +124,9 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                         validator: (v) => Validators.phone(v?.replaceAll('-', '')),
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly, PhoneInputFormatter()]),
                       AppSpacing.vGapMd,
+                      
+                      AppSpacing.vGapMd,
+
                       CustomTextField(controller: _passwordController, label: 'Password', hint: 'Minimum 6 characters',
                         prefixIcon: Icons.lock_outline, obscureText: _obscurePassword,
                         textInputAction: TextInputAction.next, validator: Validators.password,

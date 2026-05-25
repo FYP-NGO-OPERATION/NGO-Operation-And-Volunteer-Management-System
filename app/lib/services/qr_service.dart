@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'volunteer_service.dart';
 import '../enums/app_enums.dart';
+import '../config/feature_flags.dart';
 
 /// QR Code Attendance Service (FYP-02 Feature Module).
 ///
@@ -24,6 +25,16 @@ import '../enums/app_enums.dart';
 /// Platform Support:
 ///   - Mobile: Uses mobile_scanner for native camera QR scanning
 ///   - Web: Fallback message shown (camera scanning not supported)
+/// 
+/// VIVA PREP EXPLANATION (QR Attendance):
+/// Q: How does the QR Attendance work under the hood?
+/// A: 
+/// 1. The Admin creates a campaign. A unique JSON payload is generated encoding the Campaign ID.
+/// 2. This JSON is visually represented as a QR code using the 'qr_flutter' package.
+/// 3. When a Volunteer arrives, they open the app and scan it using the 'mobile_scanner' package.
+/// 4. The app reads the Campaign ID, goes to Firestore, and checks if this Volunteer is registered.
+/// 5. If yes, it updates their status to "attended". If no, it shows an error.
+/// This prevents buddy-punching (proxy attendance) because it checks the user's logged-in Firebase ID.
 class QrService {
   QrService._();
 
@@ -46,12 +57,24 @@ class QrService {
 
   /// Parse a scanned QR code payload.
   ///
-  /// Returns null if the QR code is invalid or not from HRAS.
+  /// Returns null if the QR code is invalid, not from HRAS, or expired.
   static Map<String, dynamic>? parseQrPayload(String rawData) {
     try {
       final data = jsonDecode(rawData) as Map<String, dynamic>;
       if (data['type'] != 'hras_attendance') return null;
       if (data['campaignId'] == null) return null;
+      
+      // FYP-03 Security Fix: TTL Expiry Check (Guarded by Phase Flag)
+      if (FeatureFlags.isSecureQrEnabled && data['generatedAt'] != null) {
+        final generatedAt = DateTime.parse(data['generatedAt']);
+        final difference = DateTime.now().difference(generatedAt).inSeconds;
+        
+        // If QR is older than 60 seconds, it's considered an expired screenshot
+        if (difference > 60 || difference < -5) { // -5 allows for slight clock skew
+          return {'error': 'EXPIRED_QR'};
+        }
+      }
+      
       return data;
     } catch (_) {
       return null;
@@ -73,6 +96,13 @@ class QrService {
       return QrScanResult(
         success: false,
         message: 'Invalid QR code. This is not an HRAS attendance code.',
+      );
+    }
+    
+    if (payload['error'] == 'EXPIRED_QR') {
+      return QrScanResult(
+        success: false,
+        message: 'Security Alert: This QR code has expired (Screenshot detected). Ask the admin to refresh their screen.',
       );
     }
 

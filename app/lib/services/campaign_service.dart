@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../models/campaign_model.dart';
@@ -17,8 +18,42 @@ class CampaignService {
   // ═══════════════════════════════════════════
 
   /// Create a new campaign
-  Future<CampaignModel> createCampaign(CampaignModel campaign) async {
+  Future<CampaignModel> createCampaign(
+    CampaignModel campaign, {
+    File? videoFile,
+    File? documentFile,
+    List<File>? galleryFiles,
+  }) async {
     final docRef = _campaigns.doc();
+
+    String? videoUrl;
+    String? documentUrl;
+    List<String> galleryUrls = [];
+
+    // Upload Video if provided
+    if (videoFile != null) {
+      final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/video.mp4');
+      await ref.putFile(videoFile);
+      videoUrl = await ref.getDownloadURL();
+    }
+
+    // Upload Document if provided
+    if (documentFile != null) {
+      final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/document.pdf');
+      await ref.putFile(documentFile);
+      documentUrl = await ref.getDownloadURL();
+    }
+
+    // Upload Gallery Images if provided
+    if (galleryFiles != null && galleryFiles.isNotEmpty) {
+      for (int i = 0; i < galleryFiles.length; i++) {
+        final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/gallery_$i.jpg');
+        await ref.putFile(galleryFiles[i]);
+        final url = await ref.getDownloadURL();
+        galleryUrls.add(url);
+      }
+    }
+
     final newCampaign = CampaignModel(
       id: docRef.id,
       title: campaign.title,
@@ -28,6 +63,8 @@ class CampaignService {
       startDate: campaign.startDate,
       endDate: campaign.endDate,
       location: campaign.location,
+      latitude: campaign.latitude,
+      longitude: campaign.longitude,
       coverImageUrl: campaign.coverImageUrl,
       posterImageUrl: campaign.posterImageUrl,
       targetGoal: campaign.targetGoal,
@@ -36,15 +73,20 @@ class CampaignService {
       volunteerLimit: campaign.volunteerLimit,
       createdBy: campaign.createdBy,
       createdByName: campaign.createdByName,
+      ngoId: campaign.ngoId,
+      videoUrl: videoUrl,
+      documentUrl: documentUrl,
+      galleryUrls: galleryUrls,
       createdAt: DateTime.now(),
     );
     await docRef.set(newCampaign.toMap());
     return newCampaign;
   }
 
-  /// Get all campaigns (real-time stream)
-  Stream<List<CampaignModel>> getCampaignsStream() {
+  /// Get all campaigns (real-time stream) for a specific NGO
+  Stream<List<CampaignModel>> getCampaignsStream(String ngoId) {
     return _campaigns
+        .where('ngoId', isEqualTo: ngoId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
@@ -52,15 +94,19 @@ class CampaignService {
             .toList());
   }
 
-  /// Get campaigns by status
-  Stream<List<CampaignModel>> getCampaignsByStatus(CampaignStatus status) {
+  /// Get campaigns by status for a specific NGO
+  Stream<List<CampaignModel>> getCampaignsByStatus(CampaignStatus status, String ngoId) {
     return _campaigns
+        .where('ngoId', isEqualTo: ngoId)
         .where('status', isEqualTo: status.name)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CampaignModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => CampaignModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
+        });
   }
 
   /// Get single campaign by ID
@@ -228,11 +274,14 @@ class CampaignService {
   Stream<List<ExpenseModel>> getExpensesStream(String campaignId) {
     return _expenses
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ExpenseModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => ExpenseModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
+        });
   }
 
   /// Delete an expense
@@ -272,8 +321,12 @@ class CampaignService {
   }
 
   /// Fetch all campaigns as a one-time Future (for matching algorithm).
-  Future<List<CampaignModel>> fetchAllCampaigns() async {
-    final snapshot = await _campaigns.orderBy('createdAt', descending: true).get();
+  Future<List<CampaignModel>> fetchAllCampaigns([String? ngoId]) async {
+    Query<Map<String, dynamic>> query = _campaigns;
+    if (ngoId != null) {
+      query = query.where('ngoId', isEqualTo: ngoId);
+    }
+    final snapshot = await query.orderBy('createdAt', descending: true).get();
     return snapshot.docs.map((doc) => CampaignModel.fromMap(doc.data())).toList();
   }
 }

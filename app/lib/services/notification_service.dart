@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Firebase Cloud Messaging (FCM) Notification Service (FYP-02 Feature Module).
 ///
@@ -31,6 +32,7 @@ class NotificationService {
   NotificationService._();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   /// Initialize FCM — call once after Firebase.initializeApp().
@@ -56,6 +58,23 @@ class NotificationService {
         debugPrint('[FCM] User declined notification permissions');
         return;
       }
+
+      // Initialize local notifications for foreground display
+      const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const darwinInit = DarwinInitializationSettings();
+      const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
+      await _localNotifications.initialize(settings: initSettings);
+
+      // Create a high importance channel for Android
+      const channel = AndroidNotificationChannel(
+        'high_importance_channel', // id
+        'High Importance Notifications', // title
+        description: 'This channel is used for important notifications.', // description
+        importance: Importance.max,
+      );
+      await _localNotifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
 
       // Get and store FCM token
       final token = await _messaging.getToken();
@@ -98,8 +117,31 @@ class NotificationService {
   /// Handle incoming messages while app is in foreground.
   void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('[FCM] Foreground message: ${message.notification?.title}');
-    // In a production app, you would show a local notification here.
-    // For FYP-02, we log the message for demonstration purposes.
+    final notification = message.notification;
+    final android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      _localNotifications.show(
+        id: notification.hashCode,
+        title: notification.title,
+        body: notification.body,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'High Importance Notifications',
+            channelDescription: 'This channel is used for important notifications.',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+      );
+    }
   }
 
   /// Unsubscribe from all topics (used on logout).

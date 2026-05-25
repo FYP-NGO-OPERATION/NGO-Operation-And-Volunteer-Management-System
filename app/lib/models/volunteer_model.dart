@@ -91,6 +91,7 @@ class VolunteerModel {
   }
 
   /// Helpers
+  bool get isPending => status == VolunteerStatus.pending;
   bool get isRegistered => status == VolunteerStatus.registered;
   bool get isConfirmed => status == VolunteerStatus.confirmed;
   bool get hasAttended => status == VolunteerStatus.attended;

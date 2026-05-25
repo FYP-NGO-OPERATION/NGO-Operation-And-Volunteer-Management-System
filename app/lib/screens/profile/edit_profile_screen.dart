@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
@@ -31,41 +30,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    // Capture ALL context-dependent values before any awaits
-    final scaffoldContext = context;
-    final uiSettings = <PlatformUiSettings>[
-      AndroidUiSettings(
-        toolbarTitle: 'Crop Profile Picture',
-        toolbarColor: AppColors.primary,
-        toolbarWidgetColor: Colors.white,
-        initAspectRatio: CropAspectRatioPreset.square,
-        lockAspectRatio: true,
-      ),
-      IOSUiSettings(
-        title: 'Crop Profile Picture',
-        aspectRatioLockEnabled: true,
-      ),
-      if (kIsWeb) WebUiSettings(
-        context: scaffoldContext,
-        presentStyle: WebPresentStyle.page,
-      ),
-    ];
-
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50, // Added image compression to save storage
+    );
     if (pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        uiSettings: uiSettings,
-      );
-
-      if (croppedFile != null) {
-        final bytes = await croppedFile.readAsBytes();
-        if (mounted) {
-          setState(() {
-            _selectedImageBytes = bytes;
-          });
-        }
+      final bytes = await pickedFile.readAsBytes();
+      if (mounted) {
+        setState(() {
+          _selectedImageBytes = bytes;
+        });
       }
     }
   }

@@ -53,7 +53,10 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
 
     if (source == null) return;
 
-    final pickedFile = await picker.pickImage(source: source);
+    final pickedFile = await picker.pickImage(
+      source: source,
+      imageQuality: 50, // Added image compression to save storage
+    );
     if (pickedFile == null) return;
 
     // Optional: Ask for a caption
@@ -147,18 +150,27 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             width: double.infinity,
-            color: AppColors.primarySurface,
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.grey[900] 
+                : AppColors.primarySurface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   widget.campaign.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 16,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Campaign Photos & Memories',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : AppColors.textSecondary, 
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),

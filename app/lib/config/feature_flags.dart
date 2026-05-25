@@ -11,13 +11,20 @@
 ///     flutter run --dart-define=APP_PHASE=FULL
 ///
 /// If no --dart-define is passed, defaults to FYP1 (safe for defense).
+/// 
+/// VIVA PREP EXPLANATION:
+/// Q: Why use Feature Flags?
+/// A: Instead of creating 3 different projects or making messy Git branches, 
+/// we use "--dart-define" to inject a compile-time variable. This allows us 
+/// to hide advanced FYP-2 features during the FYP-1 defense so the app doesn't crash 
+/// if the backend isn't fully ready yet. It is a standard industry practice.
 class FeatureFlags {
   FeatureFlags._(); // Prevent instantiation
 
   /// Current phase read from compile-time environment.
   static const String phase = String.fromEnvironment(
     'APP_PHASE',
-    defaultValue: 'FYP1',
+    defaultValue: 'FULL',
   );
 
   // ─── Phase Checks ───────────────────────────────────────────
@@ -45,13 +52,23 @@ class FeatureFlags {
   /// Available in: FYP2, FULL
   static bool get isPushNotificationsEnabled => isFyp2 || isFull;
 
-  /// Smart volunteer-campaign matching algorithm.
-  /// Available in: FYP2, FULL
-  static bool get isSmartMatchingEnabled => isFyp2 || isFull;
+  /// Smart volunteer-campaign matching algorithm (Basic UI).
+  /// Available in: FYP1, FYP2, FULL
+  static bool get isSmartMatchingEnabled => true;
 
-  /// QR-based attendance system.
-  /// Available in: FYP2, FULL
-  static bool get isQrAttendanceEnabled => isFyp2 || isFull;
+  /// QR-based attendance system (Basic).
+  /// Available in: FYP1, FYP2, FULL
+  static bool get isQrAttendanceEnabled => true;
+
+  // ─── FYP-03 Optimization Feature Gates ───────────────────────
+
+  /// Server-side cloud function matching (Optimized).
+  /// Available in: FULL
+  static bool get isServerSideMatchingEnabled => isFull;
+
+  /// Secure QR with 60-second TTL expiry.
+  /// Available in: FULL
+  static bool get isSecureQrEnabled => isFull;
 
   // ─── Convenience ────────────────────────────────────────────
 

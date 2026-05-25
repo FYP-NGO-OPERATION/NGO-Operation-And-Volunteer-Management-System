@@ -8,7 +8,9 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_tokens.dart';
 import '../../utils/responsive.dart';
 import '../../services/pdf_report_service.dart';
-
+import '../../enums/app_enums.dart';
+import '../../models/campaign_model.dart';
+import '../../providers/ngo_provider.dart';
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
 
@@ -24,13 +26,11 @@ class AnalyticsScreen extends StatelessWidget {
                 icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
                 tooltip: 'Download PDF Report',
                 onPressed: () {
-                  if (provider.campaigns.isEmpty) return;
-                  PdfReportService.generateAndPrintCampaignReport(
-                    campaigns: provider.allCampaigns,
-                    totalBeneficiaries: provider.totalBeneficiariesOverall,
-                    totalItems: provider.totalItemsDistributedOverall,
-                    totalDonations: provider.totalDonationsOverall,
-                  );
+                  final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+                  final ngoId = ngoProvider.currentNgo?.id;
+                  if (ngoId != null) {
+                    PdfReportService.generateAndDownloadReport(ngoId: ngoId);
+                  }
                 },
               );
             },
@@ -74,9 +74,9 @@ class AnalyticsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Donations Breakdown', style: AppTextStyles.titleLarge()),
+                            Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
                             AppSpacing.vGapLg,
-                            _buildDonationsPieChart(provider),
+                            _buildSuccessRateChart(provider),
                           ],
                         ),
                       ),
@@ -87,9 +87,9 @@ class AnalyticsScreen extends StatelessWidget {
                   AppSpacing.vGapLg,
                   _buildCampaignStatusBarChart(provider),
                   AppSpacing.vGapXxl,
-                  Text('Donations Breakdown', style: AppTextStyles.titleLarge()),
+                  Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
                   AppSpacing.vGapLg,
-                  _buildDonationsPieChart(provider),
+                  _buildSuccessRateChart(provider),
                 ],
                 AppSpacing.vGapXxl,
               ],
@@ -210,11 +210,44 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDonationsPieChart(CampaignProvider provider) {
-    // For demonstration, we break down dummy categories if actual donations aren't categorized globally.
-    // In a real app, you'd aggregate expenses/donations by category.
-    // Here we just show a static visual distribution to fulfill the FYP chart requirement.
+  bool _isCampaignSuccessful(CampaignModel c) {
+    if (c.status != CampaignStatus.completed) return false;
     
+    // Check volunteer limit
+    if (c.volunteerLimit != null && c.volunteerLimit! > 0 && c.totalVolunteers >= c.volunteerLimit!) return true;
+
+    // Check target goal
+    try {
+      final numericOnly = c.targetGoal.replaceAll(RegExp(r'[^0-9]'), '');
+      if (numericOnly.isNotEmpty) {
+        final target = double.parse(numericOnly);
+        if (target > 0 && c.totalDonationsAmount >= target) return true;
+      }
+    } catch (_) {}
+
+    // Fallback heuristic for older drives without strict targets
+    return c.totalDonationsAmount >= 5000 || c.totalVolunteers >= 5;
+  }
+
+  Widget _buildSuccessRateChart(CampaignProvider provider) {
+    final completedCampaigns = provider.allCampaigns.where((c) => c.status == CampaignStatus.completed).toList();
+    if (completedCampaigns.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: Text('No completed campaigns to evaluate.')),
+      );
+    }
+
+    int successful = 0;
+    int unsuccessful = 0;
+    for (var c in completedCampaigns) {
+      if (_isCampaignSuccessful(c)) successful++; else unsuccessful++;
+    }
+
+    final total = successful + unsuccessful;
+    final succPct = (successful / total * 100).toStringAsFixed(1);
+    final failPct = (unsuccessful / total * 100).toStringAsFixed(1);
+
     return AspectRatio(
       aspectRatio: 1.3,
       child: Card(
@@ -228,10 +261,20 @@ class AnalyticsScreen extends StatelessWidget {
                   sectionsSpace: 2,
                   centerSpaceRadius: 40,
                   sections: [
-                    PieChartSectionData(value: 40, color: AppColors.primary, title: '40%', radius: 50, titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-                    PieChartSectionData(value: 30, color: AppColors.success, title: '30%', radius: 50, titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-                    PieChartSectionData(value: 20, color: AppColors.warning, title: '20%', radius: 50, titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-                    PieChartSectionData(value: 10, color: AppColors.info, title: '10%', radius: 50, titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                    PieChartSectionData(
+                      value: successful.toDouble(),
+                      color: AppColors.success,
+                      title: '$succPct%',
+                      radius: 50,
+                      titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    PieChartSectionData(
+                      value: unsuccessful.toDouble(),
+                      color: AppColors.error,
+                      title: '$failPct%',
+                      radius: 50,
+                      titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
                   ],
                 ),
               ),
@@ -240,13 +283,9 @@ class AnalyticsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _indicator(color: AppColors.primary, text: 'Medical Funds'),
+                _indicator(color: AppColors.success, text: 'Successful ($successful)'),
                 const SizedBox(height: 8),
-                _indicator(color: AppColors.success, text: 'Food Packages'),
-                const SizedBox(height: 8),
-                _indicator(color: AppColors.warning, text: 'Winter Clothes'),
-                const SizedBox(height: 8),
-                _indicator(color: AppColors.info, text: 'Education'),
+                _indicator(color: AppColors.error, text: 'Unsuccessful ($unsuccessful)'),
               ],
             ),
             const SizedBox(width: 16),

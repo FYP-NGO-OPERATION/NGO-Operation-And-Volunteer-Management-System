@@ -11,8 +11,13 @@ class CampaignModel {
   final DateTime startDate;
   final DateTime? endDate;
   final String location;
+  final double? latitude;
+  final double? longitude;
   final String? coverImageUrl;
   final String? posterImageUrl;
+  final String? videoUrl;
+  final String? documentUrl;
+  final List<String> galleryUrls;
   final String targetGoal;
   final String? achievedGoal;
   final String? itemsNeeded;
@@ -26,6 +31,8 @@ class CampaignModel {
   final int progressPercent;
   final String createdBy;
   final String createdByName;
+  final String? ngoName; // FYP-03 Multi-NGO feature (legacy)
+  final String ngoId; // Phase 7: Multi-Tenant SaaS
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -38,8 +45,13 @@ class CampaignModel {
     required this.startDate,
     this.endDate,
     required this.location,
+    this.latitude,
+    this.longitude,
     this.coverImageUrl,
     this.posterImageUrl,
+    this.videoUrl,
+    this.documentUrl,
+    this.galleryUrls = const [],
     required this.targetGoal,
     this.achievedGoal,
     this.itemsNeeded,
@@ -53,6 +65,8 @@ class CampaignModel {
     this.progressPercent = 0,
     required this.createdBy,
     required this.createdByName,
+    this.ngoName,
+    required this.ngoId,
     required this.createdAt,
     this.updatedAt,
   });
@@ -68,8 +82,13 @@ class CampaignModel {
       startDate: (map['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       endDate: (map['endDate'] as Timestamp?)?.toDate(),
       location: map['location'] ?? '',
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
       coverImageUrl: map['coverImageUrl'],
       posterImageUrl: map['posterImageUrl'],
+      videoUrl: map['videoUrl'],
+      documentUrl: map['documentUrl'],
+      galleryUrls: List<String>.from(map['galleryUrls'] ?? []),
       targetGoal: map['targetGoal'] ?? '',
       achievedGoal: map['achievedGoal'],
       itemsNeeded: map['itemsNeeded'],
@@ -83,6 +102,8 @@ class CampaignModel {
       progressPercent: map['progressPercent'] ?? 0,
       createdBy: map['createdBy'] ?? '',
       createdByName: map['createdByName'] ?? '',
+      ngoName: map['ngoName'],
+      ngoId: map['ngoId'] ?? '',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate(),
     );
@@ -99,8 +120,13 @@ class CampaignModel {
       'startDate': Timestamp.fromDate(startDate),
       'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
       'coverImageUrl': coverImageUrl,
       'posterImageUrl': posterImageUrl,
+      'videoUrl': videoUrl,
+      'documentUrl': documentUrl,
+      'galleryUrls': galleryUrls,
       'targetGoal': targetGoal,
       'achievedGoal': achievedGoal,
       'itemsNeeded': itemsNeeded,
@@ -114,6 +140,8 @@ class CampaignModel {
       'progressPercent': progressPercent,
       'createdBy': createdBy,
       'createdByName': createdByName,
+      'ngoName': ngoName,
+      'ngoId': ngoId,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : FieldValue.serverTimestamp(),
     };
@@ -128,8 +156,13 @@ class CampaignModel {
     DateTime? startDate,
     DateTime? endDate,
     String? location,
+    double? latitude,
+    double? longitude,
     String? coverImageUrl,
     String? posterImageUrl,
+    String? videoUrl,
+    String? documentUrl,
+    List<String>? galleryUrls,
     String? targetGoal,
     String? achievedGoal,
     String? itemsNeeded,
@@ -141,6 +174,8 @@ class CampaignModel {
     int? distributionCount,
     double? totalExpenses,
     int? progressPercent,
+    String? ngoName,
+    String? ngoId,
   }) {
     return CampaignModel(
       id: id,
@@ -151,8 +186,13 @@ class CampaignModel {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       posterImageUrl: posterImageUrl ?? this.posterImageUrl,
+      videoUrl: videoUrl ?? this.videoUrl,
+      documentUrl: documentUrl ?? this.documentUrl,
+      galleryUrls: galleryUrls ?? this.galleryUrls,
       targetGoal: targetGoal ?? this.targetGoal,
       achievedGoal: achievedGoal ?? this.achievedGoal,
       itemsNeeded: itemsNeeded ?? this.itemsNeeded,
@@ -166,6 +206,8 @@ class CampaignModel {
       progressPercent: progressPercent ?? this.progressPercent,
       createdBy: createdBy,
       createdByName: createdByName,
+      ngoName: ngoName ?? this.ngoName,
+      ngoId: ngoId ?? this.ngoId,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );

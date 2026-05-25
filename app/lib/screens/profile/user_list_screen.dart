@@ -278,7 +278,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     ],
                   ),
                   subtitle: Text(
-                    '\${user.email}\nRole: \${user.isAdmin ? "Admin 👑" : "Volunteer 🤝"}',
+                    '${user.email}\nRole: ${user.isAdmin ? "Admin 👑" : "Volunteer 🤝"}',
                     style: const TextStyle(fontSize: 12),
                   ),
                   isThreeLine: true,

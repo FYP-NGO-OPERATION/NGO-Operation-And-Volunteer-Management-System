@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "169049198995-lv2jvvkqm5bdvrmkepbrigep3t22d1n8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ngo.ngo_volunteer_app",
+            "certificate_hash": "a8a3565aa6f8c5c1feeaa59c7e32dbc8860d3319"
+          }
+        },
+        {
           "client_id": "169049198995-0pmgh8018upr0a1hvrqs3n85re81ed0q.apps.googleusercontent.com",
           "client_type": 3
         }

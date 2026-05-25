@@ -106,19 +106,27 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF2C2C2C)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 4,
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 6,
                                 offset: const Offset(0, 2),
                               )
                             ],
                           ),
                           child: Text(
                             action.label,
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black87,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),

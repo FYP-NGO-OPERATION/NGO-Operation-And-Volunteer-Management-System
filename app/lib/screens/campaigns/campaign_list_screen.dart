@@ -111,7 +111,8 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
                       // ─── MOBILE: List layout ───
                       : RefreshIndicator(
                           onRefresh: () async {
-                            campaignProvider.init();
+                            final ngoId = user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+                            campaignProvider.init(ngoId);
                           },
                           child: ListView.builder(
                             padding: const EdgeInsets.only(top: 4, bottom: 80),

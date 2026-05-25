@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:convert' as dart_convert;
 import '../../config/feature_flags.dart';
+import '../../providers/ngo_provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../theme/app_text_styles.dart';
@@ -11,7 +15,7 @@ import '../../theme/app_tokens.dart';
 class WebShell extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
-  final List<Widget> tabs;
+  final List<Map<String, dynamic>> tabs;
   final bool isAdmin;
   final String userName;
   final String? userImageUrl;
@@ -36,13 +40,13 @@ class _WebShellState extends State<WebShell> {
   bool _sidebarExpanded = true;
 
   List<_SidebarItem> get _items {
-    return [
-      _SidebarItem(icon: Icons.dashboard_rounded, label: 'Dashboard', index: 0),
-      _SidebarItem(icon: Icons.campaign_rounded, label: 'Campaigns', index: 1),
-      if (widget.isAdmin) _SidebarItem(icon: Icons.people_rounded, label: 'Users', index: 2),
-      _SidebarItem(icon: Icons.person_rounded, label: 'Profile', index: 3),
-      if (widget.isAdmin && FeatureFlags.isAnalyticsEnabled) _SidebarItem(icon: Icons.analytics_rounded, label: 'Analytics', index: 4),
-    ];
+    return widget.tabs.asMap().entries.map((e) {
+      return _SidebarItem(
+        icon: e.value['icon'] as IconData,
+        label: e.value['label'] as String,
+        index: e.key,
+      );
+    }).toList();
   }
 
   @override
@@ -54,7 +58,7 @@ class _WebShellState extends State<WebShell> {
 
     // On mobile, just return the tab content — bottom nav handles navigation
     if (!isWide && !isTablet) {
-      return widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0];
+      return widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0]['screen'] as Widget;
     }
 
     // Tablet: narrow rail. Desktop: full sidebar.
@@ -112,7 +116,7 @@ class _WebShellState extends State<WebShell> {
                 Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
                 // Content
                 Expanded(
-                  child: widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0],
+                  child: widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0]['screen'] as Widget,
                 ),
               ],
             ),
@@ -123,18 +127,38 @@ class _WebShellState extends State<WebShell> {
   }
 
   Widget _buildLogoHeader(bool isDark, bool expanded) {
+    final currentNgo = Provider.of<NgoProvider>(context).currentNgo;
+
     return Container(
       height: 64,
       padding: EdgeInsets.symmetric(horizontal: expanded ? AppSpacing.lg : AppSpacing.sm),
       child: Row(
         children: [
           ClipOval(
-            child: Image.asset(AppConstants.logoPath, width: 36, height: 36, fit: BoxFit.contain),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: currentNgo?.logoUrl != null && currentNgo!.logoUrl!.isNotEmpty
+                  ? (currentNgo.logoUrl!.startsWith('data:image')
+                      ? Image.memory(
+                          dart_convert.base64Decode(currentNgo.logoUrl!.split(',').last),
+                          fit: BoxFit.cover,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: currentNgo.logoUrl!,
+                          fit: BoxFit.cover,
+                        ))
+                  : Image.asset(AppConstants.logoPath, fit: BoxFit.contain),
+            ),
           ),
           if (expanded) ...[
             AppSpacing.hGapSm,
             Expanded(
-              child: Text('HRAS', style: AppTextStyles.titleMedium(color: AppColors.primary),
+              child: Text(currentNgo?.name ?? 'HRAS', style: AppTextStyles.titleMedium(color: Theme.of(context).primaryColor),
                 overflow: TextOverflow.ellipsis),
             ),
             // Toggle sidebar

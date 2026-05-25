@@ -31,14 +31,31 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ─── NGOs Collection ───
+    match /ngos/{ngoId} {
+      allow read: if isLoggedIn();
+      allow create: if isLoggedIn();
+      allow update: if isLoggedIn();
+      allow delete: if isAdmin();
+    }
+
     // ─── Campaigns Collection ───
     match /campaigns/{campaignId} {
       // Anyone logged in can read campaigns
       allow read: if isLoggedIn();
-      // Only admins can create, update, delete campaigns
+      // Only admins can create, delete campaigns
       allow create: if isAdmin();
-      allow update: if isAdmin();
       allow delete: if isAdmin();
+      // Admins can update everything; volunteers can ONLY update totalVolunteers
+      allow update: if isAdmin() || (
+        isLoggedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalVolunteers', 'updatedAt'])
+      );
+
+      // Subcollections (tasks, messages, feedbacks)
+      match /{document=**} {
+        allow read, write: if isLoggedIn();
+      }
     }
 
     // ─── Donations Collection ───
@@ -109,6 +126,21 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow create: if isLoggedIn();
       allow update, delete: if isAdmin();
+    }
+
+    // ─── Virtual Sessions Collection ───
+    match /virtual_sessions/{sessionId} {
+      allow read, write: if isLoggedIn();
+      
+      // Participants subcollection
+      match /{document=**} {
+        allow read, write: if isLoggedIn();
+      }
+    }
+
+    // ─── Campaign Volunteers Collection ───
+    match /campaign_volunteers/{docId} {
+      allow read, write: if isLoggedIn();
     }
   }
 }

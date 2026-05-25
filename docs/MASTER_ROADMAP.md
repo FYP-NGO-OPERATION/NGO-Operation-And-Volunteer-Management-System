@@ -90,29 +90,29 @@ ngo_volunteer_app/
 | 3-4 | Progress Report + All UML Diagrams | ✅ Done |
 | 4 | FYP-01 Presentation + Defense Preparation | ✅ Done |
 
-### FYP-02 (Sep–Dec 2026) — PLANNED
+### FYP-02 (Sep–Dec 2026) — ✅ COMPLETED
 
 | Month | Deliverable |
 |-------|------------|
 | Sep | Chapter 3 (Planning and Methodology) |
 | Sep | Push Notifications (FCM) integration |
 | Oct | Chapter 4 (System Specification) + Requirements Traceability |
-| Oct | QR Volunteer Attendance feature |
+| Oct | QR Volunteer Attendance (Basic Client-Side) |
 | Nov | Chapter 5 (System Design) + All diagrams finalized |
-| Nov | Innovation: Volunteer-Campaign Matching Algorithm |
-| Nov | User study with 10-15 real HRAS members |
-| Dec | Mid-defense presentation + Chapters 3-5 submission |
+| Nov | Smart Matching Algorithm (Basic Client-Side) |
+| Dec | Chapter 6 (Coding) with code walkthrough |
+| Dec | Mid-defense presentation + Chapters 3-6 submission |
 
 ### FYP-03 (Jan–Apr 2027) — PLANNED
 
 | Month | Deliverable |
 |-------|------------|
-| Jan | Chapter 6 (Coding) with code walkthrough + screenshots |
-| Jan | Expand to 80+ unit tests |
-| Feb | Chapter 7 (Testing) with test results and metrics |
-| Feb | CSV export + Urdu language support |
-| Mar | Chapter 8 (Conclusion & Future Work) |
-| Mar | Final thesis compilation + User Guide |
+| Jan | Optimization: Cloud Shift (Serverless Matching) |
+| Jan | Optimization: Security Improvements (QR TTL, Retry Policies) |
+| Feb | Expand to 80+ unit tests |
+| Feb | Chapter 7 (Software Testing) with test results and metrics |
+| Mar | User study with 10-15 real HRAS members |
+| Mar | Chapter 8 (Conclusion) + Final thesis compilation |
 | Apr | Deployment (Play Store internal + Firebase Hosting) |
 | Apr | Final defense + viva preparation |
 
@@ -181,7 +181,7 @@ flutter run --dart-define=APP_PHASE=FULL
 | Volunteer Management | ✅ | ✅ | ✅ |
 | User Management | ✅ | ✅ | ✅ |
 | Analytics Dashboard | ✅ | ✅ | ✅ |
-| PDF Report Export | ✅ | ✅ | ✅ |
+| PDF Report Export | ❌ | ✅ | ✅ |
 | Push Notifications | ❌ | ✅ | ✅ |
 | Smart Matching | ❌ | ✅ | ✅ |
 | QR Attendance | ❌ | ✅ | ✅ |

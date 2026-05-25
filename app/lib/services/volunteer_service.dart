@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/volunteer_model.dart';
 import '../enums/app_enums.dart';
+import 'package:uuid/uuid.dart';
 
 /// Service for volunteer registration and attendance management.
 class VolunteerService {
@@ -43,7 +44,7 @@ class VolunteerService {
       userName: userName,
       userEmail: userEmail,
       userPhone: userPhone,
-      status: VolunteerStatus.registered,
+      status: VolunteerStatus.pending,
       registeredAt: DateTime.now(),
     );
 
@@ -60,6 +61,51 @@ class VolunteerService {
     });
     await batch.commit();
 
+    return volunteer;
+  }
+
+  // ═══════════════════════════════════════════
+  // ─── ADMIN: MANUAL ADD ───
+  // ═══════════════════════════════════════════
+
+  /// Admin manually adds a volunteer (for past/completed campaigns).
+  /// Does NOT require the volunteer to have a Firebase account.
+  Future<VolunteerModel> addVolunteerManually({
+    required String campaignId,
+    required String campaignTitle,
+    required String volunteerName,
+    required String volunteerEmail,
+    String? volunteerPhone,
+    String statusStr = 'attended',
+    required String addedByAdminId,
+  }) async {
+    final id = const Uuid().v4();
+    final status = VolunteerStatus.values.firstWhere(
+      (e) => e.name == statusStr,
+      orElse: () => VolunteerStatus.attended,
+    );
+    final now = DateTime.now();
+    final volunteer = VolunteerModel(
+      id: id,
+      campaignId: campaignId,
+      campaignTitle: campaignTitle,
+      userId: 'manual_$id', // synthetic userId — no real Firebase account
+      userName: volunteerName,
+      userEmail: volunteerEmail,
+      userPhone: volunteerPhone,
+      status: status,
+      registeredAt: now,
+      attendedAt: status == VolunteerStatus.attended ? now : null,
+      notes: 'Added manually by admin',
+    );
+
+    final batch = _db.batch();
+    batch.set(_volunteers.doc(id), volunteer.toMap());
+    batch.update(_campaigns.doc(campaignId), {
+      'totalVolunteers': FieldValue.increment(1),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
     return volunteer;
   }
 
@@ -101,22 +147,28 @@ class VolunteerService {
   Stream<List<VolunteerModel>> getVolunteersStream(String campaignId) {
     return _volunteers
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('registeredAt', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VolunteerModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => VolunteerModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => a.registeredAt.compareTo(b.registeredAt));
+          return list;
+        });
   }
 
   /// Get all campaigns a user has joined
   Stream<List<VolunteerModel>> getUserCampaignsStream(String userId) {
     return _volunteers
         .where('userId', isEqualTo: userId)
-        .orderBy('registeredAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VolunteerModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => VolunteerModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
+          return list;
+        });
   }
 
   /// Get volunteer count for a campaign
@@ -208,5 +260,16 @@ class VolunteerService {
   Future<void> updateVolunteerStatus(
       String volunteerId, VolunteerStatus status) async {
     await markAttendance(volunteerId, status);
+  }
+
+  /// Reject a volunteer request (deletes the record and decrements totalVolunteers)
+  Future<void> rejectVolunteer(String volunteerId, String campaignId) async {
+    final batch = _db.batch();
+    batch.delete(_volunteers.doc(volunteerId));
+    batch.update(_campaigns.doc(campaignId), {
+      'totalVolunteers': FieldValue.increment(-1),
+    });
+    
+    await batch.commit();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../theme/app_spacing.dart';
@@ -29,31 +30,43 @@ class CampaignCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── Header with type color band ───
+            // ─── Header with Image or color band ───
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              height: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? 140 : null,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: (campaign.coverImageUrl == null && campaign.galleryUrls.isEmpty) ? LinearGradient(
                   colors: [
                     _typeColor.withValues(alpha: isDark ? 0.3 : 0.1),
                     _typeColor.withValues(alpha: isDark ? 0.15 : 0.03),
                   ],
-                ),
+                ) : null,
+                image: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty)
+                    ? DecorationImage(
+                        image: CachedNetworkImageProvider(campaign.coverImageUrl ?? campaign.galleryUrls.first),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.3), BlendMode.darken),
+                      )
+                    : null,
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Type badge
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _typeColor.withValues(alpha: isDark ? 0.4 : 0.15),
+                      color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) 
+                          ? Colors.black.withValues(alpha: 0.6) 
+                          : _typeColor.withValues(alpha: isDark ? 0.4 : 0.15),
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? _typeColor : Colors.transparent),
                     ),
                     child: Text(
                       '${campaign.type.icon} ${campaign.type.label}',
                       style: TextStyle(
-                        color: _typeColor,
+                        color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? Colors.white : _typeColor,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -61,7 +74,7 @@ class CampaignCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   // Status chip
-                  _buildStatusChip(),
+                  _buildStatusChip(hasImage: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty)),
                 ],
               ),
             ),
@@ -153,7 +166,13 @@ class CampaignCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStat(Icons.people_outline, '${campaign.totalVolunteers}', 'Volunteers'),
-                      _buildStat(Icons.volunteer_activism, '${campaign.totalDonationsCount}', 'Donations'),
+                      _buildStat(
+                        Icons.volunteer_activism, 
+                        campaign.totalDonationsAmount > 0 
+                            ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
+                            : '${campaign.totalDonationsCount}', 
+                        'Donations'
+                      ),
                       _buildStat(Icons.family_restroom, '${campaign.beneficiaryCount}', 'Helped'),
                     ],
                   ),
@@ -167,7 +186,7 @@ class CampaignCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip() {
+  Widget _buildStatusChip({bool hasImage = false}) {
     Color color;
     switch (campaign.status) {
       case CampaignStatus.active:
@@ -184,9 +203,9 @@ class CampaignCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: hasImage ? Colors.black.withValues(alpha: 0.6) : color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.8)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -199,7 +218,7 @@ class CampaignCard extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             campaign.status.label,
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600),
+            style: TextStyle(color: hasImage ? Colors.white : color, fontSize: 11, fontWeight: FontWeight.w600),
           ),
         ],
       ),

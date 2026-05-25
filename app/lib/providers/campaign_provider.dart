@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/campaign_model.dart';
@@ -15,6 +16,7 @@ class CampaignProvider extends ChangeNotifier {
   String? _error;
   CampaignStatus? _statusFilter;
   String _searchQuery = '';
+  String? _ngoFilter; // FYP-03 Multi-NGO feature
   StreamSubscription? _campaignsSubscription;
 
   // ─── Getters ───
@@ -26,18 +28,23 @@ class CampaignProvider extends ChangeNotifier {
   CampaignStatus? get statusFilter => _statusFilter;
   String get searchQuery => _searchQuery;
 
-  int get totalCampaigns => _campaigns.length;
-  int get activeCampaigns => _campaigns.where((c) => c.isActive).length;
-  int get completedCampaigns => _campaigns.where((c) => c.isCompleted).length;
-  int get upcomingCampaigns => _campaigns.where((c) => c.isUpcoming).length;
+  int get totalCampaigns => _filteredCampaigns.length;
+  int get activeCampaigns => _filteredCampaigns.where((c) => c.isActive).length;
+  int get completedCampaigns => _filteredCampaigns.where((c) => c.isCompleted).length;
+  int get upcomingCampaigns => _filteredCampaigns.where((c) => c.isUpcoming).length;
 
-  double get totalDonationsOverall => _campaigns.fold(0, (sum, c) => sum + c.totalDonationsAmount);
-  int get totalBeneficiariesOverall => _campaigns.fold(0, (sum, c) => sum + c.beneficiaryCount);
-  int get totalItemsDistributedOverall => _campaigns.fold(0, (sum, c) => sum + c.distributionCount);
+  double get totalDonationsOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.totalDonationsAmount);
+  int get totalBeneficiariesOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.beneficiaryCount);
+  int get totalItemsDistributedOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.distributionCount);
 
-  /// Filtered list based on status filter and search query
+  /// Filtered list based on status filter, search query, and NGO
   List<CampaignModel> get _filteredCampaigns {
     var list = _campaigns.toList();
+
+    // Apply NGO filter
+    if (_ngoFilter != null && _ngoFilter!.isNotEmpty) {
+      list = list.where((c) => c.ngoName == _ngoFilter).toList();
+    }
 
     // Apply status filter
     if (_statusFilter != null) {
@@ -56,11 +63,18 @@ class CampaignProvider extends ChangeNotifier {
     return list;
   }
 
+  void setNgoFilter(String? ngoName) {
+    if (_ngoFilter != ngoName) {
+      _ngoFilter = ngoName;
+      notifyListeners();
+    }
+  }
+
   // ─── Initialize — subscribe to real-time updates ───
-  void init() {
+  void init(String ngoId) {
     _setLoading(true);
     _campaignsSubscription?.cancel();
-    _campaignsSubscription = _campaignService.getCampaignsStream().listen(
+    _campaignsSubscription = _campaignService.getCampaignsStream(ngoId).listen(
       (campaigns) {
         _campaigns = campaigns;
         _isLoading = false;
@@ -93,10 +107,20 @@ class CampaignProvider extends ChangeNotifier {
   }
 
   // ─── Create Campaign ───
-  Future<bool> createCampaign(CampaignModel campaign) async {
+  Future<bool> createCampaign(
+    CampaignModel campaign, {
+    File? videoFile,
+    File? documentFile,
+    List<File>? galleryFiles,
+  }) async {
     try {
       _setLoading(true);
-      await _campaignService.createCampaign(campaign);
+      await _campaignService.createCampaign(
+        campaign,
+        videoFile: videoFile,
+        documentFile: documentFile,
+        galleryFiles: galleryFiles,
+      );
       _setLoading(false);
       return true;
     } catch (e) {

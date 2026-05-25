@@ -23,6 +23,11 @@ class DonationModel {
   final PaymentMethod paymentMethod;
   final String? purpose;          // Leader: "Purpose of donation"
   final String? description;
+  final String? transactionId;
+
+  // ─── Status & Privacy ───
+  final DonationStatus status;
+  final bool isAnonymous;
 
   // ─── Received By ───
   final String receivedBy;        // User ID who collected it
@@ -47,6 +52,9 @@ class DonationModel {
     this.paymentMethod = PaymentMethod.cash,
     this.purpose,
     this.description,
+    this.transactionId,
+    this.status = DonationStatus.approved,
+    this.isAnonymous = false,
     required this.receivedBy,
     required this.receivedByName,
     required this.receivedAt,
@@ -72,6 +80,9 @@ class DonationModel {
       paymentMethod: PaymentMethod.fromString(map['paymentMethod'] ?? 'cash'),
       purpose: map['purpose'],
       description: map['description'],
+      transactionId: map['transactionId'],
+      status: DonationStatus.fromString(map['status'] ?? 'approved'),
+      isAnonymous: map['isAnonymous'] ?? false,
       receivedBy: map['receivedBy'] ?? '',
       receivedByName: map['receivedByName'] ?? '',
       receivedAt: (map['receivedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -95,6 +106,9 @@ class DonationModel {
       'paymentMethod': paymentMethod.name,
       'purpose': purpose,
       'description': description,
+      'transactionId': transactionId,
+      'status': status.name,
+      'isAnonymous': isAnonymous,
       'receivedBy': receivedBy,
       'receivedByName': receivedByName,
       'receivedAt': Timestamp.fromDate(receivedAt),

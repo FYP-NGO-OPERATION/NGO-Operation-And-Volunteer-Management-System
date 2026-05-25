@@ -69,6 +69,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     required String phone,
+    String? ngoName,
   }) async {
     try {
       _setLoading(true);
@@ -80,13 +81,17 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
+      final assignedRole = _superAdmins.contains(email.trim().toLowerCase()) ? 'admin' : 'volunteer';
+
       // 2. Create user document in Firestore
       final newUser = UserModel(
         uid: credential.user!.uid,
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        role: 'volunteer', // Default role
+        role: assignedRole,
+        ngoName: ngoName,
+        currentNgoId: 'HRAS_DEFAULT_ID',
         joinedAt: DateTime.now(),
       );
 
@@ -142,6 +147,69 @@ class AuthProvider extends ChangeNotifier {
 
       // 4. Update last active time
       await _userService.updateUser(_user!.uid, {});
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  // ─── Super Admin Emails ───
+  static const _superAdmins = [
+    'REDACTED@example.com',
+    'REDACTED@example.com',
+    'shahzaibarshad@gmail.com',
+    'maauzmansoor@gmail.com',
+  ];
+
+  // ─── Google Sign-In ───
+  Future<bool> signInWithGoogle() async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      final credential = await _authService.signInWithGoogle();
+      final firebaseUser = credential.user;
+      if (firebaseUser == null) {
+        _setError('Google sign-in failed.');
+        _setLoading(false);
+        return false;
+      }
+
+      // Check if user already exists in Firestore
+      _user = await _userService.getUser(firebaseUser.uid);
+
+      if (_user == null) {
+        // First-time Google login → create Firestore profile
+        final email = firebaseUser.email ?? '';
+        final assignedRole = _superAdmins.contains(email.toLowerCase()) ? 'admin' : 'volunteer';
+
+        final newUser = UserModel(
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName ?? 'User',
+          email: email,
+          phone: firebaseUser.phoneNumber ?? '',
+          role: assignedRole,
+          profileImageUrl: firebaseUser.photoURL,
+          currentNgoId: 'HRAS_DEFAULT_ID',
+          joinedAt: DateTime.now(),
+        );
+
+        await _userService.createUser(newUser);
+        _user = newUser;
+      }
+
+      // Check if active
+      if (!_user!.isActive) {
+        await _authService.logout();
+        _user = null;
+        _setError('Your account has been deactivated.');
+        _setLoading(false);
+        return false;
+      }
 
       _setLoading(false);
       return true;

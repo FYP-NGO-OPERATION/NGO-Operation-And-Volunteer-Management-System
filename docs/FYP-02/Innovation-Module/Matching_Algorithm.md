@@ -9,10 +9,10 @@ The HRAS Smart Matching Algorithm recommends campaigns to volunteers based on a 
 ### Scoring Formula
 
 ```
-Total Score = (Skill Score × 0.50) + (Location Score × 0.30) + (Availability Score × 0.20)
+Total Score = (Skill Score × 0.40) + (Location Score × 0.30) + (Past Activity Score × 0.20) + (Availability Score × 0.10)
 ```
 
-### Factor 1: Skills Match (50%)
+### Factor 1: Skills Match (40%)
 
 Maps each user skill keyword to relevant `CampaignType` values.
 
@@ -39,7 +39,16 @@ Compares user address with campaign location using string matching.
 
 **Supported cities:** Multan, Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Peshawar, Quetta, Hyderabad, Sialkot, Gujranwala, Bahawalpur, Sargodha, Sahiwal, Dera Ghazi Khan.
 
-### Factor 3: Availability (20%)
+### Factor 3: Past Activity (20%)
+
+Checks if the volunteer has previously participated in similar campaigns.
+
+**Scoring:**
+- **1.0** → High match (user previously attended campaigns of this exact type/title)
+- **0.5** → Medium match (user has some volunteer history but different types)
+- **0.2** → Default baseline (no past activity history)
+
+### Factor 4: Availability (10%)
 
 Checks if the volunteer is already registered for the campaign.
 
@@ -67,5 +76,4 @@ Checks if the volunteer is already registered for the campaign.
 
 1. Location matching is string-based, not GPS-based
 2. Skill matching depends on user profile completeness
-3. No historical performance data is used (future enhancement)
-4. No machine learning — purely rule-based weighted scoring
+3. No machine learning — purely rule-based weighted scoring (Expert System)

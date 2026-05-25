@@ -72,10 +72,14 @@ class GalleryService {
   Stream<List<PhotoModel>> getCampaignPhotos(String campaignId) {
     return _campaignPhotos
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => PhotoModel.fromMap(doc.data())).toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => PhotoModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
+        });
   }
 
   /// Delete a photo from both Storage and Firestore

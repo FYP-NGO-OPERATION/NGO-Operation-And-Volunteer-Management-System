@@ -83,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: [
                         // Icon container
                         TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.8, end: 1.0),
+                          tween: Tween<double>(begin: 0.8, end: 1.0),
                           duration: AppAnimations.medium,
                           curve: AppAnimations.easeOut,
                           builder: (context, val, child) => Transform.scale(scale: val, child: child),
@@ -169,6 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? AppColors.neutral900
                             : Colors.white,
                         elevation: 0,
+                        minimumSize: const Size(0, AppTokens.buttonHeightMd),
                         padding: EdgeInsets.symmetric(horizontal: isLast ? AppSpacing.xxl : AppSpacing.xl),
                         shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
                       ),

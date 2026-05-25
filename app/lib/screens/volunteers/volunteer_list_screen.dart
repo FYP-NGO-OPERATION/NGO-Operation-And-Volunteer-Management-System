@@ -9,7 +9,9 @@ import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/volunteer_service.dart';
 import '../../enums/app_enums.dart';
+import '../../enums/app_enums.dart';
 import '../../utils/snackbar_helper.dart';
+import 'add_volunteer_screen.dart';
 
 /// Volunteer list for a specific campaign — shows all registered volunteers.
 /// Admin can mark attendance from here.
@@ -108,11 +110,31 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           );
         },
       ),
+      floatingActionButton: isAdmin
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddVolunteerScreen(
+                      campaignId: widget.campaignId,
+                      campaignTitle: widget.campaignTitle,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.person_add),
+              label: const Text('Add Volunteer'),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            )
+          : null,
     );
   }
 
-  /// Stats bar at top — Registered / Confirmed / Attended / Absent
+  /// Stats bar at top
   Widget _buildStatsBar(List<VolunteerModel> volunteers, ThemeData theme) {
+    int pending = volunteers.where((v) => v.isPending).length;
     int registered = volunteers.where((v) => v.isRegistered).length;
     int confirmed = volunteers.where((v) => v.isConfirmed).length;
     int attended = volunteers.where((v) => v.hasAttended).length;
@@ -125,15 +147,26 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
         color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: AppTokens.borderRadiusMd,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _statBadge('Total', '${volunteers.length}', AppColors.primary),
-          _statBadge('Registered', '$registered', AppColors.info),
-          _statBadge('Confirmed', '$confirmed', AppColors.warning),
-          _statBadge('Attended', '$attended', AppColors.success),
-          _statBadge('Absent', '$absent', AppColors.error),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _statBadge('Total', '${volunteers.length}', AppColors.primary),
+            const SizedBox(width: 16),
+            if (pending > 0) ...[
+              _statBadge('Pending', '$pending', AppColors.textHint),
+              const SizedBox(width: 16),
+            ],
+            _statBadge('Registered', '$registered', AppColors.info),
+            const SizedBox(width: 16),
+            _statBadge('Confirmed', '$confirmed', AppColors.warning),
+            const SizedBox(width: 16),
+            _statBadge('Attended', '$attended', AppColors.success),
+            const SizedBox(width: 16),
+            _statBadge('Absent', '$absent', AppColors.error),
+          ],
+        ),
       ),
     );
   }
@@ -184,10 +217,49 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           ],
         ),
         trailing: isAdmin
-            ? _buildAttendanceDropdown(volunteer)
+            ? (volunteer.isPending
+                ? _buildApprovalButtons(volunteer)
+                : _buildAttendanceDropdown(volunteer))
             : _buildStatusChip(volunteer.status),
         isThreeLine: true,
       ),
+    );
+  }
+
+  /// Admin approval buttons for pending volunteers
+  Widget _buildApprovalButtons(VolunteerModel volunteer) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.check_circle, color: AppColors.success),
+          tooltip: 'Approve',
+          onPressed: () async {
+            try {
+              await _volunteerService.updateVolunteerStatus(volunteer.id, VolunteerStatus.registered);
+              if (mounted) {
+                SnackbarHelper.showSuccess(context, '${volunteer.userName} Approved');
+              }
+            } catch (e) {
+              if (mounted) SnackbarHelper.showError(context, 'Failed to approve: $e');
+            }
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.cancel, color: AppColors.error),
+          tooltip: 'Reject',
+          onPressed: () async {
+            try {
+              await _volunteerService.rejectVolunteer(volunteer.id, volunteer.campaignId);
+              if (mounted) {
+                SnackbarHelper.showInfo(context, '${volunteer.userName} Rejected');
+              }
+            } catch (e) {
+              if (mounted) SnackbarHelper.showError(context, 'Failed to reject: $e');
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -298,6 +370,8 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
   /// Status → Color mapping
   Color _statusColor(VolunteerStatus status) {
     switch (status) {
+      case VolunteerStatus.pending:
+        return AppColors.textHint; // Or Colors.orange/grey
       case VolunteerStatus.registered:
         return AppColors.info;
       case VolunteerStatus.confirmed:

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
+import '../../config/feature_flags.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_tokens.dart';
@@ -88,25 +91,71 @@ class AboutUsScreen extends StatelessWidget {
                 ),
                 AppSpacing.vGapXxl,
 
+                // Official Bank Details
+                Text('Official Donation Accounts', style: AppTextStyles.titleLarge()),
+                AppSpacing.vGapLg,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.1),
+                    borderRadius: AppTokens.borderRadiusMd,
+                    border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.account_balance, color: AppColors.success),
+                          AppSpacing.hGapMd,
+                          Text('JazzCash / Easypaisa', style: AppTextStyles.titleMedium()),
+                        ],
+                      ),
+                      AppSpacing.vGapMd,
+                      Text('Account Title: HRAS Foundation', style: AppTextStyles.bodyMedium().copyWith(fontWeight: FontWeight.bold)),
+                      AppSpacing.vGapXs,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text('Account No: 0300-1234567', style: AppTextStyles.bodyLarge()),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.copy, color: AppColors.success, size: 20),
+                            tooltip: 'Copy Account Number',
+                            onPressed: () {
+                              Clipboard.setData(const ClipboardData(text: '03001234567'));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Account number copied!')),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                AppSpacing.vGapXxl,
+
                 // Social Links
                 Text('Connect With Us', style: AppTextStyles.titleLarge()),
                 AppSpacing.vGapLg,
                 _SocialButton(
-                  icon: Icons.camera_alt,
+                  iconWidget: FaIcon(FontAwesomeIcons.instagram, color: const Color(0xFFE1306C), size: 28),
                   label: 'Instagram',
                   color: const Color(0xFFE1306C),
                   onTap: () => _launchUrl('https://www.instagram.com/hras_hamesharaheinapkesaath'),
                 ),
                 AppSpacing.vGapMd,
                 _SocialButton(
-                  icon: Icons.facebook,
+                  iconWidget: Icon(Icons.facebook, color: const Color(0xFF1877F2), size: 28),
                   label: 'Facebook',
                   color: const Color(0xFF1877F2),
                   onTap: () => _launchUrl('https://www.facebook.com/share/18JqaHAKdM/'),
                 ),
                 AppSpacing.vGapMd,
                 _SocialButton(
-                  icon: Icons.music_note,
+                  iconWidget: FaIcon(FontAwesomeIcons.tiktok, color: isDark ? Colors.white : Colors.black, size: 28),
                   label: 'TikTok',
                   color: isDark ? Colors.white : Colors.black,
                   onTap: () => _launchUrl('https://www.tiktok.com/@hras_official'),
@@ -114,7 +163,7 @@ class AboutUsScreen extends StatelessWidget {
 
                 AppSpacing.vGapXxl,
 
-                // ─── Planned Features Roadmap ───
+                // ─── Feature Status Roadmap ───
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.xl),
@@ -138,21 +187,52 @@ class AboutUsScreen extends StatelessWidget {
                             child: Icon(Icons.rocket_launch_rounded, color: AppColors.info, size: AppTokens.iconMd),
                           ),
                           AppSpacing.hGapMd,
-                          Text('Upcoming Features', style: AppTextStyles.titleMedium()),
+                          Text('App Features', style: AppTextStyles.titleMedium()),
                         ],
                       ),
                       AppSpacing.vGapMd,
-                      _roadmapItem('Smart Volunteer-Campaign Matching', 'FYP-02', AppColors.warning, isDark),
+                      _featureItem('Campaign Management', true, isDark),
                       AppSpacing.vGapSm,
-                      _roadmapItem('Push Notifications (FCM)', 'FYP-02', AppColors.warning, isDark),
+                      _featureItem('Volunteer Registration', true, isDark),
                       AppSpacing.vGapSm,
-                      _roadmapItem('QR Attendance System', 'FYP-02', AppColors.warning, isDark),
+                      _featureItem('Donation Tracking', true, isDark),
                       AppSpacing.vGapSm,
-                      _roadmapItem('Analytics Dashboard', 'FYP-02', AppColors.warning, isDark),
+                      _featureItem('Smart Volunteer-Campaign Matching', FeatureFlags.isSmartMatchingEnabled, isDark),
                       AppSpacing.vGapSm,
-                      _roadmapItem('CSV/Excel Export', 'FYP-03', AppColors.primary, isDark),
+                      _featureItem('Push Notifications (FCM)', FeatureFlags.isPushNotificationsEnabled, isDark),
                       AppSpacing.vGapSm,
-                      _roadmapItem('Urdu Language Support', 'FYP-03', AppColors.primary, isDark),
+                      _featureItem('QR Attendance System', FeatureFlags.isQrAttendanceEnabled, isDark),
+                      AppSpacing.vGapSm,
+                      _featureItem('Analytics Dashboard', FeatureFlags.isAnalyticsEnabled, isDark),
+                      AppSpacing.vGapSm,
+                      _featureItem('Google Sign-In', true, isDark),
+                      AppSpacing.vGapSm,
+                      _featureItem('CSV/Excel Export', false, isDark),
+                      AppSpacing.vGapSm,
+                      _featureItem('Urdu Language Support', false, isDark),
+                    ],
+                  ),
+                ),
+
+                AppSpacing.vGapMd,
+
+                // Phase Badge
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    borderRadius: AppTokens.borderRadiusMd,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.verified, color: AppColors.primary, size: 18),
+                      AppSpacing.hGapSm,
+                      Text(
+                        'Running: ${FeatureFlags.phaseLabel}',
+                        style: AppTextStyles.labelMedium(color: AppColors.primary),
+                      ),
                     ],
                   ),
                 ),
@@ -172,12 +252,15 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _roadmapItem(String title, String phase, Color color, bool isDark) {
+  Widget _featureItem(String title, bool isActive, bool isDark) {
     return Row(
       children: [
         Container(
           width: 8, height: 8,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive ? AppColors.success : AppColors.neutral400,
+          ),
         ),
         AppSpacing.hGapMd,
         Expanded(
@@ -188,10 +271,13 @@ class AboutUsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: (isActive ? AppColors.success : AppColors.neutral400).withValues(alpha: 0.1),
             borderRadius: AppTokens.borderRadiusPill,
           ),
-          child: Text(phase, style: AppTextStyles.labelSmall(color: color)),
+          child: Text(
+            isActive ? '● LIVE' : '○ PLANNED',
+            style: AppTextStyles.labelSmall(color: isActive ? AppColors.success : AppColors.neutral400),
+          ),
         ),
       ],
     );
@@ -199,13 +285,13 @@ class AboutUsScreen extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  final IconData icon;
+  final Widget iconWidget;
   final String label;
   final Color color;
   final VoidCallback onTap;
 
   const _SocialButton({
-    required this.icon,
+    required this.iconWidget,
     required this.label,
     required this.color,
     required this.onTap,
@@ -225,7 +311,7 @@ class _SocialButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: AppTokens.iconLg),
+            iconWidget,
             AppSpacing.hGapLg,
             Text(label, style: AppTextStyles.titleMedium()),
             const Spacer(),

@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/feature_flags.dart';
+import '../../config/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../screens/admin/analytics_screen.dart';
-
 import '../../screens/admin/admin_donations_screen.dart';
+import '../../screens/profile/user_list_screen.dart';
+import '../../screens/campaigns/campaign_list_screen.dart';
+import '../../screens/campaigns/create_campaign_screen.dart';
+import '../../screens/announcements/create_announcement_screen.dart';
+import '../../screens/admin/platform_requests_screen.dart';
+import '../../widgets/common/custom_speed_dial.dart';
+import '../profile_tab_widget.dart';
 
 class AdminLayout extends StatefulWidget {
   const AdminLayout({super.key});
@@ -20,10 +28,20 @@ class _AdminLayoutState extends State<AdminLayout> {
     FeatureFlags.isAnalyticsEnabled
         ? const AnalyticsScreen()
         : const AdminDonationsScreen(), // FYP1: show donations as default dashboard
-    const Center(child: Text('User Management (Coming Soon)')),
-    const Center(child: Text('Campaign Management (Coming Soon)')),
+    const UserListScreen(),
+    const CampaignListScreen(),
     const AdminDonationsScreen(),
+    const PlatformRequestsScreen(),
+    _buildAdminProfile(),
   ];
+
+  Widget _buildAdminProfile() {
+    return ProfileTab(
+      onLogout: () {
+        Provider.of<AuthProvider>(context, listen: false).logout();
+      },
+    );
+  }
 
   final List<NavigationRailDestination> _destinations = const [
     NavigationRailDestination(
@@ -46,6 +64,16 @@ class _AdminLayoutState extends State<AdminLayout> {
       selectedIcon: Icon(Icons.monetization_on),
       label: Text('Donations'),
     ),
+    NavigationRailDestination(
+      icon: Icon(Icons.verified_user_outlined),
+      selectedIcon: Icon(Icons.verified_user),
+      label: Text('Platform Requests'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.person_outline),
+      selectedIcon: Icon(Icons.person),
+      label: Text('Profile'),
+    ),
   ];
 
   @override
@@ -60,6 +88,15 @@ class _AdminLayoutState extends State<AdminLayout> {
           : AppBar(
               title: const Text('Admin Panel'),
               actions: [
+                Consumer<ThemeProvider>(
+                  builder: (context, themeProvider, _) {
+                    return IconButton(
+                      icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                      tooltip: themeProvider.isDarkMode ? 'Light Mode' : 'Dark Mode',
+                      onPressed: () => themeProvider.toggleTheme(),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.logout),
                   onPressed: () => authProvider.logout(),
@@ -138,6 +175,28 @@ class _AdminLayoutState extends State<AdminLayout> {
           if (isDesktop) const VerticalDivider(thickness: 1, width: 1),
           Expanded(
             child: _pages[_selectedIndex],
+          ),
+        ],
+      ),
+      floatingActionButton: CustomSpeedDial(
+        actions: [
+          SpeedDialAction(
+            icon: Icons.campaign,
+            label: 'Add Campaign',
+            backgroundColor: AppColors.primaryLight,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateCampaignScreen()));
+            },
+          ),
+          SpeedDialAction(
+            icon: Icons.announcement,
+            label: 'Add Announcement',
+            backgroundColor: AppColors.warning,
+            foregroundColor: Colors.white,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()));
+            },
           ),
         ],
       ),

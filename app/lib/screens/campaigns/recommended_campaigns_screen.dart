@@ -32,10 +32,10 @@ class _RecommendedCampaignsScreenState extends State<RecommendedCampaignsScreen>
 
   Future<void> _loadRecommendations() async {
     try {
-      final campaigns = await CampaignService().fetchAllCampaigns();
+      final campaigns = await CampaignService().fetchAllCampaigns(widget.user.currentNgoId);
       final registrations = await VolunteerService().fetchUserRegistrations(widget.user.uid);
 
-      final results = MatchingService.getRecommendations(
+      final results = await MatchingService.getRecommendations(
         user: widget.user,
         campaigns: campaigns,
         existingRegistrations: registrations,
@@ -211,6 +211,8 @@ class _MatchCard extends StatelessWidget {
                   _ScoreBar(label: 'Skills', value: result.breakdown['skills'] ?? 0, color: AppColors.primary),
                   AppSpacing.hGapSm,
                   _ScoreBar(label: 'Location', value: result.breakdown['location'] ?? 0, color: AppColors.warning),
+                  AppSpacing.hGapSm,
+                  _ScoreBar(label: 'Activity', value: result.breakdown['past_activity'] ?? 0, color: AppColors.info),
                   AppSpacing.hGapSm,
                   _ScoreBar(label: 'Available', value: result.breakdown['availability'] ?? 0, color: AppColors.success),
                 ],

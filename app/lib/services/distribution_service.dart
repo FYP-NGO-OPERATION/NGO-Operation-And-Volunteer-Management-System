@@ -42,11 +42,14 @@ class DistributionService {
   Stream<List<BeneficiaryModel>> getBeneficiariesStream(String campaignId) {
     return _beneficiaries
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('receivedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BeneficiaryModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => BeneficiaryModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+          return list;
+        });
   }
 
   Future<void> deleteBeneficiary(String beneficiaryId, String campaignId, int familySize) async {
@@ -91,11 +94,14 @@ class DistributionService {
   Stream<List<DistributionModel>> getDistributionsStream(String campaignId) {
     return _distributions
         .where('campaignId', isEqualTo: campaignId)
-        .orderBy('distributedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => DistributionModel.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) {
+          final list = snapshot.docs
+              .map((doc) => DistributionModel.fromMap(doc.data()))
+              .toList()
+            ..sort((a, b) => b.distributedAt.compareTo(a.distributedAt));
+          return list;
+        });
   }
 
   Future<void> deleteDistribution(String distributionId, String campaignId, int quantity) async {
