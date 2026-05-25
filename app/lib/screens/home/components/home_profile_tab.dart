@@ -14,6 +14,7 @@ import '../../ngos/ngo_selection_screen.dart';
 import '../../ngos/create_ngo_screen.dart';
 import '../../../../services/certificate_service.dart';
 import '../../../../providers/ngo_provider.dart';
+import '../../../../providers/theme_provider.dart';
 import '../../profile/activity_timeline_screen.dart';
 
 class HomeProfileTab extends StatelessWidget {
@@ -134,6 +135,29 @@ class HomeProfileTab extends StatelessWidget {
             icon: Icons.business_center,
             color: AppColors.success,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateNgoScreen())),
+          ),
+          const Divider(height: 32),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.withOpacity(0.1),
+                    borderRadius: AppTokens.borderRadiusMd,
+                  ),
+                  child: const Icon(Icons.dark_mode, color: Colors.purple),
+                ),
+                title: Text('Dark Mode', style: AppTextStyles.titleSmall()),
+                subtitle: Text('Switch between Light and Dark mode', style: AppTextStyles.caption(color: Theme.of(context).hintColor)),
+                trailing: Switch(
+                  value: themeProvider.isDarkMode,
+                  onChanged: (value) => themeProvider.toggleTheme(),
+                  activeColor: Colors.purple,
+                ),
+              );
+            },
           ),
           const Divider(height: 32),
           _buildSettingsTile(

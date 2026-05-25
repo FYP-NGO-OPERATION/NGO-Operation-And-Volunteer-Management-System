@@ -59,6 +59,13 @@ dependencies:
   mobile_scanner: ^6.0.2
   # FYP-02: Push Notifications
   firebase_messaging: ^16.2.0
+  flutter_local_notifications: ^17.0.0
+  share_plus: any
+  table_calendar: any
+  csv: any
+  flutter_tts: any
+  google_mlkit_text_recognition: ^0.14.0
+  smooth_page_indicator: ^1.1.0
   # FYP-03: Google Sign-In
   google_sign_in: ^6.2.2
   font_awesome_flutter: ^11.0.0
@@ -69,13 +76,9 @@ dependencies:
   chewie: ^1.14.0
   file_selector: ^1.1.0
   http: ^1.6.0
-  flutter_local_notifications: ^21.0.0
   flutter_colorpicker: ^1.1.0
   easy_localization: ^3.0.3
   geolocator: ^14.0.1
-  share_plus: any
-  table_calendar: any
-  csv: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

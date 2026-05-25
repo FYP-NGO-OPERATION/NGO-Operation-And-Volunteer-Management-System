@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../../config/app_colors.dart';
 import '../../config/feature_flags.dart';
 import '../../theme/app_text_styles.dart';
@@ -55,6 +56,8 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
   final VolunteerService _volunteerService = VolunteerService();
   VolunteerModel? _myVolunteerRecord;
   bool _isJoining = false;
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _isPlayingTts = false;
 
   @override
   void initState() {
@@ -80,7 +83,33 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _flutterTts.stop();
     super.dispose();
+  }
+
+  Future<void> _speakCampaignDetails() async {
+    if (_isPlayingTts) {
+      await _flutterTts.stop();
+      setState(() => _isPlayingTts = false);
+      return;
+    }
+
+    setState(() => _isPlayingTts = true);
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    
+    // In case user wants urdu, we can attempt:
+    // if (context.locale.languageCode == 'ur') await _flutterTts.setLanguage("ur-PK");
+
+    String textToRead = "Campaign Title: ${_campaign.title}. "
+        "Location: ${_campaign.location}. "
+        "Description: ${_campaign.description}.";
+
+    _flutterTts.setCompletionHandler(() {
+      if (mounted) setState(() => _isPlayingTts = false);
+    });
+
+    await _flutterTts.speak(textToRead);
   }
 
   bool get _hasJoined => _myVolunteerRecord != null && (_myVolunteerRecord!.isRegistered || _myVolunteerRecord!.isConfirmed || _myVolunteerRecord!.hasAttended);
@@ -96,6 +125,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       appBar: AppBar(
         title: Text(_campaign.title, overflow: TextOverflow.ellipsis),
         actions: [
+          IconButton(
+            icon: Icon(_isPlayingTts ? Icons.stop_circle : Icons.volume_up, color: _isPlayingTts ? AppColors.error : null),
+            tooltip: 'Read Aloud',
+            onPressed: _speakCampaignDetails,
+          ),
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: 'share_campaign'.tr(),

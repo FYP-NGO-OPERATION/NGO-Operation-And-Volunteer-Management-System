@@ -10,6 +10,8 @@ import '../../theme/app_spacing.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   final String campaignId;
@@ -44,6 +46,51 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     _vendorController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _scanReceipt() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    setState(() => _isLoading = true);
+    
+    try {
+      final inputImage = InputImage.fromFilePath(image.path);
+      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      
+      String extractedText = recognizedText.text.replaceAll(',', '');
+      
+      // Simple regex to find amounts
+      RegExp exp = RegExp(r'(?:total|amount|rs|pkr|sum)?\s*[:\-\=]?\s*(\d+(?:\.\d{1,2})?)', caseSensitive: false);
+      Iterable<RegExpMatch> matches = exp.allMatches(extractedText);
+      
+      double maxAmount = 0.0;
+      for (final m in matches) {
+        if (m.group(1) != null) {
+          double val = double.tryParse(m.group(1)!) ?? 0.0;
+          if (val > maxAmount) maxAmount = val;
+        }
+      }
+      
+      await textRecognizer.close();
+
+      if (maxAmount > 0) {
+        if (mounted) {
+          setState(() {
+            _unitPriceController.text = maxAmount.toString();
+          });
+          SnackbarHelper.showSuccess(context, 'Extracted Amount: $maxAmount');
+        }
+      } else {
+        if (mounted) SnackbarHelper.showError(context, 'Could not detect an amount clearly.');
+      }
+    } catch (e) {
+      if (mounted) SnackbarHelper.showError(context, 'OCR Failed: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _submitExpense() async {
@@ -101,7 +148,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Expense Details', style: AppTextStyles.titleLarge()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Expense Details', style: AppTextStyles.titleLarge()),
+                  TextButton.icon(
+                    onPressed: _isLoading ? null : _scanReceipt,
+                    icon: const Icon(Icons.document_scanner),
+                    label: const Text('Scan Receipt'),
+                  ),
+                ],
+              ),
               AppSpacing.vGapLg,
               
               CustomTextField(

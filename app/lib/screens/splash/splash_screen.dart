@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = await authProvider.checkAuthState();
     final prefs = await SharedPreferences.getInstance();
-    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    final hasSeenOnboarding = prefs.getBool('showHome') ?? false;
     if (!mounted) return;
 
     Widget nextScreen;
@@ -119,13 +119,23 @@ class _SplashScreenState extends State<SplashScreen>
       campaignProvider.init(ngoId);
       Provider.of<VirtualSessionProvider>(context, listen: false).init(ngoId);
       
-      nextScreen = authProvider.isAdmin ? const AdminLayout() : const HomeScreen();
-    } else if (!hasSeenOnboarding) {
-      nextScreen = const OnboardingScreen();
+      if (authProvider.isAdmin) {
+        nextScreen = AdminLayout(ngoId: ngoId);
+      } else {
+        nextScreen = const HomeScreen();
+      }
     } else {
-      nextScreen = const LandingScreen();
+      if (!hasSeenOnboarding) {
+        nextScreen = const OnboardingScreen();
+      } else {
+        nextScreen = const LandingScreen();
+      }
     }
 
+    _navigateToNext(nextScreen);
+  }
+
+  void _navigateToNext(Widget nextScreen) {
     if (!mounted) return;
     
     Navigator.of(context).pushReplacement(
