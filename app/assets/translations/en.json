@@ -145,5 +145,20 @@
   "unit": "Unit",
   "saved_successfully": "Saved successfully",
   "are_you_sure": "Are you sure you want to proceed?",
-  "activity_timeline": "Activity Timeline"
+  "activity_timeline": "Activity Timeline",
+  "auto_generate_ai": "Auto-Generate with AI ✨",
+  "please_enter_title": "Please enter a title first to generate description",
+  "ai_generating": "✨ AI is generating a professional description...",
+  "emergency_sos": "Emergency SOS",
+  "sos_desc": "Are you in an emergency situation? This will immediately alert the Campaign Admin and nearby volunteers with your location.",
+  "send_sos_alarm": "SEND SOS ALARM",
+  "sos_alert_sent": "🚨 SOS Alert Sent! Admin has been notified of your location.",
+  "budget_utilization": "Budget Utilization",
+  "expenses_used": "Expenses (Used)",
+  "remaining_budget": "Remaining Budget",
+  "share_campaign": "Share Campaign",
+  "calendar_view": "Calendar View",
+  "export_csv": "Export CSV Data",
+  "cancel": "Cancel",
+  "delete": "Delete"
 }

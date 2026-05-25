@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../enums/app_enums.dart';
 import '../../../../widgets/common/custom_text_field.dart';
 
@@ -54,13 +55,13 @@ class CampaignBasicForm extends StatelessWidget {
               onPressed: () {
                 if (titleController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a title first to generate description')),
+                    SnackBar(content: Text('please_enter_title'.tr())),
                   );
                   return;
                 }
                 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('✨ AI is generating a professional description...')),
+                  SnackBar(content: Text('ai_generating'.tr())),
                 );
                 
                 Future.delayed(const Duration(seconds: 2), () {
@@ -70,7 +71,7 @@ class CampaignBasicForm extends StatelessWidget {
                 });
               },
               icon: const Icon(Icons.auto_awesome, size: 16, color: Colors.purple),
-              label: const Text('Auto-Generate with AI ✨', style: TextStyle(color: Colors.purple, fontSize: 12)),
+              label: Text('auto_generate_ai'.tr(), style: const TextStyle(color: Colors.purple, fontSize: 12)),
             ),
           ],
         ),

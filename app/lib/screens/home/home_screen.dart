@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_currentIndex == 1) ...[
               IconButton(
                 icon: const Icon(Icons.calendar_month),
-                tooltip: 'Calendar View',
+                tooltip: 'calendar_view'.tr(),
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const CampaignCalendarScreen()));
                 },

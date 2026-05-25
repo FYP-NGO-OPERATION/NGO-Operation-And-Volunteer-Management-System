@@ -29,7 +29,7 @@ class AnalyticsScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.table_chart, color: AppColors.success),
-                    tooltip: 'Export CSV Data',
+                    tooltip: 'export_csv'.tr(),
                     onPressed: () {
                       CsvExportService.exportCampaignsToCsv(context, provider.allCampaigns);
                     },

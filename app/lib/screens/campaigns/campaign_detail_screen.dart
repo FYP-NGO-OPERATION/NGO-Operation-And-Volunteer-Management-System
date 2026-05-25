@@ -98,7 +98,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: 'Share Campaign',
+            tooltip: 'share_campaign'.tr(),
             onPressed: () {
               final String shareText = "🌟 Join this amazing campaign: ${_campaign.title}!\n\n"
                   "${_campaign.description}\n\n"
@@ -111,34 +111,34 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
             IconButton(
               icon: const Icon(Icons.emergency, color: AppColors.error),
-              tooltip: 'Emergency SOS',
+              tooltip: 'emergency_sos'.tr(),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Row(
+                    title: Row(
                       children: [
-                        Icon(Icons.warning, color: AppColors.error),
-                        SizedBox(width: 8),
-                        Text('Emergency SOS', style: TextStyle(color: AppColors.error)),
+                        const Icon(Icons.warning, color: AppColors.error),
+                        const SizedBox(width: 8),
+                        Text('emergency_sos'.tr(), style: const TextStyle(color: AppColors.error)),
                       ],
                     ),
-                    content: const Text('Are you in an emergency situation? This will immediately alert the Campaign Admin and nearby volunteers with your location.'),
+                    content: Text('sos_desc'.tr()),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr())),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('🚨 SOS Alert Sent! Admin has been notified of your location.'),
+                            SnackBar(
+                              content: Text('sos_alert_sent'.tr()),
                               backgroundColor: AppColors.error,
-                              duration: Duration(seconds: 4),
+                              duration: const Duration(seconds: 4),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-                        child: const Text('SEND SOS ALARM'),
+                        child: Text('send_sos_alarm'.tr()),
                       ),
                     ],
                   ),
