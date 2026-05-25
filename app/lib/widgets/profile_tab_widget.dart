@@ -14,6 +14,7 @@ import '../../screens/ngos/ngo_selection_screen.dart';
 import '../../screens/ngos/create_ngo_screen.dart';
 import '../../services/certificate_service.dart';
 import '../../providers/ngo_provider.dart';
+import '../../screens/volunteer/carbon_tracker_screen.dart';
 
 class ProfileTab extends StatelessWidget {
   final VoidCallback onLogout;
@@ -138,6 +139,14 @@ class ProfileTab extends StatelessWidget {
             subtitle: 'about_hras_desc'.tr(),
             icon: Icons.info_outline,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
+          ),
+          const Divider(height: 32),
+          _buildSettingsTile(
+            context,
+            title: 'Carbon Footprint Tracker',
+            subtitle: 'Track your eco-friendly impact',
+            icon: Icons.eco,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CarbonTrackerScreen())),
           ),
           const Divider(height: 32),
           _buildSettingsTile(

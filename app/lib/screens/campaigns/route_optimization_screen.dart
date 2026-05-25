@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -13,18 +14,43 @@ class RouteOptimizationScreen extends StatefulWidget {
 }
 
 class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
-  // Mock delivery stops
-  final List<LatLng> _stops = [
-    const LatLng(24.8607, 67.0011), // Depot
-    const LatLng(24.8812, 67.0323), // Stop A
-    const LatLng(24.8256, 67.0612), // Stop B
-    const LatLng(24.8723, 67.0911), // Stop C
-    const LatLng(24.8410, 67.0150), // Stop D
-  ];
-
+  List<LatLng> _stops = [];
   List<LatLng> _optimizedRoute = [];
   bool _isOptimizing = false;
+  bool _isLoadingMap = true;
   double _totalDistance = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCampaignLocations();
+  }
+
+  Future<void> _fetchCampaignLocations() async {
+    try {
+      final snap = await FirebaseFirestore.instance.collection('campaigns').where('status', isEqualTo: 'active').get();
+      List<LatLng> fetchedStops = [];
+      
+      // Default Depot (e.g., NGO Headquarters)
+      fetchedStops.add(const LatLng(24.8607, 67.0011)); 
+
+      for (var doc in snap.docs) {
+        final data = doc.data();
+        if (data['latitude'] != null && data['longitude'] != null) {
+          fetchedStops.add(LatLng((data['latitude'] as num).toDouble(), (data['longitude'] as num).toDouble()));
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _stops = fetchedStops;
+          _isLoadingMap = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingMap = false);
+    }
+  }
 
   double _calculateDistance(LatLng a, LatLng b) {
     const double earthRadius = 6371; // km
@@ -40,9 +66,11 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
   }
 
   void _runTSPOptimization() async {
+    if (_stops.length < 2) return;
+    
     setState(() => _isOptimizing = true);
-    // Simulate complex calculation
-    await Future.delayed(const Duration(seconds: 2));
+    // Simulate complex calculation for UX
+    await Future.delayed(const Duration(seconds: 1));
 
     // Nearest Neighbor Heuristic
     List<LatLng> unvisited = List.from(_stops);

@@ -221,9 +221,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
           constraints: BoxConstraints(maxWidth: Responsive.isDesktop(context) ? 1100 : double.infinity),
           child: Column(
             children: [
-              // Mock weather hazard only if campaign is active and has certain keywords
-              if (_campaign.status == CampaignStatus.active)
-                const WeatherWarningCard(isHazardous: true),
+              // Real weather hazard checking via API
+              if (_campaign.status == CampaignStatus.active && _campaign.latitude != null && _campaign.longitude != null)
+                WeatherWarningCard(latitude: _campaign.latitude!, longitude: _campaign.longitude!),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,

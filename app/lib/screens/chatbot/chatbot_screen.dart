@@ -23,14 +23,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
   late final GenerativeModel _model;
-  // Fallback for FYP if no real key is provided
-  final bool _useMockAI = true; 
+  // Real AI mode active for FYP presentation
+  final bool _useMockAI = false; 
 
   @override
   void initState() {
     super.initState();
-    // In a real scenario, fetch this from secure storage or remote config.
-    const apiKey = 'YOUR_GEMINI_API_KEY';
+    // Real Gemini API Key from Google AI Studio
+    const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw';
     if (!_useMockAI) {
       _model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
     }

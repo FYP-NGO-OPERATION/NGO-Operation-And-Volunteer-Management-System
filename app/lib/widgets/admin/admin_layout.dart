@@ -9,6 +9,7 @@ import '../../screens/admin/admin_donations_screen.dart';
 import '../../screens/profile/user_list_screen.dart';
 import '../../screens/campaigns/campaign_list_screen.dart';
 import '../../screens/campaigns/create_campaign_screen.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../screens/announcements/create_announcement_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
 import '../../screens/admin/blood_emergency_screen.dart';
@@ -28,6 +29,8 @@ class AdminLayout extends StatefulWidget {
 
 class _AdminLayoutState extends State<AdminLayout> {
   int _selectedIndex = 0;
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
 
   late final List<Widget> _pages = [
     FeatureFlags.isAnalyticsEnabled
@@ -81,6 +84,49 @@ class _AdminLayoutState extends State<AdminLayout> {
     ),
   ];
 
+  void _listenToVoiceCommand() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize();
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) {
+            final text = val.recognizedWords.toLowerCase();
+            if (val.hasConfidenceRating && val.confidence > 0) {
+              _processVoiceCommand(text);
+            }
+          },
+        );
+        // Stop listening after 4 seconds
+        Future.delayed(const Duration(seconds: 4), () {
+          if (mounted && _isListening) {
+            _speech.stop();
+            setState(() => _isListening = false);
+          }
+        });
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
+
+  void _processVoiceCommand(String text) {
+    setState(() => _isListening = false);
+    _speech.stop();
+    
+    if (text.contains('route') || text.contains('tsp')) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Voice Command: Opening Route Optimization')));
+    } else if (text.contains('sentiment') || text.contains('ai')) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const SentimentAnalysisScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Voice Command: Opening AI Sentiment')));
+    } else if (text.contains('disaster') || text.contains('map')) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Voice Command: Opening Disaster Map')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 800;
@@ -94,6 +140,11 @@ class _AdminLayoutState extends State<AdminLayout> {
               title: const Text('Admin Panel'),
               backgroundColor: Provider.of<DisasterProvider>(context).isEmergencyMode ? Colors.red : null,
               actions: [
+                IconButton(
+                  icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.amber : null),
+                  tooltip: 'Voice Command',
+                  onPressed: _listenToVoiceCommand,
+                ),
                 Consumer<ThemeProvider>(
                   builder: (context, themeProvider, _) {
                     return IconButton(
