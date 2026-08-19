@@ -22,6 +22,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
   bool _isOptimizing = false;
   bool _isLoadingMap = true;
   double _totalDistance = 0.0;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -50,7 +51,11 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
       for (var doc in snap.docs) {
         final data = doc.data();
         if (data['latitude'] != null && data['longitude'] != null) {
-          fetchedStops.add(LatLng((data['latitude'] as num).toDouble(), (data['longitude'] as num).toDouble()));
+          final lat = (data['latitude'] as num).toDouble();
+          final lng = (data['longitude'] as num).toDouble();
+          if (!lat.isNaN && !lng.isNaN) {
+            fetchedStops.add(LatLng(lat, lng));
+          }
         }
       }
 
@@ -126,6 +131,17 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
       _totalDistance = distance;
       _isOptimizing = false;
     });
+
+    // Auto zoom map to fit all route points
+    if (route.isNotEmpty && mounted) {
+      final bounds = LatLngBounds.fromPoints(route);
+      _mapController.fitCamera(
+        CameraFit.bounds(
+          bounds: bounds,
+          padding: const EdgeInsets.all(50.0),
+        ),
+      );
+    }
   }
 
   Future<void> _openInGoogleMaps() async {
@@ -206,9 +222,10 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
           ),
           Expanded(
             child: FlutterMap(
+              mapController: _mapController,
               options: MapOptions(
-                initialCenter: _stops.isNotEmpty ? _stops[0] : const LatLng(24.8607, 67.0511),
-                initialZoom: 11.5,
+                initialCenter: _stops.isNotEmpty ? _stops[0] : const LatLng(30.3753, 69.3451),
+                initialZoom: _stops.isNotEmpty ? 13.0 : 5.5,
               ),
               children: [
                 TileLayer(

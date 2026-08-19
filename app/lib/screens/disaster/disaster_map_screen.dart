@@ -32,6 +32,7 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButton(color: Colors.white),
         title: Row(
           children: [
             if (isEmergency) const Icon(Icons.warning, color: Colors.white),
@@ -184,17 +185,28 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
             onPressed: () async {
               if (titleCtrl.text.isEmpty) return;
               
-              // Get actual device location instead of hardcoded coordinates
-              loc.Location location = loc.Location();
-              bool serviceEnabled = await location.serviceEnabled();
+              // Get actual device location properly
+              bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
               if (!serviceEnabled) {
-                serviceEnabled = await location.requestService();
-                if (!serviceEnabled) {
-                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'GPS must be enabled to report incident.');
+                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Please enable GPS/Location in your phone settings.');
+                return;
+              }
+
+              LocationPermission permission = await Geolocator.checkPermission();
+              if (permission == LocationPermission.denied) {
+                permission = await Geolocator.requestPermission();
+                if (permission == LocationPermission.denied) {
+                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are denied');
                   return;
                 }
               }
-              final pos = await LocationService.getCurrentLocation();
+              
+              if (permission == LocationPermission.deniedForever) {
+                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are permanently denied, we cannot request permissions.');
+                return;
+              }
+
+              final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
               if (pos == null) {
                 if (ctx.mounted) SnackbarHelper.showError(ctx, 'Could not get your location.');
                 return;
