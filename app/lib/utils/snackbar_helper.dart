@@ -44,8 +44,8 @@ class SnackbarHelper {
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 180, // Push to top
+        margin: const EdgeInsets.only(
+          bottom: 80, // Elevated to clear FloatingActionButton
           left: 16,
           right: 16,
         ),
