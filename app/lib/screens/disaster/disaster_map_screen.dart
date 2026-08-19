@@ -36,7 +36,10 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
           children: [
             if (isEmergency) const Icon(Icons.warning, color: Colors.white),
             if (isEmergency) const SizedBox(width: 8),
-            Text(isEmergency ? 'DISASTER RELIEF MODE' : 'Normal Map Mode'),
+            Text(
+              isEmergency ? 'DISASTER RELIEF MODE' : 'Normal Map Mode',
+              style: const TextStyle(color: Colors.white),
+            ),
           ],
         ),
         backgroundColor: isEmergency ? AppColors.error : AppColors.primary,
