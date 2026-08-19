@@ -187,48 +187,56 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
             onPressed: () async {
               if (titleCtrl.text.isEmpty) return;
               
-              // Get actual device location properly
-              bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-              if (!serviceEnabled) {
-                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Please enable GPS/Location in your phone settings.');
-                return;
-              }
-
-              LocationPermission permission = await Geolocator.checkPermission();
-              if (permission == LocationPermission.denied) {
-                permission = await Geolocator.requestPermission();
-                if (permission == LocationPermission.denied) {
-                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are denied');
+              try {
+                // Get actual device location properly
+                bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                if (!serviceEnabled) {
+                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Please enable GPS/Location in your phone settings.');
                   return;
                 }
-              }
-              
-              if (permission == LocationPermission.deniedForever) {
-                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are permanently denied, we cannot request permissions.');
-                return;
-              }
 
-              final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-              if (pos == null) {
-                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Could not get your location.');
-                return;
-              }
+                LocationPermission permission = await Geolocator.checkPermission();
+                if (permission == LocationPermission.denied) {
+                  permission = await Geolocator.requestPermission();
+                  if (permission == LocationPermission.denied) {
+                    if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are denied');
+                    return;
+                  }
+                }
+                
+                if (permission == LocationPermission.deniedForever) {
+                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are permanently denied, we cannot request permissions.');
+                  return;
+                }
 
-              final service = IncidentService();
-              final incident = IncidentModel(
-                id: service.generateId(),
-                reportedByUserId: user.uid,
-                reportedByUserName: user.name,
-                title: titleCtrl.text,
-                description: descCtrl.text,
-                latitude: pos.latitude,
-                longitude: pos.longitude,
-                reportedAt: DateTime.now(),
-              );
-              await service.reportIncident(incident);
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
-                SnackbarHelper.showSuccess(ctx, 'Incident Reported!');
+                if (ctx.mounted) SnackbarHelper.showSuccess(ctx, 'Fetching your live location... Please wait.');
+                
+                final pos = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high,
+                  timeLimit: const Duration(seconds: 15), // don't hang forever
+                );
+
+                final service = IncidentService();
+                final incident = IncidentModel(
+                  id: service.generateId(),
+                  reportedByUserId: user.uid,
+                  reportedByUserName: user.name,
+                  title: titleCtrl.text,
+                  description: descCtrl.text,
+                  latitude: pos.latitude,
+                  longitude: pos.longitude,
+                  reportedAt: DateTime.now(),
+                );
+                await service.reportIncident(incident);
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                  SnackbarHelper.showSuccess(ctx, 'Incident Reported Successfully!');
+                }
+              } catch (e) {
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                  SnackbarHelper.showError(ctx, 'Error getting location: ${e.toString()}');
+                }
               }
             },
             child: const Text('Report'),
