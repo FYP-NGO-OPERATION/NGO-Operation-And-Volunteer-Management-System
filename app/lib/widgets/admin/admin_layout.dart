@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/feature_flags.dart';
@@ -171,10 +172,26 @@ class _AdminLayoutState extends State<AdminLayout> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Microphone permission denied or not available.'),
-            backgroundColor: Colors.red,
-          ));
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Microphone Required'),
+              content: const Text('Please allow microphone access in your device settings to use voice commands.'),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await Geolocator.openAppSettings();
+                  },
+                  child: const Text('Open Settings'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+              ],
+            ),
+          );
         }
       }
     } else {
