@@ -185,6 +185,29 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                               }
                             } : null,
                           ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                            tooltip: 'Delete Donation',
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (c) => AlertDialog(
+                                  title: const Text('Delete Donation?'),
+                                  content: const Text('Are you sure you want to delete this donation record? This cannot be undone.'),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(c, true),
+                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true) {
+                                await FirebaseFirestore.instance.collection('donations').doc(d.id).delete();
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -239,6 +262,28 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                         icon: const Icon(Icons.track_changes, size: 20),
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (_) => DonationTrackerScreen(donationId: donation.id, amount: donation.amount)));
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (c) => AlertDialog(
+                              title: const Text('Delete Donation?'),
+                              content: const Text('Are you sure you want to delete this donation record?'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(c, true),
+                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            await FirebaseFirestore.instance.collection('donations').doc(donation.id).delete();
+                          }
                         },
                       ),
                     ],
