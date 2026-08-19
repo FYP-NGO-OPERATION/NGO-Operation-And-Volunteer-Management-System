@@ -44,8 +44,12 @@ class SnackbarHelper {
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 180, // Push to top
+          left: 16,
+          right: 16,
+        ),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
