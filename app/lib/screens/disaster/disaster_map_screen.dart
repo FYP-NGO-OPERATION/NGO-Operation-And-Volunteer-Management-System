@@ -9,6 +9,7 @@ import '../../models/incident_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/snackbar_helper.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../services/location_service.dart';
 import 'package:location/location.dart' as loc;
 
