@@ -6,6 +6,7 @@ import 'dart:math';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../services/location_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 class RouteOptimizationScreen extends StatefulWidget {
   const RouteOptimizationScreen({super.key});
 
@@ -35,7 +36,18 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
       if (pos != null) {
         fetchedStops.add(LatLng(pos.latitude, pos.longitude)); 
       } else {
-        // Fallback Depot (e.g., NGO Headquarters)
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Location Off'),
+              content: const Text('Please turn on your device location for accurate routing.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))
+              ],
+            ),
+          );
+        }
         fetchedStops.add(const LatLng(24.8607, 67.0011)); 
       }
 
@@ -113,6 +125,22 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
     });
   }
 
+  Future<void> _openInGoogleMaps() async {
+    if (_optimizedRoute.length < 2) return;
+    final origin = _optimizedRoute.first;
+    final dest = _optimizedRoute.last;
+    final waypoints = _optimizedRoute.sublist(1, _optimizedRoute.length - 1).map((p) => '${p.latitude},${p.longitude}').join('|');
+    
+    final url = Uri.parse('https://www.google.com/maps/dir/?api=1&origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&waypoints=$waypoints');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open Google Maps.')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,6 +182,15 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                     ],
                   ),
                 ),
+                if (_optimizedRoute.isNotEmpty) ...[
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    icon: const Icon(Icons.map, color: Colors.white),
+                    label: const Text('Google Maps', style: TextStyle(color: Colors.white)),
+                    onPressed: _openInGoogleMaps,
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 ElevatedButton.icon(
                   icon: _isOptimizing
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))

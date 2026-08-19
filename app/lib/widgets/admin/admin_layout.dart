@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/feature_flags.dart';
@@ -145,7 +146,12 @@ class _AdminLayoutState extends State<AdminLayout> {
 
   void _listenToVoiceCommand() async {
     if (!_isListening) {
-      bool available = await _speech.initialize();
+      bool available = false;
+      try {
+        available = await _speech.initialize();
+      } catch (e) {
+        available = false;
+      }
       if (available) {
         setState(() => _isListening = true);
         _speech.listen(
@@ -163,6 +169,13 @@ class _AdminLayoutState extends State<AdminLayout> {
             setState(() => _isListening = false);
           }
         });
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Microphone permission denied or not available.'),
+            backgroundColor: Colors.red,
+          ));
+        }
       }
     } else {
       setState(() => _isListening = false);
@@ -186,13 +199,41 @@ class _AdminLayoutState extends State<AdminLayout> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App?'),
+        content: const Text('Are you sure you want to exit the app?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Yes', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    return shouldPop ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 800;
     final theme = Theme.of(context);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final bool shouldPop = await _onWillPop();
+        if (shouldPop) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
       appBar: isDesktop
           ? null
           : AppBar(
@@ -380,6 +421,6 @@ class _AdminLayoutState extends State<AdminLayout> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

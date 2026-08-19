@@ -93,20 +93,11 @@ class PdfReportService {
       ),
     );
 
-    // 4. Save and Open PDF
-    try {
-      final bytes = await pdf.save();
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf');
-      await file.writeAsBytes(bytes);
-      await OpenFile.open(file.path);
-    } catch (e) {
-      // Fallback to layoutPdf if path_provider fails (e.g. on web)
-      await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async => pdf.save(),
-        name: 'HRAS_Report_$dateStr.pdf',
-      );
-    }
+    // 4. Show Native Print/Save Preview
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf',
+    );
   }
 
   static pw.Widget _buildHeader(pw.MemoryImage? logoImage) {
@@ -337,17 +328,9 @@ class PdfReportService {
       ),
     );
 
-    try {
-      final bytes = await pdf.save();
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf');
-      await file.writeAsBytes(bytes);
-      await OpenFile.open(file.path);
-    } catch (e) {
-      await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async => pdf.save(),
-        name: 'CampaignReport_$dateStr.pdf',
-      );
-    }
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf',
+    );
   }
 }

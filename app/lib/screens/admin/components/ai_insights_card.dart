@@ -27,7 +27,7 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
     try {
       // Using the valid API key from volunteer AI assistant as requested
       const apiKey = 'AIzaSyBo5HXMWr_AVppR-5UgITZSBzZpootcHlQ'; 
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-flash-latest', apiKey: apiKey);
 
       final prompt = '''
 Act as an expert NGO strategist. Given our current platform data:
@@ -72,8 +72,12 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
               children: [
                 const Icon(Icons.auto_awesome, color: AppColors.primary),
                 const SizedBox(width: 8),
-                const Text('AI Predictive Insights', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                const Spacer(),
+                const Expanded(
+                  child: Text('AI Predictive Insights', 
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 if (!_isLoading)
                   TextButton.icon(
                     icon: const Icon(Icons.refresh),
