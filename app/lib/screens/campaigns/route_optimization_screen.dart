@@ -206,18 +206,19 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    if (_optimizedRoute.isNotEmpty) ...[
+                    if (_optimizedRoute.isNotEmpty)
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                         icon: const Icon(Icons.map, color: Colors.white),
                         label: const Text('Google Maps', style: TextStyle(color: Colors.white)),
                         onPressed: _openInGoogleMaps,
                       ),
-                      const SizedBox(width: 8),
-                    ],
                     ElevatedButton.icon(
                       icon: _isOptimizing
                           ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
