@@ -183,39 +183,49 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             color: AppColors.primaryLight.withValues(alpha: 0.1),
-            child: Row(
+            child: Column(
               children: [
-                const Icon(Icons.route, color: AppColors.primary, size: 32),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Traveling Salesman Problem (TSP)', style: AppTextStyles.titleMedium()),
-                      Text(
-                        _optimizedRoute.isEmpty
-                            ? 'Optimize the delivery route for ${max(0, _stops.length - 1)} stops.'
-                            : 'Optimized Distance: ${_totalDistance.toStringAsFixed(2)} km',
-                        style: AppTextStyles.bodyMedium(color: Colors.blueGrey),
+                Row(
+                  children: [
+                    const Icon(Icons.route, color: AppColors.primary, size: 32),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Traveling Salesman Problem (TSP)', style: AppTextStyles.titleMedium()),
+                          Text(
+                            _optimizedRoute.isEmpty
+                                ? 'Optimize the delivery route for ${max(0, _stops.length - 1)} stops.'
+                                : 'Optimized Distance: ${_totalDistance.toStringAsFixed(2)} km',
+                            style: AppTextStyles.bodyMedium(color: Colors.blueGrey),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                if (_optimizedRoute.isNotEmpty) ...[
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    icon: const Icon(Icons.map, color: Colors.white),
-                    label: const Text('Google Maps', style: TextStyle(color: Colors.white)),
-                    onPressed: _openInGoogleMaps,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                ElevatedButton.icon(
-                  icon: _isOptimizing
-                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Icon(Icons.play_arrow),
-                  label: Text(_isOptimizing ? 'Calculating...' : 'Optimize'),
-                  onPressed: _isOptimizing ? null : _runTSPOptimization,
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (_optimizedRoute.isNotEmpty) ...[
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        icon: const Icon(Icons.map, color: Colors.white),
+                        label: const Text('Google Maps', style: TextStyle(color: Colors.white)),
+                        onPressed: _openInGoogleMaps,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    ElevatedButton.icon(
+                      icon: _isOptimizing
+                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : const Icon(Icons.play_arrow),
+                      label: Text(_isOptimizing ? 'Calculating...' : 'Optimize'),
+                      onPressed: _isOptimizing ? null : _runTSPOptimization,
+                    ),
+                  ],
                 ),
               ],
             ),

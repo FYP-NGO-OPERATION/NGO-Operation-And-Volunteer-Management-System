@@ -12,6 +12,7 @@ import '../../utils/snackbar_helper.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../services/location_service.dart';
 import 'package:location/location.dart' as loc;
+import 'package:url_launcher/url_launcher.dart';
 
 class DisasterMapScreen extends StatefulWidget {
   const DisasterMapScreen({super.key});
@@ -121,6 +122,17 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                                       },
                                       child: const Text('Mark Resolved', style: TextStyle(color: AppColors.success)),
                                     ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${incident.latitude},${incident.longitude}');
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                                      } else {
+                                        if (ctx.mounted) SnackbarHelper.showError(ctx, 'Could not open Google Maps.');
+                                      }
+                                    },
+                                    child: const Text('Get Directions', style: TextStyle(color: Colors.blue)),
+                                  ),
                                   TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
                                 ],
                               )
