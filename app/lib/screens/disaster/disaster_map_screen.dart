@@ -9,6 +9,8 @@ import '../../models/incident_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../services/location_service.dart';
+import 'package:location/location.dart' as loc;
 
 class DisasterMapScreen extends StatefulWidget {
   const DisasterMapScreen({super.key});
@@ -25,8 +27,8 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
     final user = Provider.of<AuthProvider>(context).user;
     final bool isEmergency = disasterProvider.isEmergencyMode;
 
-    // Center on Karachi for FYP
-    final initialCenter = const LatLng(24.8607, 67.0011);
+    // Center on Pakistan by default
+    final initialCenter = const LatLng(30.3753, 69.3451);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,7 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
           FlutterMap(
             options: MapOptions(
               initialCenter: initialCenter,
-              initialZoom: 12,
+              initialZoom: 5.5,
             ),
             children: [
               TileLayer(
@@ -178,6 +180,23 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
           ElevatedButton(
             onPressed: () async {
               if (titleCtrl.text.isEmpty) return;
+              
+              // Get actual device location instead of hardcoded coordinates
+              loc.Location location = loc.Location();
+              bool serviceEnabled = await location.serviceEnabled();
+              if (!serviceEnabled) {
+                serviceEnabled = await location.requestService();
+                if (!serviceEnabled) {
+                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'GPS must be enabled to report incident.');
+                  return;
+                }
+              }
+              final pos = await LocationService.getCurrentLocation();
+              if (pos == null) {
+                if (ctx.mounted) SnackbarHelper.showError(ctx, 'Could not get your location.');
+                return;
+              }
+
               final service = IncidentService();
               final incident = IncidentModel(
                 id: service.generateId(),
@@ -185,9 +204,8 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                 reportedByUserName: user.name,
                 title: titleCtrl.text,
                 description: descCtrl.text,
-                // Hardcoding nearby location for FYP simulation
-                latitude: 24.86 + (DateTime.now().millisecond % 10) / 100,
-                longitude: 67.01 + (DateTime.now().millisecond % 10) / 100,
+                latitude: pos.latitude,
+                longitude: pos.longitude,
                 reportedAt: DateTime.now(),
               );
               await service.reportIncident(incident);
