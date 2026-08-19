@@ -266,6 +266,42 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final firestore = FirebaseFirestore.instance;
+          await firestore.collection('campaigns').add({
+            'title': 'Test Flood Relief',
+            'description': 'Test campaign 1',
+            'latitude': 24.88,
+            'longitude': 67.03,
+            'status': 'active',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          await firestore.collection('campaigns').add({
+            'title': 'Test Medical Camp',
+            'description': 'Test campaign 2',
+            'latitude': 24.84,
+            'longitude': 67.08,
+            'status': 'active',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          await firestore.collection('campaigns').add({
+            'title': 'Test Food Distribution',
+            'description': 'Test campaign 3',
+            'latitude': 24.81,
+            'longitude': 67.02,
+            'status': 'active',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('3 Fake Campaigns Added!')));
+            _fetchCampaignLocations();
+          }
+        },
+        icon: const Icon(Icons.add_location_alt, color: Colors.white),
+        label: const Text('Add 3 Fake Campaigns', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.purple,
+      ),
     );
   }
 }
