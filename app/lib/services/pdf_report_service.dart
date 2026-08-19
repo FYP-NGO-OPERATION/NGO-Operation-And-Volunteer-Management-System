@@ -93,10 +93,10 @@ class PdfReportService {
       ),
     );
 
-    // 4. Show Native Print/Save Preview
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdf.save(),
-      name: 'HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf',
+    // 4. Share PDF (always works on all devices regardless of print spooler)
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf',
     );
   }
 
@@ -328,9 +328,9 @@ class PdfReportService {
       ),
     );
 
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdf.save(),
-      name: 'CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf',
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf',
     );
   }
 }

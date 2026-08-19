@@ -209,7 +209,20 @@ class AnalyticsScreen extends StatelessWidget {
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
               maxY: (provider.totalCampaigns + 2).toDouble(),
-              barTouchData: BarTouchData(enabled: true),
+              barTouchData: BarTouchData(
+                enabled: false,
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipColor: (_) => Colors.transparent,
+                  tooltipPadding: EdgeInsets.zero,
+                  tooltipMargin: 2,
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    return BarTooltipItem(
+                      rod.toY.round().toString(),
+                      TextStyle(color: rod.color, fontWeight: FontWeight.bold, fontSize: 14),
+                    );
+                  },
+                ),
+              ),
               titlesData: FlTitlesData(
                 show: true,
                 bottomTitles: AxisTitles(
@@ -231,9 +244,9 @@ class AnalyticsScreen extends StatelessWidget {
               ),
               borderData: FlBorderData(show: false),
               barGroups: [
-                BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: upcoming.toDouble(), color: AppColors.info, width: 20, borderRadius: BorderRadius.circular(4))]),
-                BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: active.toDouble(), color: AppColors.success, width: 20, borderRadius: BorderRadius.circular(4))]),
-                BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: completed.toDouble(), color: AppColors.primary, width: 20, borderRadius: BorderRadius.circular(4))]),
+                BarChartGroupData(x: 0, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: upcoming.toDouble(), color: AppColors.info, width: 20, borderRadius: BorderRadius.circular(4))]),
+                BarChartGroupData(x: 1, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: active.toDouble(), color: AppColors.success, width: 20, borderRadius: BorderRadius.circular(4))]),
+                BarChartGroupData(x: 2, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: completed.toDouble(), color: AppColors.primary, width: 20, borderRadius: BorderRadius.circular(4))]),
               ],
             ),
           ),
