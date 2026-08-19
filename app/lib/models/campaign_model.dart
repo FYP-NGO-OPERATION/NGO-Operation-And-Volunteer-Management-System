@@ -226,6 +226,25 @@ class CampaignModel {
   double get remainingBudget => totalDonationsAmount - totalExpenses;
   bool get hasVolunteerLimit => volunteerLimit != null && volunteerLimit! > 0;
   bool get isFull => hasVolunteerLimit && totalVolunteers >= volunteerLimit!;
+  
+  bool get isSuccessful {
+    if (status != CampaignStatus.completed) return false;
+    
+    // Check volunteer limit
+    if (hasVolunteerLimit && totalVolunteers >= volunteerLimit!) return true;
+
+    // Check target goal
+    try {
+      final numericOnly = targetGoal.replaceAll(RegExp(r'[^0-9]'), '');
+      if (numericOnly.isNotEmpty) {
+        final target = double.parse(numericOnly);
+        if (target > 0 && totalDonationsAmount >= target) return true;
+      }
+    } catch (_) {}
+
+    // Fallback heuristic for older drives without strict targets
+    return totalDonationsAmount >= 5000 || totalVolunteers >= 5;
+  }
 
   @override
   String toString() => 'CampaignModel(id: $id, title: $title, status: ${status.label})';

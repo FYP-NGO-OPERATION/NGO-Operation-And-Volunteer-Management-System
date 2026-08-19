@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-
+import '../../services/location_service.dart';
 class RouteOptimizationScreen extends StatefulWidget {
   const RouteOptimizationScreen({super.key});
 
@@ -31,8 +31,13 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
       final snap = await FirebaseFirestore.instance.collection('campaigns').where('status', isEqualTo: 'active').get();
       List<LatLng> fetchedStops = [];
       
-      // Default Depot (e.g., NGO Headquarters)
-      fetchedStops.add(const LatLng(24.8607, 67.0011)); 
+      final pos = await LocationService.getCurrentLocation();
+      if (pos != null) {
+        fetchedStops.add(LatLng(pos.latitude, pos.longitude)); 
+      } else {
+        // Fallback Depot (e.g., NGO Headquarters)
+        fetchedStops.add(const LatLng(24.8607, 67.0011)); 
+      }
 
       for (var doc in snap.docs) {
         final data = doc.data();
@@ -162,7 +167,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
           Expanded(
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: const LatLng(24.8607, 67.0511),
+                initialCenter: _stops.isNotEmpty ? _stops[0] : const LatLng(24.8607, 67.0511),
                 initialZoom: 11.5,
               ),
               children: [

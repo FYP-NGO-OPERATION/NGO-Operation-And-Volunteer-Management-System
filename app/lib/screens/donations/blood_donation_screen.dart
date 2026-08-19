@@ -6,6 +6,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../providers/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodDonationScreen extends StatefulWidget {
   const BloodDonationScreen({super.key});
@@ -17,8 +18,17 @@ class BloodDonationScreen extends StatefulWidget {
 class _BloodDonationScreenState extends State<BloodDonationScreen> {
   final _bloodReqController = TextEditingController();
   final _hospitalController = TextEditingController();
+  final _contactController = TextEditingController();
   String _selectedType = 'A+';
   final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+  @override
+  void dispose() {
+    _bloodReqController.dispose();
+    _hospitalController.dispose();
+    _contactController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +37,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Blood Emergency Network', style: AppTextStyles.titleLarge()),
+        title: Text('${'blood_emergency'.tr()} Network', style: AppTextStyles.titleLarge()),
         backgroundColor: AppColors.error,
         foregroundColor: Colors.white,
       ),
@@ -42,7 +52,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No active blood requests.'));
+                  return Center(child: Text('no_active_blood_requests'.tr()));
                 }
 
                 final reqs = snapshot.data!.docs;
@@ -52,7 +62,8 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   itemBuilder: (ctx, i) {
                     final data = reqs[i].data() as Map<String, dynamic>;
                     final isMatch = user?.bloodGroup == data['bloodGroup'] && (user?.isBloodDonor ?? false);
-                    return _buildRequestCard(data, isMatch, isDark);
+                    final isMine = user?.uid == data['requesterId'];
+                    return _buildRequestCard(reqs[i].id, data, isMatch, isDark, isMine);
                   },
                 );
               },
@@ -63,8 +74,9 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRequestDialog(context),
         backgroundColor: AppColors.error,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add_alert, color: Colors.white),
-        label: const Text('Need Blood', style: TextStyle(color: Colors.white)),
+        label: Text('need_blood'.tr(), style: const TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -81,7 +93,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
             children: [
               const Icon(Icons.water_drop, color: AppColors.error),
               const SizedBox(width: 8),
-              Text('Your Group: ${myGroup ?? 'Unknown'}', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('${'your_group'.tr()} ${myGroup ?? 'unknown'.tr()}', style: const TextStyle(fontWeight: FontWeight.bold)),
               if (isDonor) ...[
                 const SizedBox(width: 16),
                 Container(
@@ -93,16 +105,16 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
             ],
           ),
           if (!isDonor)
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Text('Update your profile to register as a donor and save lives.', style: TextStyle(fontSize: 12)),
+             Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text('update_blood_profile'.tr(), style: const TextStyle(fontSize: 12)),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildRequestCard(Map<String, dynamic> data, bool isMatch, bool isDark) {
+  Widget _buildRequestCard(String docId, Map<String, dynamic> data, bool isMatch, bool isDark, bool isMine) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
@@ -146,19 +158,49 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  launchUrl(Uri.parse('tel:${data['contactPhone']}'));
-                },
-                icon: const Icon(Icons.phone),
-                label: const Text('Contact Family'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      launchUrl(Uri.parse('tel:${data['contactPhone']}'));
+                    },
+                    icon: const Icon(Icons.phone),
+                    label: const Text('Contact Family'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
                 ),
-              ),
+                if (isMine) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Request'),
+                          content: const Text('Are you sure you want to delete this blood request?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        await FirebaseFirestore.instance.collection('blood_requests').doc(docId).delete();
+                      }
+                    },
+                    icon: const Icon(Icons.delete, color: AppColors.error),
+                    tooltip: 'Delete Request',
+                  )
+                ],
+              ],
             ),
           ],
         ),
@@ -167,6 +209,11 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   }
 
   void _showRequestDialog(BuildContext context) {
+    _bloodReqController.clear();
+    _hospitalController.clear();
+    _contactController.clear();
+    _selectedType = 'A+';
+    
     showDialog(
       context: context,
       builder: (ctx) {
@@ -188,6 +235,8 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextField(controller: _hospitalController, decoration: const InputDecoration(labelText: 'Hospital Name & City')),
+                    const SizedBox(height: 16),
+                    TextField(controller: _contactController, decoration: const InputDecoration(labelText: 'Contact Phone Number'), keyboardType: TextInputType.phone),
                   ],
                 ),
               ),
@@ -195,20 +244,32 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                 TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_bloodReqController.text.isEmpty || _hospitalController.text.isEmpty) return;
+                    if (_bloodReqController.text.isEmpty || _hospitalController.text.isEmpty || _contactController.text.isEmpty) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+                       return;
+                    }
                     
                     final user = context.read<AuthProvider>().user;
-                    await FirebaseFirestore.instance.collection('blood_requests').add({
-                      'patientName': _bloodReqController.text,
-                      'bloodGroup': _selectedType,
-                      'hospital': _hospitalController.text,
-                      'contactPhone': user?.phone ?? '0000000000',
-                      'units': 1,
-                      'requesterId': user?.uid,
-                      'createdAt': FieldValue.serverTimestamp(),
-                    });
-                    
-                    if (mounted) Navigator.pop(ctx);
+                    try {
+                      await FirebaseFirestore.instance.collection('blood_requests').add({
+                        'patientName': _bloodReqController.text,
+                        'bloodGroup': _selectedType,
+                        'hospital': _hospitalController.text,
+                        'contactPhone': _contactController.text,
+                        'units': 1,
+                        'requesterId': user?.uid,
+                        'createdAt': FieldValue.serverTimestamp(),
+                      });
+                      
+                      if (mounted) Navigator.pop(ctx);
+                    } catch (e) {
+                      if (mounted) {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${e.toString().contains('permission') ? 'Permission Denied. Update Firestore Rules.' : e.toString()}')),
+                        );
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
                   child: const Text('Submit Request'),

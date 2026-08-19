@@ -217,7 +217,28 @@ class _AdminLayoutState extends State<AdminLayout> {
                   builder: (context, dp, _) => IconButton(
                     icon: Icon(dp.isEmergencyMode ? Icons.warning : Icons.health_and_safety, color: dp.isEmergencyMode ? Colors.yellow : null),
                     tooltip: 'Toggle Disaster Mode',
-                    onPressed: () => dp.toggleEmergencyMode(),
+                    onPressed: () async {
+                      if (!dp.isEmergencyMode) {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Activate Emergency Mode?'),
+                            content: const Text('This will alert all volunteers and change the UI to disaster mode. Are you sure?'),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                onPressed: () => Navigator.pop(context, true), 
+                                child: const Text('Activate', style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) dp.toggleEmergencyMode();
+                      } else {
+                        dp.toggleEmergencyMode(); // Turn it off without prompt
+                      }
+                    },
                   ),
                 ),
                 IconButton(

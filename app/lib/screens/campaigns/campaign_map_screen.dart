@@ -42,6 +42,10 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
       } catch (e) {
         // ignore
       }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to get real device location. Showing default map.')),
+      );
     }
   }
 

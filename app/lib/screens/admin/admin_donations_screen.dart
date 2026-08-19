@@ -38,6 +38,7 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
           stream: FirebaseFirestore.instance
               .collection('donations')
               .orderBy('receivedAt', descending: true)
+              .limit(50)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
@@ -162,16 +163,26 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                           IconButton(
                             icon: const Icon(Icons.receipt_outlined, size: 18),
                             tooltip: 'Download Receipt',
-                            onPressed: d.isMoney ? () {
-                              PdfReportService.generateDonationReceipt(
-                                donorName: d.donorName,
-                                donorPhone: d.donorPhone ?? '',
-                                amount: d.amount,
-                                campaignTitle: d.campaignTitle,
-                                paymentMethod: d.paymentMethod.name,
-                                date: d.receivedAt,
-                                receiptId: d.id,
-                              );
+                            onPressed: d.isMoney ? () async {
+                              try {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating Receipt...')));
+                                await PdfReportService.generateDonationReceipt(
+                                  donorName: d.donorName,
+                                  donorPhone: d.donorPhone ?? '',
+                                  amount: d.amount,
+                                  campaignTitle: d.campaignTitle,
+                                  paymentMethod: d.paymentMethod.name,
+                                  date: d.receivedAt,
+                                  receiptId: d.id,
+                                );
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text('Failed to generate receipt: $e'),
+                                    backgroundColor: AppColors.error,
+                                  ));
+                                }
+                              }
                             } : null,
                           ),
                         ],

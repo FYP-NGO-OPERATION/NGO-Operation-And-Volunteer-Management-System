@@ -109,8 +109,8 @@ class HomeProfileTab extends StatelessWidget {
               ),
               child: ListTile(
                 leading: const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 30),
-                title: const Text('Verify Identity', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
-                subtitle: const Text('Complete e-KYC to get verified.'),
+                title: Text('verify_identity'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+                subtitle: Text('verify_identity_desc'.tr(), style: TextStyle(color: Colors.orange.shade900)),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.orange),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const VolunteerKycScreen()));
@@ -126,8 +126,8 @@ class HomeProfileTab extends StatelessWidget {
           if (user != null && user.isAdmin != true)
             _buildSettingsTile(
               context,
-              title: 'Activity Timeline',
-              subtitle: 'View your campaign participation history',
+              title: 'activity_timeline'.tr(),
+              subtitle: 'activity_timeline_desc'.tr(),
               icon: Icons.timeline,
               color: AppColors.info,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivityTimelineScreen())),

@@ -142,7 +142,7 @@ class HomeSpeedDial extends StatelessWidget {
             ),
           SpeedDialAction(
             icon: Icons.bloodtype,
-            label: 'Blood Emergency',
+            label: 'blood_emergency'.tr(),
             backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
             onTap: () {
@@ -154,7 +154,7 @@ class HomeSpeedDial extends StatelessWidget {
           ),
           SpeedDialAction(
             icon: Icons.store,
-            label: 'Needs Marketplace',
+            label: 'needs_marketplace'.tr(),
             backgroundColor: Colors.indigo,
             foregroundColor: Colors.white,
             onTap: () {
@@ -179,7 +179,7 @@ class HomeSpeedDial extends StatelessWidget {
               actions: [
                 SpeedDialAction(
                   icon: Icons.bloodtype,
-                  label: 'Blood Emergency',
+                  label: 'blood_emergency'.tr(),
                   backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   onTap: () {
@@ -191,7 +191,7 @@ class HomeSpeedDial extends StatelessWidget {
                 ),
                 SpeedDialAction(
                   icon: Icons.store,
-                  label: 'Needs Marketplace',
+                  label: 'needs_marketplace'.tr(),
                   backgroundColor: Colors.indigo,
                   foregroundColor: Colors.white,
                   onTap: () {
@@ -242,7 +242,7 @@ class HomeSpeedDial extends StatelessWidget {
                   ),
                 SpeedDialAction(
                   icon: Icons.smart_toy,
-                  label: 'AI Assistant',
+                  label: 'ai_assistant'.tr(),
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
                   onTap: () {
@@ -254,21 +254,21 @@ class HomeSpeedDial extends StatelessWidget {
                 ),
                 SpeedDialAction(
                   icon: Icons.sos,
-                  label: 'EMERGENCY SOS',
+                  label: 'emergency_sos_button'.tr(),
                   backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   onTap: () async {
                     final user = auth.user;
                     if (user != null) {
                       try {
-                        SnackbarHelper.showSuccess(context, 'Sending SOS Alert...');
+                        SnackbarHelper.showSuccess(context, 'sending_sos'.tr());
                         await SosService.sendSosAlert(user.uid, user.name);
                         if (context.mounted) {
-                          SnackbarHelper.showSuccess(context, 'SOS Alert Sent Successfully! Help is on the way.');
+                          SnackbarHelper.showSuccess(context, 'sos_alert_sent'.tr());
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          SnackbarHelper.showError(context, 'Failed to send SOS: $e');
+                          SnackbarHelper.showError(context, '${'failed_to_send_sos'.tr()} $e');
                         }
                       }
                     }

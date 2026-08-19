@@ -25,7 +25,8 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
   Future<void> _generateInsight() async {
     setState(() => _isLoading = true);
     try {
-      const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw'; // Real API Key
+      // Using the valid API key from volunteer AI assistant as requested
+      const apiKey = 'AIzaSyBo5HXMWr_AVppR-5UgITZSBzZpootcHlQ'; 
       final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
 
       final prompt = '''

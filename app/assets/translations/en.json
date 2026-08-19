@@ -160,5 +160,21 @@
   "calendar_view": "Calendar View",
   "export_csv": "Export CSV Data",
   "cancel": "Cancel",
-  "delete": "Delete"
+  "delete": "Delete",
+  "blood_emergency": "Blood Emergency",
+  "needs_marketplace": "Needs Marketplace",
+  "ai_assistant": "AI Assistant",
+  "emergency_sos_button": "EMERGENCY SOS",
+  "verify_identity": "Verify Identity",
+  "verify_identity_desc": "Complete e-KYC to get verified.",
+  "activity_timeline_desc": "View your campaign participation history",
+  "no_active_blood_requests": "No active blood requests.",
+  "your_group": "Your Group:",
+  "unknown": "Unknown",
+  "update_blood_profile": "Update your profile to register as a donor and save lives.",
+  "report_need": "Report Need",
+  "need_blood": "Need Blood",
+  "no_needs_reported": "No needs reported yet.",
+  "failed_to_send_sos": "Failed to send SOS: ",
+  "sending_sos": "Sending SOS Alert..."
 }

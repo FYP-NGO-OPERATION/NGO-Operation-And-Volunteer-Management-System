@@ -18,12 +18,13 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   late final GenerativeModel _model;
   late ChatSession _chatSession;
 
+  final String apiKey = 'AIzaSyBo5HXMWr_AVppR-5UgITZSBzZpootcHlQ'; // User's new project Gemini key
+
   @override
   void initState() {
     super.initState();
-    const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw'; // Hardcoded for FYP demo
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-flash-latest',
       apiKey: apiKey,
       systemInstruction: Content.system('You are HRAS Assistant, a helpful AI guide for NGO volunteers. Keep your answers concise, empathetic, and relevant to volunteering, emergency response, and social work. Answer in the language the user speaks (Urdu or English).'),
     );
@@ -51,7 +52,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _messages.add({'role': 'assistant', 'text': 'Error: $e'});
+          _messages.add({'role': 'assistant', 'text': 'Raw Error: $e'});
         });
       }
     } finally {
@@ -71,7 +72,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
           children: [
             const Icon(Icons.smart_toy, color: AppColors.primary),
             const SizedBox(width: 8),
-            Text('AI Assistant', style: AppTextStyles.titleLarge()),
+            Text('ai_assistant'.tr(), style: AppTextStyles.titleLarge()),
           ],
         ),
       ),

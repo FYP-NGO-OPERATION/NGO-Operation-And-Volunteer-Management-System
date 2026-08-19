@@ -39,11 +39,21 @@ class AnalyticsScreen extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
                     tooltip: 'Download PDF Report',
-                    onPressed: () {
-                      final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-                      final ngoId = ngoProvider.currentNgo?.id;
-                      if (ngoId != null) {
-                        PdfReportService.generateAndDownloadReport(ngoId: ngoId);
+                    onPressed: () async {
+                      try {
+                        final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
+                        final ngoId = ngoProvider.currentNgo?.id;
+                        if (ngoId != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF...')));
+                          await PdfReportService.generateAndDownloadReport(ngoId: ngoId);
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Failed to generate PDF: $e'),
+                            backgroundColor: AppColors.error,
+                          ));
+                        }
                       }
                     },
                   ),
@@ -232,25 +242,6 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  bool _isCampaignSuccessful(CampaignModel c) {
-    if (c.status != CampaignStatus.completed) return false;
-    
-    // Check volunteer limit
-    if (c.volunteerLimit != null && c.volunteerLimit! > 0 && c.totalVolunteers >= c.volunteerLimit!) return true;
-
-    // Check target goal
-    try {
-      final numericOnly = c.targetGoal.replaceAll(RegExp(r'[^0-9]'), '');
-      if (numericOnly.isNotEmpty) {
-        final target = double.parse(numericOnly);
-        if (target > 0 && c.totalDonationsAmount >= target) return true;
-      }
-    } catch (_) {}
-
-    // Fallback heuristic for older drives without strict targets
-    return c.totalDonationsAmount >= 5000 || c.totalVolunteers >= 5;
-  }
-
   Widget _buildSuccessRateChart(CampaignProvider provider) {
     final completedCampaigns = provider.allCampaigns.where((c) => c.status == CampaignStatus.completed).toList();
     if (completedCampaigns.isEmpty) {
@@ -263,7 +254,7 @@ class AnalyticsScreen extends StatelessWidget {
     int successful = 0;
     int unsuccessful = 0;
     for (var c in completedCampaigns) {
-      if (_isCampaignSuccessful(c)) successful++; else unsuccessful++;
+      if (c.isSuccessful) successful++; else unsuccessful++;
     }
 
     final total = successful + unsuccessful;

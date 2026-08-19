@@ -160,5 +160,21 @@
   "calendar_view": "کیلنڈر ویو",
   "export_csv": "سی ایس وی (CSV) ڈیٹا ایکسپورٹ کریں",
   "cancel": "منسوخ کریں",
-  "delete": "حذف کریں"
+  "delete": "حذف کریں",
+  "blood_emergency": "خون کی ہنگامی ضرورت",
+  "needs_marketplace": "ضروریات کا بازار",
+  "ai_assistant": "اے آئی اسسٹنٹ",
+  "emergency_sos_button": "ہنگامی ایس او ایس",
+  "verify_identity": "شناخت کی تصدیق کریں",
+  "verify_identity_desc": "تصدیق کے لیے ای کے وائی سی (e-KYC) مکمل کریں۔",
+  "activity_timeline_desc": "اپنی مہم میں شرکت کی تاریخ دیکھیں",
+  "no_active_blood_requests": "خون کی کوئی فعال درخواستیں نہیں ہیں۔",
+  "your_group": "آپ کا گروپ:",
+  "unknown": "نامعلوم",
+  "update_blood_profile": "ڈونر کے طور پر رجسٹر ہونے اور جانیں بچانے کے لیے اپنی پروفائل اپ ڈیٹ کریں۔",
+  "report_need": "ضرورت رپورٹ کریں",
+  "need_blood": "خون درکار ہے",
+  "no_needs_reported": "ابھی تک کوئی ضروریات رپورٹ نہیں کی گئی ہیں۔",
+  "failed_to_send_sos": "ایس او ایس بھیجنے میں ناکامی: ",
+  "sending_sos": "ایس او ایس الرٹ بھیجا جا رہا ہے..."
 }

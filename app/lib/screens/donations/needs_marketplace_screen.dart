@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../providers/auth_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NeedsMarketplaceScreen extends StatefulWidget {
   const NeedsMarketplaceScreen({super.key});
@@ -24,7 +25,7 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Needs Marketplace', style: AppTextStyles.titleLarge()),
+        title: Text('needs_marketplace'.tr(), style: AppTextStyles.titleLarge()),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -38,7 +39,7 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No needs reported yet.'));
+            return Center(child: Text('no_needs_reported'.tr()));
           }
 
           final needs = snapshot.data!.docs;
@@ -94,15 +95,45 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      if (isAdmin && status == 'pending')
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => _adoptNeed(needs[i].id),
-                            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
-                            child: const Text('Adopt & Create Campaign'),
-                          ),
-                        ),
+                      Row(
+                        children: [
+                          if (isAdmin && status == 'pending')
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () => _adoptNeed(needs[i].id),
+                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                                child: const Text('Adopt & Create Campaign'),
+                              ),
+                            ),
+                          if (user?.uid == data['reporterId']) ...[
+                            if (isAdmin && status == 'pending') const SizedBox(width: 8),
+                            IconButton(
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Delete Need'),
+                                    content: const Text('Are you sure you want to delete this need request?'),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                                        onPressed: () => Navigator.pop(ctx, true),
+                                        child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  await FirebaseFirestore.instance.collection('public_needs').doc(needs[i].id).delete();
+                                }
+                              },
+                              icon: const Icon(Icons.delete, color: AppColors.error),
+                              tooltip: 'Delete Need',
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -114,8 +145,9 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
       floatingActionButton: !isAdmin ? FloatingActionButton.extended(
         onPressed: () => _showPostNeedDialog(context),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Report Need', style: TextStyle(color: Colors.white)),
+        label: Text('report_need'.tr(), style: const TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
       ) : null,
     );
   }
@@ -156,21 +188,30 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
                 if (_titleController.text.isEmpty) return;
                 final user = context.read<AuthProvider>().user;
                 
-                await FirebaseFirestore.instance.collection('public_needs').add({
-                  'title': _titleController.text,
-                  'description': _descController.text,
-                  'location': _locationController.text,
-                  'status': 'pending',
-                  'reporterId': user?.uid,
-                  'reporterName': user?.name,
-                  'createdAt': FieldValue.serverTimestamp(),
-                });
-                
-                _titleController.clear();
-                _descController.clear();
-                _locationController.clear();
-                
-                if (mounted) Navigator.pop(ctx);
+                try {
+                  await FirebaseFirestore.instance.collection('public_needs').add({
+                    'title': _titleController.text,
+                    'description': _descController.text,
+                    'location': _locationController.text,
+                    'status': 'pending',
+                    'reporterId': user?.uid,
+                    'reporterName': user?.name,
+                    'createdAt': FieldValue.serverTimestamp(),
+                  });
+                  
+                  _titleController.clear();
+                  _descController.clear();
+                  _locationController.clear();
+                  
+                  if (mounted) Navigator.pop(ctx);
+                } catch (e) {
+                  if (mounted) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${e.toString().contains('permission') ? 'Permission Denied. Update Firestore Rules.' : e.toString()}')),
+                    );
+                  }
+                }
               },
               child: const Text('Submit'),
             )

@@ -173,7 +173,6 @@ class AppTheme {
         backgroundColor: primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: const CircleBorder(),
       ),
 
       // NavigationRail
@@ -338,7 +337,6 @@ class AppTheme {
         backgroundColor: primaryLight,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: const CircleBorder(),
       ),
 
       navigationRailTheme: NavigationRailThemeData(
