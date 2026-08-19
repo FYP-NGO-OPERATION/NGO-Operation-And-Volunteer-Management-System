@@ -93,11 +93,17 @@ class PdfReportService {
       ),
     );
 
-    // 4. Share PDF (always works on all devices regardless of print spooler)
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf',
-    );
+    // 4. Save to Temp Directory and Open using open_file
+    try {
+      final bytes = await pdf.save();
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/HRAS_Report_${dateStr.replaceAll(' ', '_')}.pdf');
+      await file.writeAsBytes(bytes, flush: true);
+      await OpenFile.open(file.path);
+    } catch (e) {
+      print('Error saving/opening PDF: $e');
+      rethrow;
+    }
   }
 
   static pw.Widget _buildHeader(pw.MemoryImage? logoImage) {
@@ -328,9 +334,15 @@ class PdfReportService {
       ),
     );
 
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf',
-    );
+    try {
+      final bytes = await pdf.save();
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/CampaignReport_${dateStr.replaceAll(' ', '_')}.pdf');
+      await file.writeAsBytes(bytes, flush: true);
+      await OpenFile.open(file.path);
+    } catch (e) {
+      print('Error saving/opening PDF: $e');
+      rethrow;
+    }
   }
 }

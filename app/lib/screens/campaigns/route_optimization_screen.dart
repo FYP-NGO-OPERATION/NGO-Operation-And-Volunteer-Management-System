@@ -7,6 +7,8 @@ import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../services/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:location/location.dart' as loc;
+
 class RouteOptimizationScreen extends StatefulWidget {
   const RouteOptimizationScreen({super.key});
 
@@ -32,22 +34,16 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
       final snap = await FirebaseFirestore.instance.collection('campaigns').where('status', isEqualTo: 'active').get();
       List<LatLng> fetchedStops = [];
       
-      final pos = await LocationService.getCurrentLocation();
+      loc.Location location = loc.Location();
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+      }
+      
+      final pos = serviceEnabled ? await LocationService.getCurrentLocation() : null;
       if (pos != null) {
         fetchedStops.add(LatLng(pos.latitude, pos.longitude)); 
       } else {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Location Off'),
-              content: const Text('Please turn on your device location for accurate routing.'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))
-              ],
-            ),
-          );
-        }
         fetchedStops.add(const LatLng(24.8607, 67.0011)); 
       }
 
@@ -83,7 +79,14 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
   }
 
   void _runTSPOptimization() async {
-    if (_stops.length < 2) return;
+    if (_stops.length < 2) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No active campaigns found with location data to optimize.')),
+        );
+      }
+      return;
+    }
     
     setState(() => _isOptimizing = true);
     // Simulate complex calculation for UX
@@ -175,7 +178,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                       Text('Traveling Salesman Problem (TSP)', style: AppTextStyles.titleMedium()),
                       Text(
                         _optimizedRoute.isEmpty
-                            ? 'Optimize the delivery route for 4 stops.'
+                            ? 'Optimize the delivery route for ${max(0, _stops.length - 1)} stops.'
                             : 'Optimized Distance: ${_totalDistance.toStringAsFixed(2)} km',
                         style: AppTextStyles.bodyMedium(color: Colors.blueGrey),
                       ),
