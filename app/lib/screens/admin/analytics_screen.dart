@@ -132,12 +132,23 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
+  String _formatCompact(double number) {
+    if (number >= 10000000) {
+      return '${(number / 10000000).toStringAsFixed(1)}Cr';
+    } else if (number >= 100000) {
+      return '${(number / 100000).toStringAsFixed(1)}L';
+    } else if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}k';
+    }
+    return number.toStringAsFixed(0);
+  }
+
   Widget _buildSummaryCards(CampaignProvider provider, BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
     final cards = [
       _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary),
       _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info),
-      _summaryCard('Funds Raised', 'Rs.${provider.totalDonationsOverall.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.success),
+      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, AppColors.success),
       if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, AppColors.accent),
     ];
 
@@ -185,7 +196,11 @@ class AnalyticsScreen extends StatelessWidget {
             child: Icon(icon, color: color, size: AppTokens.iconMd),
           ),
           AppSpacing.vGapSm,
-          Text(value, style: AppTextStyles.statValue(color: color)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value, style: AppTextStyles.statValue(color: color)),
+          ),
           AppSpacing.vGapXs,
           Text(title, style: AppTextStyles.caption(color: color)),
         ],
