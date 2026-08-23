@@ -14,11 +14,24 @@ import '../../screens/announcements/announcement_list_screen.dart';
 import '../../screens/sessions/create_session_screen.dart';
 import '../../screens/sessions/session_list_screen.dart';
 import '../../widgets/common/dynamic_banner_carousel.dart';
+import '../../utils/cleanup_test_data.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends StatefulWidget {
   final void Function(int)? onNavigate;
 
   const AdminDashboardScreen({Key? key, this.onNavigate}) : super(key: key);
+
+  @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // One-time cleanup of test data
+    CleanupTestData.run();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +81,8 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: Colors.blue.shade600,
                   isDark: isDark,
                   onTap: () {
-                    if (onNavigate != null) {
-                      onNavigate!(7); // 7 is Analytics
+                    if (widget.onNavigate != null) {
+                      widget.onNavigate!(7); // 7 is Analytics
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AnalyticsScreen()));
                     }
@@ -82,8 +95,8 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: Colors.purple.shade500,
                   isDark: isDark,
                   onTap: () {
-                    if (onNavigate != null) {
-                      onNavigate!(6); // 6 is Virtual Sessions
+                    if (widget.onNavigate != null) {
+                      widget.onNavigate!(6); // 6 is Virtual Sessions
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Virtual Sessions')), body: const SessionListScreen())));
                     }
@@ -96,8 +109,8 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: AppColors.primary,
                   isDark: isDark,
                   onTap: () {
-                    if (onNavigate != null) {
-                      onNavigate!(2); // 2 is Campaigns
+                    if (widget.onNavigate != null) {
+                      widget.onNavigate!(2); // 2 is Campaigns
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Campaigns')), body: const CampaignListScreen())));
                     }
@@ -110,8 +123,8 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: AppColors.warning,
                   isDark: isDark,
                   onTap: () {
-                    if (onNavigate != null) {
-                      onNavigate!(5); // 5 is Announcements
+                    if (widget.onNavigate != null) {
+                      widget.onNavigate!(5); // 5 is Announcements
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const Scaffold(body: AnnouncementListScreen())));
                     }
