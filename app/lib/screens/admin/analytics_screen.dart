@@ -97,7 +97,7 @@ class AnalyticsScreen extends StatelessWidget {
                           children: [
                             Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
                             AppSpacing.vGapLg,
-                            _buildCampaignStatusBarChart(provider),
+                            _buildCampaignStatusBarChart(provider, context),
                           ],
                         ),
                       ),
@@ -108,7 +108,7 @@ class AnalyticsScreen extends StatelessWidget {
                           children: [
                             Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
                             AppSpacing.vGapLg,
-                            _buildSuccessRateChart(provider),
+                            _buildSuccessRateChart(provider, context),
                           ],
                         ),
                       ),
@@ -117,11 +117,11 @@ class AnalyticsScreen extends StatelessWidget {
                 else ...[
                   Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
                   AppSpacing.vGapLg,
-                  _buildCampaignStatusBarChart(provider),
+                  _buildCampaignStatusBarChart(provider, context),
                   AppSpacing.vGapXxl,
                   Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
                   AppSpacing.vGapLg,
-                  _buildSuccessRateChart(provider),
+                  _buildSuccessRateChart(provider, context),
                 ],
                 AppSpacing.vGapXxl,
               ],
@@ -209,14 +209,16 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCampaignStatusBarChart(CampaignProvider provider) {
+  Widget _buildCampaignStatusBarChart(CampaignProvider provider, BuildContext context) {
     int active = provider.activeCampaigns;
     int completed = provider.completedCampaigns;
     int upcoming = provider.upcomingCampaigns;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AspectRatio(
       aspectRatio: 1.5,
       child: Card(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
@@ -245,10 +247,11 @@ class AnalyticsScreen extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (double value, TitleMeta meta) {
+                      final style = TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black87);
                       switch (value.toInt()) {
-                        case 0: return const Text('Upcoming', style: TextStyle(fontSize: 12));
-                        case 1: return const Text('Active', style: TextStyle(fontSize: 12));
-                        case 2: return const Text('Completed', style: TextStyle(fontSize: 12));
+                        case 0: return Text('Upcoming', style: style);
+                        case 1: return Text('Active', style: style);
+                        case 2: return Text('Completed', style: style);
                         default: return const Text('');
                       }
                     },
@@ -271,7 +274,8 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSuccessRateChart(CampaignProvider provider) {
+  Widget _buildSuccessRateChart(CampaignProvider provider, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final completedCampaigns = provider.allCampaigns.where((c) => c.status == CampaignStatus.completed).toList();
     if (completedCampaigns.isEmpty) {
       return const SizedBox(
@@ -293,6 +297,7 @@ class AnalyticsScreen extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1.3,
       child: Card(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Row(
@@ -325,9 +330,9 @@ class AnalyticsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _indicator(color: AppColors.success, text: 'Successful ($successful)'),
+                _indicator(color: AppColors.success, text: 'Successful ($successful)', isDark: isDark),
                 const SizedBox(height: 8),
-                _indicator(color: AppColors.error, text: 'Unsuccessful ($unsuccessful)'),
+                _indicator(color: AppColors.error, text: 'Unsuccessful ($unsuccessful)', isDark: isDark),
               ],
             ),
             const SizedBox(width: 16),
@@ -337,12 +342,12 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _indicator({required Color color, required String text}) {
+  Widget _indicator({required Color color, required String text, required bool isDark}) {
     return Row(
       children: [
         Container(width: 12, height: 12, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
         const SizedBox(width: 8),
-        Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: isDark ? Colors.white70 : Colors.black87)),
       ],
     );
   }

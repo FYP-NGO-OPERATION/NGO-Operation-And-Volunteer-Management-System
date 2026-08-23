@@ -60,9 +60,13 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark ? AppColors.primaryLight : AppColors.primary;
+
     return Card(
+      color: isDark ? AppColors.darkCardBg : Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: AppColors.primary.withValues(alpha: 0.3))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: primaryColor.withValues(alpha: 0.3))),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -70,16 +74,17 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
           children: [
             Row(
               children: [
-                const Icon(Icons.auto_awesome, color: AppColors.primary),
+                Icon(Icons.auto_awesome, color: primaryColor),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text('AI Predictive Insights', 
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (!_isLoading)
                   TextButton.icon(
+                    style: TextButton.styleFrom(foregroundColor: primaryColor),
                     icon: const Icon(Icons.refresh),
                     label: const Text('Generate'),
                     onPressed: _generateInsight,
@@ -90,9 +95,9 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else if (_insight.isEmpty)
-              const Text('Tap generate to get Gemini AI strategic predictions for next month.', style: TextStyle(color: Colors.grey))
+              Text('Tap generate to get Gemini AI strategic predictions for next month.', style: TextStyle(color: isDark ? Colors.white54 : Colors.grey))
             else
-              Text(_insight, style: const TextStyle(fontSize: 15, height: 1.4)),
+              Text(_insight, style: TextStyle(fontSize: 15, height: 1.4, color: isDark ? Colors.white : Colors.black87)),
           ],
         ),
       ),
