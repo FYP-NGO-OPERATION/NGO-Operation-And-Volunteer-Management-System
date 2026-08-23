@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../../config/app_colors.dart';
+import '../../../services/gemini_config_service.dart';
+import '../ai_settings_screen.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/auth_provider.dart';
 
 class AiInsightsCard extends StatefulWidget {
   final int totalCampaigns;
@@ -20,14 +24,27 @@ class AiInsightsCard extends StatefulWidget {
 
 class _AiInsightsCardState extends State<AiInsightsCard> {
   String _insight = '';
+  String? _error;
   bool _isLoading = false;
 
   Future<void> _generateInsight() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      // Using the valid API key from volunteer AI assistant as requested
-      const apiKey = 'AIzaSyBo5HXMWr_AVppR-5UgITZSBzZpootcHlQ'; 
-      final model = GenerativeModel(model: 'gemini-flash-latest', apiKey: apiKey);
+      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+
+      final apiKey = await GeminiConfigService.getApiKey(ngoId);
+      if (apiKey == null || apiKey.isEmpty) {
+        setState(() => _error = 'AI API key is not configured.');
+        return;
+      }
+      
+      final model = GenerativeModel(
+        model: 'gemini-3.6-flash',
+        apiKey: apiKey,
+      );
 
       final prompt = '''
 Act as an expert NGO strategist. Given our current platform data:
@@ -48,7 +65,8 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
     } catch (e) {
       if (mounted) {
         setState(() {
-          _insight = 'Failed to generate AI insights: $e';
+          _error = 'Failed to generate AI insights: $e';
+          _insight = '';
         });
       }
     } finally {
@@ -91,9 +109,24 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
                   ),
               ],
             ),
-            const SizedBox(height: 12),
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
+            else if (_error != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_error!, style: const TextStyle(color: AppColors.error)),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AiSettingsScreen()));
+                    },
+                    icon: const Icon(Icons.settings),
+                    label: const Text('Configure AI API Key'),
+                    style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                  ),
+                ],
+              )
             else if (_insight.isEmpty)
               Text('Tap generate to get Gemini AI strategic predictions for next month.', style: TextStyle(color: isDark ? Colors.white54 : Colors.grey))
             else

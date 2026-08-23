@@ -68,7 +68,7 @@ class FundAllocationService {
         donationId: donation.id,
         title: expenseName,
         description: message,
-        status: TrackingStatus.done,
+        isCompleted: true,
         timestamp: DateTime.now(),
       );
 
@@ -116,7 +116,7 @@ class FundAllocationService {
         donationId: donation.id,
         title: 'Funds Transferred',
         description: 'Campaign ended. Your unspent Rs. ${amount.toStringAsFixed(0)} was securely transferred to: $toCampaignName.',
-        status: TrackingStatus.done,
+        isCompleted: true,
         timestamp: DateTime.now(),
       );
 

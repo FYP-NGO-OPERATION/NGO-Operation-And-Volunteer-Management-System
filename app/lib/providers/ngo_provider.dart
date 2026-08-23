@@ -174,6 +174,7 @@ class NgoProvider extends ChangeNotifier {
           welcomeText: data['welcomeText'] ?? _currentNgo!.welcomeText,
           missionStatement: data['missionStatement'] ?? _currentNgo!.missionStatement,
           websiteUrl: data['websiteUrl'] ?? _currentNgo!.websiteUrl,
+          geminiApiKey: data['geminiApiKey'] ?? _currentNgo!.geminiApiKey,
         );
       }
       

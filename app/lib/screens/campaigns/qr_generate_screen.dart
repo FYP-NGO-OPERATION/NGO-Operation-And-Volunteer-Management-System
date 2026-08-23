@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../config/app_colors.dart';
@@ -8,9 +9,9 @@ import '../../services/qr_service.dart';
 
 /// Admin screen to generate a QR code for campaign attendance.
 ///
-/// Displays a scannable QR code that volunteers can scan
-/// with the QR Scanner screen to mark their attendance.
-class QrGenerateScreen extends StatelessWidget {
+/// Features a premium, glassmorphism UI with glowing effects
+/// for a highly aesthetically pleasing experience.
+class QrGenerateScreen extends StatefulWidget {
   final String campaignId;
   final String campaignTitle;
 
@@ -21,97 +22,246 @@ class QrGenerateScreen extends StatelessWidget {
   });
 
   @override
+  State<QrGenerateScreen> createState() => _QrGenerateScreenState();
+}
+
+class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final qrData = QrService.generateQrPayload(
-      campaignId: campaignId,
-      campaignTitle: campaignTitle,
+      campaignId: widget.campaignId,
+      campaignTitle: widget.campaignTitle,
     );
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Attendance QR Code', style: AppTextStyles.titleLarge()),
+        title: Text('Scan for Attendance', style: AppTextStyles.titleLarge().copyWith(color: Colors.white)),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Campaign title
-              Text(
-                campaignTitle,
-                style: AppTextStyles.titleLarge(),
-                textAlign: TextAlign.center,
-              ),
-              AppSpacing.vGapMd,
-              Text(
-                'Show this QR code to volunteers for attendance',
-                style: AppTextStyles.bodyMedium(
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              AppSpacing.vGapXxl,
-
-              // QR Code
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: AppTokens.borderRadiusLg,
-                  boxShadow: AppTokens.shadowSoft,
-                ),
-                child: QrImageView(
-                  data: qrData,
-                  version: QrVersions.auto,
-                  size: 260,
-                  backgroundColor: Colors.white,
-                  eyeStyle: const QrEyeStyle(
-                    eyeShape: QrEyeShape.square,
-                    color: Color(0xFF1A1A2E),
-                  ),
-                  dataModuleStyle: const QrDataModuleStyle(
-                    dataModuleShape: QrDataModuleShape.square,
-                    color: Color(0xFF1A1A2E),
-                  ),
-                ),
-              ),
-              AppSpacing.vGapXxl,
-
-              // Instructions
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: AppColors.info.withValues(alpha: 0.08),
-                  borderRadius: AppTokens.borderRadiusMd,
-                ),
-                child: Column(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: AppColors.heroGradient,
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AppSpacing.vGapXl,
+                
+                // Animated Glowing Background behind QR
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline, color: AppColors.info, size: 20),
-                        AppSpacing.hGapSm,
-                        Text('How it works', style: AppTextStyles.labelLarge(color: AppColors.info)),
-                      ],
+                    // Outer glow pulse
+                    AnimatedBuilder(
+                      animation: _pulseAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _pulseAnimation.value,
+                          child: Container(
+                            width: 300,
+                            height: 300,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.accent.withOpacity(0.3),
+                                  blurRadius: 60,
+                                  spreadRadius: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    AppSpacing.vGapSm,
-                    Text(
-                      '1. Show this QR code at the campaign venue\n'
-                      '2. Volunteers open the app and tap "Scan QR"\n'
-                      '3. Their attendance is automatically recorded',
-                      style: AppTextStyles.bodySmall(
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    
+                    // Glassmorphism Card containing QR
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(32),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        child: Container(
+                          padding: const EdgeInsets.all(AppSpacing.xxl),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(32),
+                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              // Campaign title inside card
+                              Text(
+                                widget.campaignTitle,
+                                style: AppTextStyles.titleLarge().copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              AppSpacing.vGapLg,
+                              
+                              // Actual QR Code
+                              Container(
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 8),
+                                    )
+                                  ],
+                                ),
+                                child: QrImageView(
+                                  data: qrData,
+                                  version: QrVersions.auto,
+                                  size: 240,
+                                  backgroundColor: Colors.white,
+                                  embeddedImage: const AssetImage('assets/images/logo.png'),
+                                  embeddedImageStyle: const QrEmbeddedImageStyle(
+                                    size: Size(50, 50),
+                                  ),
+                                  errorCorrectionLevel: QrErrorCorrectLevel.H,
+                                  eyeStyle: const QrEyeStyle(
+                                    eyeShape: QrEyeShape.square,
+                                    color: AppColors.primaryDark,
+                                  ),
+                                  dataModuleStyle: const QrDataModuleStyle(
+                                    dataModuleShape: QrDataModuleShape.circle,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              
+                              AppSpacing.vGapLg,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.qr_code_scanner, color: Colors.white70, size: 20),
+                                  AppSpacing.hGapSm,
+                                  Text(
+                                    'Ready to scan',
+                                    style: AppTextStyles.bodyMedium(color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                
+                AppSpacing.vGapXxl,
+                
+                // Instructions Card (Glassmorphism)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.accent.withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.info_outline, color: AppColors.accentLight, size: 20),
+                              ),
+                              AppSpacing.hGapMd,
+                              Text('How it works', style: AppTextStyles.labelLarge(color: Colors.white)),
+                            ],
+                          ),
+                          AppSpacing.vGapMd,
+                          _buildInstructionStep('1', 'Show this code to arriving volunteers'),
+                          AppSpacing.vGapSm,
+                          _buildInstructionStep('2', 'Volunteers scan it with their HRAS app'),
+                          AppSpacing.vGapSm,
+                          _buildInstructionStep('3', 'Attendance is instantly recorded'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInstructionStep(String step, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$step.',
+          style: AppTextStyles.bodyMedium(color: Colors.white70).copyWith(fontWeight: FontWeight.bold),
+        ),
+        AppSpacing.hGapSm,
+        Expanded(
+          child: Text(
+            text,
+            style: AppTextStyles.bodyMedium(color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -17,6 +17,9 @@ class NgoModel {
   final String? welcomeText;
   final String? missionStatement;
   final String? websiteUrl;
+  
+  // Settings
+  final String? geminiApiKey;
 
   NgoModel({
     required this.id,
@@ -33,6 +36,7 @@ class NgoModel {
     this.welcomeText,
     this.missionStatement,
     this.websiteUrl,
+    this.geminiApiKey,
   });
 
   Map<String, dynamic> toMap() {
@@ -51,6 +55,7 @@ class NgoModel {
       'welcomeText': welcomeText,
       'missionStatement': missionStatement,
       'websiteUrl': websiteUrl,
+      'geminiApiKey': geminiApiKey,
     };
   }
 
@@ -70,6 +75,7 @@ class NgoModel {
       welcomeText: map['welcomeText'],
       missionStatement: map['missionStatement'],
       websiteUrl: map['websiteUrl'],
+      geminiApiKey: map['geminiApiKey'],
     );
   }
 }

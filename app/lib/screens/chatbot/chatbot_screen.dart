@@ -4,6 +4,9 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
+import '../../services/gemini_config_service.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -29,17 +32,21 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    // Real Gemini API Key from Google AI Studio
-    const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw';
-    if (!_useMockAI) {
-      _model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
-    }
+    _initializeModel();
     
     // Initial greeting
     _messages.add(ChatMessage(
       text: "Hello! I am your AI Assistant. How can I help you with campaigns, donations, or volunteer guidelines today?", 
       isUser: false
     ));
+  }
+
+  Future<void> _initializeModel() async {
+    if (!_useMockAI) {
+      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+      final apiKey = await GeminiConfigService.getApiKey(ngoId);
+      _model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
+    }
   }
 
   Future<void> _sendMessage() async {

@@ -15,6 +15,9 @@ import '../../../../services/live_tracking_service.dart';
 import 'package:provider/provider.dart';
 import '../../../../providers/auth_provider.dart';
 import '../live_mission_map_screen.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CampaignInfoTab extends StatelessWidget {
   final CampaignModel campaign;
@@ -65,21 +68,107 @@ class CampaignInfoTab extends StatelessWidget {
                       if (campaign.itemsNeeded != null)
                         _infoRow(context, Icons.list, 'items_needed'.tr(), campaign.itemsNeeded!),
                       _infoRow(context, Icons.person, 'created_by'.tr(), campaign.createdByName),
-                      if (campaign.latitude != null && campaign.longitude != null) ...[
-                        const Divider(),
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.map, color: AppColors.primary),
-                          title: const Text('Open in Google Maps', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                          trailing: const Icon(Icons.open_in_new, color: AppColors.primary, size: 16),
-                          onTap: () async {
-                            final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${campaign.latitude},${campaign.longitude}');
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            }
-                          },
-                        ),
-                      ],
+                      // Live updating map for location
+                      StreamBuilder<DocumentSnapshot>(
+                        stream: FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).snapshots(),
+                        builder: (context, snapshot) {
+                          double? lat = campaign.latitude;
+                          double? lng = campaign.longitude;
+                          
+                          if (snapshot.hasData && snapshot.data!.exists) {
+                            final data = snapshot.data!.data() as Map<String, dynamic>;
+                            lat = data['latitude'] as double? ?? lat;
+                            lng = data['longitude'] as double? ?? lng;
+                          }
+
+                          if (lat == null || lng == null) return const SizedBox.shrink();
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Divider(),
+                              const SizedBox(height: 8),
+                              Text('Location Map', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
+                              const SizedBox(height: 12),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Stack(
+                                  children: [
+                                    SizedBox(
+                                      height: 180,
+                                      width: double.infinity,
+                                      child: AbsorbPointer(
+                                        child: FlutterMap(
+                                          options: MapOptions(
+                                            initialCenter: LatLng(lat, lng),
+                                            initialZoom: 14.0,
+                                          ),
+                                          children: [
+                                            TileLayer(
+                                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                              userAgentPackageName: 'org.hras.ngo_volunteer_app',
+                                            ),
+                                            MarkerLayer(
+                                              markers: [
+                                                Marker(
+                                                  point: LatLng(lat, lng),
+                                                  width: 40,
+                                                  height: 40,
+                                                  child: const Icon(
+                                                    Icons.location_on,
+                                                    color: AppColors.error,
+                                                    size: 40,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned.fill(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                                            try {
+                                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                                            } catch (e) {
+                                              debugPrint('Could not launch maps: $e');
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 8,
+                                      bottom: 8,
+                                      child: IgnorePointer(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(0.7),
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: const [
+                                              Icon(Icons.open_in_new, color: Colors.white, size: 14),
+                                              SizedBox(width: 6),
+                                              Text('Open in Maps', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

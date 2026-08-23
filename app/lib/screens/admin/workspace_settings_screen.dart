@@ -9,6 +9,8 @@ import '../../providers/auth_provider.dart';
 import '../../models/ngo_model.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../theme/app_spacing.dart';
+import 'ai_settings_screen.dart';
 
 class WorkspaceSettingsScreen extends StatefulWidget {
   const WorkspaceSettingsScreen({super.key});

@@ -81,9 +81,34 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
   }
 
   void _toggleNetwork() {
-    setState(() {
-      _isOfflineMode = !_isOfflineMode;
-      if (!_isOfflineMode) {
+    if (!_isOfflineMode) {
+      // Show simulated permission dialog when turning on offline mode
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Bluetooth Permission Required'),
+          content: const Text('Emergency Comms requires access to Bluetooth and Nearby Devices to create a mesh network.\n\nAllow "HRAS Volunteer" to find, connect to, and determine the relative position of nearby devices?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Deny'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: () {
+                Navigator.pop(ctx);
+                _enableOfflineMode();
+              },
+              child: const Text('Allow'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Switching to online mode
+      setState(() {
+        _isOfflineMode = false;
         // Simulating cloud sync
         for (var m in _messages) {
           if (m['status'] == 'queued_bluetooth') {
@@ -92,30 +117,35 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
         }
         _messages.add({
           'senderName': 'System',
-          'text': 'Internet restored. 4 messages synced to Firestore Cloud.',
+          'text': 'Internet restored. Messages synced to Firestore Cloud.',
           'isSystem': true,
           'time': DateTime.now(),
           'status': 'synced',
         });
-      } else {
-        _isScanning = true;
-        Future.delayed(const Duration(seconds: 2), () {
-          if (!mounted) return;
-          setState(() {
-            _isScanning = false;
-            _messages.add({
-              'senderName': 'System',
-              'text': 'Found 3 nearby peers via WiFi Direct/Bluetooth.',
-              'isSystem': true,
-              'time': DateTime.now(),
-              'status': 'synced',
-            });
-          });
-          _scrollToBottom();
-        });
-      }
+      });
+      _scrollToBottom();
+    }
+  }
+
+  void _enableOfflineMode() {
+    setState(() {
+      _isOfflineMode = true;
+      _isScanning = true;
     });
-    _scrollToBottom();
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      setState(() {
+        _isScanning = false;
+        _messages.add({
+          'senderName': 'System',
+          'text': 'Found nearby peers via Bluetooth.',
+          'isSystem': true,
+          'time': DateTime.now(),
+          'status': 'synced',
+        });
+      });
+      _scrollToBottom();
+    });
   }
 
   @override

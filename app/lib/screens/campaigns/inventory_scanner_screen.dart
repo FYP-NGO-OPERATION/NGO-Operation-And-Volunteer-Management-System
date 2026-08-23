@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../providers/auth_provider.dart';
-import 'dart:math';
 
 class InventoryScannerScreen extends StatefulWidget {
   final String campaignId;
@@ -17,6 +17,9 @@ class InventoryScannerScreen extends StatefulWidget {
 
 class _InventoryScannerScreenState extends State<InventoryScannerScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  final MobileScannerController _scannerController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
   bool _isScanning = true;
 
   @override
@@ -26,28 +29,34 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-
-    // Simulate finding a barcode after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isScanning = false;
-        });
-        _animationController.stop();
-        _showScannedItemDialog();
-      }
-    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scannerController.dispose();
     super.dispose();
   }
 
-  void _showScannedItemDialog() {
-    final randomItem = ['Water Bottles Pack', 'First Aid Kit', 'Ration Bag', 'Tents (4-person)'][Random().nextInt(4)];
+  void _onDetect(BarcodeCapture capture) {
+    if (!_isScanning) return;
+    final List<Barcode> barcodes = capture.barcodes;
+    if (barcodes.isNotEmpty) {
+      final barcode = barcodes.first.rawValue;
+      if (barcode != null) {
+        setState(() {
+          _isScanning = false;
+        });
+        _scannerController.stop();
+        _animationController.stop();
+        _showScannedItemDialog(barcode);
+      }
+    }
+  }
+
+  void _showScannedItemDialog(String scannedCode) {
     final quantityController = TextEditingController(text: '1');
+    final nameController = TextEditingController(text: 'Item_$scannedCode');
 
     showDialog(
       context: context,
@@ -60,8 +69,15 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
             children: [
               const Icon(Icons.check_circle, color: AppColors.success, size: 60),
               const SizedBox(height: 16),
-              Text('Detected Item:', style: AppTextStyles.bodyMedium()),
-              Text(randomItem, style: AppTextStyles.titleMedium(color: AppColors.primary)),
+              Text('Scanned Code: $scannedCode', style: AppTextStyles.bodyMedium()),
+              const SizedBox(height: 8),
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Item Name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: quantityController,
@@ -77,7 +93,10 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx); // close dialog
-                Navigator.pop(context); // go back
+                // Resume scanning
+                setState(() => _isScanning = true);
+                _scannerController.start();
+                _animationController.repeat(reverse: true);
               },
               child: const Text('Cancel'),
             ),
@@ -85,20 +104,21 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
               onPressed: () async {
                 final qty = int.tryParse(quantityController.text) ?? 1;
+                final itemName = nameController.text.trim();
                 final user = context.read<AuthProvider>().user;
                 
                 await FirebaseFirestore.instance.collection('campaigns').doc(widget.campaignId).collection('inventory').add({
-                  'itemName': randomItem,
+                  'itemName': itemName,
                   'quantity': qty,
                   'scannedBy': user?.name ?? 'Volunteer',
                   'timestamp': FieldValue.serverTimestamp(),
-                  'barcode': '100${Random().nextInt(99999)}',
+                  'barcode': scannedCode,
                 });
                 
                 if (mounted) {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$qty x $randomItem added to inventory!')));
-                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$qty x $itemName added!')));
+                  Navigator.pop(context); // Go back to previous screen
                 }
               },
               child: const Text('Add to Inventory'),
@@ -121,11 +141,12 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
       body: Stack(
         alignment: Alignment.center,
         children: [
-          // Simulated camera view
+          // Real Camera View
           Container(
-            color: Colors.black87,
-            child: Center(
-              child: Icon(Icons.camera_alt, color: Colors.white.withOpacity(0.2), size: 100),
+            color: Colors.black,
+            child: MobileScanner(
+              controller: _scannerController,
+              onDetect: _onDetect,
             ),
           ),
           

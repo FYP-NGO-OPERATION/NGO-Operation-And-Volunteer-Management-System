@@ -4,6 +4,7 @@ import '../../models/expense_model.dart';
 import '../../enums/app_enums.dart';
 import '../../services/campaign_service.dart';
 import '../../services/fund_allocation_service.dart';
+import '../../services/gemini_config_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -60,8 +61,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     try {
       final bytes = await image.readAsBytes();
       
-      const apiKey = 'AIzaSyDshO3oaKyZKT6wJGS17f21k2JPImZjCEw'; // Real API Key
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      final ngoId = context.read<AuthProvider>().user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+      final apiKey = await GeminiConfigService.getApiKey(ngoId);
+      final model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
       
       final prompt = TextPart("Analyze this receipt. Extract the final TOTAL amount. Respond ONLY with the numeric value (no currency symbols, no text).");
       final imagePart = DataPart('image/jpeg', bytes);

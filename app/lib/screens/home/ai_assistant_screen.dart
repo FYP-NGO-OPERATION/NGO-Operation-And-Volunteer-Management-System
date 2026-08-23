@@ -3,6 +3,9 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../services/gemini_config_service.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
@@ -18,18 +21,28 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   late final GenerativeModel _model;
   late ChatSession _chatSession;
 
-  final String apiKey = 'AIzaSyBo5HXMWr_AVppR-5UgITZSBzZpootcHlQ'; // User's new project Gemini key
-
   @override
   void initState() {
     super.initState();
+    _initializeGemini();
+  }
+
+  Future<void> _initializeGemini() async {
+    final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+    final apiKey = await GeminiConfigService.getApiKey(ngoId);
     _model = GenerativeModel(
-      model: 'gemini-flash-latest',
+      model: 'gemini-3.6-flash',
       apiKey: apiKey,
-      systemInstruction: Content.system('You are HRAS Assistant, a helpful AI guide for NGO volunteers. Keep your answers concise, empathetic, and relevant to volunteering, emergency response, and social work. Answer in the language the user speaks (Urdu or English).'),
+      systemInstruction: Content.system(
+          'You are HRAS Assistant, a helpful AI guide for NGO volunteers. Keep your answers concise, empathetic, and relevant to volunteering, emergency response, and social work. Answer in the language the user speaks (Urdu or English).'),
     );
     _chatSession = _model.startChat();
-    _messages.add({'role': 'assistant', 'text': 'Hello! I am your HRAS AI Assistant. How can I help you today? (e.g. "What to do in an earthquake?")'});
+    setState(() {
+      _messages.add({
+        'role': 'assistant',
+        'text': 'Hello! I am your HRAS AI Assistant. How can I help you today? (e.g. "What to do in an earthquake?")'
+      });
+    });
   }
 
   Future<void> _sendMessage() async {
