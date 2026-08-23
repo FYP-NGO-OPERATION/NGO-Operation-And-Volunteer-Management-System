@@ -160,13 +160,18 @@ class AdminDashboardScreen extends StatelessWidget {
                 : [Colors.white, Colors.white70],
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+          border: Border.all(color: color.withOpacity(isDark ? 0.7 : 0.4), width: 2.5),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: const Offset(0, 8),
+              color: color.withOpacity(isDark ? 0.5 : 0.3),
+              blurRadius: 20,
+              spreadRadius: 3,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: color.withOpacity(isDark ? 0.25 : 0.1),
+              blurRadius: 30,
+              spreadRadius: 6,
             ),
             BoxShadow(
               color: isDark ? Colors.black26 : Colors.white,
@@ -188,9 +193,9 @@ class AdminDashboardScreen extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.45), blurRadius: 16, spreadRadius: 2),
+                  BoxShadow(color: color.withOpacity(isDark ? 0.6 : 0.4), blurRadius: 20, spreadRadius: 3),
                 ],
-                border: Border.all(color: color.withOpacity(0.7), width: 2),
+                border: Border.all(color: color.withOpacity(isDark ? 0.85 : 0.6), width: 2.5),
               ),
               child: Icon(icon, color: color, size: 36),
             ),
@@ -294,146 +299,174 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
       animation: _controller,
       builder: (context, child) {
         final angle = _controller.value * 2 * math.pi;
+        final shiftX = math.cos(angle) * 0.5;
+        final shiftY = math.sin(angle) * 0.5;
 
         return Container(
           decoration: BoxDecoration(
             borderRadius: AppTokens.borderRadiusLg,
-            gradient: LinearGradient(
-              colors: isDark
-                  ? [
-                      const Color(0xFF0D3B1E).withOpacity(0.85),
-                      const Color(0xFF0A2F2A).withOpacity(0.85),
-                    ]
-                  : [
-                      const Color(0xFF1B8A4A).withOpacity(0.75),
-                      const Color(0xFF0D7377).withOpacity(0.75),
-                    ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
             border: Border.all(
               color: isDark
-                  ? Colors.tealAccent.withOpacity(0.25)
-                  : Colors.white.withOpacity(0.4),
+                  ? Colors.tealAccent.withOpacity(0.35)
+                  : Colors.white.withOpacity(0.5),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.tealAccent.withOpacity(0.15)
-                    : const Color(0xFF2E7D32).withOpacity(0.3),
-                blurRadius: 20,
-                spreadRadius: 2,
+                    ? Colors.tealAccent.withOpacity(0.2)
+                    : const Color(0xFF2E7D32).withOpacity(0.25),
+                blurRadius: 24,
+                spreadRadius: 3,
                 offset: const Offset(0, 4),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+                color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
                 blurRadius: 12,
-                offset: const Offset(0, 6),
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: ClipRRect(
             borderRadius: AppTokens.borderRadiusLg,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Row(
-                  children: [
-                    // Profile pic with animated neon glow ring
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: SweepGradient(
-                          startAngle: angle,
-                          endAngle: angle + math.pi * 2,
-                          colors: isDark
-                              ? [
-                                  Colors.tealAccent,
-                                  Colors.greenAccent.shade400,
-                                  Colors.cyanAccent,
-                                  Colors.tealAccent,
-                                ]
-                              : [
-                                  Colors.white,
-                                  Colors.greenAccent.shade200,
-                                  Colors.white,
-                                  Colors.tealAccent.shade100,
-                                  Colors.white,
-                                ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: isDark
-                                ? Colors.tealAccent.withOpacity(0.4 + 0.15 * math.sin(angle * 2))
-                                : Colors.green.withOpacity(0.3 + 0.1 * math.sin(angle * 2)),
-                            blurRadius: 18,
-                            spreadRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 38,
-                        backgroundColor: Colors.white.withOpacity(0.15),
-                        backgroundImage: widget.user?.profileImageUrl != null
-                            ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
-                            : null,
-                        child: widget.user?.profileImageUrl == null
-                            ? Text(
-                                (widget.user?.name ?? 'A')[0].toUpperCase(),
-                                style: AppTextStyles.displaySmall(color: Colors.white),
-                              )
-                            : null,
+            child: Stack(
+              children: [
+                // Animated multi-gradient background
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: isDark
+                            ? [
+                                const Color(0xFF0A2E1A),
+                                const Color(0xFF0E3D3A),
+                                const Color(0xFF132B45),
+                                const Color(0xFF0A2E1A),
+                              ]
+                            : [
+                                const Color(0xFF1B7A3D),
+                                const Color(0xFF0F8B76),
+                                const Color(0xFF2D8C5A),
+                                const Color(0xFF1B7A3D),
+                              ],
+                        begin: Alignment(shiftX, shiftY),
+                        end: Alignment(-shiftX, -shiftY),
                       ),
                     ),
-                    AppSpacing.hGapLg,
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome back,',
-                            style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.85)),
-                          ),
-                          AppSpacing.vGapXs,
-                          Text(
-                            widget.user?.name ?? 'Admin',
-                            style: AppTextStyles.headlineLarge(color: Colors.white),
-                          ),
-                          AppSpacing.vGapSm,
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(isDark ? 0.1 : 0.2),
-                              borderRadius: AppTokens.borderRadiusPill,
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.tealAccent.withOpacity(0.4)
-                                    : Colors.white.withOpacity(0.5),
-                              ),
-                              boxShadow: isDark
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.tealAccent.withOpacity(0.15),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                      )
-                                    ]
-                                  : [],
-                            ),
-                            child: const Text(
-                              '\u{1F451} HRAS Admin',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                // Frosted glass overlay
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                    child: Container(
+                      color: isDark
+                          ? Colors.black.withOpacity(0.15)
+                          : Colors.white.withOpacity(0.08),
+                    ),
+                  ),
+                ),
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: Row(
+                    children: [
+                      // Profile pic with animated neon ring
+                      Container(
+                        padding: const EdgeInsets.all(3.5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: SweepGradient(
+                            startAngle: angle,
+                            endAngle: angle + math.pi * 2,
+                            colors: isDark
+                                ? [
+                                    Colors.tealAccent,
+                                    Colors.cyanAccent,
+                                    Colors.greenAccent,
+                                    Colors.tealAccent,
+                                  ]
+                                : [
+                                    Colors.white,
+                                    const Color(0xFF4CAF50),
+                                    Colors.white,
+                                    const Color(0xFF00BCD4),
+                                    Colors.white,
+                                  ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.tealAccent.withOpacity(0.45 + 0.15 * math.sin(angle * 2))
+                                  : const Color(0xFF4CAF50).withOpacity(0.35 + 0.1 * math.sin(angle * 2)),
+                              blurRadius: 22,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 38,
+                          backgroundColor: Colors.white.withOpacity(0.15),
+                          backgroundImage: widget.user?.profileImageUrl != null
+                              ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
+                              : null,
+                          child: widget.user?.profileImageUrl == null
+                              ? Text(
+                                  (widget.user?.name ?? 'A')[0].toUpperCase(),
+                                  style: AppTextStyles.displaySmall(color: Colors.white),
+                                )
+                              : null,
+                        ),
+                      ),
+                      AppSpacing.hGapLg,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome back,',
+                              style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.85)),
+                            ),
+                            AppSpacing.vGapXs,
+                            Text(
+                              widget.user?.name ?? 'Admin',
+                              style: AppTextStyles.headlineLarge(color: Colors.white).copyWith(
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            AppSpacing.vGapSm,
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(isDark ? 0.08 : 0.18),
+                                borderRadius: AppTokens.borderRadiusPill,
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.tealAccent.withOpacity(0.4)
+                                      : Colors.white.withOpacity(0.6),
+                                ),
+                                boxShadow: isDark
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.tealAccent.withOpacity(0.12),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                        )
+                                      ]
+                                    : [],
+                              ),
+                              child: const Text(
+                                '\u{1F451} HRAS Admin',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );
