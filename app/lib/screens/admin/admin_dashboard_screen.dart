@@ -181,15 +181,15 @@ class AdminDashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [color.withOpacity(0.2), color.withOpacity(0.05)],
+                  colors: [color.withOpacity(0.35), color.withOpacity(0.12)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.3), blurRadius: 12, spreadRadius: 1),
+                  BoxShadow(color: color.withOpacity(0.45), blurRadius: 16, spreadRadius: 2),
                 ],
-                border: Border.all(color: color.withOpacity(0.5)),
+                border: Border.all(color: color.withOpacity(0.7), width: 2),
               ),
               child: Icon(icon, color: color, size: 36),
             ),
@@ -276,7 +276,7 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 8))..repeat();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
   }
 
   @override
@@ -287,51 +287,73 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
 
   @override
   Widget build(BuildContext context) {
+    final isDark = widget.theme.brightness == Brightness.dark;
+    
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        // Rotating gradient using sine and cosine for a smooth magical effect
         final angle = _controller.value * 2 * math.pi;
-        final beginAlign = Alignment(math.cos(angle), math.sin(angle));
-        final endAlign = Alignment(math.cos(angle + math.pi), math.sin(angle + math.pi));
+        // Subtle rotating gradient alignment
+        final beginAlign = Alignment(math.cos(angle) * 0.6, math.sin(angle) * 0.4);
+        final endAlign = Alignment(math.cos(angle + math.pi) * 0.6, math.sin(angle + math.pi) * 0.4);
 
         return Container(
           padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                widget.theme.primaryColor,
-                Colors.teal.shade500,
-                Colors.indigo.shade400,
-                widget.theme.primaryColor,
-              ],
+              colors: isDark
+                  ? [
+                      const Color(0xFF1B5E20), // Dark green
+                      const Color(0xFF004D40), // Dark teal
+                      const Color(0xFF1B5E20), // Dark green
+                    ]
+                  : [
+                      const Color(0xFF2E7D32), // Green 800
+                      const Color(0xFF00897B), // Teal 600
+                      const Color(0xFF2E7D32), // Green 800
+                    ],
               begin: beginAlign,
               end: endAlign,
             ),
             borderRadius: AppTokens.borderRadiusLg,
-            boxShadow: AppTokens.shadowGlow(widget.theme.primaryColor),
+            boxShadow: [
+              BoxShadow(
+                color: (isDark ? const Color(0xFF1B5E20) : const Color(0xFF2E7D32)).withOpacity(0.4),
+                blurRadius: 16,
+                spreadRadius: 1,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Row(
             children: [
+              // Profile pic with subtle animated ring
               Container(
+                padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  gradient: SweepGradient(
+                    startAngle: angle,
+                    endAngle: angle + math.pi * 2,
+                    colors: const [
+                      Colors.white70,
+                      Colors.white24,
+                      Colors.white70,
+                      Colors.white24,
+                      Colors.white70,
+                    ],
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.5 + 0.3 * math.sin(angle * 2)), // Pulsing glow
-                      blurRadius: 25,
-                      spreadRadius: 8,
-                    ),
-                    BoxShadow(
-                      color: Colors.tealAccent.withOpacity(0.3),
-                      blurRadius: 35,
-                      spreadRadius: 12,
+                      color: Colors.white.withOpacity(0.15),
+                      blurRadius: 12,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
                 child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.white24,
+                  radius: 38,
+                  backgroundColor: Colors.white.withOpacity(0.15),
                   backgroundImage: widget.user?.profileImageUrl != null
                       ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
                       : null,
@@ -350,31 +372,20 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                   children: [
                     Text(
                       'Welcome back,',
-                      style: AppTextStyles.bodyMedium(color: Colors.white70),
+                      style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.8)),
                     ),
                     AppSpacing.vGapXs,
                     Text(
                       widget.user?.name ?? 'Admin',
-                      style: AppTextStyles.headlineLarge(color: Colors.white).copyWith(
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          )
-                        ]
-                      ),
+                      style: AppTextStyles.headlineLarge(color: Colors.white),
                     ),
                     AppSpacing.vGapXs,
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withOpacity(0.15),
                         borderRadius: AppTokens.borderRadiusPill,
-                        border: Border.all(color: Colors.white.withOpacity(0.4)),
-                        boxShadow: [
-                           BoxShadow(color: Colors.white.withOpacity(0.15), blurRadius: 10, spreadRadius: 2)
-                        ]
+                        border: Border.all(color: Colors.white.withOpacity(0.3)),
                       ),
                       child: const Text(
                         '👑 HRAS Admin',

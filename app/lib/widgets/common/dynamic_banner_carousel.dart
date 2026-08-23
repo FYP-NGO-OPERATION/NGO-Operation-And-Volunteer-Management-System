@@ -117,18 +117,34 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark 
+                  ? AppColors.primary.withValues(alpha: 0.5)
+                  : AppColors.primary.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
             boxShadow: [
-              // High-end glowing effect
+              // Main glow effect on edges
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: isDark ? 0.3 : 0.4),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: isDark ? Colors.black45 : Colors.black12,
-                blurRadius: 10,
+                color: AppColors.primary.withValues(alpha: isDark ? 0.4 : 0.3),
+                blurRadius: 24,
+                spreadRadius: 3,
                 offset: const Offset(0, 4),
+              ),
+              // Subtle top-left highlight
+              BoxShadow(
+                color: isDark 
+                    ? Colors.tealAccent.withValues(alpha: 0.15)
+                    : Colors.green.shade200.withValues(alpha: 0.4),
+                blurRadius: 16,
+                spreadRadius: 1,
+                offset: const Offset(-2, -2),
+              ),
+              // Bottom depth shadow
+              BoxShadow(
+                color: isDark ? Colors.black54 : Colors.black12,
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
