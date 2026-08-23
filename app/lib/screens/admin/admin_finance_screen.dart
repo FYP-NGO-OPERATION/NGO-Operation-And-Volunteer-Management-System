@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import 'manage_tracking_events_screen.dart';
+import '../../services/fund_allocation_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../models/expense_model.dart';
@@ -51,11 +53,21 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Recent Expenses', style: AppTextStyles.titleLarge()),
-                ElevatedButton.icon(
-                  onPressed: () => _showAddExpenseDialog(context, campaigns),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Log Expense'),
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageTrackingEventsScreen())),
+                      icon: const Icon(Icons.settings),
+                      label: const Text('Manage Tracker'),
+                    ),
+                    AppSpacing.hGapSm,
+                    ElevatedButton.icon(
+                      onPressed: () => _showAddExpenseDialog(context, campaigns),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Log Expense'),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -214,10 +226,17 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                 
                 await docRef.set(expense.toMap());
                 
-                // Update campaign total
                 await FirebaseFirestore.instance.collection('campaigns').doc(_selectedCampaignId).update({
                   'totalExpenses': FieldValue.increment(total),
                 });
+                
+                // Allocate funds via UTXO logic
+                final allocationService = FundAllocationService();
+                await allocationService.allocateExpense(
+                  campaignId: _selectedCampaignId,
+                  expenseTotal: total,
+                  expenseName: _itemCtrl.text,
+                );
                 
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense Logged Successfully!')));
