@@ -99,7 +99,7 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const AspectRatio(
-            aspectRatio: 16 / 9, // Taller aspect ratio for banners
+            aspectRatio: 4 / 3, // Premium taller aspect ratio (16:12)
             child: Center(child: CircularProgressIndicator()),
           );
         }
@@ -135,7 +135,7 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: AspectRatio(
-              aspectRatio: 16 / 9, // Taller and cinematic
+              aspectRatio: 4 / 3, // Premium taller aspect ratio
               child: Stack(
                 children: [
                   PageView.builder(
@@ -146,23 +146,59 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                     },
                     itemBuilder: (context, index) {
                       final banner = banners[index];
-                      return GestureDetector(
-                        onTap: () => _handleBannerClick(context, banner),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 500),
-                          width: double.infinity,
-                          height: double.infinity,
-                          child: CachedNetworkImage(
-                            imageUrl: banner.imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              decoration: const BoxDecoration(
-                                gradient: AppColors.darkShimmerGradient,
-                              ),
+                      return AnimatedBuilder(
+                        animation: _pageController,
+                        builder: (context, child) {
+                          double pageOffset = 0.0;
+                          if (_pageController.position.haveDimensions) {
+                            pageOffset = (_pageController.page ?? _pageController.initialPage.toDouble()) - index;
+                          } else {
+                            pageOffset = _currentPage.toDouble() - index;
+                          }
+
+                          // Magical smooth zoom-fade transition
+                          double scale = (1 - (pageOffset.abs() * 0.15)).clamp(0.85, 1.0);
+                          double opacity = (1 - (pageOffset.abs() * 0.5)).clamp(0.0, 1.0);
+
+                          return Opacity(
+                            opacity: opacity,
+                            child: Transform.scale(
+                              scale: scale,
+                              child: child,
                             ),
-                            errorWidget: (context, url, error) => Container(
-                              color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
-                              child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+                          );
+                        },
+                        child: GestureDetector(
+                          onTap: () => _handleBannerClick(context, banner),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            width: double.infinity,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                )
+                              ]
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: CachedNetworkImage(
+                                imageUrl: banner.imageUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  decoration: const BoxDecoration(
+                                    gradient: AppColors.darkShimmerGradient,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
+                                  child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+                                ),
+                              ),
                             ),
                           ),
                         ),
