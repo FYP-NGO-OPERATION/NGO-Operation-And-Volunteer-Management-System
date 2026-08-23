@@ -59,6 +59,8 @@ class CampaignInfoTab extends StatelessWidget {
                   child: Column(
                     children: [
                       _infoRow(context, Icons.calendar_today, 'start_date'.tr(), dateFormat.format(campaign.startDate)),
+                      if (campaign.eventDate != null)
+                        _infoRow(context, Icons.event, 'Event Date', dateFormat.format(campaign.eventDate!)),
                       if (campaign.endDate != null)
                         _infoRow(context, Icons.event, 'end_date'.tr(), dateFormat.format(campaign.endDate!)),
                       _infoRow(context, Icons.location_on, 'location'.tr(), campaign.location),

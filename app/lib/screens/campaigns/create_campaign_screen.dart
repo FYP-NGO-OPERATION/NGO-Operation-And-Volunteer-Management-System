@@ -39,6 +39,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   CampaignType _selectedType = CampaignType.custom;
   CampaignStatus _selectedStatus = CampaignStatus.upcoming;
   DateTime _startDate = DateTime.now();
+  DateTime? _eventDate;
   DateTime? _endDate;
   bool get _isEditing => widget.campaign != null;
 
@@ -96,6 +97,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       _selectedType = c.type;
       _selectedStatus = c.status;
       _startDate = c.startDate;
+      _eventDate = c.eventDate;
       _endDate = c.endDate;
     }
   }
@@ -135,6 +137,20 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     }
   }
 
+  Future<void> _selectEventDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _eventDate ?? _startDate,
+      firstDate: _startDate,
+      lastDate: _endDate ?? DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        _eventDate = picked;
+      });
+    }
+  }
+
   Future<void> _saveCampaign() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -153,7 +169,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     bool success;
 
     if (!_isEditing) {
-      if (_endDate != null && _endDate!.isBefore(DateTime.now())) {
+      if (_eventDate != null && _eventDate!.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event date cannot be in the past')));
+        return;
+      }
+      if (_endDate != null && _endDate!.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
         _selectedStatus = CampaignStatus.completed;
       } else if (_endDate == null && _startDate.isBefore(DateTime.now().subtract(const Duration(days: 7)))) {
         // If no end date but started more than 7 days ago, assume completed for historical entry
@@ -170,6 +190,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         type: _selectedType,
         status: _selectedStatus,
         startDate: _startDate,
+        eventDate: _eventDate,
         endDate: _endDate,
         location: _locationController.text.trim(),
         latitude: double.tryParse(_latitudeController.text.trim()),
@@ -191,6 +212,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         type: _selectedType,
         status: _selectedStatus,
         startDate: _startDate,
+        eventDate: _eventDate,
         endDate: _endDate,
         location: _locationController.text.trim(),
         latitude: double.tryParse(_latitudeController.text.trim()),
@@ -263,12 +285,15 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                       itemsNeededController: _itemsNeededController,
                       volunteerLimitController: _volunteerLimitController,
                       startDate: _startDate,
+                      eventDate: _eventDate,
                       endDate: _endDate,
                       onSelectDate: _selectDate,
+                      onSelectEventDate: _selectEventDate,
                       isEditing: _isEditing,
                       selectedStatus: _selectedStatus,
                       onStatusChanged: (v) => setState(() => _selectedStatus = v!),
                       onClearEndDate: () => setState(() => _endDate = null),
+                      onClearEventDate: () => setState(() => _eventDate = null),
                     ),
                     if (!_isEditing) 
                       CampaignMediaPicker(

@@ -10,6 +10,10 @@ class VirtualSessionModel {
   final String createdByName;
   final String ngoId;
   final DateTime createdAt;
+  final String? imageUrl;
+  final Map<String, String> rsvpUsers;
+  final Map<String, String> attendedUsers;
+  final String? secretCode;
 
   VirtualSessionModel({
     required this.id,
@@ -21,6 +25,10 @@ class VirtualSessionModel {
     required this.createdByName,
     required this.ngoId,
     required this.createdAt,
+    this.imageUrl,
+    this.rsvpUsers = const {},
+    this.attendedUsers = const {},
+    this.secretCode,
   });
 
   factory VirtualSessionModel.fromMap(Map<String, dynamic> map) {
@@ -34,6 +42,10 @@ class VirtualSessionModel {
       createdByName: map['createdByName'] ?? 'Admin',
       ngoId: map['ngoId'] ?? '',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      imageUrl: map['imageUrl'],
+      rsvpUsers: Map<String, String>.from(map['rsvpUsers'] ?? {}),
+      attendedUsers: Map<String, String>.from(map['attendedUsers'] ?? {}),
+      secretCode: map['secretCode'],
     );
   }
 
@@ -48,6 +60,10 @@ class VirtualSessionModel {
       'createdByName': createdByName,
       'ngoId': ngoId,
       'createdAt': Timestamp.fromDate(createdAt),
+      'imageUrl': imageUrl,
+      'rsvpUsers': rsvpUsers,
+      'attendedUsers': attendedUsers,
+      if (secretCode != null) 'secretCode': secretCode,
     };
   }
 

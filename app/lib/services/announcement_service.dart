@@ -7,7 +7,6 @@ class AnnouncementService {
   CollectionReference<Map<String, dynamic>> get _announcementsRef =>
       _db.collection('announcements');
 
-  /// Create a new announcement
   Future<void> createAnnouncement(AnnouncementModel announcement) async {
     final docRef = _announcementsRef.doc();
     final newAnnouncement = AnnouncementModel(
@@ -16,6 +15,8 @@ class AnnouncementService {
       message: announcement.message,
       authorId: announcement.authorId,
       authorName: announcement.authorName,
+      imageUrl: announcement.imageUrl,
+      videoUrl: announcement.videoUrl,
       createdAt: DateTime.now(),
     );
     await docRef.set(newAnnouncement.toMap());

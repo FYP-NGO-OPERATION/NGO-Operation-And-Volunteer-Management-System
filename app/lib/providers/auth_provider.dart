@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/user_service.dart';
+import '../services/cloudinary_service.dart';
 
 /// Manages authentication state across the entire app.
 /// Wraps AuthService + UserService together.
@@ -330,17 +331,15 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      // Upload to Firebase Storage
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('profile_pictures')
-          .child('${_user!.uid}.jpg');
+      // Upload to Cloudinary instead of Firebase Storage
+      final downloadUrl = await CloudinaryService.uploadImageBytes(
+        imageBytes, 
+        filename: 'profile_${_user!.uid}.jpg',
+      );
 
-      await storageRef.putData(imageBytes, SettableMetadata(contentType: 'image/jpeg'))
-          .timeout(const Duration(seconds: 15), onTimeout: () {
-        throw Exception("Upload timed out. (Web CORS or Network issue)");
-      });
-      final downloadUrl = await storageRef.getDownloadURL();
+      if (downloadUrl == null) {
+        throw Exception("Failed to upload image to Cloudinary.");
+      }
 
       // Update Firestore
       await _userService.updateUser(_user!.uid, {'profileImageUrl': downloadUrl});

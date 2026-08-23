@@ -9,6 +9,7 @@ class CampaignModel {
   final CampaignType type;
   final CampaignStatus status;
   final DateTime startDate;
+  final DateTime? eventDate;
   final DateTime? endDate;
   final String location;
   final double? latitude;
@@ -44,6 +45,7 @@ class CampaignModel {
     required this.type,
     this.status = CampaignStatus.upcoming,
     required this.startDate,
+    this.eventDate,
     this.endDate,
     required this.location,
     this.latitude,
@@ -82,6 +84,7 @@ class CampaignModel {
       type: CampaignType.fromString(map['type'] ?? 'custom'),
       status: CampaignStatus.fromString(map['status'] ?? 'upcoming'),
       startDate: (map['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      eventDate: (map['eventDate'] as Timestamp?)?.toDate(),
       endDate: (map['endDate'] as Timestamp?)?.toDate(),
       location: map['location'] ?? '',
       latitude: (map['latitude'] as num?)?.toDouble(),
@@ -121,6 +124,7 @@ class CampaignModel {
       'type': type.name,
       'status': status.name,
       'startDate': Timestamp.fromDate(startDate),
+      'eventDate': eventDate != null ? Timestamp.fromDate(eventDate!) : null,
       'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
       'location': location,
       'latitude': latitude,
@@ -158,6 +162,7 @@ class CampaignModel {
     CampaignType? type,
     CampaignStatus? status,
     DateTime? startDate,
+    DateTime? eventDate,
     DateTime? endDate,
     String? location,
     double? latitude,
@@ -189,6 +194,7 @@ class CampaignModel {
       type: type ?? this.type,
       status: status ?? this.status,
       startDate: startDate ?? this.startDate,
+      eventDate: eventDate ?? this.eventDate,
       endDate: endDate ?? this.endDate,
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,

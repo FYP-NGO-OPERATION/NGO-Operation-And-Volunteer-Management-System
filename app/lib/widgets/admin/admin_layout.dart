@@ -3,17 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../config/feature_flags.dart';
 import '../../config/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../screens/admin/analytics_screen.dart';
 import '../../screens/admin/admin_donations_screen.dart';
+import '../../screens/admin/admin_dashboard_screen.dart';
 import '../../screens/profile/user_list_screen.dart';
 import '../../screens/campaigns/campaign_list_screen.dart';
 import '../../screens/campaigns/create_campaign_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../../screens/announcements/create_announcement_screen.dart';
+import '../../screens/announcements/announcement_list_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
 import '../../screens/admin/blood_emergency_screen.dart';
 import '../../screens/admin/sentiment_analysis_screen.dart';
@@ -36,14 +38,20 @@ class _AdminLayoutState extends State<AdminLayout> {
   bool _isListening = false;
 
   late final List<Widget> _pages = [
-    FeatureFlags.isAnalyticsEnabled
-        ? const AnalyticsScreen()
-        : const AdminDonationsScreen(), // FYP1: show donations as default dashboard
-    const UserListScreen(),
-    const CampaignListScreen(),
-    const AdminDonationsScreen(),
-    const PlatformRequestsScreen(),
-    _buildAdminProfile(),
+    AdminDashboardScreen(onNavigate: (index) {
+      if (mounted) {
+        setState(() => _selectedIndex = index);
+      }
+    }), // 0. Dashboard
+    const UserListScreen(), // 1. Users
+    const CampaignListScreen(), // 2. Campaigns
+    const AdminDonationsScreen(), // 3. Donations
+    const PlatformRequestsScreen(), // 4. Platform Requests
+    const AnnouncementListScreen(), // 5. Announcements
+    const SessionListScreen(), // 6. Virtual Sessions
+    const AnalyticsScreen(), // 7. Analytics
+    const DisasterMapScreen(), // 8. Disaster Map
+    _buildAdminProfile(), // 9. Profile
   ];
 
   @override
@@ -136,7 +144,27 @@ class _AdminLayoutState extends State<AdminLayout> {
     NavigationRailDestination(
       icon: Icon(Icons.verified_user_outlined),
       selectedIcon: Icon(Icons.verified_user),
-      label: Text('Platform Requests'),
+      label: Text('Requests'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.announcement_outlined),
+      selectedIcon: Icon(Icons.announcement),
+      label: Text('News'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.video_call_outlined),
+      selectedIcon: Icon(Icons.video_call),
+      label: Text('Sessions'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.analytics_outlined),
+      selectedIcon: Icon(Icons.analytics),
+      label: Text('Analytics'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.map_outlined),
+      selectedIcon: Icon(Icons.map),
+      label: Text('Disasters'),
     ),
     NavigationRailDestination(
       icon: Icon(Icons.person_outline),
@@ -239,6 +267,7 @@ class _AdminLayoutState extends State<AdminLayout> {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 800;
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return PopScope(
@@ -308,33 +337,119 @@ class _AdminLayoutState extends State<AdminLayout> {
       drawer: isDesktop
           ? null
           : Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(color: theme.primaryColor),
-                    child: const Text(
-                      'NGO Admin',
-                      style: TextStyle(color: Colors.white, fontSize: 24),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 20,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: AppColors.heroGradient,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 2),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 36,
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
+                        backgroundImage: authProvider.user?.profileImageUrl != null
+                            ? CachedNetworkImageProvider(authProvider.user!.profileImageUrl!)
+                            : null,
+                        child: authProvider.user?.profileImageUrl == null
+                            ? Text(
+                                (authProvider.user?.name ?? 'A')[0].toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontSize: 32),
+                              )
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      authProvider.user?.name ?? 'Admin',
+                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    ),
+                    const Text(
+                      'HRAS Admin',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      children: [
+                        for (int i = 0; i < _destinations.length; i++)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                gradient: _selectedIndex == i
+                                    ? AppColors.primaryGradient
+                                    : null,
+                                boxShadow: _selectedIndex == i
+                                    ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 3))]
+                                    : [],
+                              ),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                leading: Icon(
+                                  _selectedIndex == i
+                                      ? (_destinations[i].selectedIcon as Icon).icon
+                                      : (_destinations[i].icon as Icon).icon,
+                                  color: _selectedIndex == i
+                                      ? Colors.white
+                                      : (isDark ? Colors.white70 : AppColors.neutral600),
+                                ),
+                                title: Text(
+                                  (_destinations[i].label as Text).data!,
+                                  style: TextStyle(
+                                    color: _selectedIndex == i
+                                        ? Colors.white
+                                        : (isDark ? Colors.white70 : AppColors.neutral800),
+                                    fontWeight: _selectedIndex == i ? FontWeight.bold : FontWeight.normal,
+                                  ),
+                                ),
+                                selected: _selectedIndex == i,
+                                onTap: () {
+                                  setState(() => _selectedIndex = i);
+                                  Navigator.pop(context); // Close drawer
+                                },
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  for (int i = 0; i < _destinations.length; i++)
-                    ListTile(
-                      leading: _selectedIndex == i
-                          ? _destinations[i].selectedIcon
-                          : _destinations[i].icon,
-                      title: _destinations[i].label,
-                      selected: _selectedIndex == i,
-                      onTap: () {
-                        setState(() => _selectedIndex = i);
-                        Navigator.pop(context); // Close drawer
-                      },
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: OutlinedButton.icon(
+                      onPressed: () => authProvider.logout(),
+                      icon: const Icon(Icons.logout, color: AppColors.error),
+                      label: const Text('Logout', style: TextStyle(color: AppColors.error)),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.error),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
                     ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Logout'),
-                    onTap: () => authProvider.logout(),
                   ),
                 ],
               ),
@@ -393,11 +508,11 @@ class _AdminLayoutState extends State<AdminLayout> {
           ),
           SpeedDialAction(
             icon: Icons.announcement,
-            label: 'Add Announcement',
+            label: 'Announcements',
             backgroundColor: AppColors.warning,
             foregroundColor: Colors.white,
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Scaffold(body: AnnouncementListScreen())));
             },
           ),
           SpeedDialAction(

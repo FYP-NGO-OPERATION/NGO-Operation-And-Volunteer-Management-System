@@ -33,8 +33,7 @@ migrate_working_dir/
 /build/
 /app/build/
 /coverage/
-
-# Symbolication related
+.env
 app.*.symbols
 
 # Obfuscation related

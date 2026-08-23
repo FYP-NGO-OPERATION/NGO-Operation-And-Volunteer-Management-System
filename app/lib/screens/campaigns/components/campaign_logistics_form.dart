@@ -11,12 +11,15 @@ class CampaignLogisticsForm extends StatelessWidget {
   final TextEditingController itemsNeededController;
   final TextEditingController volunteerLimitController;
   final DateTime startDate;
+  final DateTime? eventDate;
   final DateTime? endDate;
   final Function(bool) onSelectDate;
+  final VoidCallback onSelectEventDate;
   final bool isEditing;
   final CampaignStatus selectedStatus;
   final Function(CampaignStatus?) onStatusChanged;
   final Function() onClearEndDate;
+  final VoidCallback onClearEventDate;
 
   const CampaignLogisticsForm({
     Key? key,
@@ -27,12 +30,15 @@ class CampaignLogisticsForm extends StatelessWidget {
     required this.itemsNeededController,
     required this.volunteerLimitController,
     required this.startDate,
+    required this.eventDate,
     required this.endDate,
     required this.onSelectDate,
+    required this.onSelectEventDate,
     required this.isEditing,
     required this.selectedStatus,
     required this.onStatusChanged,
     required this.onClearEndDate,
+    required this.onClearEventDate,
   }) : super(key: key);
 
   @override
@@ -108,6 +114,29 @@ class CampaignLogisticsForm extends StatelessWidget {
               prefixIcon: Icon(Icons.calendar_today),
             ),
             child: Text(dateFormat.format(startDate)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text('Event Date (Optional)', style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: onSelectEventDate,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.event),
+              suffixIcon: eventDate != null
+                  ? IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: onClearEventDate,
+                    )
+                  : null,
+            ),
+            child: Text(
+              eventDate != null ? dateFormat.format(eventDate!) : 'Select event date',
+              style: eventDate == null
+                  ? TextStyle(color: Theme.of(context).hintColor)
+                  : null,
+            ),
           ),
         ),
         const SizedBox(height: 16),

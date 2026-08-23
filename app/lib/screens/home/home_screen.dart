@@ -27,6 +27,10 @@ import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
 import '../chatbot/chatbot_screen.dart';
+import '../disasters/disaster_map_screen.dart';
+import '../disasters/route_optimization_screen.dart';
+import '../announcements/announcement_list_screen.dart';
+import '../../config/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -239,6 +243,140 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        drawer: Drawer(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 20,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: AppColors.heroGradient,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 2),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 36,
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
+                        backgroundImage: user?.profileImageUrl != null
+                            ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                            : null,
+                        child: user?.profileImageUrl == null
+                            ? Text(
+                                (user?.name ?? 'U')[0].toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontSize: 32),
+                              )
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      user?.name ?? 'Volunteer',
+                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    ),
+                    Text(
+                      currentNgo?.name ?? 'Community Volunteer',
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  children: [
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.dashboard,
+                      title: 'Dashboard',
+                      onTap: () {
+                        Navigator.pop(context);
+                        setState(() => _currentIndex = 0);
+                      },
+                      isSelected: _currentIndex == 0,
+                    ),
+                    if (currentNgo?.features.contains('campaigns') ?? true)
+                      _buildDrawerItem(
+                        context,
+                        icon: Icons.campaign,
+                        title: 'Campaigns',
+                        onTap: () {
+                          Navigator.pop(context);
+                          setState(() => _currentIndex = 1);
+                        },
+                        isSelected: _currentIndex == 1,
+                      ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.map,
+                      title: 'Disaster Map',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.route,
+                      title: 'Optimize Routes',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.announcement,
+                      title: 'Announcements',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(body: const AnnouncementListScreen())));
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.emoji_events,
+                      title: 'Leaderboard',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: OutlinedButton.icon(
+                  onPressed: () => _showLogoutDialog(context),
+                  icon: const Icon(Icons.logout, color: AppColors.error),
+                  label: const Text('Logout', style: TextStyle(color: AppColors.error)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.error),
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         body: activeTabs[safeIndex]['screen'] as Widget,
         floatingActionButton: HomeSpeedDial(
           isAdmin: isAdmin,
@@ -311,4 +449,44 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+
+  Widget _buildDrawerItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isSelected = false,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: isSelected ? AppColors.primaryGradient : null,
+          boxShadow: isSelected
+              ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 3))]
+              : [],
+        ),
+        child: ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          leading: Icon(
+            icon,
+            color: isSelected ? Colors.white : (isDark ? Colors.white70 : AppColors.neutral600),
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Colors.white : (isDark ? Colors.white70 : AppColors.neutral800),
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          selected: isSelected,
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
 }
+

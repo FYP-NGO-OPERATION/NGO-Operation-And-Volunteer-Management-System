@@ -6,6 +6,8 @@ class AnnouncementModel {
   final String message;
   final String authorId;
   final String authorName;
+  final String? imageUrl;
+  final String? videoUrl;
   final DateTime createdAt;
 
   AnnouncementModel({
@@ -14,6 +16,8 @@ class AnnouncementModel {
     required this.message,
     required this.authorId,
     required this.authorName,
+    this.imageUrl,
+    this.videoUrl,
     required this.createdAt,
   });
 
@@ -24,6 +28,8 @@ class AnnouncementModel {
       message: map['message'] ?? '',
       authorId: map['authorId'] ?? '',
       authorName: map['authorName'] ?? 'Admin',
+      imageUrl: map['imageUrl'],
+      videoUrl: map['videoUrl'],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -35,6 +41,8 @@ class AnnouncementModel {
       'message': message,
       'authorId': authorId,
       'authorName': authorName,
+      'imageUrl': imageUrl,
+      'videoUrl': videoUrl,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }

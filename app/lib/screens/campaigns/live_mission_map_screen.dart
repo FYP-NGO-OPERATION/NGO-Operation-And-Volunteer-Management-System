@@ -34,6 +34,15 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
   bool _isSearching = false;
 
   List<dynamic> _searchResults = [];
+  double? _campaignLat;
+  double? _campaignLng;
+
+  @override
+  void initState() {
+    super.initState();
+    _campaignLat = widget.initialLat;
+    _campaignLng = widget.initialLng;
+  }
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
     final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
@@ -152,9 +161,10 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
 
               return Marker(
                 point: LatLng(lat, lng),
-                width: 60,
-                height: 60,
+                width: 90,
+                height: 80,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
                       onTap: () => _openGoogleMaps(lat, lng),
@@ -188,6 +198,34 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                 ),
               );
             }).toList();
+          }
+
+          if (_campaignLat != null && _campaignLng != null && !_isPickerMode) {
+            markers.add(
+              Marker(
+                point: LatLng(_campaignLat!, _campaignLng!),
+                width: 100,
+                height: 70,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'Campaign Venue',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const Icon(Icons.location_on, color: AppColors.error, size: 30),
+                  ],
+                ),
+              ),
+            );
           }
 
           // Adjust bounds if we have markers
@@ -278,7 +316,7 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                       ),
                       if (_searchResults.isNotEmpty)
                         Container(
-                          margin: const EdgeInsets.top(8),
+                          margin: const EdgeInsets.only(top: 8),
                           constraints: const BoxConstraints(maxHeight: 200),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -381,6 +419,8 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                                     if (mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Venue location updated!')));
                                       setState(() {
+                                        _campaignLat = center.latitude;
+                                        _campaignLng = center.longitude;
                                         _isPickerMode = false;
                                         _isSaving = false;
                                       });

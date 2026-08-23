@@ -26,4 +26,31 @@ class VirtualSessionService {
   Future<void> deleteSession(String sessionId) async {
     await _db.collection(collectionPath).doc(sessionId).delete();
   }
+
+  Future<void> toggleRSVP(String sessionId, String userId, String userName) async {
+    final docRef = _db.collection(collectionPath).doc(sessionId);
+    
+    return _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) throw Exception("Session does not exist!");
+      
+      final Map<String, dynamic> data = snapshot.data()!;
+      final rsvpUsers = Map<String, dynamic>.from(data['rsvpUsers'] ?? {});
+      
+      if (rsvpUsers.containsKey(userId)) {
+        rsvpUsers.remove(userId);
+      } else {
+        rsvpUsers[userId] = userName;
+      }
+      
+      transaction.update(docRef, {'rsvpUsers': rsvpUsers});
+    });
+  }
+
+  Future<void> markAttendance(String sessionId, String userId, String userName) async {
+    final docRef = _db.collection(collectionPath).doc(sessionId);
+    await docRef.set({
+      'attendedUsers': {userId: userName}
+    }, SetOptions(merge: true));
+  }
 }

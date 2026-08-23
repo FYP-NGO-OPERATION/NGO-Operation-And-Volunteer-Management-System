@@ -186,16 +186,19 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
     final isSelected = provider.statusFilter == status;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(label, style: const TextStyle(fontSize: 12)),
-        selected: isSelected,
-        onSelected: (_) => provider.setStatusFilter(isSelected ? null : status),
-        selectedColor: AppColors.primary.withValues(alpha: 0.2),
-        labelStyle: TextStyle(
-          color: isSelected ? AppColors.primary : null,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+      child: Material(
+        color: Colors.transparent,
+        child: ChoiceChip(
+          label: Text(label, style: const TextStyle(fontSize: 12)),
+          selected: isSelected,
+          onSelected: (_) => provider.setStatusFilter(isSelected ? null : status),
+          selectedColor: AppColors.primary.withValues(alpha: 0.2),
+          labelStyle: TextStyle(
+            color: isSelected ? AppColors.primary : null,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
+          visualDensity: VisualDensity.compact,
         ),
-        visualDensity: VisualDensity.compact,
       ),
     );
   }

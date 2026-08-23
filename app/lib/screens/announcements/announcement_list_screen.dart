@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/announcement_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/announcement_service.dart';
@@ -159,6 +161,44 @@ class _AnnouncementCard extends StatelessWidget {
               style: const TextStyle(height: 1.5, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 16),
+            if (announcement.imageUrl != null) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: announcement.imageUrl!,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 200,
+                    color: AppColors.neutral200,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 200,
+                    color: AppColors.neutral200,
+                    child: const Center(child: Icon(Icons.error, color: AppColors.error)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            if (announcement.videoUrl != null) ...[
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final uri = Uri.parse(announcement.videoUrl!);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
+                },
+                icon: const Icon(Icons.play_circle_fill, color: Colors.red),
+                label: const Text('Watch Reference Video', style: TextStyle(color: Colors.red)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Align(
               alignment: Alignment.centerRight,
               child: Text(

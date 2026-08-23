@@ -174,14 +174,17 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                 spacing: 8,
                 children: _statusOptions.map((opt) {
                   final isSelected = _selectedStatus == opt['value'];
-                  return ChoiceChip(
-                    label: Text('${opt['icon']} ${opt['label']}'),
-                    selected: isSelected,
-                    onSelected: (_) => setState(() => _selectedStatus = opt['value']!),
-                    selectedColor: AppColors.primary.withValues(alpha: 0.15),
-                    labelStyle: TextStyle(
-                      color: isSelected ? AppColors.primary : null,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  return Material(
+                    color: Colors.transparent,
+                    child: ChoiceChip(
+                      label: Text('${opt['icon']} ${opt['label']}'),
+                      selected: isSelected,
+                      onSelected: (_) => setState(() => _selectedStatus = opt['value']!),
+                      selectedColor: AppColors.primary.withValues(alpha: 0.15),
+                      labelStyle: TextStyle(
+                        color: isSelected ? AppColors.primary : null,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
                     ),
                   );
                 }).toList(),

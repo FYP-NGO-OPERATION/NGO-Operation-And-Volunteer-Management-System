@@ -58,4 +58,23 @@ class VirtualSessionProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> toggleRSVP(String sessionId, String userId, String userName) async {
+    try {
+      await _service.toggleRSVP(sessionId, userId, userName);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> markAttendance(String sessionId, String userId, String userName) async {
+    try {
+      await _service.markAttendance(sessionId, userId, userName);
+    } catch (e) {
+      print("Error marking attendance: $e");
+    }
+  }
 }
