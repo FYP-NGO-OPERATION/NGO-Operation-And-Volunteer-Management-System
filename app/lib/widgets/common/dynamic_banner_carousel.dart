@@ -156,16 +156,12 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                             pageOffset = _currentPage.toDouble() - index;
                           }
 
-                          // Magical smooth zoom-fade transition
-                          double scale = (1 - (pageOffset.abs() * 0.15)).clamp(0.85, 1.0);
-                          double opacity = (1 - (pageOffset.abs() * 0.5)).clamp(0.0, 1.0);
+                          // Magical smooth zoom-scale transition (no Opacity to avoid Impeller errors)
+                          double scale = (1 - (pageOffset.abs() * 0.12)).clamp(0.88, 1.0);
 
-                          return Opacity(
-                            opacity: opacity,
-                            child: Transform.scale(
-                              scale: scale,
-                              child: child,
-                            ),
+                          return Transform.scale(
+                            scale: scale,
+                            child: child,
                           );
                         },
                         child: GestureDetector(
