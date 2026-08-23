@@ -31,15 +31,16 @@ class CampaignCard extends StatelessWidget {
     final displayDate = campaign.eventDate ?? campaign.startDate;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E2C) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: _typeColor.withValues(alpha: isDark ? 0.2 : 0.15),
+            blurRadius: 25,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -109,22 +110,28 @@ class CampaignCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Type Badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: _typeColor.withValues(alpha: 0.9),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(campaign.type.icon, style: const TextStyle(fontSize: 12)),
-                                const SizedBox(width: 4),
-                                Text(
-                                  campaign.type.label,
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: BackdropFilter(
+                              filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: _typeColor.withValues(alpha: 0.8),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                              ],
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(campaign.type.icon, style: const TextStyle(fontSize: 14)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      campaign.type.label,
+                                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                           // Status Badge
@@ -229,16 +236,16 @@ class CampaignCard extends StatelessWidget {
 
                     // Stats Row
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.black12 : Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                        color: isDark ? Colors.white.withValues(alpha: 0.05) : _typeColor.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: isDark ? Colors.white10 : _typeColor.withValues(alpha: 0.1)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildStatItem(Icons.people_alt, '${campaign.totalVolunteers}', 'Volunteers', AppColors.info),
+                          _buildStatItem(Icons.people_alt, '${campaign.totalVolunteers}', 'Volunteers', AppColors.info, isDark),
                           _buildDivider(isDark),
                           _buildStatItem(
                             Icons.volunteer_activism, 
@@ -246,10 +253,11 @@ class CampaignCard extends StatelessWidget {
                                 ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
                                 : '${campaign.totalDonationsCount}', 
                             'Donations', 
-                            AppColors.warning
+                            AppColors.warning,
+                            isDark
                           ),
                           _buildDivider(isDark),
-                          _buildStatItem(Icons.family_restroom, '${campaign.beneficiaryCount}', 'Impact', AppColors.success),
+                          _buildStatItem(Icons.family_restroom, '${campaign.beneficiaryCount}', 'Impact', AppColors.success, isDark),
                         ],
                       ),
                     ),
@@ -277,27 +285,32 @@ class CampaignCard extends StatelessWidget {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(width: 6),
-          Text(
-            campaign.status.label,
-            style: TextStyle(color: Colors.black87, fontSize: 11, fontWeight: FontWeight.bold),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: color, boxShadow: [BoxShadow(color: color, blurRadius: 4)]),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                campaign.status.label,
+                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -310,20 +323,20 @@ class CampaignCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(IconData icon, String value, String label, Color iconColor) {
+  Widget _buildStatItem(IconData icon, String value, String label, Color iconColor, bool isDark) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: iconColor),
-            const SizedBox(width: 6),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+            Icon(icon, size: 18, color: iconColor),
+            const SizedBox(width: 8),
+            Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
           ],
         ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: AppColors.lightTextSecondary, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 6),
+        Text(label, style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w700)),
       ],
     );
   }

@@ -172,12 +172,15 @@ class CampaignTasksTab extends StatelessWidget {
     List<VolunteerModel> selectedVolunteers = [];
     bool assignToAll = false;
 
+    // Cache future to prevent rebuilding when keyboard opens
+    final volunteersFuture = VolunteerService().getVolunteersStream(campaign.id).first;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (ctx) {
         return FutureBuilder<List<VolunteerModel>>(
-          future: VolunteerService().getVolunteersStream(campaign.id).first,
+          future: volunteersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));

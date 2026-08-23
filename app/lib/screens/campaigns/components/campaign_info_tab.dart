@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,384 +25,275 @@ class CampaignInfoTab extends StatelessWidget {
 
   const CampaignInfoTab({Key? key, required this.campaign}) : super(key: key);
 
+  Color get _themeColor {
+    switch (campaign.type) {
+      case CampaignType.winterDrive: return AppColors.winterDrive;
+      case CampaignType.ramadan: return AppColors.ramadan;
+      case CampaignType.eid: return AppColors.eid;
+      case CampaignType.orphanage: return AppColors.orphanage;
+      case CampaignType.medical: return AppColors.medical;
+      case CampaignType.education: return AppColors.education;
+      default: return AppColors.primary;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final dateFormat = DateFormat('MMM dd, yyyy');
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 700),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Status & Type badges
-              Row(
-                children: [
-                  _chip('${campaign.type.icon} ${campaign.type.label}', AppColors.primary),
-                  AppSpacing.hGapSm,
-                  _statusBadge(),
+    return Stack(
+      children: [
+        // Magical Background Gradient
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(-0.5, -0.8),
+                radius: 1.5,
+                colors: [
+                  _themeColor.withValues(alpha: isDark ? 0.3 : 0.1),
+                  theme.scaffoldBackgroundColor,
                 ],
               ),
-              AppSpacing.vGapLg,
-              Text(campaign.title, style: AppTextStyles.headlineMedium()),
-              AppSpacing.vGapMd,
-              Text(campaign.description, style: AppTextStyles.bodyMedium(
-                color: theme.brightness == Brightness.dark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
-              AppSpacing.vGapXl,
-
-              // Info Grid
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
+            ),
+          ),
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title and Badges
+                  Row(
                     children: [
-                      _infoRow(context, Icons.calendar_today, 'start_date'.tr(), dateFormat.format(campaign.startDate)),
-                      if (campaign.eventDate != null)
-                        _infoRow(context, Icons.event, 'Event Date', dateFormat.format(campaign.eventDate!)),
-                      if (campaign.endDate != null)
-                        _infoRow(context, Icons.event, 'end_date'.tr(), dateFormat.format(campaign.endDate!)),
-                      _infoRow(context, Icons.location_on, 'location'.tr(), campaign.location),
-                      _infoRow(context, Icons.flag, 'target'.tr(), campaign.targetGoal),
-                      if (campaign.achievedGoal != null)
-                        _infoRow(context, Icons.check_circle, 'achieved'.tr(), campaign.achievedGoal!),
-                      if (campaign.itemsNeeded != null)
-                        _infoRow(context, Icons.list, 'items_needed'.tr(), campaign.itemsNeeded!),
-                      _infoRow(context, Icons.person, 'created_by'.tr(), campaign.createdByName),
-                      // Live updating map for location
-                      StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).snapshots(),
-                        builder: (context, snapshot) {
-                          double? lat = campaign.latitude;
-                          double? lng = campaign.longitude;
-                          
-                          if (snapshot.hasData && snapshot.data!.exists) {
-                            final data = snapshot.data!.data() as Map<String, dynamic>;
-                            lat = data['latitude'] as double? ?? lat;
-                            lng = data['longitude'] as double? ?? lng;
-                          }
-
-                          if (lat == null || lng == null) return const SizedBox.shrink();
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Divider(),
-                              const SizedBox(height: 8),
-                              Text('Location Map', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
-                              const SizedBox(height: 12),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Stack(
-                                  children: [
-                                    SizedBox(
-                                      height: 180,
-                                      width: double.infinity,
-                                      child: AbsorbPointer(
-                                        child: FlutterMap(
-                                          options: MapOptions(
-                                            initialCenter: LatLng(lat, lng),
-                                            initialZoom: 14.0,
-                                          ),
-                                          children: [
-                                            TileLayer(
-                                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                              userAgentPackageName: 'org.hras.ngo_volunteer_app',
-                                            ),
-                                            MarkerLayer(
-                                              markers: [
-                                                Marker(
-                                                  point: LatLng(lat, lng),
-                                                  width: 40,
-                                                  height: 40,
-                                                  child: const Icon(
-                                                    Icons.location_on,
-                                                    color: AppColors.error,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned.fill(
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-                                            try {
-                                              await launchUrl(url, mode: LaunchMode.externalApplication);
-                                            } catch (e) {
-                                              debugPrint('Could not launch maps: $e');
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 8,
-                                      bottom: 8,
-                                      child: IgnorePointer(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.7),
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(Icons.open_in_new, color: Colors.white, size: 14),
-                                              SizedBox(width: 6),
-                                              Text('Open in Maps', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                      _glassChip('${campaign.type.icon} ${campaign.type.label}', _themeColor, isDark),
+                      const SizedBox(width: 8),
+                      _statusBadge(isDark),
                     ],
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Donation Goal Progress Card
-              _buildDonationGoalCard(context),
-              const SizedBox(height: 16),
-
-              // Campaign Progress
-              if (campaign.progressPercent > 0) ...[
-                Text('progress'.tr(), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: campaign.progressPercent / 100,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    color: AppColors.primary,
-                    minHeight: 12,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      '${campaign.progressPercent}%',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+                  const SizedBox(height: 20),
+                  Text(
+                    campaign.title,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
+                      letterSpacing: -0.5,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                  const SizedBox(height: 16),
+                  Text(
+                    campaign.description,
+                    style: TextStyle(
+                      fontSize: 16,
+                      height: 1.6,
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
 
-              // Stats Cards
-              Text('statistics'.tr(), style: AppTextStyles.titleLarge()),
-              AppSpacing.vGapMd,
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: Responsive.isMobile(context) ? 2 : 3,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: Responsive.isMobile(context) ? 1.5 : 2.0,
-                children: [
-                  _statCard('volunteers'.tr(), '${campaign.totalVolunteers}', Icons.people, AppColors.info),
-                  _statCard('beneficiaries'.tr(), '${campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary),
-                  _statCard('items_distributed'.tr(), '${campaign.distributionCount}', Icons.inventory_2, AppColors.success),
-                  _statCard('donations'.tr(), 'Rs.${campaign.totalDonationsAmount.toStringAsFixed(0)}', Icons.volunteer_activism, AppColors.warning),
-                  _statCard('expenses'.tr(), 'Rs.${campaign.totalExpenses.toStringAsFixed(0)}', Icons.receipt, AppColors.error),
-                  _statCard('remaining'.tr(), 'Rs.${campaign.remainingBudget.toStringAsFixed(0)}', Icons.savings, AppColors.success),
+                  // Quick Info Grid (Glassmorphic)
+                  _buildGlassContainer(
+                    isDark: isDark,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Mission Brief', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _themeColor)),
+                        const SizedBox(height: 16),
+                        _infoRow(context, Icons.calendar_today, 'Start Date', dateFormat.format(campaign.startDate), isDark),
+                        if (campaign.eventDate != null)
+                          _infoRow(context, Icons.event, 'Event Date', dateFormat.format(campaign.eventDate!), isDark),
+                        _infoRow(context, Icons.location_on, 'Location', campaign.location, isDark),
+                        _infoRow(context, Icons.flag, 'Target', campaign.targetGoal, isDark),
+                        _infoRow(context, Icons.person, 'Coordinator', campaign.createdByName, isDark),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Donation Goal Progress
+                  _buildDonationGoalCard(context, isDark),
+                  const SizedBox(height: 24),
+
+                  // Stats Grid
+                  Text('Live Statistics', style: AppTextStyles.titleLarge().copyWith(fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: Responsive.isMobile(context) ? 2 : 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: Responsive.isMobile(context) ? 1.4 : 1.8,
+                    children: [
+                      _glassStatCard('Volunteers', '${campaign.totalVolunteers}', Icons.people, AppColors.info, isDark),
+                      _glassStatCard('Impact', '${campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary, isDark),
+                      _glassStatCard('Items', '${campaign.distributionCount}', Icons.inventory_2, AppColors.success, isDark),
+                      _glassStatCard('Donations', 'Rs.${campaign.totalDonationsAmount.toInt()}', Icons.volunteer_activism, AppColors.warning, isDark),
+                      _glassStatCard('Expenses', 'Rs.${campaign.totalExpenses.toInt()}', Icons.receipt, AppColors.error, isDark),
+                      _glassStatCard('Remaining', 'Rs.${campaign.remainingBudget.toInt()}', Icons.savings, AppColors.success, isDark),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Action Buttons (Volunteers, Beneficiaries, Gallery)
+                  _buildActionTiles(context, isDark),
+                  const SizedBox(height: 32),
+                  
+                  // Map
+                  _buildMapSection(context, isDark),
+                  const SizedBox(height: 24),
+
+                  // Live Tracking
+                  _LiveTrackingCard(campaign: campaign, isDark: isDark),
+                  
+                  const SizedBox(height: 80),
                 ],
               ),
-              const SizedBox(height: 16),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-              // View Volunteers button
-              Card(
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.info.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.people, color: AppColors.info),
-                  ),
-                  title: Text(
-                    '${'view_volunteers'.tr()} (${campaign.totalVolunteers})',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text('view_volunteers_desc'.tr()),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => VolunteerListScreen(
-                          campaignId: campaign.id,
-                          campaignTitle: campaign.title,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // View Beneficiaries button
-              Card(
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.handshake, color: AppColors.primary),
-                  ),
-                  title: Text(
-                    'view_impact'.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text('view_impact_desc'.tr()),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BeneficiaryListScreen(
-                          campaignId: campaign.id,
-                          campaignTitle: campaign.title,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // View Photo Gallery button
-              Card(
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.photo_library, color: AppColors.success),
-                  ),
-                  title: Text(
-                    'photo_gallery'.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text('photo_gallery_desc'.tr()),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PhotoGalleryScreen(campaign: campaign),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-              
-              // Live Mission Tracking Card
-              _LiveTrackingCard(campaign: campaign),
-              
-              const SizedBox(height: 80),
-            ],
+  Widget _buildGlassContainer({required Widget child, required bool isDark, EdgeInsetsGeometry padding = const EdgeInsets.all(24)}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: _themeColor.withValues(alpha: 0.05),
+            blurRadius: 30,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Padding(
+            padding: padding,
+            child: child,
           ),
         ),
       ),
     );
   }
 
-  Widget _chip(String text, Color color) {
+  Widget _glassChip(String text, Color color, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
-      child: Text(text, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+      child: Text(
+        text, 
+        style: TextStyle(
+          color: isDark ? color.withValues(alpha: 0.9) : color, 
+          fontSize: 13, 
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.3,
+        ),
+      ),
     );
   }
 
-  Widget _statusBadge() {
+  Widget _statusBadge(bool isDark) {
     Color color;
     switch (campaign.status) {
-      case CampaignStatus.active:
-        color = AppColors.success;
-        break;
-      case CampaignStatus.completed:
-        color = AppColors.info;
-        break;
-      case CampaignStatus.upcoming:
-        color = AppColors.warning;
-        break;
+      case CampaignStatus.active: color = AppColors.success; break;
+      case CampaignStatus.completed: color = AppColors.info; break;
+      case CampaignStatus.upcoming: color = AppColors.warning; break;
     }
-    return _chip('${campaign.status.icon} ${campaign.status.label}', color);
+    return _glassChip('${campaign.status.icon} ${campaign.status.label}', color, isDark);
   }
 
-  Widget _infoRow(BuildContext context, IconData icon, String label, String value) {
+  Widget _infoRow(BuildContext context, IconData icon, String label, String value, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.primaryLight),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 100,
-            child: Text(label, style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodySmall?.color)),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _themeColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 20, color: _themeColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: Text(label, style: TextStyle(fontSize: 15, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w500)),
           ),
           Expanded(
-            child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
+            flex: 3,
+            child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black87), textAlign: TextAlign.right),
           ),
         ],
       ),
     );
   }
 
-  Widget _statCard(String label, String value, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 6),
-            Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 14), overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 10)),
-          ],
+  Widget _glassStatCard(String label, String value, IconData icon, Color color, bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: isDark ? 0.05 : 0.05),
+            blurRadius: 20,
+            spreadRadius: -5,
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: color, size: 28),
+                const SizedBox(height: 12),
+                Text(
+                  value, 
+                  style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87, fontSize: 18), 
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label, 
+                  style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600, letterSpacing: 0.2),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildDonationGoalCard(BuildContext context) {
-    // Try to parse targetGoal as a number for the progress bar
+  Widget _buildDonationGoalCard(BuildContext context, bool isDark) {
     final goalAmount = double.tryParse(campaign.targetGoal.replaceAll(RegExp(r'[^0-9.]'), ''));
     final collected = campaign.totalDonationsAmount;
 
-    // If targetGoal is not a number, skip this card
     if (goalAmount == null || goalAmount <= 0) return const SizedBox.shrink();
 
     final progress = (collected / goalAmount).clamp(0.0, 1.0);
@@ -430,122 +322,325 @@ class CampaignInfoTab extends StatelessWidget {
       goalMessage = 'Help us reach the goal!';
     }
 
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              progressColor.withOpacity(0.08),
-              progressColor.withOpacity(0.02),
+    return _buildGlassContainer(
+      isDark: isDark,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: progressColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(goalIcon, color: progressColor, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                'Donation Goal',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: progressColor),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: progressColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$percentage%',
+                  style: TextStyle(color: progressColor, fontWeight: FontWeight.w900, fontSize: 14),
+                ),
+              ),
             ],
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(goalIcon, color: progressColor, size: 24),
-                const SizedBox(width: 8),
-                Text(
-                  'Donation Goal',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: progressColor),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: progressColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '$percentage%',
-                    style: TextStyle(color: progressColor, fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                ),
-              ],
+          const SizedBox(height: 24),
+          // Progress Bar
+          Container(
+            height: 20,
+            decoration: BoxDecoration(
+              color: progressColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: progressColor.withValues(alpha: 0.2)),
             ),
-            const SizedBox(height: 16),
-            // Progress Bar
-            ClipRRect(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Stack(
                 children: [
-                  Container(
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: progressColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
                   FractionallySizedBox(
                     widthFactor: progress,
                     child: Container(
-                      height: 18,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [progressColor.withOpacity(0.7), progressColor],
+                          colors: [progressColor.withValues(alpha: 0.7), progressColor],
                         ),
-                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Amount Labels
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Collected', style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rs. ${NumberFormat('#,###').format(collected)}',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: progressColor),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('Goal', style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rs. ${NumberFormat('#,###').format(goalAmount)}',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: progressColor.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Collected', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                    Text(
-                      'Rs. ${NumberFormat('#,###').format(collected)}',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: progressColor),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('Goal', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                    Text(
-                      'Rs. ${NumberFormat('#,###').format(goalAmount)}',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Icon(Icons.info_outline, size: 16, color: progressColor.withValues(alpha: 0.8)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    percentage < 100 ? 'Rs. ${NumberFormat('#,###').format(remaining)} more needed • $goalMessage' : goalMessage,
+                    style: TextStyle(fontSize: 13, color: progressColor, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ],
             ),
-            if (percentage < 100) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Rs. ${NumberFormat('#,###').format(remaining)} more needed • $goalMessage',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
-              ),
-            ] else ...[
-              const SizedBox(height: 8),
-              Text(goalMessage, style: TextStyle(fontSize: 13, color: progressColor, fontWeight: FontWeight.bold)),
-            ],
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionTiles(BuildContext context, bool isDark) {
+    return Column(
+      children: [
+        _actionTile(
+          context: context,
+          icon: Icons.people_alt_rounded,
+          color: AppColors.info,
+          title: '${'view_volunteers'.tr()} (${campaign.totalVolunteers})',
+          subtitle: 'view_volunteers_desc'.tr(),
+          isDark: isDark,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VolunteerListScreen(campaignId: campaign.id, campaignTitle: campaign.title))),
+        ),
+        const SizedBox(height: 12),
+        _actionTile(
+          context: context,
+          icon: Icons.handshake_rounded,
+          color: AppColors.primary,
+          title: 'view_impact'.tr(),
+          subtitle: 'view_impact_desc'.tr(),
+          isDark: isDark,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BeneficiaryListScreen(campaignId: campaign.id, campaignTitle: campaign.title))),
+        ),
+        const SizedBox(height: 12),
+        _actionTile(
+          context: context,
+          icon: Icons.photo_library_rounded,
+          color: AppColors.success,
+          title: 'photo_gallery'.tr(),
+          subtitle: 'photo_gallery_desc'.tr(),
+          isDark: isDark,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoGalleryScreen(campaign: campaign))),
+        ),
+      ],
+    );
+  }
+
+  Widget _actionTile({required BuildContext context, required IconData icon, required Color color, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.05), blurRadius: 10, spreadRadius: 0)
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
+                      const SizedBox(height: 4),
+                      Text(subtitle, style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: isDark ? Colors.white30 : Colors.black26),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMapSection(BuildContext context, bool isDark) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).snapshots(),
+      builder: (context, snapshot) {
+        double? lat = campaign.latitude;
+        double? lng = campaign.longitude;
+        
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+          lat = data['latitude'] as double? ?? lat;
+          lng = data['longitude'] as double? ?? lng;
+        }
+
+        if (lat == null || lng == null) return const SizedBox.shrink();
+
+        return _buildGlassContainer(
+          isDark: isDark,
+          padding: const EdgeInsets.all(0), // No padding for map
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Icon(Icons.map_rounded, color: _themeColor),
+                    const SizedBox(width: 12),
+                    Text('Operation Location', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 220,
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    AbsorbPointer(
+                      child: FlutterMap(
+                        options: MapOptions(
+                          initialCenter: LatLng(lat, lng),
+                          initialZoom: 14.0,
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'org.hras.ngo_volunteer_app',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: LatLng(lat, lng),
+                                width: 50,
+                                height: 50,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Center(
+                                    child: Icon(Icons.location_on, color: AppColors.error, size: 40),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () async {
+                            final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                            try {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            } catch (e) {
+                              debugPrint('Could not launch maps: $e');
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 12,
+                      bottom: 12,
+                      child: IgnorePointer(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.open_in_new, color: Colors.white, size: 16),
+                              SizedBox(width: 8),
+                              Text('Navigate', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
 class _LiveTrackingCard extends StatefulWidget {
   final CampaignModel campaign;
-  const _LiveTrackingCard({required this.campaign});
+  final bool isDark;
+  
+  const _LiveTrackingCard({required this.campaign, required this.isDark});
 
   @override
   State<_LiveTrackingCard> createState() => _LiveTrackingCardState();
@@ -587,45 +682,95 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
     final isAdmin = user?.isAdmin == true;
 
     if (isAdmin) {
-      return Card(
-        color: AppColors.error.withValues(alpha: 0.1),
-        child: ListTile(
-          leading: const Icon(Icons.satellite_alt, color: AppColors.error),
-          title: const Text('Live Mission Map', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error)),
-          subtitle: const Text('View real-time volunteer locations'),
-          trailing: const Icon(Icons.chevron_right, color: AppColors.error),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => LiveMissionMapScreen(
-                  campaignId: widget.campaign.id,
-                  campaignTitle: widget.campaign.title,
-                  initialLat: widget.campaign.latitude,
-                  initialLng: widget.campaign.longitude,
+      return Container(
+        decoration: BoxDecoration(
+          color: widget.isDark ? AppColors.error.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LiveMissionMapScreen(
+                    campaignId: widget.campaign.id,
+                    campaignTitle: widget.campaign.title,
+                    initialLat: widget.campaign.latitude,
+                    initialLng: widget.campaign.longitude,
+                  ),
                 ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.satellite_alt, color: AppColors.error),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Live Mission Map', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.error)),
+                        const SizedBox(height: 4),
+                        Text('View real-time volunteer locations', style: TextStyle(color: widget.isDark ? Colors.white60 : Colors.black54, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: AppColors.error),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         ),
       );
     }
 
-    return Card(
-      color: _isTracking ? AppColors.error.withValues(alpha: 0.1) : null,
+    return Container(
+      decoration: BoxDecoration(
+        color: _isTracking 
+            ? AppColors.error.withValues(alpha: 0.1) 
+            : (widget.isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.02)),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: _isTracking 
+              ? AppColors.error.withValues(alpha: 0.3) 
+              : (widget.isDark ? Colors.white10 : Colors.black12)
+        ),
+      ),
       child: SwitchListTile(
-        secondary: Icon(
-          _isTracking ? Icons.my_location : Icons.location_disabled,
-          color: _isTracking ? AppColors.error : Colors.grey,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        secondary: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: _isTracking ? AppColors.error.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            _isTracking ? Icons.my_location : Icons.location_disabled,
+            color: _isTracking ? AppColors.error : Colors.grey,
+          ),
         ),
         title: Text(
           'Live Mission Tracking',
-          style: TextStyle(fontWeight: FontWeight.bold, color: _isTracking ? AppColors.error : null),
+          style: TextStyle(fontWeight: FontWeight.w900, color: _isTracking ? AppColors.error : (widget.isDark ? Colors.white : Colors.black87)),
         ),
         subtitle: Text(
           _isTracking
               ? 'Your location is being shared with Admins'
               : 'Share location during active mission',
+          style: TextStyle(color: widget.isDark ? Colors.white60 : Colors.black54),
         ),
         value: _isTracking,
         activeColor: AppColors.error,

@@ -11,6 +11,7 @@ import '../../screens/campaigns/campaign_list_screen.dart';
 import '../../screens/announcements/announcement_list_screen.dart';
 import '../../screens/sessions/create_session_screen.dart';
 import '../../screens/sessions/session_list_screen.dart';
+import '../../widgets/common/dynamic_banner_carousel.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   final void Function(int)? onNavigate;
@@ -90,6 +91,21 @@ class AdminDashboardScreen extends StatelessWidget {
             ),
             AppSpacing.vGapXl,
             
+            // Banners Section
+            Row(
+              children: [
+                Icon(Icons.view_carousel_rounded, color: theme.primaryColor, size: 24),
+                AppSpacing.hGapSm,
+                Text('Featured Banners', style: AppTextStyles.headlineSmall()),
+              ],
+            ),
+            AppSpacing.vGapMd,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              child: DynamicBannerCarousel(),
+            ),
+            AppSpacing.vGapXl,
+
             Text('Quick Access', style: AppTextStyles.headlineSmall()),
             AppSpacing.vGapMd,
             GridView.count(

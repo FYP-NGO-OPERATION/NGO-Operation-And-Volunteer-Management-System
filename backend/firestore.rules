@@ -142,5 +142,11 @@ service cloud.firestore {
     match /campaign_volunteers/{docId} {
       allow read, write: if isLoggedIn();
     }
+
+    // ─── Banners Collection ───
+    match /banners/{bannerId} {
+      allow read: if isLoggedIn();
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
