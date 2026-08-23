@@ -24,6 +24,8 @@ class DonationModel {
   final String? purpose;          // Leader: "Purpose of donation"
   final String? description;
   final String? transactionId;
+  final String? txHash;           // Blockchain-simulated Tx Hash
+  final int? blockNumber;         // Blockchain-simulated Block Number
 
   // ─── Status & Privacy ───
   final DonationStatus status;
@@ -53,6 +55,8 @@ class DonationModel {
     this.purpose,
     this.description,
     this.transactionId,
+    this.txHash,
+    this.blockNumber,
     this.status = DonationStatus.approved,
     this.isAnonymous = false,
     required this.receivedBy,
@@ -81,6 +85,8 @@ class DonationModel {
       purpose: map['purpose'],
       description: map['description'],
       transactionId: map['transactionId'],
+      txHash: map['txHash'],
+      blockNumber: map['blockNumber'],
       status: DonationStatus.fromString(map['status'] ?? 'approved'),
       isAnonymous: map['isAnonymous'] ?? false,
       receivedBy: map['receivedBy'] ?? '',
@@ -107,6 +113,8 @@ class DonationModel {
       'purpose': purpose,
       'description': description,
       'transactionId': transactionId,
+      'txHash': txHash,
+      'blockNumber': blockNumber,
       'status': status.name,
       'isAnonymous': isAnonymous,
       'receivedBy': receivedBy,

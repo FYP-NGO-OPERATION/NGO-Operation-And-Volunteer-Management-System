@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import '../../config/app_colors.dart';
 
 class DonationLedgerScreen extends StatelessWidget {
   const DonationLedgerScreen({super.key});
@@ -19,12 +20,12 @@ class DonationLedgerScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.blueGrey.shade900,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Transparent Ledger', style: TextStyle(fontFamily: 'monospace', color: Colors.greenAccent)),
+        title: const Text('Transparent Ledger', style: TextStyle(fontFamily: 'monospace', color: Colors.teal)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.greenAccent),
+        iconTheme: const IconThemeData(color: Colors.teal),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -48,18 +49,24 @@ class DonationLedgerScreen extends StatelessWidget {
               final date = (data['receivedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
               final donor = data['donorName'] ?? 'Anonymous';
               
-              // Mock Blockchain Data
-              final txHash = _generateHash(docs[index].id);
-              final blockHeight = 18490000 + (docs.length - index);
+              // Real / Mock Blockchain Data
+              final dbTxHash = data['txHash'];
+              final dbBlock = data['blockNumber'];
+              
+              final txHash = dbTxHash ?? _generateHash(docs[index].id);
+              final blockHeight = dbBlock ?? (18490000 + (docs.length - index));
               final confirmations = 100 + (docs.length - index) * 15;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.black45,
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.teal.withValues(alpha: 0.5)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2)),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,18 +74,18 @@ class DonationLedgerScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('BLOCK #$blockHeight', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
-                        Text('$confirmations Confirmations', style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontFamily: 'monospace')),
+                        Text('BLOCK #$blockHeight', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+                        Text('$confirmations Confirmations', style: const TextStyle(color: Colors.teal, fontSize: 12, fontFamily: 'monospace')),
                       ],
                     ),
-                    const Divider(color: Colors.white24),
+                    Divider(color: isDark ? Colors.white24 : Colors.black12),
                     const SizedBox(height: 8),
-                    _buildLedgerRow('TxHash', txHash),
-                    _buildLedgerRow('Sender', donor),
-                    _buildLedgerRow('Value', 'Rs. ${NumberFormat('#,##0').format(amount)}'),
-                    _buildLedgerRow('Timestamp', DateFormat('yyyy-MM-dd HH:mm:ss').format(date)),
+                    _buildLedgerRow('TxHash', txHash, isDark),
+                    _buildLedgerRow('Sender', donor, isDark),
+                    _buildLedgerRow('Value', 'Rs. ${NumberFormat('#,##0').format(amount)}', isDark),
+                    _buildLedgerRow('Timestamp', DateFormat('yyyy-MM-dd HH:mm:ss').format(date), isDark),
                     const SizedBox(height: 12),
-                    const Text('STATUS: MINED 🟢', style: TextStyle(color: Colors.green, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                    const Text('STATUS: MINED 🟢', style: TextStyle(color: Colors.teal, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
                   ],
                 ),
               );
@@ -89,14 +96,14 @@ class DonationLedgerScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLedgerRow(String label, String value) {
+  Widget _buildLedgerRow(String label, String value, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 80, child: Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace'))),
-          Expanded(child: Text(value, style: const TextStyle(color: Colors.white, fontSize: 13, fontFamily: 'monospace'))),
+          SizedBox(width: 80, child: Text(label, style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 12, fontFamily: 'monospace'))),
+          Expanded(child: Text(value, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 13, fontFamily: 'monospace'))),
         ],
       ),
     );

@@ -1,16 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 
-class DonationTrackerScreen extends StatelessWidget {
+class DonationTrackerScreen extends StatefulWidget {
   final String donationId;
   final double amount;
   
   const DonationTrackerScreen({
     super.key,
-    this.donationId = 'DON-98234710',
-    this.amount = 50.0,
+    required this.donationId,
+    required this.amount,
   });
+
+  @override
+  State<DonationTrackerScreen> createState() => _DonationTrackerScreenState();
+}
+
+class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
+  final _titleController = TextEditingController();
+  final _descController = TextEditingController();
+  bool _isSaving = false;
+
+  Future<void> _addEvent() async {
+    if (_titleController.text.trim().isEmpty) return;
+
+    setState(() => _isSaving = true);
+    try {
+      await FirebaseFirestore.instance.collection('donation_tracking_events').add({
+        'donationId': widget.donationId,
+        'title': _titleController.text.trim(),
+        'description': _descController.text.trim(),
+        'timestamp': FieldValue.serverTimestamp(),
+        'isCompleted': true,
+      });
+      if (mounted) {
+        Navigator.pop(context);
+        _titleController.clear();
+        _descController.clear();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  void _showAddEventDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Tracking Event'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: 'Title (e.g. Material Purchased)'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _descController,
+                decoration: const InputDecoration(labelText: 'Description (e.g. Vendor Invoice #123)'),
+                maxLines: 2,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: _isSaving ? null : _addEvent,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+              child: _isSaving 
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Text('Add Event'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,64 +98,89 @@ class DonationTrackerScreen extends StatelessWidget {
         title: const Text('Transparent Tracker'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Blockchain Mock Info
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green),
-              ),
-              child: Column(
-                children: [
-                  const Icon(Icons.security, color: Colors.green, size: 40),
-                  const SizedBox(height: 8),
-                  Text('Blockchain Verified', style: AppTextStyles.titleMedium(color: Colors.green)),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tx Hash: 0x7F9B8A...D4C2\nAmount: \$${amount.toStringAsFixed(2)}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontFamily: 'monospace'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showAddEventDialog,
+        icon: const Icon(Icons.add),
+        label: const Text('Add Event'),
+        backgroundColor: AppColors.primary,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('donation_tracking_events')
+            .where('donationId', isEqualTo: widget.donationId)
+            .orderBy('timestamp', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            // Custom Timeline
-            _buildTimelineNode(
-              title: 'Donation Received',
-              description: 'Funds safely deposited in NGO Escrow Account.',
-              date: 'Oct 12, 10:00 AM',
-              isCompleted: true,
-              isFirst: true,
+          final docs = snapshot.data?.docs ?? [];
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Blockchain Mock Info
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface : Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.green),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.security, color: Colors.green, size: 40),
+                      const SizedBox(height: 8),
+                      Text('Supply Chain Verified', style: AppTextStyles.titleMedium(color: Colors.green)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Amount Tracked: Rs.${widget.amount.toStringAsFixed(0)}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontFamily: 'monospace'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                if (docs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 32.0),
+                    child: Center(
+                      child: Text('No tracking events found yet.\nAdmin will update this soon.', 
+                        textAlign: TextAlign.center, 
+                        style: TextStyle(color: Colors.grey)),
+                    ),
+                  ),
+
+                // Dynamic Timeline
+                for (var i = 0; i < docs.length; i++) ...[
+                  Builder(
+                    builder: (context) {
+                      final data = docs[i].data() as Map<String, dynamic>;
+                      final title = data['title'] ?? 'Event';
+                      final desc = data['description'] ?? '';
+                      final isCompleted = data['isCompleted'] ?? true;
+                      final date = (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+                      
+                      return _buildTimelineNode(
+                        title: title,
+                        description: desc,
+                        date: DateFormat('MMM dd, hh:mm a').format(date),
+                        isCompleted: isCompleted,
+                        isFirst: i == 0,
+                        isLast: i == docs.length - 1,
+                      );
+                    },
+                  )
+                ]
+              ],
             ),
-            _buildTimelineNode(
-              title: 'Material Purchased',
-              description: 'Vendor: City Supermart (Invoice #1029)',
-              date: 'Oct 13, 02:30 PM',
-              isCompleted: true,
-            ),
-            _buildTimelineNode(
-              title: 'Allocated to Campaign',
-              description: 'Food distribution drive in Sector 11.',
-              date: 'Oct 14, 09:00 AM',
-              isCompleted: true,
-            ),
-            _buildTimelineNode(
-              title: 'Handed over to Beneficiary',
-              description: 'Beneficiary #B-452. Verified via biometric.',
-              date: 'Oct 14, 01:45 PM',
-              isCompleted: false,
-              isLast: true,
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -132,8 +233,10 @@ class DonationTrackerScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: AppTextStyles.titleMedium()),
-                  const SizedBox(height: 4),
-                  Text(description, style: AppTextStyles.bodyMedium(color: Colors.grey)),
+                  if (description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(description, style: AppTextStyles.bodyMedium(color: Colors.grey)),
+                  ],
                   const SizedBox(height: 4),
                   Text(date, style: const TextStyle(fontSize: 12, color: Colors.blueGrey)),
                 ],
