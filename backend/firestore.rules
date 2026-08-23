@@ -143,6 +143,11 @@ service cloud.firestore {
       allow read, write: if isLoggedIn();
     }
 
+    // ─── Incidents Collection ───
+    match /incidents/{incidentId} {
+      allow read, write: if isLoggedIn();
+    }
+
     // ─── Banners Collection ───
     match /banners/{bannerId} {
       allow read: if isLoggedIn();

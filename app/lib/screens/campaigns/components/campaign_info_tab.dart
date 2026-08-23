@@ -264,23 +264,28 @@ class CampaignInfoTab extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5), // Reduced blur for performance
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: color, size: 28),
-                const SizedBox(height: 12),
-                Text(
-                  value, 
-                  style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87, fontSize: 18), 
-                  overflow: TextOverflow.ellipsis,
+                Icon(icon, color: color, size: 24),
+                const SizedBox(height: 8),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    value, 
+                    style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87, fontSize: 18), 
+                  ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  label, 
-                  style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600, letterSpacing: 0.2),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label, 
+                    style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600, letterSpacing: 0.2),
+                  ),
                 ),
               ],
             ),

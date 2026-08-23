@@ -52,9 +52,12 @@ class _AdminLayoutState extends State<AdminLayout> {
     const AnnouncementListScreen(), // 5. Announcements
     const SessionListScreen(), // 6. Virtual Sessions
     const AnalyticsScreen(), // 7. Analytics
-    const DisasterMapScreen(), // 8. Disaster Map
+    const SizedBox.shrink(), // 8. Disaster Map (placeholder, pushed instead)
     const AdminBannerManagementScreen(), // 9. Banners
-    _buildAdminProfile(), // 10. Profile
+    const SizedBox.shrink(), // 10. Route Optimization (placeholder, pushed instead)
+    const SizedBox.shrink(), // 11. Blood Emergency (placeholder, pushed instead)
+    const SizedBox.shrink(), // 12. AI Sentiment (placeholder, pushed instead)
+    _buildAdminProfile(), // 13. Profile
   ];
 
   @override
@@ -173,6 +176,21 @@ class _AdminLayoutState extends State<AdminLayout> {
       icon: Icon(Icons.view_carousel_outlined),
       selectedIcon: Icon(Icons.view_carousel),
       label: Text('Banners'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.route_outlined),
+      selectedIcon: Icon(Icons.route),
+      label: Text('Routes'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.bloodtype_outlined),
+      selectedIcon: Icon(Icons.bloodtype),
+      label: Text('Blood Emerg.'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.pie_chart_outline),
+      selectedIcon: Icon(Icons.pie_chart),
+      label: Text('Sentiment'),
     ),
     NavigationRailDestination(
       icon: Icon(Icons.person_outline),
@@ -499,8 +517,18 @@ class _AdminLayoutState extends State<AdminLayout> {
                                 ),
                                 selected: _selectedIndex == i,
                                 onTap: () {
-                                  setState(() => _selectedIndex = i);
                                   Navigator.pop(context); // Close drawer
+                                  if (i == 8) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+                                  } else if (i == 10) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
+                                  } else if (i == 11) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const BloodEmergencyScreen()));
+                                  } else if (i == 12) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SentimentAnalysisScreen()));
+                                  } else {
+                                    setState(() => _selectedIndex = i);
+                                  }
                                 },
                               ),
                             ),
@@ -531,7 +559,17 @@ class _AdminLayoutState extends State<AdminLayout> {
               extended: MediaQuery.of(context).size.width >= 1000,
               selectedIndex: _selectedIndex,
               onDestinationSelected: (index) {
-                setState(() => _selectedIndex = index);
+                if (index == 8) {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen()));
+                } else if (index == 10) {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()));
+                } else if (index == 11) {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const BloodEmergencyScreen()));
+                } else if (index == 12) {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SentimentAnalysisScreen()));
+                } else {
+                  setState(() => _selectedIndex = index);
+                }
               },
               leading: Column(
                 children: [

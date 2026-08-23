@@ -477,65 +477,63 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
 
   Widget _buildMessageInput(bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 4),
       color: Colors.transparent,
-      child: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2a3942) : Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageCtrl,
-                        maxLines: 5,
-                        minLines: 1,
-                        style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                        decoration: InputDecoration(
-                          hintText: 'Message',
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
-                        ),
-                        textCapitalization: TextCapitalization.sentences,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF2a3942) : Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageCtrl,
+                      maxLines: 5,
+                      minLines: 1,
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                      decoration: InputDecoration(
+                        hintText: 'Message',
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
                       ),
+                      textCapitalization: TextCapitalization.sentences,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.attach_file, color: isDark ? Colors.white54 : Colors.grey.shade600),
-                      onPressed: () => _pickImage(ImageSource.gallery),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.camera_alt, color: isDark ? Colors.white54 : Colors.grey.shade600),
-                      onPressed: () => _pickImage(ImageSource.camera),
-                    ),
-                    const SizedBox(width: 4),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.attach_file, color: isDark ? Colors.white54 : Colors.grey.shade600),
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.camera_alt, color: isDark ? Colors.white54 : Colors.grey.shade600),
+                    onPressed: () => _pickImage(ImageSource.camera),
+                  ),
+                  const SizedBox(width: 4),
+                ],
               ),
             ),
-            const SizedBox(width: 8),
-            Container(
-              margin: const EdgeInsets.only(bottom: 2),
-              decoration: const BoxDecoration(
-                color: Color(0xFF00a884), // WhatsApp primary green
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: _isSending 
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Icon(Icons.send, color: Colors.white, size: 20),
-                onPressed: _sendMessage,
-              ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            margin: const EdgeInsets.only(bottom: 2),
+            decoration: const BoxDecoration(
+              color: Color(0xFF00a884), // WhatsApp primary green
+              shape: BoxShape.circle,
             ),
-          ],
-        ),
+            child: IconButton(
+              icon: _isSending 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Icon(Icons.send, color: Colors.white, size: 20),
+              onPressed: _sendMessage,
+            ),
+          ),
+        ],
       ),
     );
   }
