@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
@@ -31,64 +32,7 @@ class AdminDashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Header
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [theme.primaryColor, theme.primaryColor.withOpacity(0.8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: AppTokens.borderRadiusLg,
-                boxShadow: AppTokens.shadowGlow(theme.primaryColor),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white24,
-                    backgroundImage: user?.profileImageUrl != null
-                        ? CachedNetworkImageProvider(user!.profileImageUrl!)
-                        : null,
-                    child: user?.profileImageUrl == null
-                        ? Text(
-                            (user?.name ?? 'A')[0].toUpperCase(),
-                            style: AppTextStyles.displaySmall(color: Colors.white),
-                          )
-                        : null,
-                  ),
-                  AppSpacing.hGapLg,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome back,',
-                          style: AppTextStyles.bodyMedium(color: Colors.white70),
-                        ),
-                        AppSpacing.vGapXs,
-                        Text(
-                          user?.name ?? 'Admin',
-                          style: AppTextStyles.headlineLarge(color: Colors.white),
-                        ),
-                        AppSpacing.vGapXs,
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white24,
-                            borderRadius: AppTokens.borderRadiusPill,
-                          ),
-                          child: const Text(
-                            '👑 HRAS Admin',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _AnimatedAdminBanner(user: user, theme: theme),
             AppSpacing.vGapXl,
             
             // Banners Section
@@ -313,6 +257,137 @@ class AdminDashboardScreen extends StatelessWidget {
         subtitle: Text(subtitle, style: AppTextStyles.labelSmall(color: AppColors.textHint)),
         trailing: Icon(Icons.arrow_forward_ios, size: 16, color: isDark ? Colors.white54 : Colors.black54),
       ),
+    );
+  }
+}
+
+class _AnimatedAdminBanner extends StatefulWidget {
+  final dynamic user;
+  final ThemeData theme;
+  const _AnimatedAdminBanner({required this.user, required this.theme});
+
+  @override
+  State<_AnimatedAdminBanner> createState() => _AnimatedAdminBannerState();
+}
+
+class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 8))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        // Rotating gradient using sine and cosine for a smooth magical effect
+        final angle = _controller.value * 2 * math.pi;
+        final beginAlign = Alignment(math.cos(angle), math.sin(angle));
+        final endAlign = Alignment(math.cos(angle + math.pi), math.sin(angle + math.pi));
+
+        return Container(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                widget.theme.primaryColor,
+                Colors.teal.shade500,
+                Colors.indigo.shade400,
+                widget.theme.primaryColor,
+              ],
+              begin: beginAlign,
+              end: endAlign,
+            ),
+            borderRadius: AppTokens.borderRadiusLg,
+            boxShadow: AppTokens.shadowGlow(widget.theme.primaryColor),
+          ),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.5 + 0.3 * math.sin(angle * 2)), // Pulsing glow
+                      blurRadius: 25,
+                      spreadRadius: 8,
+                    ),
+                    BoxShadow(
+                      color: Colors.tealAccent.withOpacity(0.3),
+                      blurRadius: 35,
+                      spreadRadius: 12,
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.white24,
+                  backgroundImage: widget.user?.profileImageUrl != null
+                      ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
+                      : null,
+                  child: widget.user?.profileImageUrl == null
+                      ? Text(
+                          (widget.user?.name ?? 'A')[0].toUpperCase(),
+                          style: AppTextStyles.displaySmall(color: Colors.white),
+                        )
+                      : null,
+                ),
+              ),
+              AppSpacing.hGapLg,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome back,',
+                      style: AppTextStyles.bodyMedium(color: Colors.white70),
+                    ),
+                    AppSpacing.vGapXs,
+                    Text(
+                      widget.user?.name ?? 'Admin',
+                      style: AppTextStyles.headlineLarge(color: Colors.white).copyWith(
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          )
+                        ]
+                      ),
+                    ),
+                    AppSpacing.vGapXs,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: AppTokens.borderRadiusPill,
+                        border: Border.all(color: Colors.white.withOpacity(0.4)),
+                        boxShadow: [
+                           BoxShadow(color: Colors.white.withOpacity(0.15), blurRadius: 10, spreadRadius: 2)
+                        ]
+                      ),
+                      child: const Text(
+                        '👑 HRAS Admin',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
