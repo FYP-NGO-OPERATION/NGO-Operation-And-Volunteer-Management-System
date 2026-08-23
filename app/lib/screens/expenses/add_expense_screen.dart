@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/expense_model.dart';
 import '../../enums/app_enums.dart';
 import '../../services/campaign_service.dart';
+import '../../services/fund_allocation_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -121,6 +122,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       );
 
       await _campaignService.addExpense(expense);
+
+      // Automated FIFO Fund Allocation & Tracker Generation
+      final allocationService = FundAllocationService();
+      await allocationService.allocateExpense(
+        campaignId: widget.campaignId,
+        expenseTotal: total,
+        expenseName: expense.itemName,
+        vendor: expense.vendor,
+      );
 
       if (mounted) {
         SnackbarHelper.showSuccess(context, 'Expense recorded successfully!');

@@ -27,6 +27,9 @@ class DonationModel {
   final String? txHash;           // Blockchain-simulated Tx Hash
   final int? blockNumber;         // Blockchain-simulated Block Number
 
+  // ─── UTXO Fund Allocation ───
+  final double remainingAmount;   // Unspent amount available for allocation
+
   // ─── Status & Privacy ───
   final DonationStatus status;
   final bool isAnonymous;
@@ -59,11 +62,12 @@ class DonationModel {
     this.blockNumber,
     this.status = DonationStatus.approved,
     this.isAnonymous = false,
-    required this.receivedBy,
     required this.receivedByName,
     required this.receivedAt,
+    double? remainingAmount,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : remainingAmount = remainingAmount ?? (amountCash + amountOnline),
+        createdAt = createdAt ?? DateTime.now();
 
   /// Total amount (cash + online)
   double get totalAmount => amountCash + amountOnline;
@@ -92,6 +96,9 @@ class DonationModel {
       receivedBy: map['receivedBy'] ?? '',
       receivedByName: map['receivedByName'] ?? '',
       receivedAt: (map['receivedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      remainingAmount: map['remainingAmount'] != null 
+          ? (map['remainingAmount'] as num).toDouble() 
+          : ((map['amountCash'] ?? 0).toDouble() + (map['amountOnline'] ?? 0).toDouble()),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -117,9 +124,9 @@ class DonationModel {
       'blockNumber': blockNumber,
       'status': status.name,
       'isAnonymous': isAnonymous,
-      'receivedBy': receivedBy,
       'receivedByName': receivedByName,
       'receivedAt': Timestamp.fromDate(receivedAt),
+      'remainingAmount': remainingAmount,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
