@@ -9,6 +9,7 @@ class MessageModel {
   final bool isAdmin;
   final DateTime timestamp;
   final bool isDeleted;
+  final List<String> mentionedUserIds;
 
   MessageModel({
     required this.id,
@@ -19,6 +20,7 @@ class MessageModel {
     this.isAdmin = false,
     required this.timestamp,
     this.isDeleted = false,
+    this.mentionedUserIds = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +33,7 @@ class MessageModel {
       'isAdmin': isAdmin,
       'timestamp': Timestamp.fromDate(timestamp),
       'isDeleted': isDeleted,
+      'mentionedUserIds': mentionedUserIds,
     };
   }
 
@@ -44,6 +47,7 @@ class MessageModel {
       isAdmin: map['isAdmin'] ?? false,
       timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isDeleted: map['isDeleted'] ?? false,
+      mentionedUserIds: map['mentionedUserIds'] != null ? List<String>.from(map['mentionedUserIds']) : [],
     );
   }
 }

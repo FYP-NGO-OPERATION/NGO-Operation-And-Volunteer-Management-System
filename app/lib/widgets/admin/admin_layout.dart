@@ -16,11 +16,13 @@ import '../../screens/campaigns/campaign_list_screen.dart';
 import '../../screens/campaigns/create_campaign_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../screens/announcements/announcement_list_screen.dart';
+import '../../screens/sessions/session_list_screen.dart';
 import '../../screens/admin/platform_requests_screen.dart';
 import '../../screens/admin/blood_emergency_screen.dart';
 import '../../screens/admin/sentiment_analysis_screen.dart';
 import '../../screens/campaigns/route_optimization_screen.dart';
 import '../../screens/disaster/disaster_map_screen.dart';
+import '../../screens/admin/admin_banner_management_screen.dart';
 import '../../providers/disaster_provider.dart';
 import '../../widgets/common/custom_speed_dial.dart';
 import '../profile_tab_widget.dart';
@@ -51,7 +53,8 @@ class _AdminLayoutState extends State<AdminLayout> {
     const SessionListScreen(), // 6. Virtual Sessions
     const AnalyticsScreen(), // 7. Analytics
     const DisasterMapScreen(), // 8. Disaster Map
-    _buildAdminProfile(), // 9. Profile
+    const AdminBannerManagementScreen(), // 9. Banners
+    _buildAdminProfile(), // 10. Profile
   ];
 
   @override
@@ -167,6 +170,11 @@ class _AdminLayoutState extends State<AdminLayout> {
       label: Text('Disasters'),
     ),
     NavigationRailDestination(
+      icon: Icon(Icons.view_carousel_outlined),
+      selectedIcon: Icon(Icons.view_carousel),
+      label: Text('Banners'),
+    ),
+    NavigationRailDestination(
       icon: Icon(Icons.person_outline),
       selectedIcon: Icon(Icons.person),
       label: Text('Profile'),
@@ -245,19 +253,71 @@ class _AdminLayoutState extends State<AdminLayout> {
   }
 
   Future<bool> _onWillPop() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     final shouldPop = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Exit App?'),
-        content: const Text('Are you sure you want to exit the app?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes', style: TextStyle(color: Colors.white)),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.white,
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.exit_to_app, color: Colors.red, size: 40),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Exit Application?',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to close the app?',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7)),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Exit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
     return shouldPop ?? false;
@@ -274,9 +334,19 @@ class _AdminLayoutState extends State<AdminLayout> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
+        
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+          return;
+        }
+
         final bool shouldPop = await _onWillPop();
         if (shouldPop) {
-          SystemNavigator.pop();
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
         }
       },
       child: Scaffold(

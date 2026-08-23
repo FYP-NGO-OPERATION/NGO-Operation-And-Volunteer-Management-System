@@ -23,6 +23,12 @@ class VirtualSessionService {
     });
   }
 
+  Future<VirtualSessionModel?> getSessionById(String sessionId) async {
+    final doc = await _db.collection(collectionPath).doc(sessionId).get();
+    if (!doc.exists) return null;
+    return VirtualSessionModel.fromMap(doc.data()!);
+  }
+
   Future<void> deleteSession(String sessionId) async {
     await _db.collection(collectionPath).doc(sessionId).delete();
   }

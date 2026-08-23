@@ -27,8 +27,8 @@ import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
 import '../chatbot/chatbot_screen.dart';
-import '../disasters/disaster_map_screen.dart';
-import '../disasters/route_optimization_screen.dart';
+import '../disaster/disaster_map_screen.dart';
+import '../campaigns/route_optimization_screen.dart';
 import '../announcements/announcement_list_screen.dart';
 import '../../config/app_colors.dart';
 

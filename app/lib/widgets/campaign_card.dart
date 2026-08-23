@@ -8,7 +8,7 @@ import '../theme/app_spacing.dart';
 import '../models/campaign_model.dart';
 import '../enums/app_enums.dart';
 
-/// Beautiful campaign card for the campaign list.
+/// Beautiful, modern campaign card for the campaign list.
 class CampaignCard extends StatelessWidget {
   final CampaignModel campaign;
   final VoidCallback onTap;
@@ -23,180 +23,247 @@ class CampaignCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    
+    final bool hasImage = campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty;
+    final String? displayImageUrl = campaign.coverImageUrl ?? (campaign.galleryUrls.isNotEmpty ? campaign.galleryUrls.first : null);
+    
+    // The date to display (prefer eventDate over startDate)
+    final displayDate = campaign.eventDate ?? campaign.startDate;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs + 2),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ─── Header with Image or color band ───
-            Container(
-              width: double.infinity,
-              height: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? 140 : null,
-              decoration: BoxDecoration(
-                gradient: (campaign.coverImageUrl == null && campaign.galleryUrls.isEmpty) ? LinearGradient(
-                  colors: [
-                    _typeColor.withValues(alpha: isDark ? 0.3 : 0.1),
-                    _typeColor.withValues(alpha: isDark ? 0.15 : 0.03),
-                  ],
-                ) : null,
-                image: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty)
-                    ? DecorationImage(
-                        image: CachedNetworkImageProvider(campaign.coverImageUrl ?? campaign.galleryUrls.first),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E2C) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ─── Top Section: Image with Badges & Title Overlay ───
+              SizedBox(
+                height: 180,
+                width: double.infinity,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Background Image or Gradient
+                    if (hasImage)
+                      CachedNetworkImage(
+                        imageUrl: displayImageUrl!,
                         fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.3), BlendMode.darken),
+                        placeholder: (context, url) => Container(color: _typeColor.withValues(alpha: 0.2)),
+                        errorWidget: (context, url, error) => Container(color: _typeColor.withValues(alpha: 0.2)),
                       )
-                    : null,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Type badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) 
-                          ? Colors.black.withValues(alpha: 0.6) 
-                          : _typeColor.withValues(alpha: isDark ? 0.4 : 0.15),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? _typeColor : Colors.transparent),
-                    ),
-                    child: Text(
-                      '${campaign.type.icon} ${campaign.type.label}',
-                      style: TextStyle(
-                        color: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty) ? Colors.white : _typeColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  // Status chip
-                  _buildStatusChip(hasImage: (campaign.coverImageUrl != null || campaign.galleryUrls.isNotEmpty)),
-                ],
-              ),
-            ),
-
-            // ─── Body ───
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    campaign.title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-
-                  // Description
-                  Text(
-                    campaign.description,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Date & Location row
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today, size: 14, color: AppColors.primaryLight),
-                      const SizedBox(width: 4),
-                      Directionality(
-                        textDirection: ui.TextDirection.ltr,
-                        child: Text(
-                          DateFormat('MMM dd, yyyy').format(campaign.startDate),
-                          style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(Icons.location_on_outlined, size: 14, color: AppColors.primaryLight),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Directionality(
-                          textDirection: ui.TextDirection.ltr,
-                          child: Text(
-                            campaign.location,
-                            style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
+                    else
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              _typeColor.withValues(alpha: isDark ? 0.4 : 0.2),
+                              _typeColor.withValues(alpha: isDark ? 0.2 : 0.05),
+                            ],
                           ),
                         ),
+                        child: Center(
+                          child: Icon(Icons.volunteer_activism, size: 60, color: _typeColor.withValues(alpha: 0.3)),
+                        ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Progress bar (for active campaigns)
-                  if (campaign.isActive && campaign.progressPercent > 0) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: campaign.progressPercent / 100,
-                              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                              color: AppColors.primary,
-                              minHeight: 6,
+                      
+                    // Gradient Overlay (dark at bottom for text readability)
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.3), // Slightly dark at top for badges
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.8), // Dark at bottom for text
+                          ],
+                          stops: const [0.0, 0.4, 1.0],
+                        ),
+                      ),
+                    ),
+                    
+                    // Top Badges (Type & Status)
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      right: 16,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Type Badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _typeColor.withValues(alpha: 0.9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(campaign.type.icon, style: const TextStyle(fontSize: 12)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  campaign.type.label,
+                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${campaign.progressPercent}%',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
-                          ),
-                          textDirection: ui.TextDirection.ltr,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-
-                  // Stats row
-                  Divider(height: 1, color: theme.dividerColor),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStat(Icons.people_outline, '${campaign.totalVolunteers}', 'volunteers'.tr()),
-                      _buildStat(
-                        Icons.volunteer_activism, 
-                        campaign.totalDonationsAmount > 0 
-                            ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
-                            : '${campaign.totalDonationsCount}', 
-                        'donations'.tr()
+                          // Status Badge
+                          _buildStatusChip(),
+                        ],
                       ),
-                      _buildStat(Icons.family_restroom, '${campaign.beneficiaryCount}', 'helped'.tr()),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                ],
+                    ),
+                    
+                    // Bottom Overlay Text (Title & Location)
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            campaign.title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, size: 14, color: Colors.white70),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  campaign.location,
+                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const Icon(Icons.event, size: 14, color: Colors.white70),
+                              const SizedBox(width: 4),
+                              Text(
+                                DateFormat('MMM dd').format(displayDate),
+                                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              // ─── Bottom Section: Body & Stats ───
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Description
+                    Text(
+                      campaign.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+                        height: 1.4,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    
+                    const SizedBox(height: 16),
+
+                    // Progress Bar (if active and has progress)
+                    if (campaign.isActive && campaign.progressPercent > 0) ...[
+                      Row(
+                        children: [
+                          Text(
+                            'Campaign Progress',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.textTheme.bodySmall?.color),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${campaign.progressPercent}%',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.primary),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value: campaign.progressPercent / 100,
+                          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                          color: AppColors.primary,
+                          minHeight: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Stats Row
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.black12 : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStatItem(Icons.people_alt, '${campaign.totalVolunteers}', 'Volunteers', AppColors.info),
+                          _buildDivider(isDark),
+                          _buildStatItem(
+                            Icons.volunteer_activism, 
+                            campaign.totalDonationsAmount > 0 
+                                ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
+                                : '${campaign.totalDonationsCount}', 
+                            'Donations', 
+                            AppColors.warning
+                          ),
+                          _buildDivider(isDark),
+                          _buildStatItem(Icons.family_restroom, '${campaign.beneficiaryCount}', 'Impact', AppColors.success),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildStatusChip({bool hasImage = false}) {
+  Widget _buildStatusChip() {
     Color color;
     switch (campaign.status) {
       case CampaignStatus.active:
@@ -211,43 +278,52 @@ class CampaignCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: hasImage ? Colors.black.withValues(alpha: 0.6) : color.withValues(alpha: 0.15),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.8)),
+        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 7,
-            height: 7,
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(shape: BoxShape.circle, color: color),
           ),
-          const SizedBox(width: 5),
+          const SizedBox(width: 6),
           Text(
             campaign.status.label,
-            style: TextStyle(color: hasImage ? Colors.white : color, fontSize: 11, fontWeight: FontWeight.w600),
+            style: TextStyle(color: Colors.black87, fontSize: 11, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStat(IconData icon, String value, String label) {
+  Widget _buildDivider(bool isDark) {
+    return Container(
+      height: 24,
+      width: 1,
+      color: isDark ? Colors.white24 : Colors.grey.shade300,
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String value, String label, Color iconColor) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: AppColors.primaryLight),
-            const SizedBox(width: 4),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Icon(icon, size: 16, color: iconColor),
+            const SizedBox(width: 6),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
           ],
         ),
-        const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.lightTextSecondary)),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 11, color: AppColors.lightTextSecondary, fontWeight: FontWeight.w500)),
       ],
     );
   }

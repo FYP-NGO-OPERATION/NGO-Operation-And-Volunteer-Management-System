@@ -37,6 +37,14 @@ class CampaignTasksTab extends StatelessWidget {
           }
 
           var allTasks = snapshot.data!;
+          // Sort tasks: My tasks / All tasks first, then others
+          allTasks.sort((a, b) {
+            bool aIsMine = a.assignedToIds.contains(user?.uid) || a.assignedToIds.contains('all');
+            bool bIsMine = b.assignedToIds.contains(user?.uid) || b.assignedToIds.contains('all');
+            if (aIsMine && !bIsMine) return -1;
+            if (!aIsMine && bIsMine) return 1;
+            return b.createdAt.compareTo(a.createdAt);
+          });
           var openTasks = allTasks.where((t) => !t.isCompleted).toList();
           var completedTasks = allTasks.where((t) => t.isCompleted).toList();
 
@@ -83,12 +91,18 @@ class CampaignTasksTab extends StatelessWidget {
   }
 
   Widget _buildTaskCard(BuildContext context, TaskModel task, TaskService taskService, user, bool isAdmin) {
-    final isMe = task.assignedToId == user?.uid;
-    final isUnassigned = task.assignedToId.isEmpty;
+    final isMe = task.assignedToIds.contains(user?.uid) || task.assignedToIds.contains('all');
+    final isUnassigned = task.assignedToIds.isEmpty;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: isMe && !task.isCompleted 
+            ? BorderSide(color: AppColors.primary, width: 2) 
+            : BorderSide.none,
+      ),
       color: task.isCompleted ? (isDark ? Colors.green.withOpacity(0.1) : Colors.green.shade50) : (isDark ? Colors.grey[800] : Colors.white),
       elevation: task.isCompleted ? 0 : 2,
       child: ListTile(
@@ -121,7 +135,9 @@ class CampaignTasksTab extends StatelessWidget {
               )
             else
               Text(
-                'Assigned to: ${task.assignedToName}',
+                task.assignedToIds.contains('all') 
+                    ? 'Assigned to: All Volunteers'
+                    : 'Assigned to: ${task.assignedToNames.join(', ')}',
                 style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 12),
               ),
           ],
@@ -133,7 +149,7 @@ class CampaignTasksTab extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   if (user != null) {
-                    await taskService.updateTask(task.copyWith(assignedToId: user.uid, assignedToName: user.name));
+                    await taskService.updateTask(task.copyWith(assignedToIds: [user.uid], assignedToNames: [user.name]));
                     if (context.mounted) SnackbarHelper.showSuccess(context, 'Task Claimed!');
                   }
                 },
@@ -153,7 +169,8 @@ class CampaignTasksTab extends StatelessWidget {
   void _showAddTaskSheet(BuildContext context) {
     final titleCtrl = TextEditingController();
     final descCtrl = TextEditingController();
-    VolunteerModel? selectedVolunteer;
+    List<VolunteerModel> selectedVolunteers = [];
+    bool assignToAll = false;
 
     showModalBottomSheet(
       context: context,
@@ -199,20 +216,46 @@ class CampaignTasksTab extends StatelessWidget {
                           child: Text('No registered volunteers to assign tasks to.', style: TextStyle(color: AppColors.error)),
                         )
                       else
-                      DropdownButtonFormField<VolunteerModel?>(
-                        decoration: const InputDecoration(labelText: 'Assign To (Optional)'),
-                        value: selectedVolunteer,
-                        items: [
-                          const DropdownMenuItem<VolunteerModel?>(value: null, child: Text('Leave Unassigned')),
-                          ...eligibleVolunteers.map((v) {
-                            return DropdownMenuItem(
-                              value: v,
-                              child: Text(v.userName),
-                            );
-                          }),
-                        ],
-                        onChanged: (val) => setState(() => selectedVolunteer = val),
-                      ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Assign To:', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                FilterChip(
+                                  label: const Text('All Volunteers'),
+                                  selected: assignToAll,
+                                  onSelected: (val) {
+                                    setState(() {
+                                      assignToAll = val;
+                                      if (val) selectedVolunteers.clear();
+                                    });
+                                  },
+                                ),
+                                if (!assignToAll)
+                                  ...eligibleVolunteers.map((v) {
+                                    final isSelected = selectedVolunteers.contains(v);
+                                    return FilterChip(
+                                      label: Text(v.userName),
+                                      selected: isSelected,
+                                      onSelected: (val) {
+                                        setState(() {
+                                          if (val) {
+                                            selectedVolunteers.add(v);
+                                          } else {
+                                            selectedVolunteers.remove(v);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }),
+                              ],
+                            ),
+                          ],
+                        ),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
@@ -221,13 +264,25 @@ class CampaignTasksTab extends StatelessWidget {
                             if (titleCtrl.text.isEmpty || descCtrl.text.isEmpty) return;
 
                             final taskService = TaskService();
+                            
+                            List<String> assignedIds = [];
+                            List<String> assignedNames = [];
+                            
+                            if (assignToAll) {
+                              assignedIds = ['all'];
+                              assignedNames = ['All Volunteers'];
+                            } else {
+                              assignedIds = selectedVolunteers.map((v) => v.userId).toList();
+                              assignedNames = selectedVolunteers.map((v) => v.userName).toList();
+                            }
+
                             final task = TaskModel(
                               id: taskService.generateId(),
                               campaignId: campaign.id,
                               title: titleCtrl.text,
                               description: descCtrl.text,
-                              assignedToId: selectedVolunteer?.userId ?? '',
-                              assignedToName: selectedVolunteer?.userName ?? '',
+                              assignedToIds: assignedIds,
+                              assignedToNames: assignedNames,
                               createdAt: DateTime.now(),
                             );
 

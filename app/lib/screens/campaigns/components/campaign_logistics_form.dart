@@ -105,7 +105,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 20),
-        Text('Start Date', style: Theme.of(context).textTheme.labelLarge),
+        Text('Event Date', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         InkWell(
           onTap: () => onSelectDate(true),

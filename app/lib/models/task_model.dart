@@ -5,8 +5,8 @@ class TaskModel {
   final String campaignId;
   final String title;
   final String description;
-  final String assignedToId;
-  final String assignedToName;
+  final List<String> assignedToIds;
+  final List<String> assignedToNames;
   final bool isCompleted;
   final DateTime createdAt;
 
@@ -15,8 +15,8 @@ class TaskModel {
     required this.campaignId,
     required this.title,
     required this.description,
-    required this.assignedToId,
-    required this.assignedToName,
+    required this.assignedToIds,
+    required this.assignedToNames,
     this.isCompleted = false,
     required this.createdAt,
   });
@@ -27,8 +27,8 @@ class TaskModel {
       'campaignId': campaignId,
       'title': title,
       'description': description,
-      'assignedToId': assignedToId,
-      'assignedToName': assignedToName,
+      'assignedToIds': assignedToIds,
+      'assignedToNames': assignedToNames,
       'isCompleted': isCompleted,
       'createdAt': Timestamp.fromDate(createdAt),
     };
@@ -40,8 +40,12 @@ class TaskModel {
       campaignId: map['campaignId'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      assignedToId: map['assignedToId'] ?? '',
-      assignedToName: map['assignedToName'] ?? '',
+      assignedToIds: map['assignedToIds'] != null 
+          ? List<String>.from(map['assignedToIds']) 
+          : (map['assignedToId'] != null ? [map['assignedToId']] : []),
+      assignedToNames: map['assignedToNames'] != null 
+          ? List<String>.from(map['assignedToNames']) 
+          : (map['assignedToName'] != null ? [map['assignedToName']] : []),
       isCompleted: map['isCompleted'] ?? false,
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -50,8 +54,8 @@ class TaskModel {
   TaskModel copyWith({
     String? title,
     String? description,
-    String? assignedToId,
-    String? assignedToName,
+    List<String>? assignedToIds,
+    List<String>? assignedToNames,
     bool? isCompleted,
   }) {
     return TaskModel(
@@ -59,8 +63,8 @@ class TaskModel {
       campaignId: campaignId,
       title: title ?? this.title,
       description: description ?? this.description,
-      assignedToId: assignedToId ?? this.assignedToId,
-      assignedToName: assignedToName ?? this.assignedToName,
+      assignedToIds: assignedToIds ?? this.assignedToIds,
+      assignedToNames: assignedToNames ?? this.assignedToNames,
       isCompleted: isCompleted ?? this.isCompleted,
       createdAt: createdAt,
     );

@@ -128,6 +128,12 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
+  static const LinearGradient emergencyGradient = LinearGradient(
+    colors: [Color(0xFFDC2626), Color(0xFF991B1B)], // Vivid Red to Deep Red
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   static const LinearGradient darkOverlay = LinearGradient(
     colors: [Color(0xCC000000), Color(0x00000000)],
     begin: Alignment.bottomCenter,

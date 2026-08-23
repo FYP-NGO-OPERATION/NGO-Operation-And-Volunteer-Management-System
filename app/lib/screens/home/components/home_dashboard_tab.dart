@@ -11,12 +11,15 @@ import '../../../../config/app_colors.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/ngo_provider.dart';
 import '../../../../models/announcement_model.dart';
+import '../../../../models/incident_model.dart';
 import '../../../../services/announcement_service.dart';
 import '../../announcements/announcement_list_screen.dart';
 import '../../../../providers/virtual_session_provider.dart';
 import '../../sessions/session_list_screen.dart';
 import 'home_quick_actions.dart';
 import 'home_joined_campaigns.dart';
+import '../../volunteers/volunteer_disaster_map_screen.dart';
+import '../../../../widgets/common/dynamic_banner_carousel.dart';
 
 class HomeDashboardTab extends StatefulWidget {
   final Function(int) onTabChange;
@@ -51,40 +54,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TOP CAROUSEL (1:1 Ratio)
+            // TOP DYNAMIC BANNER CAROUSEL
             if (user != null)
-              AspectRatio(
-                aspectRatio: 1.0, // Square like Rekhta
-                child: Stack(
-                  children: [
-                    PageView(
-                      controller: _pageController,
-                      children: [
-                        _buildWelcomeSlide(context, user, currentNgo, isDark),
-                        if (currentNgo != null) _buildNgoSlide(context, currentNgo, isDark),
-                        _buildStatsSlide(context, user, isDark),
-                      ],
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: SmoothPageIndicator(
-                          controller: _pageController,
-                          count: currentNgo != null ? 3 : 2,
-                          effect: ExpandingDotsEffect(
-                            dotHeight: 8,
-                            dotWidth: 8,
-                            activeDotColor: Theme.of(context).primaryColor,
-                            dotColor: Colors.white.withOpacity(0.5),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const DynamicBannerCarousel(),
 
             // QUICK ACTIONS (Horizontal Scroll)
             Container(
@@ -109,6 +81,52 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                   Text("Today's Feed", style: AppTextStyles.headlineMedium()),
                   AppSpacing.vGapLg,
                   
+                  // Emergency Alerts (Volunteers only)
+                  if (user?.isAdmin != true)
+                    StreamBuilder<List<IncidentModel>>(
+                      stream: IncidentService().getActiveIncidents(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) return const SizedBox.shrink();
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Scaffold(body: SafeArea(child: VolunteerDisasterMapScreen()))));
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.emergencyGradient,
+                                  borderRadius: AppTokens.borderRadiusLg,
+                                  boxShadow: [
+                                    BoxShadow(color: AppColors.error.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 40),
+                                    const SizedBox(width: AppSpacing.md),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text('EMERGENCY MISSION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                          Text('${snapshot.data!.length} active disaster(s) near you.', style: const TextStyle(color: Colors.white70)),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            AppSpacing.vGapLg,
+                          ],
+                        );
+                      }
+                    ),
+
                   // Upcoming Sessions
                   Consumer<VirtualSessionProvider>(
                     builder: (context, sessionProvider, child) {
