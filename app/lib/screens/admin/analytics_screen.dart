@@ -37,7 +37,7 @@ class AnalyticsScreen extends StatelessWidget {
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
+                    icon: Icon(Icons.picture_as_pdf, color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryLight : AppColors.primary),
                     tooltip: 'Download PDF Report',
                     onPressed: () async {
                       try {
@@ -146,11 +146,14 @@ class AnalyticsScreen extends StatelessWidget {
   Widget _buildSummaryCards(CampaignProvider provider, BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    Color getColor(Color base) => isDark && base == AppColors.primary ? AppColors.primaryLight : base;
+
     final cards = [
-      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary, isDark),
-      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info, isDark),
-      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, AppColors.success, isDark),
-      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, AppColors.accent, isDark),
+      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, getColor(AppColors.primary), isDark),
+      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, getColor(AppColors.info), isDark),
+      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, getColor(AppColors.success), isDark),
+      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, getColor(AppColors.accent), isDark),
     ];
 
     if (isDesktop) {
@@ -194,7 +197,7 @@ class AnalyticsScreen extends StatelessWidget {
               color: isDark ? color.withValues(alpha: 0.25) : color.withValues(alpha: 0.15),
               borderRadius: AppTokens.borderRadiusSm,
             ),
-            child: Icon(icon, color: isDark ? color.withOpacity(0.9) : color, size: AppTokens.iconMd),
+            child: Icon(icon, color: isDark ? color : color, size: AppTokens.iconMd),
           ),
           AppSpacing.vGapSm,
           FittedBox(
@@ -236,7 +239,7 @@ class AnalyticsScreen extends StatelessWidget {
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     return BarTooltipItem(
                       rod.toY.round().toString(),
-                      TextStyle(color: rod.color, fontWeight: FontWeight.bold, fontSize: 14),
+                      TextStyle(color: isDark ? Colors.white : rod.color, fontWeight: FontWeight.bold, fontSize: 14),
                     );
                   },
                 ),

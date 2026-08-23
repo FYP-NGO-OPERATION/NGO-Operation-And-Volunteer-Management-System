@@ -108,14 +108,22 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
         stream: FirebaseFirestore.instance
             .collection('donation_tracking_events')
             .where('donationId', isEqualTo: widget.donationId)
-            .orderBy('timestamp', descending: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final docs = snapshot.data?.docs ?? [];
+          var docs = snapshot.data?.docs.toList() ?? [];
+          
+          // Sort locally to avoid Firestore Composite Index requirements
+          docs.sort((a, b) {
+            final aData = a.data() as Map<String, dynamic>;
+            final bData = b.data() as Map<String, dynamic>;
+            final aTime = (aData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final bTime = (bData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+            return aTime.compareTo(bTime);
+          });
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
