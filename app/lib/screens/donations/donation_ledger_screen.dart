@@ -20,7 +20,7 @@ class DonationLedgerScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
       appBar: AppBar(
         title: const Text('Transparent Ledger', style: TextStyle(fontFamily: 'monospace', color: Colors.teal)),
         backgroundColor: Colors.transparent,
