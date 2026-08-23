@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/banner_model.dart';
 import '../../services/banner_service.dart';
 import '../../services/cloudinary_service.dart';
@@ -30,7 +31,7 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
 
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 2.0, ratioY: 1.0),
+      aspectRatio: const CropAspectRatio(ratioX: 16.0, ratioY: 9.0),
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Banner',
@@ -103,10 +104,35 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                       decoration: const InputDecoration(labelText: 'Link Type'),
                     ),
                     const SizedBox(height: 16),
-                    if (type == 'campaign' || type == 'session')
-                      TextField(
-                        controller: idController,
-                        decoration: InputDecoration(labelText: type == 'campaign' ? 'Campaign ID' : 'Session ID'),
+                    if (type == 'campaign')
+                      FutureBuilder<QuerySnapshot>(
+                        future: FirebaseFirestore.instance.collection('campaigns').get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) return const CircularProgressIndicator();
+                          final docs = snapshot.data!.docs;
+                          return DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            value: docs.any((d) => d.id == idController.text) ? idController.text : null,
+                            hint: const Text('Select Campaign'),
+                            items: docs.map((d) => DropdownMenuItem(value: d.id, child: Text(d['title'] ?? 'Unknown'))).toList(),
+                            onChanged: (val) => idController.text = val ?? '',
+                          );
+                        }
+                      ),
+                    if (type == 'session')
+                      FutureBuilder<QuerySnapshot>(
+                        future: FirebaseFirestore.instance.collection('virtual_sessions').get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) return const CircularProgressIndicator();
+                          final docs = snapshot.data!.docs;
+                          return DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            value: docs.any((d) => d.id == idController.text) ? idController.text : null,
+                            hint: const Text('Select Session'),
+                            items: docs.map((d) => DropdownMenuItem(value: d.id, child: Text(d['title'] ?? 'Unknown'))).toList(),
+                            onChanged: (val) => idController.text = val ?? '',
+                          );
+                        }
                       ),
                     if (type == 'external')
                       TextField(

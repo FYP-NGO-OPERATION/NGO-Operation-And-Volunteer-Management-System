@@ -21,8 +21,15 @@ class DynamicBannerCarousel extends StatefulWidget {
 
 class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
   final PageController _pageController = PageController();
+  late Stream<List<BannerModel>> _bannersStream;
   Timer? _timer;
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _bannersStream = BannerService().getActiveBanners();
+  }
 
   void _startTimer(int itemCount) {
     _timer?.cancel();
@@ -88,11 +95,11 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return StreamBuilder<List<BannerModel>>(
-      stream: BannerService().getActiveBanners(),
+      stream: _bannersStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const AspectRatio(
-            aspectRatio: 2.0, // Wider aspect ratio for a real banner look
+            aspectRatio: 16 / 9, // Taller aspect ratio for banners
             child: Center(child: CircularProgressIndicator()),
           );
         }
@@ -128,7 +135,7 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: AspectRatio(
-              aspectRatio: 2.0, // Wide and cinematic
+              aspectRatio: 16 / 9, // Taller and cinematic
               child: Stack(
                 children: [
                   PageView.builder(
