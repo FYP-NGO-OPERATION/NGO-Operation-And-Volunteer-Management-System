@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
@@ -293,109 +294,147 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
       animation: _controller,
       builder: (context, child) {
         final angle = _controller.value * 2 * math.pi;
-        // Subtle rotating gradient alignment
-        final beginAlign = Alignment(math.cos(angle) * 0.6, math.sin(angle) * 0.4);
-        final endAlign = Alignment(math.cos(angle + math.pi) * 0.6, math.sin(angle + math.pi) * 0.4);
 
         return Container(
-          padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
+            borderRadius: AppTokens.borderRadiusLg,
             gradient: LinearGradient(
               colors: isDark
                   ? [
-                      const Color(0xFF1B5E20), // Dark green
-                      const Color(0xFF004D40), // Dark teal
-                      const Color(0xFF1B5E20), // Dark green
+                      const Color(0xFF0D3B1E).withOpacity(0.85),
+                      const Color(0xFF0A2F2A).withOpacity(0.85),
                     ]
                   : [
-                      const Color(0xFF2E7D32), // Green 800
-                      const Color(0xFF00897B), // Teal 600
-                      const Color(0xFF2E7D32), // Green 800
+                      const Color(0xFF1B8A4A).withOpacity(0.75),
+                      const Color(0xFF0D7377).withOpacity(0.75),
                     ],
-              begin: beginAlign,
-              end: endAlign,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            borderRadius: AppTokens.borderRadiusLg,
+            border: Border.all(
+              color: isDark
+                  ? Colors.tealAccent.withOpacity(0.25)
+                  : Colors.white.withOpacity(0.4),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: (isDark ? const Color(0xFF1B5E20) : const Color(0xFF2E7D32)).withOpacity(0.4),
-                blurRadius: 16,
-                spreadRadius: 1,
+                color: isDark
+                    ? Colors.tealAccent.withOpacity(0.15)
+                    : const Color(0xFF2E7D32).withOpacity(0.3),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+                blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: Row(
-            children: [
-              // Profile pic with subtle animated ring
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: SweepGradient(
-                    startAngle: angle,
-                    endAngle: angle + math.pi * 2,
-                    colors: const [
-                      Colors.white70,
-                      Colors.white24,
-                      Colors.white70,
-                      Colors.white24,
-                      Colors.white70,
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.15),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 38,
-                  backgroundColor: Colors.white.withOpacity(0.15),
-                  backgroundImage: widget.user?.profileImageUrl != null
-                      ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
-                      : null,
-                  child: widget.user?.profileImageUrl == null
-                      ? Text(
-                          (widget.user?.name ?? 'A')[0].toUpperCase(),
-                          style: AppTextStyles.displaySmall(color: Colors.white),
-                        )
-                      : null,
-                ),
-              ),
-              AppSpacing.hGapLg,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: ClipRRect(
+            borderRadius: AppTokens.borderRadiusLg,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Row(
                   children: [
-                    Text(
-                      'Welcome back,',
-                      style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.8)),
-                    ),
-                    AppSpacing.vGapXs,
-                    Text(
-                      widget.user?.name ?? 'Admin',
-                      style: AppTextStyles.headlineLarge(color: Colors.white),
-                    ),
-                    AppSpacing.vGapXs,
+                    // Profile pic with animated neon glow ring
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: AppTokens.borderRadiusPill,
-                        border: Border.all(color: Colors.white.withOpacity(0.3)),
+                        shape: BoxShape.circle,
+                        gradient: SweepGradient(
+                          startAngle: angle,
+                          endAngle: angle + math.pi * 2,
+                          colors: isDark
+                              ? [
+                                  Colors.tealAccent,
+                                  Colors.greenAccent.shade400,
+                                  Colors.cyanAccent,
+                                  Colors.tealAccent,
+                                ]
+                              : [
+                                  Colors.white,
+                                  Colors.greenAccent.shade200,
+                                  Colors.white,
+                                  Colors.tealAccent.shade100,
+                                  Colors.white,
+                                ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.tealAccent.withOpacity(0.4 + 0.15 * math.sin(angle * 2))
+                                : Colors.green.withOpacity(0.3 + 0.1 * math.sin(angle * 2)),
+                            blurRadius: 18,
+                            spreadRadius: 4,
+                          ),
+                        ],
                       ),
-                      child: const Text(
-                        '👑 HRAS Admin',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                      child: CircleAvatar(
+                        radius: 38,
+                        backgroundColor: Colors.white.withOpacity(0.15),
+                        backgroundImage: widget.user?.profileImageUrl != null
+                            ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
+                            : null,
+                        child: widget.user?.profileImageUrl == null
+                            ? Text(
+                                (widget.user?.name ?? 'A')[0].toUpperCase(),
+                                style: AppTextStyles.displaySmall(color: Colors.white),
+                              )
+                            : null,
+                      ),
+                    ),
+                    AppSpacing.hGapLg,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back,',
+                            style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.85)),
+                          ),
+                          AppSpacing.vGapXs,
+                          Text(
+                            widget.user?.name ?? 'Admin',
+                            style: AppTextStyles.headlineLarge(color: Colors.white),
+                          ),
+                          AppSpacing.vGapSm,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(isDark ? 0.1 : 0.2),
+                              borderRadius: AppTokens.borderRadiusPill,
+                              border: Border.all(
+                                color: isDark
+                                    ? Colors.tealAccent.withOpacity(0.4)
+                                    : Colors.white.withOpacity(0.5),
+                              ),
+                              boxShadow: isDark
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.tealAccent.withOpacity(0.15),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                      )
+                                    ]
+                                  : [],
+                            ),
+                            child: const Text(
+                              '\u{1F451} HRAS Admin',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         );
       },

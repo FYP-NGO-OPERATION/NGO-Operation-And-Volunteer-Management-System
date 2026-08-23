@@ -99,7 +99,7 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const AspectRatio(
-            aspectRatio: 4 / 3, // Premium taller aspect ratio (16:12)
+            aspectRatio: 1 / 1, // Square banner
             child: Center(child: CircularProgressIndicator()),
           );
         }
@@ -119,39 +119,50 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: isDark 
-                  ? AppColors.primary.withValues(alpha: 0.5)
-                  : AppColors.primary.withValues(alpha: 0.3),
-              width: 1.5,
+                  ? Colors.tealAccent.withValues(alpha: 0.5)
+                  : AppColors.primary.withValues(alpha: 0.35),
+              width: 2,
             ),
             boxShadow: [
-              // Main glow effect on edges
+              // Strong primary glow
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: isDark ? 0.4 : 0.3),
-                blurRadius: 24,
-                spreadRadius: 3,
-                offset: const Offset(0, 4),
+                color: isDark
+                    ? Colors.tealAccent.withValues(alpha: 0.35)
+                    : AppColors.primary.withValues(alpha: 0.35),
+                blurRadius: 28,
+                spreadRadius: 4,
+                offset: const Offset(0, 2),
               ),
-              // Subtle top-left highlight
+              // Top highlight
               BoxShadow(
                 color: isDark 
-                    ? Colors.tealAccent.withValues(alpha: 0.15)
-                    : Colors.green.shade200.withValues(alpha: 0.4),
+                    ? Colors.cyanAccent.withValues(alpha: 0.2)
+                    : Colors.green.shade200.withValues(alpha: 0.5),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(-2, -3),
+              ),
+              // Bottom right glow
+              BoxShadow(
+                color: isDark
+                    ? Colors.greenAccent.withValues(alpha: 0.15)
+                    : AppColors.primary.withValues(alpha: 0.2),
                 blurRadius: 16,
                 spreadRadius: 1,
-                offset: const Offset(-2, -2),
+                offset: const Offset(3, 5),
               ),
-              // Bottom depth shadow
+              // Depth shadow
               BoxShadow(
-                color: isDark ? Colors.black54 : Colors.black12,
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+                color: isDark ? Colors.black54 : Colors.black.withValues(alpha: 0.08),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: AspectRatio(
-              aspectRatio: 4 / 3, // Premium taller aspect ratio
+              aspectRatio: 1 / 1, // Square banner
               child: Stack(
                 children: [
                   PageView.builder(

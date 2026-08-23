@@ -31,7 +31,7 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
 
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 4.0, ratioY: 3.0),
+      aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Banner',
