@@ -225,70 +225,102 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
               ),
               itemBuilder: (context, index) {
                 final donation = donations[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
-                    vertical: AppSpacing.xs,
+                    vertical: AppSpacing.sm,
                   ),
-                  leading: CircleAvatar(
-                    backgroundColor: donation.isMoney
-                        ? AppColors.accent.withValues(alpha: 0.1)
-                        : AppColors.info.withValues(alpha: 0.1),
-                    child: Icon(
-                      donation.isMoney ? Icons.attach_money : Icons.inventory,
-                      color: donation.isMoney ? AppColors.accent : AppColors.info,
-                    ),
-                  ),
-                  title: Text(donation.donorName, style: AppTextStyles.titleSmall()),
-                  subtitle: Text(
-                    '${donation.campaignTitle}\n${_dateFormat.format(donation.receivedAt)}',
-                    style: AppTextStyles.caption(
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        donation.isMoney ? _currencyFormat.format(donation.amount) : donation.quantity,
-                        style: AppTextStyles.titleMedium(color: AppColors.success),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.currency_bitcoin, size: 20, color: Colors.orange),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationLedgerScreen()));
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.track_changes, size: 20),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => DonationTrackerScreen(donationId: donation.id, amount: donation.amount)));
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                        onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (c) => AlertDialog(
-                              title: const Text('Delete Donation?'),
-                              content: const Text('Are you sure you want to delete this donation record?'),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(c, true),
-                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: donation.isMoney
+                                ? AppColors.accent.withValues(alpha: 0.1)
+                                : AppColors.info.withValues(alpha: 0.1),
+                            child: Icon(
+                              donation.isMoney ? Icons.attach_money : Icons.inventory,
+                              color: donation.isMoney ? AppColors.accent : AppColors.info,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(donation.donorName, style: AppTextStyles.titleSmall(color: isDark ? Colors.white : Colors.black87)),
+                                Text(
+                                  donation.campaignTitle,
+                                  style: AppTextStyles.caption(
+                                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  _dateFormat.format(donation.receivedAt),
+                                  style: TextStyle(fontSize: 11, color: isDark ? Colors.white54 : Colors.black54),
                                 ),
                               ],
                             ),
-                          );
-                          if (confirm == true) {
-                            await FirebaseFirestore.instance.collection('donations').doc(donation.id).delete();
-                          }
-                        },
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            donation.isMoney ? _currencyFormat.format(donation.amount) : donation.quantity,
+                            style: AppTextStyles.titleMedium(color: AppColors.success),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            icon: const Icon(Icons.currency_bitcoin, size: 16, color: Colors.orange),
+                            label: const Text('Ledger', style: TextStyle(color: Colors.orange, fontSize: 12)),
+                            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationLedgerScreen()));
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                          TextButton.icon(
+                            icon: Icon(Icons.track_changes, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                            label: Text('Track', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12)),
+                            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => DonationTrackerScreen(donationId: donation.id, amount: donation.amount)));
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                          TextButton.icon(
+                            icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                            label: const Text('Delete', style: TextStyle(color: Colors.red, fontSize: 12)),
+                            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (c) => AlertDialog(
+                                  title: const Text('Delete Donation?'),
+                                  content: const Text('Are you sure you want to delete this donation record?'),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(c, true),
+                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true) {
+                                await FirebaseFirestore.instance.collection('donations').doc(donation.id).delete();
+                              }
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  isThreeLine: true,
                 );
               },
             );

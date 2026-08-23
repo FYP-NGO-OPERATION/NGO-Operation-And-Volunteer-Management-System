@@ -145,11 +145,12 @@ class AnalyticsScreen extends StatelessWidget {
 
   Widget _buildSummaryCards(CampaignProvider provider, BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cards = [
-      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary),
-      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info),
-      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, AppColors.success),
-      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, AppColors.accent),
+      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, AppColors.primary, isDark),
+      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, AppColors.info, isDark),
+      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, AppColors.success, isDark),
+      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, AppColors.accent, isDark),
     ];
 
     if (isDesktop) {
@@ -176,13 +177,13 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _summaryCard(String title, String value, IconData icon, Color color) {
+  Widget _summaryCard(String title, String value, IconData icon, Color color, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.1),
         borderRadius: AppTokens.borderRadiusMd,
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,19 +191,19 @@ class AnalyticsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xs + 2),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: isDark ? color.withValues(alpha: 0.25) : color.withValues(alpha: 0.15),
               borderRadius: AppTokens.borderRadiusSm,
             ),
-            child: Icon(icon, color: color, size: AppTokens.iconMd),
+            child: Icon(icon, color: isDark ? color.withOpacity(0.9) : color, size: AppTokens.iconMd),
           ),
           AppSpacing.vGapSm,
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(value, style: AppTextStyles.statValue(color: color)),
+            child: Text(value, style: AppTextStyles.statValue(color: isDark ? Colors.white : color)),
           ),
           AppSpacing.vGapXs,
-          Text(title, style: AppTextStyles.caption(color: color)),
+          Text(title, style: AppTextStyles.caption(color: isDark ? Colors.white70 : color)),
         ],
       ),
     );
