@@ -29,11 +29,11 @@ class BannerService {
   Stream<List<BannerModel>> getActiveBanners() {
     return _db
         .collection('banners')
-        .where('isActive', isEqualTo: true)
         .orderBy('sortOrder')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
+            .where((banner) => banner.isActive)
             .toList());
   }
 

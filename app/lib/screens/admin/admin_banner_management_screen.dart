@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:io';
+import 'package:image_cropper/image_cropper.dart';
 import '../../models/banner_model.dart';
 import '../../services/banner_service.dart';
 import '../../services/cloudinary_service.dart';
@@ -27,10 +28,31 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
     if (image == null) return;
     if (!mounted) return;
 
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: image.path,
+      aspectRatio: const CropAspectRatio(ratioX: 2.0, ratioY: 1.0),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Banner',
+          toolbarColor: AppColors.primary,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.ratio16x9,
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(
+          title: 'Crop Banner',
+          aspectRatioLockEnabled: true,
+        ),
+      ],
+    );
+
+    if (croppedFile == null) return;
+    if (!mounted) return;
+
     setState(() => _isLoading = true);
     
     try {
-      final imageUrl = await CloudinaryService.uploadImage(File(image.path));
+      final imageUrl = await CloudinaryService.uploadImage(File(croppedFile.path));
       if (imageUrl != null) {
         final newBanner = BannerModel(
           id: _bannerService.generateId(),
@@ -67,12 +89,13 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
+                      isExpanded: true,
                       value: type,
                       items: const [
                         DropdownMenuItem(value: 'none', child: Text('No Link')),
                         DropdownMenuItem(value: 'campaign', child: Text('Internal Campaign')),
                         DropdownMenuItem(value: 'session', child: Text('Virtual Session')),
-                        DropdownMenuItem(value: 'external', child: Text('External URL (e.g. YouTube/Insta)')),
+                        DropdownMenuItem(value: 'external', child: Text('External URL')),
                       ],
                       onChanged: (val) {
                         setStateSB(() => type = val ?? 'none');
@@ -168,53 +191,76 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                   return Card(
                     key: ValueKey(banner.id),
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      leading: SizedBox(
-                        width: 80,
-                        child: CachedNetworkImage(
-                          imageUrl: banner.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      title: Text('Link: ${banner.targetType.toUpperCase()}'),
-                      subtitle: Text(
-                        banner.targetType == 'external' ? (banner.targetUrl ?? 'No URL') :
-                        (banner.targetType != 'none' ? (banner.targetId ?? 'No ID') : 'None')
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
                         children: [
-                          Switch(
-                            value: banner.isActive,
-                            onChanged: (val) => _bannerService.toggleBannerStatus(banner.id, val),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: SizedBox(
+                              width: 80,
+                              height: 50,
+                              child: CachedNetworkImage(
+                                imageUrl: banner.imageUrl,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                          PopupMenuButton<String>(
-                            onSelected: (value) async {
-                              if (value == 'edit') {
-                                _editBannerDetails(banner);
-                              } else if (value == 'delete') {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Delete Banner?'),
-                                    actions: [
-                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
-                                    ],
-                                  )
-                                );
-                                if (confirm == true) {
-                                  await _bannerService.deleteBanner(banner.id);
-                                }
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, color: Colors.blue, size: 20), SizedBox(width: 8), Text('Edit')])),
-                              const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 20), SizedBox(width: 8), Text('Delete')])),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Link: ${banner.targetType.toUpperCase()}', 
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  banner.targetType == 'external' ? (banner.targetUrl ?? 'No URL') :
+                                  (banner.targetType != 'none' ? (banner.targetId ?? 'No ID') : 'None'),
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Switch(
+                                value: banner.isActive,
+                                onChanged: (val) => _bannerService.toggleBannerStatus(banner.id, val),
+                              ),
+                              PopupMenuButton<String>(
+                                onSelected: (value) async {
+                                  if (value == 'edit') {
+                                    _editBannerDetails(banner);
+                                  } else if (value == 'delete') {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: const Text('Delete Banner?'),
+                                        actions: [
+                                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: const TextStyle(color: Colors.red))),
+                                        ],
+                                      )
+                                    );
+                                    if (confirm == true) {
+                                      await _bannerService.deleteBanner(banner.id);
+                                    }
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, color: Colors.blue, size: 20), SizedBox(width: 8), Text('Edit')])),
+                                  const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 20), SizedBox(width: 8), Text('Delete')])),
+                                ],
+                              ),
+                              const Icon(Icons.drag_handle, color: Colors.grey),
                             ],
                           ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.drag_handle),
                         ],
                       ),
                     ),
