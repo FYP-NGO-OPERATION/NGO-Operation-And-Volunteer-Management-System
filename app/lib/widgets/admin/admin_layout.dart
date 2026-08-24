@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -428,56 +430,7 @@ class _AdminLayoutState extends State<AdminLayout> {
           backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 20,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                ),
-                decoration: const BoxDecoration(
-                  gradient: AppColors.heroGradient,
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 2),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 36,
-                        backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        backgroundImage: authProvider.user?.profileImageUrl != null
-                            ? CachedNetworkImageProvider(authProvider.user!.profileImageUrl!)
-                            : null,
-                        child: authProvider.user?.profileImageUrl == null
-                            ? Text(
-                                (authProvider.user?.name ?? 'A')[0].toUpperCase(),
-                                style: const TextStyle(color: Colors.white, fontSize: 32),
-                              )
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      authProvider.user?.name ?? 'Admin',
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-                    ),
-                    const Text(
-                      'HRAS Admin',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
+              _AnimatedDrawerHeader(user: authProvider.user, isDark: Theme.of(context).brightness == Brightness.dark),
                   Expanded(
                     child: ListView(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -664,3 +617,232 @@ class _AdminLayoutState extends State<AdminLayout> {
     ));
   }
 }
+
+class _AnimatedDrawerHeader extends StatefulWidget {
+  final dynamic user;
+  final bool isDark;
+  
+  const _AnimatedDrawerHeader({required this.user, required this.isDark});
+
+  @override
+  State<_AnimatedDrawerHeader> createState() => _AnimatedDrawerHeaderState();
+}
+
+class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final angle = _controller.value * 2 * math.pi;
+        final shiftX = math.cos(angle) * 0.5;
+        final shiftY = math.sin(angle) * 0.5;
+
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: widget.isDark
+                    ? Colors.tealAccent.withOpacity(0.2)
+                    : const Color(0xFF2E7D32).withOpacity(0.25),
+                blurRadius: 16,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(widget.isDark ? 0.35 : 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 8),
+              ),
+            ],
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            child: Stack(
+              children: [
+                // Animated multi-gradient background
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: widget.isDark
+                            ? [
+                                const Color(0xFF0F172A),
+                                const Color(0xFF312E81),
+                                const Color(0xFF115E59),
+                                const Color(0xFF0F172A),
+                              ]
+                            : [
+                                const Color(0xFF021B0B),
+                                const Color(0xFF052B14),
+                                const Color(0xFF093D1E),
+                                const Color(0xFF021B0B),
+                              ],
+                        begin: Alignment(shiftX, shiftY),
+                        end: Alignment(-shiftX, -shiftY),
+                      ),
+                    ),
+                  ),
+                ),
+                // Magical Stars
+                ...List.generate(12, (index) {
+                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 4);
+                  final opacity = (math.sin(starAngle * (2 + index % 3)) + 1) / 2 * 0.9;
+                  final sizeScale = (math.cos(starAngle * 3) + 1) / 2;
+                  final baseSize = 2.0 + (index % 4) * 2.0;
+                  final size = baseSize + (sizeScale * 3.5);
+                  
+                  final top = 10.0 + (index * 31.0) % 150;
+                  final left = 10.0 + (index * 83.0) % 250;
+                  
+                  final starColors = [
+                    Colors.white,
+                    Colors.yellowAccent.shade100,
+                    Colors.cyanAccent.shade100,
+                    Colors.lightGreenAccent.shade100,
+                  ];
+                  final starColor = starColors[index % starColors.length];
+                  
+                  return Positioned(
+                    top: top,
+                    left: left,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: starColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: starColor.withOpacity(0.9),
+                              blurRadius: size * 2.0,
+                              spreadRadius: size * 0.8,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                // Frosted glass overlay
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                    child: Container(
+                      color: widget.isDark
+                          ? Colors.black.withOpacity(0.15)
+                          : Colors.white.withOpacity(0.08),
+                    ),
+                  ),
+                ),
+                // Content
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + 20,
+                    bottom: 24,
+                    left: 24,
+                    right: 24,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3.5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: SweepGradient(
+                            startAngle: angle,
+                            endAngle: angle + math.pi * 2,
+                            colors: widget.isDark
+                                ? [
+                                    Colors.tealAccent,
+                                    Colors.cyanAccent,
+                                    Colors.greenAccent,
+                                    Colors.tealAccent,
+                                  ]
+                                : [
+                                    Colors.white,
+                                    Colors.greenAccent,
+                                    Colors.white,
+                                    Colors.lightGreenAccent,
+                                    Colors.white,
+                                  ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.isDark
+                                  ? Colors.tealAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2))
+                                  : Colors.greenAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2)),
+                              blurRadius: 24,
+                              spreadRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 38,
+                          backgroundColor: Colors.white.withOpacity(0.15),
+                          backgroundImage: widget.user?.profileImageUrl != null
+                              ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
+                              : null,
+                          child: widget.user?.profileImageUrl == null
+                              ? Text(
+                                  (widget.user?.name ?? 'A')[0].toUpperCase(),
+                                  style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                                )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        widget.user?.name ?? 'Admin',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'HRAS Admin',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
