@@ -141,10 +141,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               context,
               title: 'Schedule New Session',
               subtitle: 'Host a virtual training or orientation',
-              icon: Icons.event,
-              color: Colors.indigo,
+              icon: Icons.calendar_today,
+              color: isDark ? Colors.greenAccent.shade400 : AppColors.primary,
               isDark: isDark,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateSessionScreen())),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateSessionScreen()));
+              },
             ),
           ],
         ),
@@ -357,10 +359,10 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                                 const Color(0xFF0F172A),
                               ]
                             : [
-                                const Color(0xFF2563EB), // Rich Blue
-                                const Color(0xFF7C3AED), // Rich Purple
-                                const Color(0xFF059669), // Rich Emerald
-                                const Color(0xFF2563EB),
+                                const Color(0xFF021B0B), // Extremely dark green
+                                const Color(0xFF052B14), 
+                                const Color(0xFF093D1E),
+                                const Color(0xFF021B0B),
                               ],
                         begin: Alignment(shiftX, shiftY),
                         end: Alignment(-shiftX, -shiftY),
@@ -369,13 +371,27 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                   ),
                 ),
                 // Magical Stars
-                ...List.generate(6, (index) {
-                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 3);
-                  final opacity = (math.sin(starAngle * 4) + 1) / 2 * 0.7; // Pulse between 0 and 0.7
-                  final size = 2.0 + (index % 3) * 2.0;
-                  // Distribute stars across the banner randomly but fixed based on index
-                  final top = 15.0 + (index * 23.0) % 100;
-                  final left = 20.0 + (index * 67.0) % 300;
+                ...List.generate(18, (index) {
+                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 4);
+                  // Opacity: fade in and out smoothly
+                  final opacity = (math.sin(starAngle * (2 + index % 3)) + 1) / 2 * 0.9;
+                  // Scale/Zoom effect
+                  final sizeScale = (math.cos(starAngle * 3) + 1) / 2;
+                  final baseSize = 2.0 + (index % 4) * 2.0;
+                  final size = baseSize + (sizeScale * 3.5);
+                  
+                  // Distribute stars randomly across the banner
+                  final top = 10.0 + (index * 31.0) % 110;
+                  final left = 10.0 + (index * 83.0) % 320;
+                  
+                  // Multi light colors
+                  final starColors = [
+                    Colors.white,
+                    Colors.yellowAccent.shade100,
+                    Colors.cyanAccent.shade100,
+                    Colors.lightGreenAccent.shade100,
+                  ];
+                  final starColor = starColors[index % starColors.length];
                   
                   return Positioned(
                     top: top,
@@ -387,12 +403,12 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                         height: size,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          color: starColor,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.white.withOpacity(0.9),
-                              blurRadius: size * 1.5,
-                              spreadRadius: size * 0.5,
+                              color: starColor.withOpacity(0.9),
+                              blurRadius: size * 2.0,
+                              spreadRadius: size * 0.8,
                             ),
                           ],
                         ),
@@ -433,19 +449,19 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                                   ]
                                 : [
                                     Colors.white,
-                                    const Color(0xFF4CAF50),
+                                    Colors.greenAccent,
                                     Colors.white,
-                                    const Color(0xFF00BCD4),
+                                    Colors.lightGreenAccent,
                                     Colors.white,
                                   ],
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isDark
-                                  ? Colors.tealAccent.withOpacity(0.45 + 0.15 * math.sin(angle * 2))
-                                  : const Color(0xFF4CAF50).withOpacity(0.35 + 0.1 * math.sin(angle * 2)),
-                              blurRadius: 22,
-                              spreadRadius: 5,
+                                  ? Colors.tealAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2))
+                                  : Colors.greenAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2)),
+                              blurRadius: 24,
+                              spreadRadius: 6,
                             ),
                           ],
                         ),
