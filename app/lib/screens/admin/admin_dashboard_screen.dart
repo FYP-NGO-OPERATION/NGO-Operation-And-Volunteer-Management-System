@@ -78,7 +78,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Impact Metrics',
                   icon: Icons.analytics,
-                  color: Colors.blue.shade600,
+                  color: isDark ? Colors.lightBlueAccent : Colors.blue.shade600,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
@@ -92,7 +92,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Virtual Sessions',
                   icon: Icons.video_call,
-                  color: Colors.purple.shade500,
+                  color: isDark ? Colors.purpleAccent.shade200 : Colors.purple.shade500,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
@@ -106,7 +106,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Campaigns',
                   icon: Icons.campaign,
-                  color: AppColors.primary,
+                  color: isDark ? Colors.greenAccent.shade400 : AppColors.primary,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
@@ -120,7 +120,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Announcements',
                   icon: Icons.announcement,
-                  color: AppColors.warning,
+                  color: isDark ? Colors.amberAccent : AppColors.warning,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
@@ -351,16 +351,16 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                       gradient: LinearGradient(
                         colors: isDark
                             ? [
-                                const Color(0xFF0A2E1A),
-                                const Color(0xFF0E3D3A),
-                                const Color(0xFF132B45),
-                                const Color(0xFF0A2E1A),
+                                const Color(0xFF0F172A), // Deep Slate
+                                const Color(0xFF312E81), // Deep Indigo
+                                const Color(0xFF115E59), // Deep Teal
+                                const Color(0xFF0F172A),
                               ]
                             : [
-                                const Color(0xFF1B7A3D),
-                                const Color(0xFF0F8B76),
-                                const Color(0xFF2D8C5A),
-                                const Color(0xFF1B7A3D),
+                                const Color(0xFF2563EB), // Rich Blue
+                                const Color(0xFF7C3AED), // Rich Purple
+                                const Color(0xFF059669), // Rich Emerald
+                                const Color(0xFF2563EB),
                               ],
                         begin: Alignment(shiftX, shiftY),
                         end: Alignment(-shiftX, -shiftY),
@@ -368,6 +368,38 @@ class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleT
                     ),
                   ),
                 ),
+                // Magical Stars
+                ...List.generate(6, (index) {
+                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 3);
+                  final opacity = (math.sin(starAngle * 4) + 1) / 2 * 0.7; // Pulse between 0 and 0.7
+                  final size = 2.0 + (index % 3) * 2.0;
+                  // Distribute stars across the banner randomly but fixed based on index
+                  final top = 15.0 + (index * 23.0) % 100;
+                  final left = 20.0 + (index * 67.0) % 300;
+                  
+                  return Positioned(
+                    top: top,
+                    left: left,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.9),
+                              blurRadius: size * 1.5,
+                              spreadRadius: size * 0.5,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
                 // Frosted glass overlay
                 Positioned.fill(
                   child: BackdropFilter(
