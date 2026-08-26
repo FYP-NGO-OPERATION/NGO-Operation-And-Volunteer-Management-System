@@ -16,9 +16,9 @@ async function getFooterSettings() {
     console.error("Error fetching footer settings:", error);
   }
   return {
-    footerEmail: 'contact@hras-ngo.org',
+    footerEmail: 'contact@hras-ngo.org.pk',
     footerPhone: '+92 (300) 123-4567',
-    footerAddress: '123 Relief Street, Future City, PK'
+    footerAddress: 'Lahore, Pakistan'
   };
 }
 
@@ -49,7 +49,7 @@ export default async function Footer() {
             </Link>
             <p className="brand-fullname">Humanitarian Relief and Aid Society</p>
             <p className="footer-description">
-              Empowering local volunteers and connecting global donors to make a real, completely transparent impact in communities worldwide.
+              Empowering local volunteers and creating a direct, transparent impact in communities across Pakistan.
             </p>
             <div className="social-links">
               <a href="#" className="social-icon">Fb</a>
@@ -93,7 +93,7 @@ export default async function Footer() {
           {/* 4. Action */}
           <div className="footer-action-section">
             <h4 className="footer-heading">Make a Difference</h4>
-            <p className="footer-action-text">Join thousands of others in our mission.</p>
+            <p className="footer-action-text">Join us in making Pakistan a better place.</p>
             <div className="footer-buttons">
               <Link href="/donate" className="btn btn-primary" style={{ width: '100%', marginBottom: '12px' }}>
                 <Heart size={18} /> Donate Now

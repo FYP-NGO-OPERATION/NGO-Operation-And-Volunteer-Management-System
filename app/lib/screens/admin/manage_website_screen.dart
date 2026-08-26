@@ -50,51 +50,51 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
       final doc = await FirebaseFirestore.instance.collection('website_content').doc('settings').get();
       if (doc.exists) {
         final data = doc.data()!;
-        _heroTitleCtrl.text = data['heroTitle'] ?? 'Radical Transparency';
-        _heroSubtitleCtrl.text = data['heroSubtitle'] ?? 'Track every single dollar you donate through our live, public financial ledger.';
-        _aboutCtrl.text = data['aboutText'] ?? 'We are changing the way NGOs work by using absolute transparency.';
+        _heroTitleCtrl.text = data['heroTitle'] ?? 'Grassroots Impact';
+        _heroSubtitleCtrl.text = data['heroSubtitle'] ?? 'Empowering local communities across Pakistan through direct, transparent volunteer action.';
+        _aboutCtrl.text = data['aboutText'] ?? 'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
         _stat1Ctrl.text = data['stat1'] ?? '100%';
-        _stat2Ctrl.text = data['stat2'] ?? '50k+';
-        _stat3Ctrl.text = data['stat3'] ?? '\$2.5M';
-        _footerEmailCtrl.text = data['footerEmail'] ?? 'contact@hras-ngo.org';
+        _stat2Ctrl.text = data['stat2'] ?? 'Local';
+        _stat3Ctrl.text = data['stat3'] ?? 'Impact';
+        _footerEmailCtrl.text = data['footerEmail'] ?? 'contact@hras-ngo.org.pk';
         _footerPhoneCtrl.text = data['footerPhone'] ?? '+92 (300) 123-4567';
-        _footerAddressCtrl.text = data['footerAddress'] ?? '123 Relief Street, Future City, PK';
+        _footerAddressCtrl.text = data['footerAddress'] ?? 'Lahore, Pakistan';
       } else {
-        _heroTitleCtrl.text = 'Radical Transparency';
-        _heroSubtitleCtrl.text = 'Track every single dollar you donate through our live, public financial ledger.';
-        _aboutCtrl.text = 'We are changing the way NGOs work by using absolute transparency.';
+        _heroTitleCtrl.text = 'Grassroots Impact';
+        _heroSubtitleCtrl.text = 'Empowering local communities across Pakistan through direct, transparent volunteer action.';
+        _aboutCtrl.text = 'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
         _stat1Ctrl.text = '100%';
-        _stat2Ctrl.text = '50k+';
-        _stat3Ctrl.text = '\$2.5M';
-        _footerEmailCtrl.text = 'contact@hras-ngo.org';
+        _stat2Ctrl.text = 'Local';
+        _stat3Ctrl.text = 'Impact';
+        _footerEmailCtrl.text = 'contact@hras-ngo.org.pk';
         _footerPhoneCtrl.text = '+92 (300) 123-4567';
-        _footerAddressCtrl.text = '123 Relief Street, Future City, PK';
+        _footerAddressCtrl.text = 'Lahore, Pakistan';
       }
 
       final aboutDoc = await FirebaseFirestore.instance.collection('website_content').doc('about_page').get();
       if (aboutDoc.exists) {
         final data = aboutDoc.data()!;
         _aboutHeroTitleCtrl.text = data['heroTitle'] ?? 'Who We Are';
-        _aboutHeroSubCtrl.text = data['heroSubtitle'] ?? 'The Humanitarian Relief and Aid Society is a global NGO dedicated to bridging the gap...';
+        _aboutHeroSubCtrl.text = data['heroSubtitle'] ?? 'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
         _missionTitleCtrl.text = data['missionTitle'] ?? 'Our Mission';
-        _missionTextCtrl.text = data['missionText'] ?? 'In a world facing unprecedented crises, the traditional model of aid is too slow and opaque...';
+        _missionTextCtrl.text = data['missionText'] ?? 'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
         _val1TitleCtrl.text = data['val1Title'] ?? '100% Transparency';
-        _val1DescCtrl.text = data['val1Desc'] ?? 'Our public ledger tracks all funds.';
-        _val2TitleCtrl.text = data['val2Title'] ?? 'Global Reach';
-        _val2DescCtrl.text = data['val2Desc'] ?? 'Active in over 15 countries.';
+        _val1DescCtrl.text = data['val1Desc'] ?? 'Every donation is tracked on our public ledger.';
+        _val2TitleCtrl.text = data['val2Title'] ?? 'Grassroots Focus';
+        _val2DescCtrl.text = data['val2Desc'] ?? 'Addressing local problems with local solutions.';
         _val3TitleCtrl.text = data['val3Title'] ?? 'Volunteer-Led';
-        _val3DescCtrl.text = data['val3Desc'] ?? 'Driven by local communities.';
+        _val3DescCtrl.text = data['val3Desc'] ?? 'Driven by passionate youth across Pakistan.';
       } else {
         _aboutHeroTitleCtrl.text = 'Who We Are';
-        _aboutHeroSubCtrl.text = 'The Humanitarian Relief and Aid Society is a global NGO dedicated to bridging the gap...';
+        _aboutHeroSubCtrl.text = 'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
         _missionTitleCtrl.text = 'Our Mission';
-        _missionTextCtrl.text = 'In a world facing unprecedented crises, the traditional model of aid is too slow and opaque...';
+        _missionTextCtrl.text = 'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
         _val1TitleCtrl.text = '100% Transparency';
-        _val1DescCtrl.text = 'Our public ledger tracks all funds.';
-        _val2TitleCtrl.text = 'Global Reach';
-        _val2DescCtrl.text = 'Active in over 15 countries.';
+        _val1DescCtrl.text = 'Every donation is tracked on our public ledger.';
+        _val2TitleCtrl.text = 'Grassroots Focus';
+        _val2DescCtrl.text = 'Addressing local problems with local solutions.';
         _val3TitleCtrl.text = 'Volunteer-Led';
-        _val3DescCtrl.text = 'Driven by local communities.';
+        _val3DescCtrl.text = 'Driven by passionate youth across Pakistan.';
       }
 
     } catch (e) {

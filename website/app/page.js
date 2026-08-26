@@ -21,12 +21,12 @@ async function getWebsiteSettings() {
     console.error("Error fetching website settings:", error);
   }
   return {
-    heroTitle: 'Radical Transparency',
-    heroSubtitle: 'Track every single dollar you donate through our live, public financial ledger.',
-    aboutText: 'We\'ve re-engineered the charity model. Utilizing mobile technology to empower locals, and blockchain-inspired public ledgers to guarantee absolute transparency.',
+    heroTitle: 'Grassroots Impact',
+    heroSubtitle: 'Empowering local communities across Pakistan through direct, transparent volunteer action.',
+    aboutText: 'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.',
     stat1: '100%',
-    stat2: '50k+',
-    stat3: '$2.5M'
+    stat2: 'Local',
+    stat3: 'Impact'
   };
 }
 

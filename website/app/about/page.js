@@ -25,15 +25,15 @@ async function getAboutSettings() {
   // Fallbacks
   return {
     heroTitle: "Who We Are",
-    heroSubtitle: "The Humanitarian Relief and Aid Society is a global NGO dedicated to bridging the gap between generous donors and on-ground relief efforts through radical transparency and volunteer empowerment.",
+    heroSubtitle: "The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.",
     missionTitle: "Our Mission",
-    missionText: "In a world facing unprecedented crises, the traditional model of aid is too slow and opaque. HRAS was founded on a simple principle: Impact should be immediate, measurable, and completely transparent.",
+    missionText: "We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.",
     val1Title: "100% Transparency",
-    val1Desc: "Our public ledger tracks all funds.",
-    val2Title: "Global Reach",
-    val2Desc: "Active in over 15 countries.",
+    val1Desc: "Every donation is tracked on our public ledger.",
+    val2Title: "Grassroots Focus",
+    val2Desc: "Addressing local problems with local solutions.",
     val3Title: "Volunteer-Led",
-    val3Desc: "Driven by local communities.",
+    val3Desc: "Driven by passionate youth across Pakistan.",
   };
 }
 
