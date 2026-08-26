@@ -2,6 +2,7 @@ import { Poppins } from "next/font/google";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { Providers } from "./providers";
+import BackgroundEffects from "../components/ui/BackgroundEffects";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning className={poppins.variable}>
       <body>
         <Providers>
+          <BackgroundEffects />
           <Navbar />
           <main>{children}</main>
           <Footer />

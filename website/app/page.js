@@ -4,6 +4,9 @@ import { Heart, Globe, TrendingUp, ShieldCheck, ArrowRight, Activity, Smartphone
 import Image from "next/image";
 import { db } from "../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import LiveTicker from "../components/ui/LiveTicker";
+import GlowingCard from "../components/ui/GlowingCard";
+import TestimonialCarousel from "../components/ui/TestimonialCarousel";
 
 export const revalidate = 60; // ISR 60s
 
@@ -34,9 +37,12 @@ export default async function Home() {
     <>
       {/* 1. Hero */}
       <HeroSlider title={settings.heroTitle} subtitle={settings.heroSubtitle} />
+      
+      {/* 1.5 Live Ticker */}
+      <LiveTicker />
 
-      {/* 2. About & Stats */}
-      <section className="section" style={{ backgroundColor: 'var(--bg-secondary)', position: 'relative', zIndex: 2 }}>
+      {/* 2. About & Stats with Glowing Cards */}
+      <section className="section" style={{ backgroundColor: 'transparent', position: 'relative', zIndex: 2 }}>
         <div className="container">
           <div className="flex-between" style={{ flexWrap: 'wrap', gap: '60px', alignItems: 'flex-start' }}>
             
@@ -56,31 +62,42 @@ export default async function Home() {
             {/* Right: Magic Stats Grid */}
             <div style={{ flex: '1 1 400px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               
-              <div className="glass-panel" style={{ padding: '32px 24px', textAlign: 'center' }}>
+              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px' }}>
                 <ShieldCheck size={36} color="var(--primary)" style={{ margin: '0 auto 16px' }} />
                 <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat1 || '100%'}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Transparency</p>
-              </div>
+              </GlowingCard>
 
-              <div className="glass-panel" style={{ padding: '32px 24px', textAlign: 'center', transform: 'translateY(24px)' }}>
-                <Globe size={36} color="var(--accent)" style={{ margin: '0 auto 16px' }} />
+              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', transform: 'translateY(24px)' }}>
+                <Globe size={36} color="var(--magic-2)" style={{ margin: '0 auto 16px' }} />
                 <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat2 || '50k+'}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Volunteers</p>
-              </div>
+              </GlowingCard>
 
-              <div className="glass-panel" style={{ padding: '32px 24px', textAlign: 'center', gridColumn: 'span 2' }}>
-                <TrendingUp size={36} color="var(--primary)" style={{ margin: '0 auto 16px' }} />
+              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', gridColumn: 'span 2' }}>
+                <TrendingUp size={36} color="var(--magic-3)" style={{ margin: '0 auto 16px' }} />
                 <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat3 || '$2.5M'}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Total Aid Distributed</p>
-              </div>
+              </GlowingCard>
 
             </div>
           </div>
         </div>
       </section>
 
+      {/* 2.5 Testimonials (Voices from the Ground) */}
+      <section className="section" style={{ position: 'relative', zIndex: 2 }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 className="section-title">Voices from the Ground</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto' }}>Real stories from the people making it happen.</p>
+          </div>
+          <TestimonialCarousel />
+        </div>
+      </section>
+
       {/* 3. Urgent Appeals Preview */}
-      <section className="section" style={{ backgroundColor: 'var(--bg)' }}>
+      <section className="section" style={{ backgroundColor: 'transparent' }}>
         <div className="container">
           <div className="flex-between" style={{ marginBottom: '48px', flexWrap: 'wrap', gap: '20px' }}>
             <div>
@@ -94,7 +111,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="glass-panel" style={{ display: 'flex', flexWrap: 'wrap', overflow: 'hidden', padding: 0 }}>
+          <GlowingCard style={{ display: 'flex', flexWrap: 'wrap', padding: 0, borderRadius: '32px' }}>
             <div style={{ flex: '1 1 400px', position: 'relative', minHeight: '400px' }}>
               <Image 
                 src="https://images.unsplash.com/photo-1547683905-f686c993bbf5?q=80&w=2070&auto=format&fit=crop" 
@@ -123,7 +140,7 @@ export default async function Home() {
                 <Heart size={20} /> Donate Immediately
               </Link>
             </div>
-          </div>
+          </GlowingCard>
         </div>
       </section>
 
@@ -145,7 +162,7 @@ export default async function Home() {
             <p style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.8)', marginBottom: '48px', lineHeight: 1.6 }}>
               Download the revolutionary HRAS Volunteer App. Manage campaigns, track live transparency ledgers, and coordinate global relief efforts from your pocket.
             </p>
-            <Link href="/download" className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>
+            <Link href="/download" className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem', backgroundColor: 'var(--magic-2)' }}>
               <Smartphone size={24} /> Get the App
             </Link>
           </div>
@@ -158,14 +175,14 @@ export default async function Home() {
               backgroundColor: '#111', 
               borderRadius: '48px', 
               border: '12px solid #222',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.3)',
+              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.3)',
               position: 'relative',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column'
             }}>
               <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '140px', height: '30px', backgroundColor: '#222', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', zIndex: 10 }}></div>
-              <div style={{ flex: 1, backgroundColor: 'var(--primary-dark)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center' }}>
+              <div style={{ flex: 1, background: 'linear-gradient(to bottom, var(--primary-dark), #111)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center' }}>
                  <div className="logo-glow-wrapper" style={{ marginBottom: '24px' }}>
                    <Image src="/logo.png" alt="Logo" width={40} height={40} style={{ objectFit: 'contain' }} />
                  </div>
