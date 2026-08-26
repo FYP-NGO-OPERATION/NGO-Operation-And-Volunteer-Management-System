@@ -124,13 +124,8 @@ export default async function Home() {
             max-width: 1000px;
             margin: 0 auto;
             aspect-ratio: 16/9;
-            mix-blend-mode: screen; /* Removes black background */
             -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-          }
-          
-          .founders-group-wrapper img {
-            mix-blend-mode: screen; /* Failsafe */
           }
         `}} />
         
@@ -143,13 +138,13 @@ export default async function Home() {
 
         <div className="container text-center" style={{ position: 'relative', zIndex: 3 }}>
           
-          {/* New Group Image (mix-blend-mode applied) */}
+          {/* New Group Image (AI processed PNG) */}
           <div className="founders-group-wrapper">
             <Image 
-              src="/images/founders/group.jpg" 
+              src="/images/founders/group.png" 
               alt="HRAS Founders" 
               fill 
-              style={{ objectFit: 'contain', objectPosition: 'bottom center', mixBlendMode: 'screen' }} 
+              style={{ objectFit: 'contain', objectPosition: 'bottom center' }} 
               priority 
             />
           </div>
