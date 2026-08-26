@@ -42,138 +42,117 @@ export default async function Home() {
       <LiveTicker />
 
       {/* 1.8 Founders Group (Animated Background & 3D Effect) */}
-      <section className="section" style={{ position: 'relative', zIndex: 10, padding: '40px 0', marginTop: '-20px', overflow: 'hidden' }}>
+      <section className="section" style={{ position: 'relative', zIndex: 10, padding: '60px 0', marginTop: '-20px', overflow: 'hidden' }}>
         <style dangerouslySetInnerHTML={{__html: `
-          .cyber-lines-bg {
+          .cyber-podium {
             position: absolute;
-            bottom: 30%;
+            bottom: 25%;
             left: 50%;
             transform: translateX(-50%);
             width: 100vw;
-            height: 60%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            z-index: 0;
-            pointer-events: none;
-          }
-          .cyber-line {
-            width: 100%;
-            background: #10b981;
-            margin-bottom: 25px;
-            opacity: 0;
-            animation: pulseLine 3s infinite alternate ease-in-out;
-            border-radius: 50%;
-          }
-          .cyber-line:nth-child(1) { animation-delay: 0s; height: 2px; box-shadow: 0 0 10px #047857, 0 0 20px #047857; width: 60%; }
-          .cyber-line:nth-child(2) { animation-delay: 0.5s; height: 3px; box-shadow: 0 0 15px #059669, 0 0 30px #059669; width: 80%; }
-          .cyber-line:nth-child(3) { animation-delay: 1s; height: 4px; box-shadow: 0 0 20px #10b981, 0 0 40px #10b981; width: 100%; }
-          .cyber-line:nth-child(4) { animation-delay: 1.5s; height: 6px; box-shadow: 0 0 30px #34d399, 0 0 60px #34d399; width: 120%; }
-          
-          @keyframes pulseLine {
-            0% { opacity: 0.1; transform: scaleX(0.9) translateY(10px); filter: hue-rotate(0deg); }
-            100% { opacity: 0.9; transform: scaleX(1.1) translateY(0px); filter: hue-rotate(20deg); }
-          }
-          
-          .founders-group {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 20px;
-            position: relative;
+            height: 150px;
+            background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            border-top: 2px solid rgba(16, 185, 129, 0.4);
+            box-shadow: 0 -10px 30px rgba(16, 185, 129, 0.2);
             z-index: 1;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+          }
+          
+          .founders-img-wrapper {
+            position: relative;
             width: 100%;
             max-width: 900px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto;
+            aspect-ratio: 16/9;
+            z-index: 2;
+            mix-blend-mode: screen; /* Removes black background */
+            -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 95%);
+            mask-image: linear-gradient(to bottom, black 75%, transparent 95%);
+          }
+          .founders-img-wrapper img {
+            mix-blend-mode: screen;
+          }
+
+          .founders-title-container {
+            position: relative;
+            z-index: 3;
+            margin-top: -40px; /* Pull text up into the fade */
           }
         `}} />
         
-        {/* Animated Lines Background */}
-        <div className="cyber-lines-bg">
-          <div className="cyber-line"></div>
-          <div className="cyber-line"></div>
-          <div className="cyber-line"></div>
-          <div className="cyber-line"></div>
-        </div>
+        {/* Animated Cyber Podium */}
+        <div className="cyber-podium"></div>
 
         <div className="container text-center" style={{ position: 'relative', zIndex: 2 }}>
           
           {/* New Group Image */}
-          <div className="founders-group">
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.8))' }}>
-              <Image 
-                src="/images/founders/group.jpg" 
-                alt="HRAS Founders" 
-                fill 
-                style={{ 
-                  objectFit: 'contain', 
-                  objectPosition: 'bottom center',
-                  mixBlendMode: 'screen' /* Removes black background smoothly */
-                }} 
-              />
-            </div>
+          <div className="founders-img-wrapper">
+            <Image 
+              src="/images/founders/group.jpg" 
+              alt="HRAS Founders" 
+              fill 
+              style={{ objectFit: 'contain', objectPosition: 'bottom center' }} 
+              priority
+            />
           </div>
 
-          <h2 style={{ 
-            fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
-            fontWeight: 900, 
-            textTransform: 'uppercase', 
-            letterSpacing: '4px',
-            color: 'white',
-            textShadow: '0 0 20px var(--magic-2), 0 0 40px var(--magic-1)',
-            margin: 0,
-            position: 'relative',
-            zIndex: 3
-          }}>
-            HRAS FOUNDERS
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px', position: 'relative', zIndex: 3 }}>
-            The visionaries standing together for a better Pakistan.
-          </p>
+          <div className="founders-title-container">
+            <h2 style={{ 
+              fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '4px',
+              color: 'white',
+              textShadow: '0 0 20px var(--magic-2), 0 0 40px var(--magic-1)',
+              margin: 0
+            }}>
+              HRAS FOUNDERS
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px' }}>
+              The visionaries standing together for a better Pakistan.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* 2. About & Stats with Glowing Cards */}
-      <section className="section" style={{ backgroundColor: 'transparent', position: 'relative', zIndex: 2 }}>
+      <section className="section" style={{ backgroundColor: 'rgba(0,0,0,0.2)', position: 'relative', zIndex: 2, borderTop: '1px solid rgba(255,255,255,0.05)', padding: '80px 0' }}>
         <div className="container">
-          <div className="flex-between" style={{ flexWrap: 'wrap', gap: '60px', alignItems: 'flex-start' }}>
+          
+          {/* Centered About Text */}
+          <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 60px auto' }}>
+            <div style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--bg-input)', borderRadius: '20px', color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '24px' }}>
+              WHO WE ARE
+            </div>
+            <h2 className="section-title">The HRAS Difference</h2>
+            <p className="section-subtitle" style={{ margin: '0 auto 30px auto' }}>{settings.aboutText}</p>
             
-            {/* Left: About Text */}
-            <div style={{ flex: '1 1 500px' }}>
-              <div style={{ display: 'inline-block', padding: '8px 16px', backgroundColor: 'var(--bg-input)', borderRadius: '20px', color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '24px' }}>
-                WHO WE ARE
-              </div>
-              <h2 className="section-title">The HRAS Difference</h2>
-              <p className="section-subtitle">{settings.aboutText}</p>
-              
-              <Link href="/about" className="btn btn-outline">
-                Learn More <ArrowRight size={18} />
-              </Link>
-            </div>
+            <Link href="/about" className="btn btn-outline">
+              Learn More <ArrowRight size={18} />
+            </Link>
+          </div>
 
-            {/* Right: Magic Stats Grid */}
-            <div style={{ flex: '1 1 400px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-              
-              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px' }}>
-                <ShieldCheck size={36} color="var(--primary)" style={{ margin: '0 auto 16px' }} />
-                <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat1 || '100%'}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Transparency</p>
-              </GlowingCard>
+          {/* Magic Stats Grid - Fixed Alignment */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', maxWidth: '1000px', margin: '0 auto' }}>
+            
+            <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <ShieldCheck size={36} color="var(--primary)" style={{ marginBottom: '16px' }} />
+              <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px', lineHeight: 1 }}>{settings.stat1 || '100%'}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>Transparency</p>
+            </GlowingCard>
 
-              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', transform: 'translateY(24px)' }}>
-                <Globe size={36} color="var(--magic-2)" style={{ margin: '0 auto 16px' }} />
-                <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat2 || '50k+'}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Volunteers</p>
-              </GlowingCard>
+            <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <Globe size={36} color="var(--magic-2)" style={{ marginBottom: '16px' }} />
+              <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px', lineHeight: 1 }}>{settings.stat2 || '50k+'}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>Local Volunteers</p>
+            </GlowingCard>
 
-              <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', gridColumn: 'span 2' }}>
-                <TrendingUp size={36} color="var(--magic-3)" style={{ margin: '0 auto 16px' }} />
-                <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>{settings.stat3 || '$2.5M'}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Total Aid Distributed</p>
-              </GlowingCard>
+            <GlowingCard style={{ padding: '32px 24px', textAlign: 'center', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <TrendingUp size={36} color="var(--magic-3)" style={{ marginBottom: '16px' }} />
+              <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px', lineHeight: 1 }}>{settings.stat3 || '$2.5M'}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>Total Aid Distributed</p>
+            </GlowingCard>
 
-            </div>
           </div>
         </div>
       </section>
