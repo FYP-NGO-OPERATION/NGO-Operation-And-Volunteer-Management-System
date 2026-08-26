@@ -46,7 +46,7 @@ export default async function Home() {
         <style dangerouslySetInnerHTML={{__html: `
           .magic-portal-container {
             position: absolute;
-            bottom: 15%;
+            bottom: 25%;
             left: 50%;
             transform: translateX(-50%);
             width: 100vw;
@@ -57,7 +57,7 @@ export default async function Home() {
           }
           .magic-portal-ring {
             position: absolute;
-            top: 60%;
+            top: 45%;
             left: 50%;
             width: 800px;
             height: 800px;
@@ -76,7 +76,7 @@ export default async function Home() {
           }
           .magic-portal-core {
             position: absolute;
-            top: 60%;
+            top: 45%;
             left: 50%;
             width: 600px;
             height: 600px;
@@ -88,7 +88,7 @@ export default async function Home() {
           }
           .magic-light-beam {
             position: absolute;
-            bottom: 40%;
+            bottom: 30%;
             left: 50%;
             transform: translateX(-50%);
             width: 500px;
@@ -124,8 +124,8 @@ export default async function Home() {
             max-width: 1000px;
             margin: 0 auto;
             aspect-ratio: 16/9;
-            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
           }
         `}} />
         
@@ -136,7 +136,7 @@ export default async function Home() {
           <div className="magic-portal-ring"></div>
         </div>
 
-        <div className="container text-center" style={{ position: 'relative', zIndex: 3 }}>
+        <div className="container" style={{ position: 'relative', zIndex: 3 }}>
           
           {/* New Group Image (AI processed PNG) */}
           <div className="founders-group-wrapper">
@@ -149,7 +149,16 @@ export default async function Home() {
             />
           </div>
 
-          <div style={{ position: 'relative', zIndex: 4, marginTop: '20px' }}>
+          <div style={{ 
+            position: 'relative', 
+            zIndex: 4, 
+            marginTop: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            width: '100%'
+          }}>
             <h2 style={{ 
               fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
               fontWeight: 900, 
@@ -157,11 +166,12 @@ export default async function Home() {
               letterSpacing: '4px',
               color: 'white',
               textShadow: '0 0 20px var(--magic-2), 0 0 40px var(--magic-1)',
-              margin: 0
+              margin: 0,
+              textAlign: 'center'
             }}>
               HRAS FOUNDERS
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px', textAlign: 'center' }}>
               The visionaries standing together for a better Pakistan.
             </p>
           </div>
