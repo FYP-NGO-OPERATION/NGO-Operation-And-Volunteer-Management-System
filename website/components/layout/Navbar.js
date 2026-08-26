@@ -41,87 +41,75 @@ export default function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="navbar-container">
-        {/* Logo */}
-        <Link href="/" className="logo-container" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-              <div style={{
-                backgroundColor: 'white',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                width: 45,
-                height: 45,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 15px 3px rgba(251, 191, 36, 0.4)', // Amber glow
-                transition: 'all 0.3s ease'
-              }}>
-                <Image 
-                  src="/logo.png" 
-                  alt="HRAS Logo" 
-                  width={45} 
-                  height={45} 
-                  style={{ objectFit: 'contain', filter: 'brightness(1.1)' }}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '12px' }}>
-                <span className="logo-text" style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1 }}>HRAS</span>
-                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', marginTop: '2px' }}>Hamesha Rahen Aap Ke Sath</span>
-              </div>
-            </Link>
-
-        {/* Desktop Nav */}
-        <nav className="navbar-links desktop-only">
-          {navLinks.map((link) => (
-            <Link key={link.name} href={link.href} className="nav-link">
-              {link.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Desktop Actions */}
-        <div className="navbar-actions desktop-only">
-          {mounted && (
-            <button 
-              onClick={toggleTheme} 
-              className="theme-toggle" 
-              aria-label="Toggle Dark Mode"
-              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '8px' }}
-            >
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-          )}
-          <Link href="/volunteer" className="btn btn-outline">
-            Volunteer
+      <div className="container h-full">
+        <div className="navbar-content">
+          {/* 1. Left - Logo */}
+          <Link href="/" className="navbar-brand">
+            <div className="logo-glow-wrapper">
+              <Image 
+                src="/logo.png" 
+                alt="HRAS Logo" 
+                width={45} 
+                height={45} 
+                style={{ objectFit: 'contain' }}
+              />
+            </div>
+            <div className="brand-text-container">
+              <span className="brand-title">HRAS</span>
+              <span className="brand-subtitle">Hamesha Rahen Aap Ke Sath</span>
+            </div>
           </Link>
-          <Link href="/donate" className="btn btn-primary glass-panel">
-            <Heart size={18} />
-            Donate
-          </Link>
-        </div>
 
-        {/* Mobile Toggle */}
-        <div className="mobile-actions mobile-only" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {mounted && (
-            <button 
-              onClick={toggleTheme} 
-              className="theme-toggle" 
-              aria-label="Toggle Dark Mode"
-              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
+          {/* 2. Center - Navigation Links */}
+          <nav className="navbar-links desktop-only">
+            {navLinks.map((link) => (
+              <Link key={link.name} href={link.href} className="nav-link">
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* 3. Right - Actions */}
+          <div className="navbar-actions desktop-only">
+            {mounted && (
+              <button 
+                onClick={toggleTheme} 
+                className="theme-toggle" 
+                aria-label="Toggle Dark Mode"
+              >
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            )}
+            <Link href="/volunteer" className="btn btn-outline">
+              Volunteer
+            </Link>
+            <Link href="/donate" className="btn btn-primary">
+              <Heart size={18} /> Donate
+            </Link>
+          </div>
+
+          {/* Mobile Toggle */}
+          <div className="mobile-toggle-container mobile-only">
+            {mounted && (
+              <button 
+                onClick={toggleTheme} 
+                className="theme-toggle" 
+                aria-label="Toggle Dark Mode"
+              >
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            )}
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-          )}
-          <button
-            className="mobile-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -143,12 +131,11 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="mobile-nav-actions">
-                <Link href="/volunteer" className="btn btn-outline full-width">
-                  Become a Volunteer
+                <Link href="/volunteer" className="btn btn-outline" style={{ width: '100%' }}>
+                  Volunteer
                 </Link>
-                <Link href="/donate" className="btn btn-primary full-width">
-                  <Heart size={18} />
-                  Donate Now
+                <Link href="/donate" className="btn btn-primary" style={{ width: '100%' }}>
+                  <Heart size={18} /> Donate Now
                 </Link>
               </div>
             </nav>

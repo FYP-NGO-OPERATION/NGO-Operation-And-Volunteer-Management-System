@@ -16,6 +16,16 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
   final TextEditingController _heroTitleCtrl = TextEditingController();
   final TextEditingController _heroSubtitleCtrl = TextEditingController();
   final TextEditingController _aboutCtrl = TextEditingController();
+  
+  // New Stats
+  final TextEditingController _stat1Ctrl = TextEditingController();
+  final TextEditingController _stat2Ctrl = TextEditingController();
+  final TextEditingController _stat3Ctrl = TextEditingController();
+  
+  // New Footer Settings
+  final TextEditingController _footerEmailCtrl = TextEditingController();
+  final TextEditingController _footerPhoneCtrl = TextEditingController();
+  final TextEditingController _footerAddressCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -31,10 +41,22 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
         _heroTitleCtrl.text = data['heroTitle'] ?? 'Radical Transparency';
         _heroSubtitleCtrl.text = data['heroSubtitle'] ?? 'Track every single dollar you donate through our live, public financial ledger.';
         _aboutCtrl.text = data['aboutText'] ?? 'We are changing the way NGOs work by using absolute transparency.';
+        _stat1Ctrl.text = data['stat1'] ?? '100%';
+        _stat2Ctrl.text = data['stat2'] ?? '50k+';
+        _stat3Ctrl.text = data['stat3'] ?? '\$2.5M';
+        _footerEmailCtrl.text = data['footerEmail'] ?? 'contact@hras-ngo.org';
+        _footerPhoneCtrl.text = data['footerPhone'] ?? '+92 (300) 123-4567';
+        _footerAddressCtrl.text = data['footerAddress'] ?? '123 Relief Street, Future City, PK';
       } else {
         _heroTitleCtrl.text = 'Radical Transparency';
         _heroSubtitleCtrl.text = 'Track every single dollar you donate through our live, public financial ledger.';
         _aboutCtrl.text = 'We are changing the way NGOs work by using absolute transparency.';
+        _stat1Ctrl.text = '100%';
+        _stat2Ctrl.text = '50k+';
+        _stat3Ctrl.text = '\$2.5M';
+        _footerEmailCtrl.text = 'contact@hras-ngo.org';
+        _footerPhoneCtrl.text = '+92 (300) 123-4567';
+        _footerAddressCtrl.text = '123 Relief Street, Future City, PK';
       }
     } catch (e) {
       debugPrint('Error loading website settings: $e');
@@ -53,11 +75,17 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
         'heroTitle': _heroTitleCtrl.text,
         'heroSubtitle': _heroSubtitleCtrl.text,
         'aboutText': _aboutCtrl.text,
+        'stat1': _stat1Ctrl.text,
+        'stat2': _stat2Ctrl.text,
+        'stat3': _stat3Ctrl.text,
+        'footerEmail': _footerEmailCtrl.text,
+        'footerPhone': _footerPhoneCtrl.text,
+        'footerAddress': _footerAddressCtrl.text,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Website content updated! Netlify will show changes instantly.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Website content updated! Refresh the website to see changes.')));
       }
     } catch (e) {
       if (mounted) {
@@ -74,6 +102,12 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
     _heroTitleCtrl.dispose();
     _heroSubtitleCtrl.dispose();
     _aboutCtrl.dispose();
+    _stat1Ctrl.dispose();
+    _stat2Ctrl.dispose();
+    _stat3Ctrl.dispose();
+    _footerEmailCtrl.dispose();
+    _footerPhoneCtrl.dispose();
+    _footerAddressCtrl.dispose();
     super.dispose();
   }
 
@@ -118,7 +152,29 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
                 maxLines: 5,
                 validator: (val) => val!.isEmpty ? 'Required' : null,
               ),
-              
+              const SizedBox(height: 32),
+
+              const Text('Impact Stats', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(child: TextFormField(controller: _stat1Ctrl, decoration: const InputDecoration(labelText: 'Stat 1 (e.g. 100%)', border: OutlineInputBorder()))),
+                  const SizedBox(width: 16),
+                  Expanded(child: TextFormField(controller: _stat2Ctrl, decoration: const InputDecoration(labelText: 'Stat 2 (e.g. 50k+)', border: OutlineInputBorder()))),
+                  const SizedBox(width: 16),
+                  Expanded(child: TextFormField(controller: _stat3Ctrl, decoration: const InputDecoration(labelText: 'Stat 3 (e.g. \$2.5M)', border: OutlineInputBorder()))),
+                ],
+              ),
+              const SizedBox(height: 32),
+
+              const Text('Footer Contact Info', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextFormField(controller: _footerEmailCtrl, decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder())),
+              const SizedBox(height: 16),
+              TextFormField(controller: _footerPhoneCtrl, decoration: const InputDecoration(labelText: 'Phone', border: OutlineInputBorder())),
+              const SizedBox(height: 16),
+              TextFormField(controller: _footerAddressCtrl, decoration: const InputDecoration(labelText: 'Address', border: OutlineInputBorder())),
+
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
