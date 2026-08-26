@@ -57,61 +57,50 @@ export default async function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section className="mission-section" style={{ padding: '60px 20px', position: 'relative', zIndex: 10 }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
-          
-          <GlowingCard>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ display: 'inline-flex', padding: '15px', borderRadius: '50%', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)', width: 'fit-content' }}>
-                 <ShieldCheck size={32} color="var(--magic-1)" />
+      <section className="mission-section text-center" style={{ padding: '60px 20px', position: 'relative', zIndex: 10 }}>
+        <div className="container" style={{ maxWidth: '900px', margin: '0 auto 80px auto' }}>
+          <div style={{ display: 'inline-flex', padding: '15px', borderRadius: '50%', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)', marginBottom: '24px' }}>
+             <ShieldCheck size={32} color="var(--magic-1)" />
+          </div>
+          <h2 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '24px' }}>
+             <span className="text-gradient-cyan">{content.missionTitle}</span>
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.25rem', lineHeight: 1.8 }}>
+            {content.missionText}
+          </p>
+        </div>
+
+        {/* Core Values 3-Column Grid */}
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
+          <GlowingCard style={{ textAlign: 'left', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px' }}>
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', width: 'fit-content' }}>
+                <ShieldCheck size={28} color="var(--magic-2)" />
               </div>
-              <h2 className="section-title" style={{ fontSize: '2.5rem', margin: 0 }}>
-                 <span className="text-gradient-cyan">{content.missionTitle}</span>
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: 1.6 }}>
-                {content.missionText}
-              </p>
+              <h3 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '1.3rem' }}>{content.val1Title}</h3>
+              <p style={{ color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>{content.val1Desc}</p>
             </div>
           </GlowingCard>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <GlowingCard>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-                <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
-                  <ShieldCheck size={24} color="var(--magic-2)" />
-                </div>
-                <div>
-                  <h3 style={{ color: 'var(--text-primary)', margin: '0 0 5px 0', fontSize: '1.2rem' }}>{content.val1Title}</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{content.val1Desc}</p>
-                </div>
+          <GlowingCard style={{ textAlign: 'left', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px' }}>
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)', width: 'fit-content' }}>
+                <Globe size={28} color="var(--magic-1)" />
               </div>
-            </GlowingCard>
+              <h3 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '1.3rem' }}>{content.val2Title}</h3>
+              <p style={{ color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>{content.val2Desc}</p>
+            </div>
+          </GlowingCard>
 
-            <GlowingCard>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-                <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)' }}>
-                  <Globe size={24} color="var(--magic-1)" />
-                </div>
-                <div>
-                  <h3 style={{ color: 'var(--text-primary)', margin: '0 0 5px 0', fontSize: '1.2rem' }}>{content.val2Title}</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{content.val2Desc}</p>
-                </div>
+          <GlowingCard style={{ textAlign: 'left', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px' }}>
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', width: 'fit-content' }}>
+                <Users size={28} color="var(--magic-3)" />
               </div>
-            </GlowingCard>
-
-            <GlowingCard>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-                <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
-                  <Users size={24} color="var(--magic-3)" />
-                </div>
-                <div>
-                  <h3 style={{ color: 'var(--text-primary)', margin: '0 0 5px 0', fontSize: '1.2rem' }}>{content.val3Title}</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{content.val3Desc}</p>
-                </div>
-              </div>
-            </GlowingCard>
-          </div>
-          
+              <h3 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '1.3rem' }}>{content.val3Title}</h3>
+              <p style={{ color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>{content.val3Desc}</p>
+            </div>
+          </GlowingCard>
         </div>
       </section>
 
