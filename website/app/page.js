@@ -46,18 +46,18 @@ export default async function Home() {
         <style dangerouslySetInnerHTML={{__html: `
           .magic-portal-container {
             position: absolute;
-            bottom: 25%;
+            bottom: 20%;
             left: 50%;
             transform: translateX(-50%);
             width: 100vw;
-            height: 500px;
+            height: 400px;
             perspective: 1000px;
             z-index: 0;
             pointer-events: none;
           }
           .magic-portal-ring {
             position: absolute;
-            top: 45%;
+            top: 70%;
             left: 50%;
             width: 800px;
             height: 800px;
@@ -76,7 +76,7 @@ export default async function Home() {
           }
           .magic-portal-core {
             position: absolute;
-            top: 45%;
+            top: 70%;
             left: 50%;
             width: 600px;
             height: 600px;
@@ -124,6 +124,7 @@ export default async function Home() {
             max-width: 1000px;
             margin: 0 auto;
             aspect-ratio: 16/9;
+            transform: translateY(-20px); /* Lifts the picture up above the portal */
             -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
           }
@@ -152,7 +153,7 @@ export default async function Home() {
           <div style={{ 
             position: 'relative', 
             zIndex: 4, 
-            marginTop: '20px',
+            marginTop: '-10px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
