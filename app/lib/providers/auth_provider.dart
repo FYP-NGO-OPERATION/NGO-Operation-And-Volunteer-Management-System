@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -159,12 +160,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ─── Super Admin Emails ───
-  static const _superAdmins = [
-    'REDACTED@example.com',
-    'REDACTED@example.com',
-    'shahzaibarshad@gmail.com',
-    'maauzmansoor@gmail.com',
-  ];
+  static List<String> get _superAdmins {
+    final emailsString = dotenv.env['SUPER_ADMIN_EMAILS'] ?? '';
+    if (emailsString.isEmpty) return [];
+    return emailsString.split(',').map((e) => e.trim().toLowerCase()).toList();
+  }
 
   // ─── Google Sign-In ───
   Future<bool> signInWithGoogle() async {

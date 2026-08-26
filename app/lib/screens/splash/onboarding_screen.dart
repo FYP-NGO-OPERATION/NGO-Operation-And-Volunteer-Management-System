@@ -60,34 +60,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: Stack(
         children: [
-          // Dynamic Background Elements
-          Positioned(
-            top: -100,
-            right: -50,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _pages[_currentPage].color.withValues(alpha: 0.1),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -100,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 700),
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _pages[_currentPage].color.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
-
           SafeArea(
             child: Column(
               children: [

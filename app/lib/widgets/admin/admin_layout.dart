@@ -25,6 +25,7 @@ import '../../screens/admin/sentiment_analysis_screen.dart';
 import '../../screens/campaigns/route_optimization_screen.dart';
 import '../../screens/disaster/disaster_map_screen.dart';
 import '../../screens/admin/admin_banner_management_screen.dart';
+import '../../screens/splash/splash_screen.dart';
 import '../../providers/disaster_provider.dart';
 import '../../widgets/common/custom_speed_dial.dart';
 import '../profile_tab_widget.dart';
@@ -122,10 +123,90 @@ class _AdminLayoutState extends State<AdminLayout> {
 
   Widget _buildAdminProfile() {
     return ProfileTab(
-      onLogout: () {
-        Provider.of<AuthProvider>(context, listen: false).logout();
-      },
+      onLogout: _handleLogout,
     );
+  }
+
+  Future<void> _handleLogout() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.white,
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.logout, color: Colors.orange, size: 40),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Logout?',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to log out of your account?',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7)),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldLogout == true) {
+      if (context.mounted) {
+        await Provider.of<AuthProvider>(context, listen: false).logout();
+        if (context.mounted) {
+           Navigator.of(context).pushAndRemoveUntil(
+             MaterialPageRoute(builder: (_) => const SplashScreen()), 
+             (route) => false,
+           );
+        }
+      }
+    }
   }
 
   final List<NavigationRailDestination> _destinations = const [
@@ -420,7 +501,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.logout),
-                  onPressed: () => authProvider.logout(),
+                  onPressed: _handleLogout,
                 ),
               ],
             ),
@@ -492,7 +573,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: OutlinedButton.icon(
-                      onPressed: () => authProvider.logout(),
+                      onPressed: _handleLogout,
                       icon: const Icon(Icons.logout, color: AppColors.error),
                       label: const Text('Logout', style: TextStyle(color: AppColors.error)),
                       style: OutlinedButton.styleFrom(
@@ -543,7 +624,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                     child: IconButton(
                       icon: const Icon(Icons.logout),
                       tooltip: 'Logout',
-                      onPressed: () => authProvider.logout(),
+                      onPressed: _handleLogout,
                     ),
                   ),
                 ),

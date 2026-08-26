@@ -83,6 +83,7 @@ dependencies:
   easy_localization: ^3.0.3
   geolocator: ^14.0.1
   location: ^10.0.2
+  audioplayers: ^6.7.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -109,6 +110,7 @@ flutter:
   assets:
     - assets/images/
     - assets/translations/
+    - assets/audio/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

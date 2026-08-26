@@ -115,98 +115,151 @@ class _AnnouncementCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySurface,
-                    shape: BoxShape.circle,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.primary.withOpacity(0.15), width: 1.5),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).cardColor,
+              AppColors.primary.withOpacity(0.03),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: AppColors.primary,
+                      child: Text(
+                        announcement.authorName[0].toUpperCase(),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
                   ),
-                  child: Icon(Icons.campaign, color: AppColors.primary, size: AppTokens.iconMd),
+                  AppSpacing.hGapMd,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          announcement.authorName,
+                          style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          DateFormat('MMM dd, yyyy • hh:mm a').format(announcement.createdAt),
+                          style: AppTextStyles.labelSmall(color: AppColors.textHint),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.campaign, color: AppColors.primary, size: 14),
+                        const SizedBox(width: 4),
+                        Text('Update', style: AppTextStyles.labelSmall(color: AppColors.primary).copyWith(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  if (isAdmin)
+                    PopupMenuButton(
+                      icon: const Icon(Icons.more_vert, color: AppColors.textHint),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete', style: TextStyle(color: AppColors.error)),
+                        ),
+                      ],
+                      onSelected: (val) {
+                        if (val == 'delete') _confirmDelete(context);
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                announcement.title, 
+                style: AppTextStyles.headlineSmall().copyWith(
+                  fontWeight: FontWeight.w900, 
+                )
+              ),
+              const SizedBox(height: 12),
+              Text(
+                announcement.message,
+                style: const TextStyle(height: 1.6, fontSize: 15),
+              ),
+              const SizedBox(height: 16),
+              if (announcement.imageUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: announcement.imageUrl!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      color: AppColors.neutral200,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200,
+                      color: AppColors.neutral200,
+                      child: const Center(child: Icon(Icons.error, color: AppColors.error)),
+                    ),
+                  ),
                 ),
-                AppSpacing.hGapMd,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(announcement.title, style: AppTextStyles.titleMedium()),
-                      AppSpacing.vGapXs,
-                      Text('Posted by ${announcement.authorName}',
-                        style: AppTextStyles.labelSmall(color: AppColors.primary)),
-                    ],
-                  ),
-                ),
-                if (isAdmin)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _confirmDelete(context),
-                  ),
+                const SizedBox(height: 16),
               ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(),
-            ),
-            Text(
-              announcement.message,
-              style: const TextStyle(height: 1.5, color: AppColors.textPrimary),
-            ),
-            const SizedBox(height: 16),
-            if (announcement.imageUrl != null) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: CachedNetworkImage(
-                  imageUrl: announcement.imageUrl!,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    height: 200,
-                    color: AppColors.neutral200,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    height: 200,
-                    color: AppColors.neutral200,
-                    child: const Center(child: Icon(Icons.error, color: AppColors.error)),
+              if (announcement.videoUrl != null) ...[
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final uri = Uri.parse(announcement.videoUrl!);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  },
+                  icon: const Icon(Icons.play_circle_fill, color: Colors.red),
+                  label: const Text('Watch Reference Video', style: TextStyle(color: Colors.red)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
+              ],
             ],
-            if (announcement.videoUrl != null) ...[
-              OutlinedButton.icon(
-                onPressed: () async {
-                  final uri = Uri.parse(announcement.videoUrl!);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  }
-                },
-                icon: const Icon(Icons.play_circle_fill, color: Colors.red),
-                label: const Text('Watch Reference Video', style: TextStyle(color: Colors.red)),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.red),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                DateFormat('MMM dd, yyyy • hh:mm a').format(announcement.createdAt),
-                style: const TextStyle(fontSize: 11, color: AppColors.textHint),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

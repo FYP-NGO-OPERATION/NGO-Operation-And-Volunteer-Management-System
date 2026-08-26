@@ -27,11 +27,24 @@ class HomeJoinedCampaigns extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'my_campaigns'.tr(),
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
+              child: const Icon(Icons.campaign_rounded, color: AppColors.secondary, size: 20),
+            ),
+            AppSpacing.hGapSm,
+            Text(
+              'my_campaigns'.tr(),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         StreamBuilder<List<VolunteerModel>>(

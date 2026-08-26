@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
 import '../../config/feature_flags.dart';
@@ -69,6 +70,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     // Sequence
+    _playWelcomeAudio();
     _logoController.forward();
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) _contentController.forward();
@@ -77,6 +79,18 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) _pulseController.repeat(reverse: true);
     });
     Future.delayed(const Duration(seconds: 3), _checkAuth);
+  }
+
+  Future<void> _playWelcomeAudio() async {
+    try {
+      final player = AudioPlayer();
+      player.onPlayerComplete.listen((_) {
+        player.dispose();
+      });
+      await player.play(AssetSource('audio/HRAS-Welcome.mpeg'));
+    } catch (e) {
+      debugPrint('Error playing audio: $e');
+    }
   }
 
   Future<void> _checkAuth() async {

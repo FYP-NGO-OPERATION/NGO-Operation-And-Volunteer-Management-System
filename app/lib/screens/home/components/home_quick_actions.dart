@@ -104,11 +104,25 @@ class HomeQuickActions extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Text('quick_actions'.tr(), style: AppTextStyles.titleMedium()),
+          child: Row(
+            children: [
+              Icon(Icons.flash_on, color: AppColors.primary, size: 24),
+              AppSpacing.hGapSm,
+              Text(
+                'quick_actions'.tr(),
+                style: AppTextStyles.headlineMedium().copyWith(
+                  fontWeight: FontWeight.w900,
+                  shadows: [
+                    Shadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 2)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        AppSpacing.vGapMd,
+        AppSpacing.vGapLg,
         SizedBox(
-          height: 110,
+          height: 120,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             scrollDirection: Axis.horizontal,
@@ -116,6 +130,22 @@ class HomeQuickActions extends StatelessWidget {
             itemCount: actions.length,
             separatorBuilder: (context, index) => const SizedBox(width: 16),
             itemBuilder: (context, index) => actions[index],
+          ),
+        ),
+        AppSpacing.vGapSm,
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.swipe_left, size: 14, color: AppColors.textHint),
+              const SizedBox(width: 6),
+              Text(
+                'Swipe for more actions',
+                style: AppTextStyles.labelSmall(color: AppColors.textHint),
+              ),
+              const SizedBox(width: 6),
+              Icon(Icons.swipe_right, size: 14, color: AppColors.textHint),
+            ],
           ),
         ),
       ],
@@ -133,13 +163,23 @@ class HomeQuickActions extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
+        width: 105,
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCardBg : Colors.white,
-          borderRadius: AppTokens.borderRadiusMd,
-          border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+          color: isDark ? AppColors.darkCardBg.withOpacity(0.8) : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark 
+                ? color.withOpacity(0.3) 
+                : color.withOpacity(0.5),
+            width: 1.5,
+          ),
           boxShadow: [
-            if (!isDark) BoxShadow(color: color.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4)),
+            BoxShadow(
+              color: color.withOpacity(isDark ? 0.2 : 0.15),
+              blurRadius: 12,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         padding: const EdgeInsets.all(AppSpacing.sm),
@@ -147,17 +187,29 @@ class HomeQuickActions extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.15),
+                    color.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: color.withOpacity(0.2), blurRadius: 8, spreadRadius: 1),
+                ],
               ),
-              child: Icon(icon, color: color, size: 28),
+              child: Icon(icon, color: color, size: 30),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               title,
-              style: AppTextStyles.labelSmall(color: isDark ? Colors.white : Colors.black87),
+              style: AppTextStyles.labelMedium(color: isDark ? Colors.white : Colors.black87).copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

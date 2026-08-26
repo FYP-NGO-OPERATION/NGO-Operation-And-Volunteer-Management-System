@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -110,30 +111,7 @@ class CampaignCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Type Badge
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: BackdropFilter(
-                              filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: _typeColor.withValues(alpha: 0.8),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(campaign.type.icon, style: const TextStyle(fontSize: 14)),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      campaign.type.label,
-                                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          _MagicalTypeBadge(type: campaign.type, typeColor: _typeColor),
                           // Status Badge
                           _buildStatusChip(),
                         ],
@@ -358,5 +336,138 @@ class CampaignCard extends StatelessWidget {
       default:
         return AppColors.primary;
     }
+  }
+}
+
+class _MagicalTypeBadge extends StatefulWidget {
+  final CampaignType type;
+  final Color typeColor;
+
+  const _MagicalTypeBadge({required this.type, required this.typeColor});
+
+  @override
+  State<_MagicalTypeBadge> createState() => _MagicalTypeBadgeState();
+}
+
+class _MagicalTypeBadgeState extends State<_MagicalTypeBadge> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 4))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final angle = _controller.value * 2 * math.pi;
+        final shiftX = math.cos(angle) * 0.5;
+        final shiftY = math.sin(angle) * 0.5;
+
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: widget.typeColor.withValues(alpha: 0.4),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              children: [
+                // Animated multi-gradient background
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          widget.typeColor.withValues(alpha: 0.9),
+                          widget.typeColor.withValues(alpha: 0.6),
+                          widget.typeColor.withValues(alpha: 1.0),
+                          widget.typeColor.withValues(alpha: 0.7),
+                        ],
+                        begin: Alignment(shiftX, shiftY),
+                        end: Alignment(-shiftX, -shiftY),
+                      ),
+                    ),
+                  ),
+                ),
+                // Magical Stars
+                ...List.generate(6, (index) {
+                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 2);
+                  final opacity = (math.sin(starAngle * (2 + index % 3)) + 1) / 2 * 0.9;
+                  final sizeScale = (math.cos(starAngle * 3) + 1) / 2;
+                  final size = 1.0 + (sizeScale * 2.0);
+                  
+                  final top = 4.0 + (index * 13.0) % 25;
+                  final left = 8.0 + (index * 27.0) % 100;
+                  
+                  return Positioned(
+                    top: top,
+                    left: left,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(color: Colors.white, blurRadius: 2.0, spreadRadius: 1.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                // Glass effect
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ui.ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                // Text Content
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(widget.type.icon, style: const TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.type.label,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
