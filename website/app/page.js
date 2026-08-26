@@ -46,7 +46,7 @@ export default async function Home() {
         <style dangerouslySetInnerHTML={{__html: `
           .magic-portal-container {
             position: absolute;
-            bottom: 20%;
+            bottom: 25%;
             left: 50%;
             transform: translateX(-50%);
             width: 100vw;
@@ -57,7 +57,7 @@ export default async function Home() {
           }
           .magic-portal-ring {
             position: absolute;
-            top: 70%;
+            top: 60%;
             left: 50%;
             width: 800px;
             height: 800px;
@@ -76,7 +76,7 @@ export default async function Home() {
           }
           .magic-portal-core {
             position: absolute;
-            top: 70%;
+            top: 60%;
             left: 50%;
             width: 600px;
             height: 600px;
@@ -153,7 +153,7 @@ export default async function Home() {
           <div style={{ 
             position: 'relative', 
             zIndex: 4, 
-            marginTop: '-10px',
+            marginTop: '30px', /* Increased to push text down from the portal/image */
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
