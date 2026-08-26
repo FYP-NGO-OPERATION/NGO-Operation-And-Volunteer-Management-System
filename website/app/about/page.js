@@ -45,7 +45,7 @@ export default async function AboutPage() {
       <BackgroundEffects />
       
       {/* Hero Section */}
-      <section className="about-hero text-center" style={{ padding: '120px 20px 80px', position: 'relative', zIndex: 10 }}>
+      <section className="about-hero text-center" style={{ padding: '120px 20px 80px', position: 'relative', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
         <div className="container">
           <h1 className="hero-title" style={{ fontSize: 'clamp(3rem, 8vw, 5rem)' }}>
             <span className="text-gradient-purple">{content.heroTitle}</span>
@@ -57,9 +57,9 @@ export default async function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section className="mission-section text-center" style={{ padding: '60px 20px', position: 'relative', zIndex: 10 }}>
+      <section className="mission-section text-center" style={{ padding: '100px 20px', position: 'relative', zIndex: 10, background: 'rgba(0, 0, 0, 0.15)', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
         <div className="container" style={{ maxWidth: '900px', margin: '0 auto 80px auto' }}>
-          <div style={{ display: 'inline-flex', padding: '15px', borderRadius: '50%', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)', marginBottom: '24px' }}>
+          <div style={{ display: 'inline-flex', padding: '15px', borderRadius: '50%', background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.3)', marginBottom: '24px', boxShadow: '0 0 20px rgba(20, 184, 166, 0.2)' }}>
              <ShieldCheck size={32} color="var(--magic-1)" />
           </div>
           <h2 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '24px' }}>
@@ -105,7 +105,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Team/Join Section */}
-      <section className="join-section text-center" style={{ padding: '100px 20px', position: 'relative', zIndex: 10 }}>
+      <section className="join-section text-center" style={{ padding: '100px 20px', position: 'relative', zIndex: 10, background: 'linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.05))' }}>
         <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '20px' }}>Ready to make a <span className="text-gradient-purple">difference?</span></h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 40px auto', fontSize: '1.1rem' }}>Whether you want to contribute financially or physically on the ground, there is a place for you in the HRAS ecosystem.</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>

@@ -51,11 +51,42 @@ export default function BackgroundEffects() {
           animation: twinkle alternate infinite ease-in-out;
         }
 
+        .slow-beam {
+          position: absolute;
+          border-radius: 50%;
+          will-change: transform;
+          opacity: 0.15;
+        }
+
         @keyframes twinkle {
           0% { transform: scale(0.8); opacity: 0.1; }
           100% { transform: scale(1.5); opacity: 0.8; }
         }
+
+        @keyframes beamMove1 {
+          0% { transform: translate3d(-20vw, -20vh, 0); }
+          50% { transform: translate3d(50vw, 30vh, 0) scale(1.2); }
+          100% { transform: translate3d(-20vw, -20vh, 0); }
+        }
+
+        @keyframes beamMove2 {
+          0% { transform: translate3d(80vw, 60vh, 0); }
+          50% { transform: translate3d(-10vw, 10vh, 0) scale(1.1); }
+          100% { transform: translate3d(80vw, 60vh, 0); }
+        }
       `}} />
+
+      {/* Slow Moving Beams (Zero Lag) */}
+      <div className="slow-beam" style={{
+        top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'radial-gradient(circle, var(--magic-1) 0%, transparent 50%)',
+        animation: 'beamMove1 50s linear infinite'
+      }} />
+      <div className="slow-beam" style={{
+        top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'radial-gradient(circle, var(--magic-2) 0%, transparent 50%)',
+        animation: 'beamMove2 65s linear infinite'
+      }} />
 
       {mounted && stars.map((star) => (
         <div 

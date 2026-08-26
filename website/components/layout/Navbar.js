@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Heart, Sun, Moon } from "lucide-react";
@@ -13,6 +14,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -24,6 +26,7 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
+    { name: "Home", href: "/" },
     { name: "Campaigns", href: "/campaigns" },
     { name: "Our Impact", href: "/impact" },
     { name: "Transparency", href: "/transparency" },
@@ -37,6 +40,7 @@ export default function Navbar() {
   return (
     <motion.header
       className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}
+      style={scrolled ? { borderBottom: '1px solid var(--magic-2)', boxShadow: '0 4px 30px rgba(0,0,0,0.5)' } : {}}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
@@ -62,11 +66,19 @@ export default function Navbar() {
 
           {/* 2. Center - Navigation Links */}
           <nav className="navbar-links desktop-only">
-            {navLinks.map((link) => (
-              <Link key={link.name} href={link.href} className="nav-link">
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
+              return (
+                <Link 
+                  key={link.name} 
+                  href={link.href} 
+                  className={`nav-link ${isActive ? 'active' : ''}`}
+                  style={isActive ? { color: 'var(--magic-2)', textShadow: '0 0 8px var(--magic-2)', borderBottom: '2px solid var(--magic-2)' } : {}}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* 3. Right - Actions */}
@@ -120,16 +132,20 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
           >
             <nav className="mobile-nav-links">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="mobile-nav-link"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className="mobile-nav-link"
+                    style={isActive ? { color: 'var(--magic-2)', textShadow: '0 0 8px var(--magic-2)' } : {}}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
               <div className="mobile-nav-actions">
                 <Link href="/volunteer" className="btn btn-outline" style={{ width: '100%' }}>
                   Volunteer

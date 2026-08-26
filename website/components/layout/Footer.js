@@ -26,7 +26,7 @@ export default async function Footer() {
   const settings = await getFooterSettings();
 
   return (
-    <footer className="footer">
+    <footer className="footer glass-panel" style={{ borderTop: '1px solid var(--magic-1)', marginTop: '40px' }}>
       <div className="container">
         <div className="footer-grid">
           
@@ -47,15 +47,22 @@ export default async function Footer() {
                 <span className="brand-subtitle-footer">Hamesha Rahen Aap Ke Sath</span>
               </div>
             </Link>
-            <p className="brand-fullname">Humanitarian Relief and Aid Society</p>
             <p className="footer-description">
               Empowering local volunteers and creating a direct, transparent impact in communities across Pakistan.
             </p>
             <div className="social-links">
-              <a href="#" className="social-icon">Fb</a>
-              <a href="#" className="social-icon">Tw</a>
-              <a href="#" className="social-icon">Ig</a>
-              <a href="#" className="social-icon">In</a>
+              <a href="#" className="social-icon" aria-label="Facebook">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </a>
+              <a href="#" className="social-icon" aria-label="Twitter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              </a>
+              <a href="#" className="social-icon" aria-label="Instagram">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a href="#" className="social-icon" aria-label="LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              </a>
             </div>
           </div>
 
@@ -107,9 +114,11 @@ export default async function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} Humanitarian Relief and Aid Society. All rights reserved.</p>
-          <div className="footer-legal">
+        <div className="footer-bottom" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
+          <p className="copyright-text" style={{ textShadow: '0 0 10px var(--magic-1)' }}>
+            &copy; {new Date().getFullYear()} HRAS. All rights reserved.
+          </p>
+          <div className="footer-legal" style={{ justifyContent: 'center' }}>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
           </div>
