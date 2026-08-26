@@ -41,48 +41,77 @@ export default async function Home() {
       {/* 1.5 Live Ticker */}
       <LiveTicker />
 
-      {/* 1.8 Founders Group (3D Effect) */}
-      <section className="section" style={{ position: 'relative', zIndex: 10, padding: '40px 20px', marginTop: '-40px' }}>
+      {/* 1.8 Founders Group (Animated Background & 3D Effect) */}
+      <section className="section" style={{ position: 'relative', zIndex: 10, padding: '40px 0', marginTop: '-20px', overflow: 'hidden' }}>
         <style dangerouslySetInnerHTML={{__html: `
+          .cyber-lines-bg {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 0;
+            pointer-events: none;
+          }
+          .cyber-line {
+            width: 100%;
+            background: #10b981;
+            margin-bottom: 25px;
+            opacity: 0;
+            animation: pulseLine 3s infinite alternate ease-in-out;
+            border-radius: 50%;
+          }
+          .cyber-line:nth-child(1) { animation-delay: 0s; height: 2px; box-shadow: 0 0 10px #047857, 0 0 20px #047857; width: 60%; }
+          .cyber-line:nth-child(2) { animation-delay: 0.5s; height: 3px; box-shadow: 0 0 15px #059669, 0 0 30px #059669; width: 80%; }
+          .cyber-line:nth-child(3) { animation-delay: 1s; height: 4px; box-shadow: 0 0 20px #10b981, 0 0 40px #10b981; width: 100%; }
+          .cyber-line:nth-child(4) { animation-delay: 1.5s; height: 6px; box-shadow: 0 0 30px #34d399, 0 0 60px #34d399; width: 120%; }
+          
+          @keyframes pulseLine {
+            0% { opacity: 0.1; transform: scaleX(0.9) translateY(10px); filter: hue-rotate(0deg); }
+            100% { opacity: 0.9; transform: scaleX(1.1) translateY(0px); filter: hue-rotate(20deg); }
+          }
+          
           .founders-group {
             display: flex;
             justify-content: center;
             align-items: flex-end;
             margin-bottom: 20px;
             position: relative;
-            transform-origin: bottom center;
-          }
-          @media (max-width: 900px) {
-            .founders-group { transform: scale(0.8); margin-bottom: 0px; }
-          }
-          @media (max-width: 600px) {
-            .founders-group { transform: scale(0.55); margin-bottom: -30px; }
-          }
-          @media (max-width: 400px) {
-            .founders-group { transform: scale(0.45); margin-bottom: -50px; }
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 20px auto;
           }
         `}} />
-        <div className="container text-center">
+        
+        {/* Animated Lines Background */}
+        <div className="cyber-lines-bg">
+          <div className="cyber-line"></div>
+          <div className="cyber-line"></div>
+          <div className="cyber-line"></div>
+          <div className="cyber-line"></div>
+        </div>
+
+        <div className="container text-center" style={{ position: 'relative', zIndex: 2 }}>
           
+          {/* New Group Image */}
           <div className="founders-group">
-            {/* Founder 2 (Left) */}
-            <div style={{ position: 'relative', width: '220px', height: '350px', zIndex: 1, marginRight: '-60px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
-              <Image src="/images/founders/founder_2.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
-            </div>
-            
-            {/* Founder 3 (Middle Left) */}
-            <div style={{ position: 'relative', width: '250px', height: '380px', zIndex: 2, marginRight: '-50px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
-              <Image src="/images/founders/founder_3.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
-            </div>
-
-            {/* Founder 1 (Middle Right) - Main/Center */}
-            <div style={{ position: 'relative', width: '270px', height: '400px', zIndex: 3, marginRight: '-60px', filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))' }}>
-              <Image src="/images/founders/founder_1.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
-            </div>
-
-            {/* Founder 4 (Right) */}
-            <div style={{ position: 'relative', width: '230px', height: '360px', zIndex: 1, filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
-              <Image src="/images/founders/founder_4.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.8))' }}>
+              <Image 
+                src="/images/founders/group.jpg" 
+                alt="HRAS Founders" 
+                fill 
+                style={{ 
+                  objectFit: 'contain', 
+                  objectPosition: 'bottom center',
+                  mixBlendMode: 'screen' /* Removes black background smoothly */
+                }} 
+              />
             </div>
           </div>
 
@@ -93,11 +122,13 @@ export default async function Home() {
             letterSpacing: '4px',
             color: 'white',
             textShadow: '0 0 20px var(--magic-2), 0 0 40px var(--magic-1)',
-            margin: 0
+            margin: 0,
+            position: 'relative',
+            zIndex: 3
           }}>
             HRAS FOUNDERS
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px', position: 'relative', zIndex: 3 }}>
             The visionaries standing together for a better Pakistan.
           </p>
         </div>
