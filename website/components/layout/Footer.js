@@ -1,67 +1,89 @@
-"use client";
-
 import Link from "next/link";
-import { Shield, Mail, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, Heart } from "lucide-react";
 import "./Footer.css";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="footer glass-panel">
-      <div className="container footer-container">
+    <footer className="footer">
+      <div className="container">
         <div className="footer-grid">
-          {/* Brand */}
+          
+          {/* Brand & About */}
           <div className="footer-brand">
             <Link href="/" className="footer-logo">
-              <Shield className="logo-icon" size={32} />
+              <div style={{ backgroundColor: 'white', borderRadius: '50%', overflow: 'hidden', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="HRAS Logo" 
+                  width={40} 
+                  height={40} 
+                  style={{ objectFit: 'contain', filter: 'brightness(1.1)' }}
+                />
+              </div>
               <span className="logo-text">HRAS</span>
             </Link>
+            <p className="brand-fullname">Humanitarian Relief and Aid Society</p>
             <p className="footer-description">
-              Humanitarian Relief and Aid Society. Empowering volunteers and connecting donors to make a real, transparent impact in communities worldwide.
+              Empowering local volunteers and connecting global donors to make a real, completely transparent impact in communities worldwide.
             </p>
-            <div className="social-links">
-              <a href="#" aria-label="Facebook">Fb</a>
-              <a href="#" aria-label="Twitter">Tw</a>
-              <a href="#" aria-label="Instagram">Ig</a>
-              <a href="#" aria-label="LinkedIn">In</a>
+            <div className="social-links" style={{ gap: '10px' }}>
+              <a href="#" className="social-icon" aria-label="Facebook">Fb</a>
+              <a href="#" className="social-icon" aria-label="Twitter">Tw</a>
+              <a href="#" className="social-icon" aria-label="Instagram">Ig</a>
+              <a href="#" className="social-icon" aria-label="LinkedIn">In</a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="footer-links">
-            <h3>Quick Links</h3>
+            <h4 className="footer-heading">Quick Links</h4>
             <ul>
               <li><Link href="/">Home</Link></li>
               <li><Link href="/campaigns">Active Campaigns</Link></li>
-              <li><Link href="/transparency">Transparency Ledger</Link></li>
+              <li><Link href="/transparency">Live Transparency Ledger</Link></li>
               <li><Link href="/about">About Us</Link></li>
+              <li><Link href="/impact">Our Impact</Link></li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Contact Info */}
           <div className="footer-contact">
-            <h3>Contact Us</h3>
+            <h4 className="footer-heading">Contact Us</h4>
             <ul>
               <li>
-                <Mail size={16} className="contact-icon" />
+                <Mail size={18} className="contact-icon" />
                 <a href="mailto:contact@hras-ngo.org">contact@hras-ngo.org</a>
               </li>
               <li>
-                <Phone size={16} className="contact-icon" />
+                <Phone size={18} className="contact-icon" />
                 <span>+92 (300) 123-4567</span>
               </li>
               <li>
-                <MapPin size={16} className="contact-icon" />
+                <MapPin size={18} className="contact-icon" />
                 <span>123 Relief Street, Future City, PK</span>
               </li>
             </ul>
           </div>
+          
+          {/* CTA Area */}
+          <div className="footer-cta">
+             <h4 className="footer-heading">Make a Difference</h4>
+             <p style={{ color: 'var(--text-secondary)', marginBottom: '15px', fontSize: '0.9rem' }}>Join thousands of others in our mission.</p>
+             <Link href="/campaigns" className="btn btn-primary full-width" style={{ display: 'flex', justifyContent: 'center' }}>
+               <Heart size={16} /> Donate Now
+             </Link>
+             <div style={{ marginTop: '15px' }}>
+               <Link href="/volunteer" className="btn btn-outline full-width" style={{ display: 'flex', justifyContent: 'center' }}>
+                 Become a Volunteer
+               </Link>
+             </div>
+          </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {currentYear} Humanitarian Relief and Aid Society (HRAS). All rights reserved.</p>
-          <div className="footer-legal">
+          <p>&copy; {new Date().getFullYear()} Humanitarian Relief and Aid Society. All rights reserved.</p>
+          <div className="footer-bottom-links">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
           </div>

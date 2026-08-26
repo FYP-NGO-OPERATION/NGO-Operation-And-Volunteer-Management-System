@@ -59,28 +59,8 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* ─── DARK THEME VARIABLES ─── */
-    --bg: #0f1110;
-    --bg-secondary: #1a1d1b;
-    --bg-surface: #1a1d1b;
-    --bg-input: #252926;
-    
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-hint: #6b7280;
-    
-    --border: #2d312e;
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-bg: rgba(26, 29, 27, 0.6);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  }
-}
-
 /* Fallback classes for explicit theme toggling */
-.light-theme {
+:root, .light {
   --bg: #f8faf9;
   --bg-secondary: #f3f5f4;
   --bg-surface: #ffffff;
@@ -95,7 +75,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.dark-theme {
+.dark {
   --bg: #0f1110;
   --bg-secondary: #1a1d1b;
   --bg-surface: #1a1d1b;
