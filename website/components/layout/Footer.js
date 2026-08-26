@@ -11,19 +11,33 @@ export default function Footer() {
           
           {/* Brand & About */}
           <div className="footer-brand">
-            <Link href="/" className="footer-logo">
-              <div style={{ backgroundColor: 'white', borderRadius: '50%', overflow: 'hidden', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Link href="/" className="footer-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', marginBottom: '20px' }}>
+              <div style={{
+                backgroundColor: 'white',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                width: 45,
+                height: 45,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 15px 3px rgba(251, 191, 36, 0.4)', // Amber glow
+                transition: 'all 0.3s ease'
+              }}>
                 <Image 
                   src="/logo.png" 
                   alt="HRAS Logo" 
-                  width={40} 
-                  height={40} 
+                  width={45} 
+                  height={45} 
                   style={{ objectFit: 'contain', filter: 'brightness(1.1)' }}
                 />
               </div>
-              <span className="logo-text">HRAS</span>
+              <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '12px' }}>
+                <span className="logo-text" style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1 }}>HRAS</span>
+                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', marginTop: '2px' }}>Hamesha Rahen Aap Ke Sath</span>
+              </div>
             </Link>
-            <p className="brand-fullname">Humanitarian Relief and Aid Society</p>
+            <p className="brand-fullname" style={{ marginTop: '-10px' }}>Humanitarian Relief and Aid Society</p>
             <p className="footer-description">
               Empowering local volunteers and connecting global donors to make a real, completely transparent impact in communities worldwide.
             </p>

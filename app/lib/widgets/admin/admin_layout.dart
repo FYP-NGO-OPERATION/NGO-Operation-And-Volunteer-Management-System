@@ -25,6 +25,7 @@ import '../../screens/admin/sentiment_analysis_screen.dart';
 import '../../screens/campaigns/route_optimization_screen.dart';
 import '../../screens/disaster/disaster_map_screen.dart';
 import '../../screens/admin/admin_banner_management_screen.dart';
+import '../../screens/admin/manage_website_screen.dart';
 import '../../screens/splash/splash_screen.dart';
 import '../../providers/disaster_provider.dart';
 import '../../widgets/common/custom_speed_dial.dart';
@@ -60,7 +61,8 @@ class _AdminLayoutState extends State<AdminLayout> {
     const SizedBox.shrink(), // 10. Route Optimization (placeholder, pushed instead)
     const SizedBox.shrink(), // 11. Blood Emergency (placeholder, pushed instead)
     const SizedBox.shrink(), // 12. AI Sentiment (placeholder, pushed instead)
-    _buildAdminProfile(), // 13. Profile
+    const ManageWebsiteScreen(), // 13. Manage Website
+    _buildAdminProfile(), // 14. Profile
   ];
 
   @override
@@ -274,6 +276,11 @@ class _AdminLayoutState extends State<AdminLayout> {
       icon: Icon(Icons.pie_chart_outline),
       selectedIcon: Icon(Icons.pie_chart),
       label: Text('Sentiment'),
+    ),
+    NavigationRailDestination(
+      icon: Icon(Icons.web_outlined),
+      selectedIcon: Icon(Icons.web),
+      label: Text('Website'),
     ),
     NavigationRailDestination(
       icon: Icon(Icons.person_outline),

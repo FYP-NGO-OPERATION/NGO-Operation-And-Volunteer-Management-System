@@ -43,18 +43,32 @@ export default function Navbar() {
     >
       <div className="navbar-container">
         {/* Logo */}
-        <Link href="/" className="navbar-logo">
-          <div style={{ backgroundColor: 'white', borderRadius: '50%', overflow: 'hidden', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image 
-              src="/logo.png" 
-              alt="HRAS Logo" 
-              width={40} 
-              height={40} 
-              style={{ objectFit: 'contain', filter: 'brightness(1.1)' }}
-            />
-          </div>
-          <span className="logo-text">HRAS</span>
-        </Link>
+        <Link href="/" className="logo-container" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+              <div style={{
+                backgroundColor: 'white',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                width: 45,
+                height: 45,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 15px 3px rgba(251, 191, 36, 0.4)', // Amber glow
+                transition: 'all 0.3s ease'
+              }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="HRAS Logo" 
+                  width={45} 
+                  height={45} 
+                  style={{ objectFit: 'contain', filter: 'brightness(1.1)' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '12px' }}>
+                <span className="logo-text" style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1 }}>HRAS</span>
+                <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.5px', marginTop: '2px' }}>Hamesha Rahen Aap Ke Sath</span>
+              </div>
+            </Link>
 
         {/* Desktop Nav */}
         <nav className="navbar-links desktop-only">

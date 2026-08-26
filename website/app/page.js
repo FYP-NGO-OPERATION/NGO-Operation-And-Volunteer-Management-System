@@ -2,12 +2,37 @@ import HeroSlider from "../components/layout/HeroSlider";
 import Link from "next/link";
 import { Heart, Globe, TrendingUp, ShieldCheck, ArrowRight, Activity, Smartphone } from "lucide-react";
 import Image from "next/image";
+import { db } from "../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
-export default function Home() {
+// Force dynamic rendering if we want it to fetch fresh data every time,
+// or use revalidate for ISR (incremental static regeneration).
+export const revalidate = 60; // Revalidate every 60 seconds
+
+async function getWebsiteSettings() {
+  try {
+    const docRef = doc(db, 'website_content', 'settings');
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+  } catch (error) {
+    console.error("Error fetching website settings:", error);
+  }
+  return {
+    heroTitle: 'Radical Transparency',
+    heroSubtitle: 'Track every single dollar you donate through our live, public financial ledger.',
+    aboutText: 'We\'ve re-engineered the charity model. Utilizing mobile technology to empower locals, and blockchain-inspired public ledgers to guarantee absolute transparency.'
+  };
+}
+
+export default async function Home() {
+  const settings = await getWebsiteSettings();
+
   return (
     <>
       {/* 1. Hero Slider (Full Screen) */}
-      <HeroSlider />
+      <HeroSlider title={settings.heroTitle} subtitle={settings.heroSubtitle} />
 
       {/* 2. Urgent Appeals (Modern Bento Grid) */}
       <section className="section" style={{ backgroundColor: 'var(--bg)', position: 'relative', zIndex: 2 }}>
@@ -72,7 +97,7 @@ export default function Home() {
           <div style={{ textAlign: 'center', marginBottom: '60px', maxWidth: '800px', margin: '0 auto 60px' }}>
             <h2 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '20px' }}>The HRAS Difference</h2>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>
-              We've re-engineered the charity model. Utilizing mobile technology to empower locals, and blockchain-inspired public ledgers to guarantee absolute transparency.
+              {settings.aboutText}
             </p>
           </div>
 
