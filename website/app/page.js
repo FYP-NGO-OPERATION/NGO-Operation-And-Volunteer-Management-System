@@ -41,6 +41,68 @@ export default async function Home() {
       {/* 1.5 Live Ticker */}
       <LiveTicker />
 
+      {/* 1.8 Founders Group (3D Effect) */}
+      <section className="section" style={{ position: 'relative', zIndex: 10, padding: '40px 20px', marginTop: '-40px' }}>
+        <style dangerouslySetInnerHTML={{__html: `
+          .founders-group {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            position: relative;
+            transform-origin: bottom center;
+          }
+          @media (max-width: 900px) {
+            .founders-group { transform: scale(0.8); margin-bottom: 0px; }
+          }
+          @media (max-width: 600px) {
+            .founders-group { transform: scale(0.55); margin-bottom: -30px; }
+          }
+          @media (max-width: 400px) {
+            .founders-group { transform: scale(0.45); margin-bottom: -50px; }
+          }
+        `}} />
+        <div className="container text-center">
+          
+          <div className="founders-group">
+            {/* Founder 2 (Left) */}
+            <div style={{ position: 'relative', width: '220px', height: '350px', zIndex: 1, marginRight: '-60px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
+              <Image src="/images/founders/founder_2.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
+            </div>
+            
+            {/* Founder 3 (Middle Left) */}
+            <div style={{ position: 'relative', width: '250px', height: '380px', zIndex: 2, marginRight: '-50px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
+              <Image src="/images/founders/founder_3.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
+            </div>
+
+            {/* Founder 1 (Middle Right) - Main/Center */}
+            <div style={{ position: 'relative', width: '270px', height: '400px', zIndex: 3, marginRight: '-60px', filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))' }}>
+              <Image src="/images/founders/founder_1.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
+            </div>
+
+            {/* Founder 4 (Right) */}
+            <div style={{ position: 'relative', width: '230px', height: '360px', zIndex: 1, filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }}>
+              <Image src="/images/founders/founder_4.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} />
+            </div>
+          </div>
+
+          <h2 style={{ 
+            fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
+            fontWeight: 900, 
+            textTransform: 'uppercase', 
+            letterSpacing: '4px',
+            color: 'white',
+            textShadow: '0 0 20px var(--magic-2), 0 0 40px var(--magic-1)',
+            margin: 0
+          }}>
+            HRAS FOUNDERS
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '10px' }}>
+            The visionaries standing together for a better Pakistan.
+          </p>
+        </div>
+      </section>
+
       {/* 2. About & Stats with Glowing Cards */}
       <section className="section" style={{ backgroundColor: 'transparent', position: 'relative', zIndex: 2 }}>
         <div className="container">
