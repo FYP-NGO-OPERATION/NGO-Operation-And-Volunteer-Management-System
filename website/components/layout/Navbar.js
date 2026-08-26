@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Heart, Shield } from "lucide-react";
+import { Menu, X, Heart } from "lucide-react";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -19,10 +20,10 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "/" },
     { name: "Campaigns", href: "/campaigns" },
-    { name: "About Us", href: "/about" },
+    { name: "Our Impact", href: "/impact" },
     { name: "Transparency", href: "/transparency" },
+    { name: "About", href: "/about" },
   ];
 
   return (
@@ -35,7 +36,13 @@ export default function Navbar() {
       <div className="navbar-container">
         {/* Logo */}
         <Link href="/" className="navbar-logo">
-          <Shield className="logo-icon" />
+          <Image 
+            src="/logo.png" 
+            alt="HRAS Logo" 
+            width={40} 
+            height={40} 
+            style={{ objectFit: 'contain' }}
+          />
           <span className="logo-text">HRAS</span>
         </Link>
 
@@ -50,10 +57,10 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="navbar-actions desktop-only">
-          <Link href="/download" className="btn btn-outline">
-            Become a Volunteer
+          <Link href="/volunteer" className="btn btn-outline">
+            Volunteer
           </Link>
-          <Link href="/campaigns" className="btn btn-primary glass-panel">
+          <Link href="/donate" className="btn btn-primary glass-panel">
             <Heart size={18} />
             Donate Now
           </Link>

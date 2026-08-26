@@ -10,11 +10,9 @@
 }
 
 .navbar-scrolled {
-  background: rgba(10, 1, 24, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .navbar-container {
@@ -43,9 +41,7 @@
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 1px;
-  background: linear-gradient(135deg, var(--primary-light), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .navbar-links {
@@ -87,14 +83,15 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
 }
 
 .btn-primary:hover {
-  box-shadow: var(--shadow-glow);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-dark);
 }
 
 .btn-outline {
