@@ -46,45 +46,58 @@ export default async function Home() {
         <style dangerouslySetInnerHTML={{__html: `
           .magic-portal-container {
             position: absolute;
-            bottom: 25%;
+            bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
             width: 100vw;
-            height: 400px;
+            height: 500px;
             perspective: 1000px;
             z-index: 0;
             pointer-events: none;
           }
           .magic-portal-ring {
             position: absolute;
-            top: 50%;
+            top: 60%;
             left: 50%;
-            width: 700px;
-            height: 700px;
+            width: 800px;
+            height: 800px;
             border-radius: 50%;
-            border: 4px solid rgba(16, 185, 129, 0.6);
-            box-shadow: 0 0 60px 20px rgba(16, 185, 129, 0.4), inset 0 0 60px 20px rgba(16, 185, 129, 0.4);
-            animation: spinRing 15s linear infinite;
+            border: 6px solid rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 80px 30px rgba(16, 185, 129, 0.5), inset 0 0 80px 30px rgba(16, 185, 129, 0.5);
+            animation: spinRing 12s linear infinite;
           }
           .magic-portal-ring::before {
             content: '';
             position: absolute;
-            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
             border-radius: 50%;
-            border: 4px dashed rgba(52, 211, 153, 0.8);
-            animation: spinRingReverse 20s linear infinite;
+            border: 4px dashed rgba(52, 211, 153, 1);
+            animation: spinRingReverse 15s linear infinite;
           }
           .magic-portal-core {
             position: absolute;
-            top: 50%;
+            top: 60%;
             left: 50%;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.9) 0%, rgba(4, 120, 87, 0.4) 40%, transparent 70%);
-            filter: blur(15px);
-            animation: pulseCore 3s ease-in-out infinite alternate;
+            background: radial-gradient(circle, rgba(16, 185, 129, 1) 0%, rgba(4, 120, 87, 0.6) 30%, transparent 70%);
+            filter: blur(20px);
+            animation: pulseCore 2s ease-in-out infinite alternate;
             transform: translate(-50%, -50%) rotateX(75deg);
+          }
+          .magic-light-beam {
+            position: absolute;
+            bottom: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 800px;
+            background: linear-gradient(to top, rgba(16, 185, 129, 0.5) 0%, transparent 100%);
+            filter: blur(40px);
+            z-index: 1;
+            animation: pulseBeam 4s ease-in-out infinite alternate;
+            pointer-events: none;
           }
           
           @keyframes spinRing {
@@ -96,40 +109,33 @@ export default async function Home() {
             100% { transform: rotateZ(0deg); }
           }
           @keyframes pulseCore {
-            0% { opacity: 0.6; transform: translate(-50%, -50%) rotateX(75deg) scale(0.9); }
-            100% { opacity: 1; transform: translate(-50%, -50%) rotateX(75deg) scale(1.1); }
+            0% { opacity: 0.7; transform: translate(-50%, -50%) rotateX(75deg) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, -50%) rotateX(75deg) scale(1.15); }
+          }
+          @keyframes pulseBeam {
+            0% { opacity: 0.5; height: 700px; }
+            100% { opacity: 1; height: 900px; }
           }
 
           .founders-group-wrapper {
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
+            aspect-ratio: 16/9;
+            mix-blend-mode: screen; /* Removes black background */
             -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
           }
-
-          .founder-img {
-            position: relative;
-            filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.6));
-            transition: transform 0.3s ease;
+          
+          .founders-group-wrapper img {
+            mix-blend-mode: screen; /* Failsafe */
           }
-          .founder-img:hover {
-            transform: translateY(-10px) scale(1.02);
-            filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.9));
-            z-index: 10 !important;
-          }
-
-          @media (max-width: 900px) { .founders-group-wrapper { transform: scale(0.8); margin-bottom: -40px; } }
-          @media (max-width: 600px) { .founders-group-wrapper { transform: scale(0.55); margin-bottom: -100px; } }
-          @media (max-width: 400px) { .founders-group-wrapper { transform: scale(0.45); margin-bottom: -140px; } }
         `}} />
         
         {/* Magical Fantasy Portal Background */}
+        <div className="magic-light-beam"></div>
         <div className="magic-portal-container">
           <div className="magic-portal-core"></div>
           <div className="magic-portal-ring"></div>
@@ -137,30 +143,18 @@ export default async function Home() {
 
         <div className="container text-center" style={{ position: 'relative', zIndex: 3 }}>
           
-          {/* 4 Individual Transparent Images perfectly aligned */}
+          {/* New Group Image (mix-blend-mode applied) */}
           <div className="founders-group-wrapper">
-            {/* Founder 2 (Left) */}
-            <div className="founder-img" style={{ width: '220px', height: '350px', zIndex: 1, marginRight: '-60px' }}>
-              <Image src="/images/founders/founder_2.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} priority />
-            </div>
-            
-            {/* Founder 3 (Middle Left) */}
-            <div className="founder-img" style={{ width: '250px', height: '380px', zIndex: 2, marginRight: '-50px' }}>
-              <Image src="/images/founders/founder_3.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} priority />
-            </div>
-
-            {/* Founder 1 (Middle Right - Main Center) */}
-            <div className="founder-img" style={{ width: '270px', height: '400px', zIndex: 3, marginRight: '-60px' }}>
-              <Image src="/images/founders/founder_1.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} priority />
-            </div>
-
-            {/* Founder 4 (Right) */}
-            <div className="founder-img" style={{ width: '230px', height: '360px', zIndex: 1 }}>
-              <Image src="/images/founders/founder_4.png" alt="HRAS Founder" fill style={{ objectFit: 'contain', objectPosition: 'bottom' }} priority />
-            </div>
+            <Image 
+              src="/images/founders/group.jpg" 
+              alt="HRAS Founders" 
+              fill 
+              style={{ objectFit: 'contain', objectPosition: 'bottom center', mixBlendMode: 'screen' }} 
+              priority 
+            />
           </div>
 
-          <div style={{ position: 'relative', zIndex: 4, marginTop: '10px' }}>
+          <div style={{ position: 'relative', zIndex: 4, marginTop: '20px' }}>
             <h2 style={{ 
               fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
               fontWeight: 900, 
