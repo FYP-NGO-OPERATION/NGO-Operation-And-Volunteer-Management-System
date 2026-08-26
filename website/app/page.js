@@ -116,6 +116,56 @@ export default async function Home() {
             0% { opacity: 0.5; height: 700px; }
             100% { opacity: 1; height: 900px; }
           }
+          
+          @keyframes spinBackdrop {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+          @keyframes spinBackdropReverse {
+            0% { transform: translate(-50%, -50%) rotate(360deg); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+          }
+
+          .magic-backdrop-circle {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            height: 130%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            background: conic-gradient(
+              from 0deg,
+              #10b981, 
+              #3b82f6, 
+              #8b5cf6, 
+              #ec4899, 
+              #f59e0b, 
+              #10b981
+            );
+            border: 4px solid rgba(255,255,255,0.3);
+            box-shadow: 
+              0 0 80px 20px rgba(139, 92, 246, 0.4),
+              inset 0 0 80px 20px rgba(59, 130, 246, 0.4);
+            filter: blur(8px);
+            opacity: 0.7;
+            z-index: 1;
+            animation: spinBackdrop 12s linear infinite;
+            pointer-events: none;
+          }
+
+          .magic-backdrop-ring {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            height: 135%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            border: 3px dashed rgba(255, 255, 255, 0.9);
+            z-index: 1;
+            animation: spinBackdropReverse 24s linear infinite;
+            pointer-events: none;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255,255,255,0.4);
+          }
 
           .founders-group-wrapper {
             position: relative;
@@ -141,11 +191,15 @@ export default async function Home() {
           
           {/* New Group Image (AI processed PNG) */}
           <div className="founders-group-wrapper">
+            {/* Multi-colored upright backdrop */}
+            <div className="magic-backdrop-circle"></div>
+            <div className="magic-backdrop-ring"></div>
+            
             <Image 
               src="/images/founders/group.png" 
               alt="HRAS Founders" 
               fill 
-              style={{ objectFit: 'contain', objectPosition: 'bottom center' }} 
+              style={{ objectFit: 'contain', objectPosition: 'bottom center', zIndex: 2 }} 
               priority 
             />
           </div>
