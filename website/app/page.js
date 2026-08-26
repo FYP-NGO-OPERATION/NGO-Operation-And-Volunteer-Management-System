@@ -117,54 +117,29 @@ export default async function Home() {
             100% { opacity: 1; height: 900px; }
           }
           
-          @keyframes spinBackdrop {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-          }
-          @keyframes spinBackdropReverse {
-            0% { transform: translate(-50%, -50%) rotate(360deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
+          @keyframes pulseAura {
+            0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); }
+            100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
           }
 
-          .magic-backdrop-circle {
+          .magic-aura-glow {
             position: absolute;
-            top: 45%;
+            top: 50%;
             left: 50%;
-            height: 130%;
-            aspect-ratio: 1/1;
+            width: 120%;
+            height: 120%;
             border-radius: 50%;
-            background: conic-gradient(
-              from 0deg,
-              #10b981, 
-              #3b82f6, 
-              #8b5cf6, 
-              #ec4899, 
-              #f59e0b, 
-              #10b981
-            );
-            border: 4px solid rgba(255,255,255,0.3);
-            box-shadow: 
-              0 0 80px 20px rgba(139, 92, 246, 0.4),
-              inset 0 0 80px 20px rgba(59, 130, 246, 0.4);
-            filter: blur(8px);
-            opacity: 0.7;
+            background: radial-gradient(circle, var(--magic-1) 0%, var(--magic-2) 40%, transparent 70%);
+            filter: blur(50px);
             z-index: 1;
-            animation: spinBackdrop 12s linear infinite;
+            animation: pulseAura 6s ease-in-out infinite alternate;
             pointer-events: none;
+            mix-blend-mode: screen;
           }
-
-          .magic-backdrop-ring {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            height: 135%;
-            aspect-ratio: 1/1;
-            border-radius: 50%;
-            border: 3px dashed rgba(255, 255, 255, 0.9);
-            z-index: 1;
-            animation: spinBackdropReverse 24s linear infinite;
-            pointer-events: none;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255,255,255,0.4);
+          
+          [data-theme='dark'] .magic-aura-glow {
+            mix-blend-mode: color-dodge;
+            opacity: 0.4;
           }
 
           .founders-group-wrapper {
@@ -191,9 +166,8 @@ export default async function Home() {
           
           {/* New Group Image (AI processed PNG) */}
           <div className="founders-group-wrapper">
-            {/* Multi-colored upright backdrop */}
-            <div className="magic-backdrop-circle"></div>
-            <div className="magic-backdrop-ring"></div>
+            {/* Subtle pulsing aura behind characters */}
+            <div className="magic-aura-glow"></div>
             
             <Image 
               src="/images/founders/group.png" 
