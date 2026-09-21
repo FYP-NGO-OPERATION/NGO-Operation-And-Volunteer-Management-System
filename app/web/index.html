@@ -85,6 +85,29 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- Aggressive Cache & Service Worker Exterminator -->
+  <script>
+    // 1. Destroy all registered Service Workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.warn('ServiceWorker unregistered for privacy parity.');
+        }
+      });
+    }
+
+    // 2. Eradicate orphaned IndexedDB instances
+    const databases = ['firebaseLocalStorageDb', 'firestore_clients'];
+    databases.forEach(dbName => {
+      const req = indexedDB.deleteDatabase(dbName);
+      req.onsuccess = function () { console.warn(`IndexedDB ${dbName} deleted successfully.`); };
+      req.onerror = function () { console.error(`Couldn't delete IndexedDB ${dbName}`); };
+      req.onblocked = function () { console.error(`Couldn't delete IndexedDB ${dbName} due to the operation being blocked`); };
+    });
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
