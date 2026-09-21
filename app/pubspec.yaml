@@ -37,11 +37,14 @@ dependencies:
   google_fonts: ^8.0.2
   intl: ^0.20.2
   provider: ^6.1.5+1
-  firebase_core: 4.7.0
-  firebase_auth: 6.4.0
-  cloud_firestore: 6.3.0
-  firebase_storage: 13.3.0
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: any
+  firebase_storage: any
+  firebase_crashlytics: any
+  firebase_analytics: any
   shared_preferences: 2.5.5
+  app_links: ^6.3.1
   connectivity_plus: ^7.1.1
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
@@ -85,12 +88,14 @@ dependencies:
   location: ^10.0.2
   audioplayers: ^6.7.1
   flutter_secure_storage: 11.2.0
-  firebase_app_check: 0.4.8
+  firebase_app_check: any
   freerasp: ^8.2.2
   flutter_windowmanager: ^0.2.0
   flutter_web_plugins:
     sdk: flutter
   crypto: 3.0.3
+  local_auth: ^3.0.2
+  workmanager: ^0.10.10
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -104,7 +109,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
-  fake_cloud_firestore: ^4.3.0
+  fake_cloud_firestore: any
   mockito: ^5.6.4
   build_runner: ^2.15.1
 

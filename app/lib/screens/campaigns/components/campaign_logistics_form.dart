@@ -53,6 +53,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           label: 'Location Name',
           hint: 'e.g., Lahore, Gulberg',
           prefixIcon: Icons.location_on,
+          maxLength: 100,
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'Location is required' : null,
         ),
@@ -65,6 +66,7 @@ class CampaignLogisticsForm extends StatelessWidget {
                 label: 'Lat (Optional)',
                 hint: 'e.g. 24.8607',
                 prefixIcon: Icons.map,
+                maxLength: 20,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -77,6 +79,7 @@ class CampaignLogisticsForm extends StatelessWidget {
                 label: 'Lng (Optional)',
                 hint: 'e.g. 67.0011',
                 prefixIcon: Icons.map,
+                maxLength: 20,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -90,6 +93,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           label: 'Target Goal',
           hint: 'e.g., Distribute 500 ration packs',
           prefixIcon: Icons.flag,
+          maxLength: 200,
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'Target is required' : null,
         ),
@@ -99,6 +103,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           label: 'Items Needed (Optional)',
           hint: 'e.g., 500 packs, 50 volunteers, 100K PKR',
           prefixIcon: Icons.list_alt,
+          maxLength: 200,
         ),
         const SizedBox(height: 16),
         CustomTextField(
@@ -106,6 +111,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           label: 'Volunteer Limit (Optional)',
           hint: 'Max volunteers (leave empty for no limit)',
           prefixIcon: Icons.people,
+          maxLength: 10,
           keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 20),

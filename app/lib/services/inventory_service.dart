@@ -25,6 +25,7 @@ class InventoryService {
     return _firestore
         .collection('inventory')
         .where('ngoId', isEqualTo: ngoId)
+        .where('is_deleted', isNotEqualTo: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs
@@ -35,6 +36,9 @@ class InventoryService {
 
   // Delete
   Future<void> deleteItem(String itemId) async {
-    await _firestore.collection('inventory').doc(itemId).delete();
+    await _firestore.collection('inventory').doc(itemId).update({
+      'is_deleted': true,
+      'deleted_at': FieldValue.serverTimestamp(),
+    });
   }
 }

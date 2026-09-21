@@ -64,7 +64,10 @@ class TaskService {
         .collection('tasks')
         .doc(taskId);
 
-    await taskRef.delete();
+    await taskRef.update({
+      'is_deleted': true,
+      'deleted_at': FieldValue.serverTimestamp(),
+    });
   }
 
   // Generate ID

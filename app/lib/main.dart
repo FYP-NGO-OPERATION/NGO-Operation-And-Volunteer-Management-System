@@ -21,6 +21,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:freerasp/freerasp.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:workmanager/workmanager.dart';
+import 'services/deep_link_service.dart';
+import 'services/offline_sync_service.dart';
 
 class SecureHttpOverrides extends HttpOverrides {
   @override
@@ -32,6 +38,23 @@ class SecureHttpOverrides extends HttpOverrides {
         return false;
       };
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("Handling a background message: ${message.messageId}");
+}
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    if (task == syncTaskName) {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      return await OfflineSyncService.flushQueue();
+    }
+    return true;
+  });
 }
 
 void main() async {
@@ -94,16 +117,38 @@ void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
     debugPrint('⚠️ FlutterError Log: ${details.exceptionAsString()}');
+    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
   };
 
   // Catches unhandled async errors from platform channels, isolates, etc.
   PlatformDispatcher.instance.onError = (error, stack) {
     debugPrint('⚠️ PlatformError: $error');
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true; // Prevents app crash — logs instead
   };
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Analytics
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  analytics.setAnalyticsCollectionEnabled(true);
+
+  // Crashlytics setup for uncaught exceptions
+  // Pass all uncaught "fatal" errors from the framework to Crashlytics
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  // Push Notifications Background Handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  
+  // Request permissions for notifications
+  await FirebaseMessaging.instance.requestPermission();
+
+  // Initialize Workmanager
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false,
+  );
 
   // ─── Firebase App Check ───
   await FirebaseAppCheck.instance.activate(
@@ -138,8 +183,27 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    DeepLinkService().initialize(_navigatorKey);
+  }
+
+  @override
+  void dispose() {
+    DeepLinkService().dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,6 +241,7 @@ class MyApp extends StatelessWidget {
           }
 
           return MaterialApp(
+            navigatorKey: _navigatorKey,
             title: AppConstants.appName,
             debugShowCheckedModeBanner: false,
             localizationsDelegates: context.localizationDelegates,

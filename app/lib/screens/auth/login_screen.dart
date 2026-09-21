@@ -189,6 +189,7 @@ class _LoginScreenState extends State<LoginScreen>
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          maxLength: 50,
                           validator: Validators.email,
                         ),
                         AppSpacing.vGapLg,
@@ -201,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen>
                           prefixIcon: Icons.lock_outline,
                           obscureText: _obscurePassword,
                           textInputAction: TextInputAction.done,
+                          maxLength: 30,
                           validator: Validators.password,
                           suffixIcon: IconButton(
                             icon: Icon(

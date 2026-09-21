@@ -43,6 +43,8 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('donations')
+              .where('is_deleted', isNotEqualTo: true)
+              .orderBy('is_deleted') // required when using inequality filter
               .orderBy('receivedAt', descending: true)
               .limit(50)
               .snapshots(),
@@ -295,7 +297,10 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                                 await FirebaseFirestore.instance
                                     .collection('donations')
                                     .doc(d.id)
-                                    .delete();
+                                    .update({
+                                  'is_deleted': true,
+                                  'deleted_at': FieldValue.serverTimestamp(),
+                                });
                               }
                             },
                           ),
@@ -496,7 +501,10 @@ class _AdminDonationsScreenState extends State<AdminDonationsScreen> {
                                 await FirebaseFirestore.instance
                                     .collection('donations')
                                     .doc(donation.id)
-                                    .delete();
+                                    .update({
+                                  'is_deleted': true,
+                                  'deleted_at': FieldValue.serverTimestamp(),
+                                });
                               }
                             },
                           ),

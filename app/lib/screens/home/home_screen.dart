@@ -13,7 +13,7 @@ import '../../providers/ngo_provider.dart';
 import '../../utils/responsive.dart';
 import '../auth/login_screen.dart';
 import '../campaigns/campaign_list_screen.dart';
-import '../campaigns/campaign_map_screen.dart';
+import '../campaigns/campaign_map_screen.dart' deferred as campaignMap;
 import '../campaigns/campaign_calendar_screen.dart';
 import '../profile/user_list_screen.dart';
 import '../ngos/ngo_selection_screen.dart';
@@ -26,7 +26,7 @@ import 'components/campaign_search_delegate.dart';
 import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
-import '../disaster/disaster_map_screen.dart';
+import '../disaster/disaster_map_screen.dart' deferred as disasterMap;
 import '../campaigns/route_optimization_screen.dart';
 import '../announcements/announcement_list_screen.dart';
 import '../../config/app_colors.dart';
@@ -249,10 +249,12 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.map),
               tooltip: 'Explore Live Map',
-              onPressed: () {
+              onPressed: () async {
+                await campaignMap.loadLibrary();
+                if (!mounted) return;
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CampaignMapScreen()),
+                  MaterialPageRoute(builder: (_) => campaignMap.CampaignMapScreen()),
                 );
               },
             ),
@@ -298,12 +300,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       icon: Icons.map,
                       title: 'Disaster Map',
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
+                        await disasterMap.loadLibrary();
+                        if (!mounted) return;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DisasterMapScreen(),
+                            builder: (_) => disasterMap.DisasterMapScreen(),
                           ),
                         );
                       },

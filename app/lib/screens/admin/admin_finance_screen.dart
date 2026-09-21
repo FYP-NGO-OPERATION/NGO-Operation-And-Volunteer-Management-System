@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 import 'manage_tracking_events_screen.dart';
+import '../../services/campaign_service.dart';
 import '../../services/fund_allocation_service.dart';
+import '../../services/biometric_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../models/expense_model.dart';
@@ -313,6 +315,21 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                   addedByName: user.name,
                   createdAt: DateTime.now(),
                 );
+
+                // Biometric authentication lock
+                final authService = BiometricService();
+                final isAuthenticated = await authService.authenticate(
+                  reason: 'Authenticate to allocate funds for $total',
+                );
+
+                if (!isAuthenticated) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Authentication failed. Transaction blocked.')),
+                    );
+                  }
+                  return;
+                }
 
                 await docRef.set(expense.toMap());
 

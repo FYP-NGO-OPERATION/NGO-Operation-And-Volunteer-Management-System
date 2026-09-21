@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import '../../utils/validators.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -291,9 +293,9 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       prefixIcon: Icons.person,
                       enabled:
                           _isAdmin, // Volunteers cant change their name easily here
-                      validator: (v) => v == null || v.trim().isEmpty
-                          ? 'Donor name required'
-                          : null,
+                      maxLength: 30,
+                      validator: Validators.name,
+                      inputFormatters: [LengthLimitingTextInputFormatter(30)],
                     ),
                     AppSpacing.vGapLg,
 
@@ -321,6 +323,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       label: 'Quantity / Items',
                       hint: isMoney ? 'e.g., Rs. 5,000' : 'e.g., 50 shirts',
                       prefixIcon: Icons.inventory,
+                      maxLength: 50,
                       validator: (v) => v == null || v.trim().isEmpty
                           ? 'Quantity required'
                           : null,
@@ -362,6 +365,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                           hint: '0',
                           prefixIcon: Icons.money,
                           keyboardType: TextInputType.number,
+                          maxLength: 20,
                         ),
                         AppSpacing.vGapLg,
                       ],
@@ -374,6 +378,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         hint: '0',
                         prefixIcon: Icons.account_balance,
                         keyboardType: TextInputType.number,
+                        maxLength: 20,
                       ),
                       AppSpacing.vGapLg,
 
@@ -383,6 +388,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                           label: 'Transaction ID (TID) / Ref No',
                           hint: 'e.g., 0011223344',
                           prefixIcon: Icons.receipt,
+                          maxLength: 50,
                         ),
                         AppSpacing.vGapLg,
                       ],

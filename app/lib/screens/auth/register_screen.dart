@@ -161,7 +161,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                         prefixIcon: Icons.person_outline,
                         validator: Validators.name,
                         textInputAction: TextInputAction.next,
-                        inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                        maxLength: 30,
+                        inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       ),
                       AppSpacing.vGapMd,
                       CustomTextField(
@@ -171,6 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
+                        maxLength: 50,
                         validator: Validators.email,
                       ),
                       AppSpacing.vGapMd,
@@ -196,6 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         hint: 'e.g., VOL2026',
                         prefixIcon: Icons.card_giftcard,
                         textInputAction: TextInputAction.next,
+                        maxLength: 20,
                       ),
                       AppSpacing.vGapMd,
 
@@ -206,6 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         prefixIcon: Icons.lock_outline,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.next,
+                        maxLength: 30,
                         validator: Validators.password,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -226,6 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         hint: 'Re-enter password',
                         prefixIcon: Icons.lock_outline,
                         obscureText: _obscureConfirm,
+                        maxLength: 30,
                         validator: (v) => Validators.confirmPassword(
                           v,
                           _passwordController.text,

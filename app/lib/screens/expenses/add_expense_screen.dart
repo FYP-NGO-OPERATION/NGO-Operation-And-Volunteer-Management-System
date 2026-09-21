@@ -4,6 +4,7 @@ import '../../models/expense_model.dart';
 import '../../enums/app_enums.dart';
 import '../../services/campaign_service.dart';
 import '../../services/fund_allocation_service.dart';
+import '../../services/biometric_service.dart';
 import '../../services/gemini_config_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
@@ -144,6 +145,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         status: user.isAdmin ? 'approved' : 'pending',
         createdAt: DateTime.now(),
       );
+
+      // Biometric authentication lock
+      final authService = BiometricService();
+      final isAuthenticated = await authService.authenticate(
+        reason: 'Authenticate to log expense of $total',
+      );
+
+      if (!isAuthenticated) {
+        if (mounted) {
+          SnackbarHelper.showError(context, 'Authentication failed. Blocked.');
+        }
+        return;
+      }
 
       await _campaignService.addExpense(expense);
 

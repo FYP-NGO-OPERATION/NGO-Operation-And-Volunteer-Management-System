@@ -354,7 +354,10 @@ class CampaignService {
     String campaignId,
     double amount,
   ) async {
-    await _expenses.doc(expenseId).delete();
+    await _expenses.doc(expenseId).update({
+      'is_deleted': true,
+      'deleted_at': FieldValue.serverTimestamp(),
+    });
     // Subtract from campaign total
     await _campaigns.doc(campaignId).update({
       'totalExpenses': FieldValue.increment(-amount),

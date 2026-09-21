@@ -20,7 +20,8 @@ import '../../../../providers/virtual_session_provider.dart';
 import '../../sessions/session_list_screen.dart';
 import 'home_quick_actions.dart';
 import 'home_joined_campaigns.dart';
-import '../../volunteers/volunteer_disaster_map_screen.dart';
+import '../../widgets/common/loading_overlay.dart';
+import '../../volunteers/volunteer_disaster_map_screen.dart' deferred as volMap;
 import '../../../../widgets/common/dynamic_banner_carousel.dart';
 
 class HomeDashboardTab extends StatefulWidget {
@@ -252,14 +253,17 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                         return Column(
                           children: [
                             GestureDetector(
-                              onTap: () {
+                              onTap: () async {
+                                await volMap.loadLibrary();
+                                if (!context.mounted) return;
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const Scaffold(
-                                      body: SafeArea(
-                                        child: VolunteerDisasterMapScreen(),
+                                    builder: (_) => Scaffold(
+                                      appBar: AppBar(
+                                        title: const Text('Volunteer Map'),
                                       ),
+                                      body: volMap.VolunteerDisasterMapScreen(),
                                     ),
                                   ),
                                 );

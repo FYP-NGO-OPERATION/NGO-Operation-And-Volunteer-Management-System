@@ -2,12 +2,13 @@
 class Validators {
   Validators._();
 
-  /// Validate email format
+  /// Validate email format using RFC 5322 strict pattern
   static String? email(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Email is required';
     }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    // Strict RFC 5322 regex for email validation
+    final emailRegex = RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
     if (!emailRegex.hasMatch(value.trim())) {
       return 'Please enter a valid email';
     }
@@ -44,7 +45,7 @@ class Validators {
     return null;
   }
 
-  /// Validate name (2-50 characters)
+  /// Validate name (2-30 characters, strictly letters and spaces)
   static String? name(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Name is required';
@@ -52,8 +53,13 @@ class Validators {
     if (value.trim().length < 2) {
       return 'Name must be at least 2 characters';
     }
-    if (value.trim().length > 50) {
-      return 'Name must be less than 50 characters';
+    if (value.trim().length > 30) {
+      return 'Name must be less than 30 characters';
+    }
+    // Reject numbers and special characters
+    final nameRegex = RegExp(r"^[a-zA-Z\s]+$");
+    if (!nameRegex.hasMatch(value.trim())) {
+      return 'Name must contain only letters and spaces';
     }
     return null;
   }

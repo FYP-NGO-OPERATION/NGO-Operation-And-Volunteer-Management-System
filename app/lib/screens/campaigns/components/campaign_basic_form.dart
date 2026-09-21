@@ -47,6 +47,7 @@ class CampaignBasicForm extends StatelessWidget {
           label: 'Campaign Title',
           hint: 'e.g., Ramadan Dastarkhan 2026',
           prefixIcon: Icons.title,
+          maxLength: 100,
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'Title is required' : null,
         ),
@@ -60,6 +61,7 @@ class CampaignBasicForm extends StatelessWidget {
                 label: 'Category',
                 hint: 'e.g., Ramadan, Eid, General',
                 prefixIcon: Icons.folder,
+                maxLength: 30,
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? 'Category required' : null,
               ),
@@ -73,6 +75,7 @@ class CampaignBasicForm extends StatelessWidget {
                 hint: 'e.g., 1',
                 prefixIcon: Icons.numbers,
                 keyboardType: TextInputType.number,
+                maxLength: 10,
               ),
             ),
           ],
@@ -120,6 +123,7 @@ class CampaignBasicForm extends StatelessWidget {
           hint: 'Describe the campaign purpose and goals...',
           prefixIcon: Icons.description,
           maxLines: 4,
+          maxLength: 1000,
           validator: (v) =>
               v == null || v.trim().isEmpty ? 'Description is required' : null,
         ),
@@ -129,6 +133,7 @@ class CampaignBasicForm extends StatelessWidget {
           label: 'Required Skills (Optional)',
           hint: 'e.g., medical, teaching, driving (comma-separated)',
           prefixIcon: Icons.psychology,
+          maxLength: 100,
         ),
       ],
     );

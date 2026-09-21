@@ -20,6 +20,12 @@ service cloud.firestore {
       return field is string && field.size() > 0 && field.size() < 1000;
     }
 
+    // Rate Limiting: Prevent rapid sequential updates (Throttling)
+    function isNotRateLimited() {
+      // If resource exists and has createdAt, require at least 2s before update
+      return !('createdAt' in resource.data) || request.time > resource.data.createdAt + duration.value(2, 's');
+    }
+
     // ─── Users Collection ───
     match /users/{userId} {
       // Anyone logged in can read user profiles (needed for name display)
@@ -82,7 +88,7 @@ service cloud.firestore {
       allow read: if isLoggedIn();
       // Users can only create pending donations, admins can create any
       allow create: if isAdmin() || (isLoggedIn() && request.resource.data.status == 'pending');
-      allow update: if isAdmin();
+      allow update: if isAdmin() && isNotRateLimited();
       allow delete: if isAdmin();
     }
 
@@ -170,7 +176,8 @@ service cloud.firestore {
     // ─── Incidents Collection ───
     match /incidents/{incidentId} {
       allow read: if isLoggedIn();
-      allow create, update: if isLoggedIn();
+      allow create: if isLoggedIn();
+      allow update: if isLoggedIn() && isNotRateLimited();
       allow delete: if isAdmin();
     }
 
