@@ -66,11 +66,19 @@ class _CustomButtonState extends State<CustomButton>
         children: [
           Icon(widget.icon, size: AppTokens.iconSm),
           AppSpacing.hGapSm,
-          Text(widget.text, style: AppTextStyles.button()),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(widget.text, style: AppTextStyles.button()),
+            ),
+          ),
         ],
       );
     }
-    return Text(widget.text, style: AppTextStyles.button());
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(widget.text, style: AppTextStyles.button()),
+    );
   }
 
   @override

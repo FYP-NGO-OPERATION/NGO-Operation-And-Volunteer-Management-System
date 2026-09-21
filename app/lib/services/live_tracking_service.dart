@@ -122,4 +122,10 @@ class LiveTrackingService {
       // ignore
     }
   }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
+  }
 }

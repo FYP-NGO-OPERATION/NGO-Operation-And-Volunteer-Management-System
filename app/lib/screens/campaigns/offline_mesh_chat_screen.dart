@@ -151,6 +151,14 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
     });
   }
 
+  
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _msgController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;

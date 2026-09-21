@@ -183,8 +183,11 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
       Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
         SnackbarHelper.showError(context, 'Failed: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
