@@ -1,0 +1,35 @@
+default_platform(:android)
+
+platform :android do
+  desc "Deploy a new version to the Google Play Internal Testing Track"
+  lane :internal do
+    # Ensure correct working directory
+    # Build Android App Bundle using Flutter
+    sh("cd ../.. && flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols")
+    
+    # Upload to Google Play Console Internal Track
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Run automated tests, capture screenshots and build"
+  lane :deploy_production do
+    # Run tests
+    sh("cd ../.. && flutter test")
+
+    # Capture screenshots using screengrab
+    # screengrab
+
+    sh("cd ../.. && flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols")
+    
+    upload_to_play_store(
+      track: 'production',
+      aab: '../build/app/outputs/bundle/release/app-release.aab'
+    )
+  end
+end

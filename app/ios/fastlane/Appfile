@@ -1,0 +1,5 @@
+app_identifier("com.ngo.ngo-volunteer-app") # The bundle identifier of your app
+apple_id("admin@ngo-hras.org") # Your Apple email address
+
+itc_team_id("123456789") # App Store Connect Team ID
+team_id("ABCDE12345") # Developer Portal Team ID

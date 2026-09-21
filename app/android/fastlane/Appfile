@@ -1,0 +1,2 @@
+json_key_file("google-play-key.json") # Path to the service account JSON key file
+package_name("com.ngo.ngo_volunteer_app") # App package name
