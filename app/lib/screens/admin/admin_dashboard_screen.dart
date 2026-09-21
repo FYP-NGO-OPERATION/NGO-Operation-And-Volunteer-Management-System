@@ -1,3 +1,4 @@
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui';
@@ -31,6 +32,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     super.initState();
     // One-time cleanup of test data
     CleanupTestData.run();
+    _secureScreen();
+  }
+
+  Future<void> _secureScreen() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  @override
+  void dispose() {
+    FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    super.dispose();
   }
 
   @override

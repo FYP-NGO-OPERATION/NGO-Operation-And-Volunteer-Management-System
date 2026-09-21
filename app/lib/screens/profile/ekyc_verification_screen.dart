@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,22 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
   bool _isProcessing = false;
   String _statusMessage = 'Center your face in the camera frame.';
   double _livenessScore = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _secureScreen();
+  }
+
+  Future<void> _secureScreen() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  @override
+  void dispose() {
+    FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    super.dispose();
+  }
 
   Future<void> _takeSelfie() async {
     final picker = ImagePicker();
