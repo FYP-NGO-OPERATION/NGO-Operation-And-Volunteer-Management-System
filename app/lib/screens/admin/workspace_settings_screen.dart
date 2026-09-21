@@ -211,7 +211,7 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
           if (_isLoading)
             const Center(
               child: Padding(
-                padding: EdgeInsets.only(right: 16),
+                padding: EdgeInsetsDirectional.only(end: 16),
                 child: CircularProgressIndicator(color: Colors.white),
               ),
             )

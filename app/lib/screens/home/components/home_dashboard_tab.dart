@@ -800,7 +800,7 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
   ) {
     return Container(
       width: 260,
-      margin: const EdgeInsets.only(right: 16),
+      margin: const EdgeInsetsDirectional.only(end: 16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16),

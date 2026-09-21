@@ -347,9 +347,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.8,
           ),
-          padding: EdgeInsets.only(
-            left: msg.imageUrl != null ? 4 : 12,
-            right: msg.imageUrl != null ? 4 : 12,
+          padding: EdgeInsetsDirectional.only(
+            start: msg.imageUrl != null ? 4 : 12,
+            end: msg.imageUrl != null ? 4 : 12,
             top: msg.imageUrl != null ? 4 : 8,
             bottom: msg.imageUrl != null ? 4 : 8,
           ),
@@ -376,9 +376,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
             children: [
               if (!isMe && !msg.isDeleted)
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: EdgeInsetsDirectional.only(
                     bottom: 2,
-                    left: msg.imageUrl != null ? 8 : 0,
+                    start: msg.imageUrl != null ? 8 : 0,
                   ),
                   child: Text(
                     msg.senderName,
@@ -440,9 +440,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                   children: [
                     if (msg.text.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(
-                          left: msg.imageUrl != null ? 8 : 0,
-                          right: 8.0,
+                        padding: EdgeInsetsDirectional.only(
+                          start: msg.imageUrl != null ? 8 : 0,
+                          end: 8.0,
                           bottom: 2,
                         ),
                         child: _buildRichText(
@@ -452,8 +452,8 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                         ),
                       ),
                     Padding(
-                      padding: EdgeInsets.only(
-                        left: (msg.imageUrl != null && msg.text.isEmpty)
+                      padding: EdgeInsetsDirectional.only(
+                        start: (msg.imageUrl != null && msg.text.isEmpty)
                             ? 8
                             : 0,
                         right: (msg.imageUrl != null && msg.text.isEmpty)
@@ -559,7 +559,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
 
   Widget _buildMessageInput(bool isDark) {
     return Container(
-      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 4),
+      padding: const EdgeInsetsDirectional.only(start: 8, end: 8, bottom: 12, top: 4),
       color: Colors.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,

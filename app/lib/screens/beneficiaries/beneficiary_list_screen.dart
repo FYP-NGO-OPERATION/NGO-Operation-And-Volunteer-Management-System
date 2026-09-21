@@ -115,7 +115,7 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                           : DismissDirection.none,
                       background: Container(
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
+                        padding: const EdgeInsetsDirectional.only(end: 20),
                         color: AppColors.error,
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
@@ -248,7 +248,7 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                           : DismissDirection.none,
                       background: Container(
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
+                        padding: const EdgeInsetsDirectional.only(end: 20),
                         color: AppColors.error,
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),

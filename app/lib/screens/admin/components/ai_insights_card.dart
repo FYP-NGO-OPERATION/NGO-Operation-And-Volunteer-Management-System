@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../../config/app_colors.dart';
@@ -46,23 +47,51 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
         return;
       }
 
-      final model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
+      final model = GenerativeModel(
+        model: 'gemini-3.6-flash',
+        apiKey: apiKey,
+        generationConfig: GenerationConfig(
+          responseMimeType: 'application/json',
+          responseSchema: Schema.object(
+            properties: {
+              'insight': Schema.string(description: 'A 3-sentence predictive insight.'),
+              'trend': Schema.string(description: 'Trend prediction for the next month.'),
+              'focus_area': Schema.string(description: 'A suggested campaign focus area.'),
+            },
+            requiredProperties: ['insight', 'trend', 'focus_area'],
+          ),
+        ),
+      );
+
+      // Sanitize inputs by ensuring they are strictly typed numbers
+      final int safeCampaigns = widget.totalCampaigns;
+      final int safeVolunteers = widget.totalVolunteers;
+      final double safeFunds = widget.totalFunds;
 
       final prompt =
           '''
 Act as an expert NGO strategist. Given our current platform data:
-- Total Campaigns: ${widget.totalCampaigns}
-- Total Volunteers: ${widget.totalVolunteers}
-- Total Funds Raised: Rs. ${widget.totalFunds}
+- Total Campaigns: $safeCampaigns
+- Total Volunteers: $safeVolunteers
+- Total Funds Raised: Rs. $safeFunds
 
-Write a short, engaging 3-sentence predictive insight. Predict the trend for next month and suggest one specific campaign focus area.
+Return a valid JSON object matching the requested schema.
 ''';
 
       final response = await model.generateContent([Content.text(prompt)]);
 
       if (mounted) {
         setState(() {
-          _insight = response.text?.trim() ?? 'No insights generated.';
+          try {
+            if (response.text == null || response.text!.isEmpty) {
+               _insight = 'No insights generated.';
+            } else {
+               final Map<String, dynamic> jsonResponse = jsonDecode(response.text!);
+               _insight = jsonResponse['insight'] ?? 'No insights generated.';
+            }
+          } catch (e) {
+            _insight = 'Error parsing AI response.';
+          }
         });
       }
     } catch (e) {

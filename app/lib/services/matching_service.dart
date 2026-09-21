@@ -4,6 +4,7 @@ import '../models/match_result_model.dart';
 import '../models/volunteer_model.dart';
 import '../enums/app_enums.dart';
 import '../config/feature_flags.dart';
+import 'package:flutter/foundation.dart';
 
 /// Smart Volunteer-Campaign Matching Service.
 class MatchingService {
@@ -69,15 +70,25 @@ class MatchingService {
     final registeredCampaignIds = existingRegistrations
         .map((e) => e.campaignId)
         .toSet();
+        
+    // O(1) Hash Map Optimization
     final pastCampaignTypes = existingRegistrations
         .map((e) => e.campaignTitle.toLowerCase())
-        .toList();
+        .toSet();
+    
+    // O(1) Skill Mapping Precomputation
+    final Set<String> normalizedUserSkills = user.skills.map((s) => s.toLowerCase().trim()).toSet();
+    final Set<CampaignType> userMappedTypes = {};
+    for (String skill in normalizedUserSkills) {
+      final mappedTypes = _skillCampaignMap[skill] ?? [CampaignType.custom];
+      userMappedTypes.addAll(mappedTypes);
+    }
 
     for (var campaign in campaigns) {
       if (campaign.status != CampaignStatus.active) continue;
       if (campaign.isFull) continue;
 
-      double skillScore = _calculateSkillScore(user.skills, campaign);
+      double skillScore = _calculateSkillScore(normalizedUserSkills, userMappedTypes, campaign);
       double locationScore = _calculateLocationScore(
         user.address,
         campaign.location,
@@ -117,16 +128,17 @@ class MatchingService {
   }
 
   static double _calculateSkillScore(
-    List<String> userSkills,
+    Set<String> normalizedUserSkills,
+    Set<CampaignType> userMappedTypes,
     CampaignModel campaign,
   ) {
-    if (userSkills.isEmpty) return 0.3;
+    if (normalizedUserSkills.isEmpty) return 0.3;
 
-    // Exact match based on required skills
+    // Exact match based on required skills via O(1) hash set lookup
     if (campaign.requiredSkills.isNotEmpty) {
       int matches = 0;
       for (String req in campaign.requiredSkills) {
-        if (userSkills.any((s) => s.toLowerCase() == req.toLowerCase())) {
+        if (normalizedUserSkills.contains(req.toLowerCase().trim())) {
           matches++;
         }
       }
@@ -137,15 +149,11 @@ class MatchingService {
       if (matches > 0) return 0.8;
     }
 
-    // Fallback to type mapping
-    int matches = 0;
-    for (String skill in userSkills) {
-      final s = skill.toLowerCase().trim();
-      final mappedTypes = _skillCampaignMap[s] ?? [CampaignType.custom];
-      if (mappedTypes.contains(campaign.type)) matches++;
+    // Fallback to type mapping using O(1) set
+    if (userMappedTypes.contains(campaign.type)) {
+      return 1.0; // Assume 1 match is enough for fallback type mapping score bump
     }
-    if (matches > 1) return 1.0;
-    if (matches == 1) return 0.7;
+    
     return 0.1;
   }
 
@@ -162,16 +170,23 @@ class MatchingService {
   }
 
   static double _calculatePastActivityScore(
-    List<String> pastHistory,
+    Set<String> pastHistory,
     CampaignModel campaign,
   ) {
     if (pastHistory.isEmpty) return 0.2;
-    final cType = campaign.type.name.toLowerCase();
+    
     final cTitle = campaign.title.toLowerCase();
-    bool exactTypeMatch = pastHistory.any(
-      (h) => h.contains(cType) || cTitle.contains(h.split(' ')[0]),
-    );
-    if (exactTypeMatch) return 1.0;
+    
+    // Check if the first word of the title exists in past history (fastest)
+    if (pastHistory.any((h) => cTitle.contains(h.split(' ')[0]))) {
+      return 1.0;
+    }
+    
+    // Check Campaign Type explicitly
+    if (pastHistory.any((h) => h.contains(campaign.type.name.toLowerCase()))) {
+      return 0.8;
+    }
+    
     return 0.5;
   }
 

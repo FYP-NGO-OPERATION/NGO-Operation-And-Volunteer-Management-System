@@ -82,7 +82,7 @@ class CampaignMediaPicker extends StatelessWidget {
               itemCount: galleryImages.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                  padding: const EdgeInsetsDirectional.only(end: 8.0, top: 8.0),
                   child: Stack(
                     children: [
                       ClipRRect(

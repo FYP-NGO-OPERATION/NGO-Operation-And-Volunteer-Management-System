@@ -29,9 +29,9 @@ class HomeProfileTab extends StatelessWidget {
     final user = Provider.of<AuthProvider>(context).user;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(
-        left: AppSpacing.lg,
-        right: AppSpacing.lg,
+      padding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.lg,
+        end: AppSpacing.lg,
         top: AppSpacing.lg,
         bottom: 100, // Extra padding so FAB doesn't overlap Logout
       ),

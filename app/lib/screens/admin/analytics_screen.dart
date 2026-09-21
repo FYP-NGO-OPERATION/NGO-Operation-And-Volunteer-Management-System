@@ -230,7 +230,7 @@ class AnalyticsScreen extends StatelessWidget {
         children: cards.asMap().entries.map((e) {
           return Expanded(
             child: Padding(
-              padding: EdgeInsets.only(left: e.key > 0 ? AppSpacing.md : 0),
+              padding: EdgeInsetsDirectional.only(start: e.key > 0 ? AppSpacing.md : 0),
               child: e.value,
             ),
           );

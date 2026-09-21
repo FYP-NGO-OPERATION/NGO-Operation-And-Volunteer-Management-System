@@ -198,7 +198,7 @@ class CampaignRecordTab extends StatelessWidget {
                         : DismissDirection.none,
                     background: Container(
                       alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
+                      padding: const EdgeInsetsDirectional.only(end: 20),
                       color: AppColors.error,
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
@@ -602,7 +602,7 @@ class CampaignRecordTab extends StatelessWidget {
                         : DismissDirection.none,
                     background: Container(
                       alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
+                      padding: const EdgeInsetsDirectional.only(end: 20),
                       color: AppColors.error,
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
@@ -675,7 +675,7 @@ class CampaignRecordTab extends StatelessWidget {
                                 ),
                                 if (e.status == 'pending')
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
+                                    padding: const EdgeInsetsDirectional.only(start: 8.0),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 6,

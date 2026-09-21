@@ -262,7 +262,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             ),
                             if (state.hasError)
                               Padding(
-                                padding: const EdgeInsets.only(left: 12.0),
+                                padding: const EdgeInsetsDirectional.only(start: 12.0),
                                 child: Text(
                                   state.errorText!,
                                   style: TextStyle(color: Colors.red.shade700, fontSize: 12),

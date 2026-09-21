@@ -188,7 +188,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeOutCubic,
-                            margin: const EdgeInsets.only(right: 8),
+                            margin: const EdgeInsetsDirectional.only(end: 8),
                             height: 8,
                             width: isActive ? 32 : 8,
                             decoration: BoxDecoration(

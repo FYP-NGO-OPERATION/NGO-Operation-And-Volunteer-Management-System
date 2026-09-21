@@ -121,7 +121,7 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
                 final category = campaignProvider.availableCategories[index];
                 final isSelected = campaignProvider.categoryFilter == category;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsetsDirectional.only(end: 8),
                   child: ChoiceChip(
                     label: Text(
                       category,
@@ -249,7 +249,7 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
   ) {
     final isSelected = provider.statusFilter == status;
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: Material(
         color: Colors.transparent,
         child: ChoiceChip(

@@ -293,10 +293,10 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
 
     return Container(
       height: 300,
-      padding: const EdgeInsets.only(
+      padding: const EdgeInsetsDirectional.only(
         top: AppSpacing.xl,
-        right: AppSpacing.xl,
-        left: AppSpacing.sm,
+        end: AppSpacing.xl,
+        start: AppSpacing.sm,
         bottom: AppSpacing.sm,
       ),
       decoration: BoxDecoration(

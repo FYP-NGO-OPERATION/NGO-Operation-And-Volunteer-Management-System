@@ -49,10 +49,10 @@ class SnackbarHelper {
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.only(
+        margin: const EdgeInsetsDirectional.only(
           bottom: 80, // Elevated to clear FloatingActionButton
-          left: 16,
-          right: 16,
+          start: 16,
+          end: 16,
         ),
         duration: const Duration(seconds: 4),
       ),

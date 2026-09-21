@@ -81,7 +81,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
                 Container(
                   width: 44,
                   height: 44,
-                  margin: const EdgeInsets.only(right: AppSpacing.md),
+                  margin: const EdgeInsetsDirectional.only(end: AppSpacing.md),
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,
