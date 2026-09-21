@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/donation_model.dart';
 import '../enums/app_enums.dart';
 
-/// Service for donation CRUD operations.
 class DonationService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+
+  DonationService({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _donations =>
       _db.collection('donations');

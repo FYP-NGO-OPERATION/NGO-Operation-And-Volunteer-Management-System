@@ -12,7 +12,8 @@ import '../../services/shop_service.dart';
 // used as generic trigger, or I'll implement proper logic
 
 class ShopListScreen extends StatefulWidget {
-  const ShopListScreen({super.key});
+  final ShopService? shopService;
+  const ShopListScreen({super.key, this.shopService});
 
   @override
   State<ShopListScreen> createState() => _ShopListScreenState();
@@ -22,6 +23,13 @@ class _ShopListScreenState extends State<ShopListScreen> {
   int _cartCount = 0;
   double _cartTotal = 0.0;
   final List<ProductModel> _cartItems = [];
+  late final ShopService _shopService;
+
+  @override
+  void initState() {
+    super.initState();
+    _shopService = widget.shopService ?? ShopService();
+  }
 
   void _addToCart(ProductModel product) {
     if (product.stock <= 0) {
@@ -52,8 +60,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
     );
 
     try {
-      final shopService = ShopService();
-      await shopService.checkout(
+      await _shopService.checkout(
         user.uid,
         user.name,
         _cartItems,
@@ -128,7 +135,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: ShopService().getProductsStream(),
+        stream: _shopService.getProductsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -192,8 +199,8 @@ class _ShopListScreenState extends State<ShopListScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('{product.price.toStringAsFixed(2)}', style: AppTextStyles.titleMedium(color: AppColors.primary)),
-                              Text(' left', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                              Flexible(child: Text('\Rs. ${product.price.toStringAsFixed(2)}', style: AppTextStyles.titleMedium(color: AppColors.primary), overflow: TextOverflow.ellipsis)),
+                              Text('${product.stock} left', style: const TextStyle(fontSize: 10, color: Colors.grey)),
                             ],
                           ),
                           AppSpacing.vGapXs,
