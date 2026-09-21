@@ -5,9 +5,14 @@ class ShopService {
 
   ShopService({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
 
-  Future<void> checkout(String userId, String userName, List<dynamic> cartItems, double total) async {
+  Future<void> checkout(
+    String userId,
+    String userName,
+    List<dynamic> cartItems,
+    double total,
+  ) async {
     final batch = _db.batch();
-    
+
     // Save order
     final orderRef = _db.collection('orders').doc();
     batch.set(orderRef, {
@@ -18,13 +23,13 @@ class ShopService {
       'timestamp': FieldValue.serverTimestamp(),
       'status': 'paid',
     });
-    
+
     // Update stock
     for (var item in cartItems) {
       final docRef = _db.collection('products').doc(item.id);
       batch.update(docRef, {'stock': FieldValue.increment(-1)});
     }
-    
+
     // Admin notification
     final notifRef = _db.collection('admin_notifications').doc();
     batch.set(notifRef, {
@@ -33,7 +38,7 @@ class ShopService {
       'type': 'order',
       'timestamp': FieldValue.serverTimestamp(),
     });
-    
+
     await batch.commit();
   }
 
@@ -41,4 +46,3 @@ class ShopService {
     return _db.collection('products').snapshots();
   }
 }
-

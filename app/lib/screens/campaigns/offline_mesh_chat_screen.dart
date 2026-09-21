@@ -149,7 +149,6 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
     });
   }
 
-  
   @override
   void dispose() {
     _scrollController.dispose();

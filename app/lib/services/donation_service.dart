@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/donation_model.dart';
 import '../enums/app_enums.dart';
+import '../utils/network_resilience_helper.dart';
 
 class DonationService {
   final FirebaseFirestore _db;
 
-  DonationService({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
+  DonationService({FirebaseFirestore? db})
+    : _db = db ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _donations =>
       _db.collection('donations');
@@ -42,24 +44,26 @@ class DonationService {
       isAnonymous: donation.isAnonymous,
     );
 
-    await _db.runTransaction((transaction) async {
-      final docSnapshot = await transaction.get(docRef);
-      if (docSnapshot.exists) {
-        throw Exception("Donation already exists.");
-      }
+    await ChaosResilience.withRetry(
+      () => _db.runTransaction((transaction) async {
+        final docSnapshot = await transaction.get(docRef);
+        if (docSnapshot.exists) {
+          throw Exception("Donation already exists.");
+        }
 
-      transaction.set(docRef, donationWithId.toMap());
+        transaction.set(docRef, donationWithId.toMap());
 
-      // Update campaign donation counters ONLY if approved
-      if (donationWithId.status == DonationStatus.approved) {
-        final totalMoney = donation.amountCash + donation.amountOnline;
-        transaction.update(_campaigns.doc(donation.campaignId), {
-          'totalDonationsCount': FieldValue.increment(1),
-          'totalDonationsAmount': FieldValue.increment(totalMoney),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
-    });
+        // Update campaign donation counters ONLY if approved
+        if (donationWithId.status == DonationStatus.approved) {
+          final totalMoney = donation.amountCash + donation.amountOnline;
+          transaction.update(_campaigns.doc(donation.campaignId), {
+            'totalDonationsCount': FieldValue.increment(1),
+            'totalDonationsAmount': FieldValue.increment(totalMoney),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }),
+    );
 
     return donationWithId;
   }
@@ -71,42 +75,46 @@ class DonationService {
   ) async {
     if (donation.status == newStatus) return;
 
-    await _db.runTransaction((transaction) async {
-      final docRef = _donations.doc(donation.id);
-      final docSnapshot = await transaction.get(docRef);
-      if (!docSnapshot.exists) {
-        throw Exception("Donation does not exist.");
-      }
-      
-      final currentStatusStr = docSnapshot.data()?['status'] as String?;
-      if (currentStatusStr == newStatus.name) {
-        return; // Idempotency check: Already processed
-      }
+    await ChaosResilience.withRetry(
+      () => _db.runTransaction((transaction) async {
+        final docRef = _donations.doc(donation.id);
+        final docSnapshot = await transaction.get(docRef);
+        if (!docSnapshot.exists) {
+          throw Exception("Donation does not exist.");
+        }
 
-      transaction.update(docRef, {
-        'status': newStatus.name,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+        final currentStatusStr = docSnapshot.data()?['status'] as String?;
+        if (currentStatusStr == newStatus.name) {
+          return; // Idempotency check: Already processed
+        }
 
-      // If changing to approved from anything else -> INCREMENT counters
-      if (newStatus == DonationStatus.approved && currentStatusStr != DonationStatus.approved.name) {
-        final totalMoney = donation.amountCash + donation.amountOnline;
-        transaction.update(_campaigns.doc(donation.campaignId), {
-          'totalDonationsCount': FieldValue.increment(1),
-          'totalDonationsAmount': FieldValue.increment(totalMoney),
+        transaction.update(docRef, {
+          'status': newStatus.name,
           'updatedAt': FieldValue.serverTimestamp(),
         });
-      }
-      // If changing from approved to something else (e.g., rejected) -> DECREMENT counters
-      else if (currentStatusStr == DonationStatus.approved.name && newStatus != DonationStatus.approved) {
-        final totalMoney = donation.amountCash + donation.amountOnline;
-        transaction.update(_campaigns.doc(donation.campaignId), {
-          'totalDonationsCount': FieldValue.increment(-1),
-          'totalDonationsAmount': FieldValue.increment(-totalMoney),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
-    });
+
+        // If changing to approved from anything else -> INCREMENT counters
+        if (newStatus == DonationStatus.approved &&
+            currentStatusStr != DonationStatus.approved.name) {
+          final totalMoney = donation.amountCash + donation.amountOnline;
+          transaction.update(_campaigns.doc(donation.campaignId), {
+            'totalDonationsCount': FieldValue.increment(1),
+            'totalDonationsAmount': FieldValue.increment(totalMoney),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+        // If changing from approved to something else (e.g., rejected) -> DECREMENT counters
+        else if (currentStatusStr == DonationStatus.approved.name &&
+            newStatus != DonationStatus.approved) {
+          final totalMoney = donation.amountCash + donation.amountOnline;
+          transaction.update(_campaigns.doc(donation.campaignId), {
+            'totalDonationsCount': FieldValue.increment(-1),
+            'totalDonationsAmount': FieldValue.increment(-totalMoney),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }),
+    );
   }
 
   // ═══════════════════════════════════════════
@@ -118,7 +126,9 @@ class DonationService {
     return _donations
         .where('campaignId', isEqualTo: campaignId)
         .orderBy('receivedAt', descending: true)
-        .limit(500) // SECURE: Added limit to prevent massive billing spikes on large campaigns
+        .limit(
+          500,
+        ) // SECURE: Added limit to prevent massive billing spikes on large campaigns
         .snapshots()
         .map((snapshot) {
           final list =
@@ -176,6 +186,4 @@ class DonationService {
       }
     });
   }
-
-
 }

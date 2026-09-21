@@ -49,10 +49,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     String phone = widget.phoneNumber;
     if (!phone.startsWith('+')) {
       phone =
-          '+92${phone.replaceFirst(
-            RegExp(r'^0'),
-            '',
-          )}'; // Simple fallback for PK numbers
+          '+92${phone.replaceFirst(RegExp(r'^0'), '')}'; // Simple fallback for PK numbers
     }
 
     final success = await auth.verifyPhoneNumber(phone);

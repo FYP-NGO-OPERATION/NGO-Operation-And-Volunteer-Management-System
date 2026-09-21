@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/beneficiary_model.dart';
 import '../models/distribution_model.dart';
+import '../utils/network_resilience_helper.dart';
 
 /// Service for Beneficiary and Distribution CRUD operations.
 class DistributionService {
@@ -31,29 +33,25 @@ class DistributionService {
       notes: beneficiary.notes,
       addedBy: beneficiary.addedBy,
     );
-    await docRef.set(newBeneficiary.toMap());
+
+    final batch = _db.batch();
+    batch.set(docRef, newBeneficiary.toMap());
 
     // Update campaign's beneficiaryCount (increment by familySize)
-    await _campaigns.doc(beneficiary.campaignId).update({
+    batch.update(_campaigns.doc(beneficiary.campaignId), {
       'beneficiaryCount': FieldValue.increment(beneficiary.familySize),
       'updatedAt': FieldValue.serverTimestamp(),
     });
 
+    await ChaosResilience.withRetry(() => batch.commit());
+
     return newBeneficiary;
   }
 
-  Stream<List<BeneficiaryModel>> getBeneficiariesStream(String campaignId) {
+  Query<Map<String, dynamic>> getBeneficiariesQuery(String campaignId) {
     return _beneficiaries
         .where('campaignId', isEqualTo: campaignId)
-        .snapshots()
-        .map((snapshot) {
-          final list =
-              snapshot.docs
-                  .map((doc) => BeneficiaryModel.fromMap(doc.data()))
-                  .toList()
-                ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
-          return list;
-        });
+        .orderBy('receivedAt', descending: true);
   }
 
   Future<void> deleteBeneficiary(
@@ -61,13 +59,26 @@ class DistributionService {
     String campaignId,
     int familySize,
   ) async {
-    await _beneficiaries.doc(beneficiaryId).delete();
+    final batch = _db.batch();
+    batch.delete(_beneficiaries.doc(beneficiaryId));
 
     // Decrement campaign's beneficiaryCount
-    await _campaigns.doc(campaignId).update({
+    batch.update(_campaigns.doc(campaignId), {
       'beneficiaryCount': FieldValue.increment(-familySize),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'DELETE_BENEFICIARY',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'campaignId': campaignId,
+      'beneficiaryId': beneficiaryId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   // ═══════════════════════════════════════════
@@ -90,29 +101,25 @@ class DistributionService {
       location: distribution.location,
       notes: distribution.notes,
     );
-    await docRef.set(newDistribution.toMap());
+
+    final batch = _db.batch();
+    batch.set(docRef, newDistribution.toMap());
 
     // Update campaign's distributionCount (increment by quantity)
-    await _campaigns.doc(distribution.campaignId).update({
+    batch.update(_campaigns.doc(distribution.campaignId), {
       'distributionCount': FieldValue.increment(distribution.quantity),
       'updatedAt': FieldValue.serverTimestamp(),
     });
 
+    await ChaosResilience.withRetry(() => batch.commit());
+
     return newDistribution;
   }
 
-  Stream<List<DistributionModel>> getDistributionsStream(String campaignId) {
+  Query<Map<String, dynamic>> getDistributionsQuery(String campaignId) {
     return _distributions
         .where('campaignId', isEqualTo: campaignId)
-        .snapshots()
-        .map((snapshot) {
-          final list =
-              snapshot.docs
-                  .map((doc) => DistributionModel.fromMap(doc.data()))
-                  .toList()
-                ..sort((a, b) => b.distributedAt.compareTo(a.distributedAt));
-          return list;
-        });
+        .orderBy('distributedAt', descending: true);
   }
 
   Future<void> deleteDistribution(
@@ -120,12 +127,25 @@ class DistributionService {
     String campaignId,
     int quantity,
   ) async {
-    await _distributions.doc(distributionId).delete();
+    final batch = _db.batch();
+    batch.delete(_distributions.doc(distributionId));
 
     // Decrement campaign's distributionCount
-    await _campaigns.doc(campaignId).update({
+    batch.update(_campaigns.doc(campaignId), {
       'distributionCount': FieldValue.increment(-quantity),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'DELETE_DISTRIBUTION',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'campaignId': campaignId,
+      'distributionId': distributionId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 }

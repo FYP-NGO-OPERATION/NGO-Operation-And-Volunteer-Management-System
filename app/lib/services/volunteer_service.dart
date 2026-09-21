@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/volunteer_model.dart';
 import '../enums/app_enums.dart';
+import '../utils/network_resilience_helper.dart';
 import 'package:uuid/uuid.dart';
 
 /// Service for volunteer registration and attendance management.
@@ -60,7 +62,9 @@ class VolunteerService {
       final volunteerLimit = data['volunteerLimit'] as int?;
       final totalVolunteers = data['totalVolunteers'] as int? ?? 0;
 
-      if (volunteerLimit != null && volunteerLimit > 0 && totalVolunteers >= volunteerLimit) {
+      if (volunteerLimit != null &&
+          volunteerLimit > 0 &&
+          totalVolunteers >= volunteerLimit) {
         throw Exception('Campaign is full. Cannot join.');
       }
 
@@ -69,9 +73,7 @@ class VolunteerService {
         'totalVolunteers': totalVolunteers + 1,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      transaction.update(userRef, {
-        'campaignsJoined': FieldValue.increment(1),
-      });
+      transaction.update(userRef, {'campaignsJoined': FieldValue.increment(1)});
     });
 
     return volunteer;
@@ -137,7 +139,18 @@ class VolunteerService {
     batch.update(_db.collection('users').doc(userId), {
       'campaignsJoined': FieldValue.increment(-1),
     });
-    await batch.commit();
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'VOLUNTEER_LEAVE_CAMPAIGN',
+      'userId': userId,
+      'campaignId': campaignId,
+      'volunteerId': volunteerId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   // ═══════════════════════════════════════════
@@ -176,16 +189,18 @@ class VolunteerService {
 
   /// Get all campaigns a user has joined
   Stream<List<VolunteerModel>> getUserCampaignsStream(String userId) {
-    return _volunteers.where('userId', isEqualTo: userId).limit(500).snapshots().map((
-      snapshot,
-    ) {
-      final list =
-          snapshot.docs
-              .map((doc) => VolunteerModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
-      return list;
-    });
+    return _volunteers
+        .where('userId', isEqualTo: userId)
+        .limit(500)
+        .snapshots()
+        .map((snapshot) {
+          final list =
+              snapshot.docs
+                  .map((doc) => VolunteerModel.fromMap(doc.data()))
+                  .toList()
+                ..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
+          return list;
+        });
   }
 
   /// Get volunteer count for a campaign
@@ -232,11 +247,12 @@ class VolunteerService {
     await batch.commit();
   }
 
-
-
   /// Fetch all registrations for a user as a one-time list (for matching algorithm).
   Future<List<VolunteerModel>> fetchUserRegistrations(String userId) async {
-    final snapshot = await _volunteers.where('userId', isEqualTo: userId).limit(500).get();
+    final snapshot = await _volunteers
+        .where('userId', isEqualTo: userId)
+        .limit(500)
+        .get();
     return snapshot.docs
         .map((doc) => VolunteerModel.fromMap(doc.data()))
         .toList();
@@ -258,6 +274,16 @@ class VolunteerService {
       'totalVolunteers': FieldValue.increment(-1),
     });
 
-    await batch.commit();
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'REJECT_VOLUNTEER',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'campaignId': campaignId,
+      'volunteerId': volunteerId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 }

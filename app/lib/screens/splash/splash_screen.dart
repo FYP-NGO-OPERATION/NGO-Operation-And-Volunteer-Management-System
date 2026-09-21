@@ -120,6 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
       await prefs.setString('pending_invite_ngo_id', widget.inviteNgoId!);
     }
 
+    if (!mounted) return;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = await authProvider.checkAuthState();
     final prefs = await SharedPreferences.getInstance();

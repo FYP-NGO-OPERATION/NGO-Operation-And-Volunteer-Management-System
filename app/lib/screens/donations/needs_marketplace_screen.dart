@@ -286,9 +286,9 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content: Text(
-                            'An unexpected error occurred. Please try again.',
-                          ),
+                        content: Text(
+                          'An unexpected error occurred. Please try again.',
+                        ),
                       ),
                     );
                   }

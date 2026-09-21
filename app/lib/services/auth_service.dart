@@ -8,8 +8,8 @@ class AuthService {
   final GoogleSignIn _googleSignIn;
 
   AuthService({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
-      : _auth = auth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+    : _auth = auth ?? FirebaseAuth.instance,
+      _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   /// Get current user
   User? get currentUser => _auth.currentUser;
@@ -137,7 +137,10 @@ class AuthService {
       await user.reauthenticateWithCredential(credential);
 
       // GDPR Compliance: Scrub all PII from Firestore before deleting Auth user
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .delete();
 
       await user.delete();
     } on FirebaseAuthException catch (e) {

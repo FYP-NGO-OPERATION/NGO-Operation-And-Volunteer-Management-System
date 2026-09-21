@@ -13,6 +13,7 @@ import '../../enums/app_enums.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
+import '../../widgets/common/infinite_firestore_list.dart';
 
 class AdminFinanceScreen extends StatefulWidget {
   const AdminFinanceScreen({super.key});
@@ -157,28 +158,26 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
   }
 
   Widget _buildExpensesList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
+    return InfiniteFirestoreList<ExpenseModel>(
+      query: FirebaseFirestore.instance
           .collection('expenses')
-          .orderBy('createdAt', descending: true)
-          .limit(20)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          .orderBy('createdAt', descending: true),
+      limit: 20,
+      itemBuilder: (doc) {
+        final data = doc.data()!;
+        data['id'] = doc.id;
+        return ExpenseModel.fromMap(data);
+      },
+      builder: (context, expenses, hasMore, isLoading, fetchNext) {
+        if (expenses.isEmpty) {
+          return const Text('No expenses logged yet.');
         }
-
-        final docs = snapshot.data!.docs;
-        if (docs.isEmpty) return const Text('No expenses logged yet.');
-
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: docs.length,
+          itemCount: expenses.length,
           itemBuilder: (context, index) {
-            final data = docs[index].data() as Map<String, dynamic>;
-            final expense = ExpenseModel.fromMap(data);
-
+            final expense = expenses[index];
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(

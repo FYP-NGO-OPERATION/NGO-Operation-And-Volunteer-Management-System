@@ -188,7 +188,9 @@ class _AdminLayoutState extends State<AdminLayout> {
                 'Are you sure you want to log out of your account?',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(
+                    alpha: 0.1,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -242,15 +244,13 @@ class _AdminLayoutState extends State<AdminLayout> {
     );
 
     if (shouldLogout == true) {
-      if (context.mounted) {
-        await Provider.of<AuthProvider>(context, listen: false).logout();
-        if (context.mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const SplashScreen()),
-            (route) => false,
-          );
-        }
-      }
+      if (!mounted) return;
+      await Provider.of<AuthProvider>(context, listen: false).logout();
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
+        (route) => false,
+      );
     }
   }
 
@@ -461,7 +461,9 @@ class _AdminLayoutState extends State<AdminLayout> {
                 'Are you sure you want to close the app?',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(
+                    alpha: 0.1,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -1109,11 +1111,13 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                             boxShadow: [
                               BoxShadow(
                                 color: widget.isDark
-                                    ? Colors.tealAccent.withOpacity(
-                                        0.55 + 0.25 * math.sin(angle * 2),
+                                    ? Colors.tealAccent.withValues(
+                                        alpha:
+                                            0.55 + 0.25 * math.sin(angle * 2),
                                       )
-                                    : Colors.greenAccent.withOpacity(
-                                        0.55 + 0.25 * math.sin(angle * 2),
+                                    : Colors.greenAccent.withValues(
+                                        alpha:
+                                            0.55 + 0.25 * math.sin(angle * 2),
                                       ),
                                 blurRadius: 24,
                                 spreadRadius: 6,
@@ -1122,7 +1126,9 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                           ),
                           child: CircleAvatar(
                             radius: 38,
-                            backgroundColor: Colors.white.withValues(alpha: 0.1),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.1,
+                            ),
                             backgroundImage:
                                 widget.user?.profileImageUrl != null
                                 ? CachedNetworkImageProvider(

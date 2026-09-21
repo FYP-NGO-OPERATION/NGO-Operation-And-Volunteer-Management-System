@@ -32,6 +32,20 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ─── Settings Collection ───
+    match /settings/{docId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+    
+    // ─── Audit Logs (Zero-Trust) ───
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      // IMMUTABLE: No one, not even super admins, can edit or delete audit logs
+      allow update, delete: if false; 
+    }
+
     // ─── NGOs Collection ───
     match /ngos/{ngoId} {
       allow read: if isLoggedIn();

@@ -217,7 +217,8 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                   children: [
                     if (!_isAdmin && isMoney) ...[
                       Semantics(
-                        label: 'Payment instructions. Please transfer your funds to our official JazzCash or Easypaisa number: 0 3 0 0, 1 2 3 4 5 6 7, then enter the Transaction ID below.',
+                        label:
+                            'Payment instructions. Please transfer your funds to our official JazzCash or Easypaisa number: 0 3 0 0, 1 2 3 4 5 6 7, then enter the Transaction ID below.',
                         child: Container(
                           padding: const EdgeInsets.all(AppSpacing.md),
                           margin: const EdgeInsets.only(bottom: 20),

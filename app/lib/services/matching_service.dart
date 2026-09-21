@@ -52,7 +52,8 @@ class MatchingService {
         throw Exception('Cloud Functions not configured. Fallback to local.');
       } catch (e) {
         debugPrint(
-            'Failed to geocode ngo address: $e (Falling back to exact city string match)');
+          'Failed to geocode ngo address: $e (Falling back to exact city string match)',
+        );
         // Fallback to local logic
       }
     }
@@ -70,14 +71,16 @@ class MatchingService {
     final registeredCampaignIds = existingRegistrations
         .map((e) => e.campaignId)
         .toSet();
-        
+
     // O(1) Hash Map Optimization
     final pastCampaignTypes = existingRegistrations
         .map((e) => e.campaignTitle.toLowerCase())
         .toSet();
-    
+
     // O(1) Skill Mapping Precomputation
-    final Set<String> normalizedUserSkills = user.skills.map((s) => s.toLowerCase().trim()).toSet();
+    final Set<String> normalizedUserSkills = user.skills
+        .map((s) => s.toLowerCase().trim())
+        .toSet();
     final Set<CampaignType> userMappedTypes = {};
     for (String skill in normalizedUserSkills) {
       final mappedTypes = _skillCampaignMap[skill] ?? [CampaignType.custom];
@@ -88,7 +91,11 @@ class MatchingService {
       if (campaign.status != CampaignStatus.active) continue;
       if (campaign.isFull) continue;
 
-      double skillScore = _calculateSkillScore(normalizedUserSkills, userMappedTypes, campaign);
+      double skillScore = _calculateSkillScore(
+        normalizedUserSkills,
+        userMappedTypes,
+        campaign,
+      );
       double locationScore = _calculateLocationScore(
         user.address,
         campaign.location,
@@ -153,7 +160,7 @@ class MatchingService {
     if (userMappedTypes.contains(campaign.type)) {
       return 1.0; // Assume 1 match is enough for fallback type mapping score bump
     }
-    
+
     return 0.1;
   }
 
@@ -174,19 +181,19 @@ class MatchingService {
     CampaignModel campaign,
   ) {
     if (pastHistory.isEmpty) return 0.2;
-    
+
     final cTitle = campaign.title.toLowerCase();
-    
+
     // Check if the first word of the title exists in past history (fastest)
     if (pastHistory.any((h) => cTitle.contains(h.split(' ')[0]))) {
       return 1.0;
     }
-    
+
     // Check Campaign Type explicitly
     if (pastHistory.any((h) => h.contains(campaign.type.name.toLowerCase()))) {
       return 0.8;
     }
-    
+
     return 0.5;
   }
 

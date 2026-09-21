@@ -78,7 +78,9 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
     );
 
     final user = context.read<AuthProvider>().user;
-    if (user == null || user.currentNgoId == null || user.currentNgoId!.isEmpty) {
+    if (user == null ||
+        user.currentNgoId == null ||
+        user.currentNgoId!.isEmpty) {
       return;
     }
 

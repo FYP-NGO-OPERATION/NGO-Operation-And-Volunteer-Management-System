@@ -131,7 +131,8 @@ class _AdminBannerManagementScreenState
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            initialValue: docs.any((d) => d.id == idController.text)
+                            initialValue:
+                                docs.any((d) => d.id == idController.text)
                                 ? idController.text
                                 : null,
                             hint: const Text('Select Campaign'),
@@ -159,7 +160,8 @@ class _AdminBannerManagementScreenState
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            initialValue: docs.any((d) => d.id == idController.text)
+                            initialValue:
+                                docs.any((d) => d.id == idController.text)
                                 ? idController.text
                                 : null,
                             hint: const Text('Select Session'),

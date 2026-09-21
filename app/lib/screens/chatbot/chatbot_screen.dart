@@ -110,7 +110,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     }
   }
 
-  
   @override
   void dispose() {
     _controller.dispose();

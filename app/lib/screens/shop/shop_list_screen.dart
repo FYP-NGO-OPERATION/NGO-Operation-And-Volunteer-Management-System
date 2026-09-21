@@ -49,10 +49,10 @@ class _ShopListScreenState extends State<ShopListScreen> {
       SnackbarHelper.showError(context, 'Your cart is empty.');
       return;
     }
-    
+
     final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user == null) return;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -60,20 +60,17 @@ class _ShopListScreenState extends State<ShopListScreen> {
     );
 
     try {
-      await _shopService.checkout(
-        user.uid,
-        user.name,
-        _cartItems,
-        _cartTotal,
-      );
-      
+      await _shopService.checkout(user.uid, user.name, _cartItems, _cartTotal);
+
       if (mounted) {
         Navigator.pop(context); // pop loading
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Checkout Successful'),
-            content: Text('Thank you for your purchase! You bought  items for \$. Proceeds will go to the NGO.'),
+            content: Text(
+              'Thank you for your purchase! You bought  items for \$. Proceeds will go to the NGO.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -121,10 +118,17 @@ class _ShopListScreenState extends State<ShopListScreen> {
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     child: Text(
                       '$_cartCount',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -143,13 +147,24 @@ class _ShopListScreenState extends State<ShopListScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          
-          final products = snapshot.data?.docs.map((doc) => ProductModel.fromMap(doc.data() as Map<String, dynamic>, doc.id)).toList() ?? [];
-          
+
+          final products =
+              snapshot.data?.docs
+                  .map(
+                    (doc) => ProductModel.fromMap(
+                      doc.data() as Map<String, dynamic>,
+                      doc.id,
+                    ),
+                  )
+                  .toList() ??
+              [];
+
           if (products.isEmpty) {
-            return const Center(child: Text('Store is empty. Admin needs to add products.'));
+            return const Center(
+              child: Text('Store is empty. Admin needs to add products.'),
+            );
           }
-          
+
           return GridView.builder(
             padding: const EdgeInsets.all(AppSpacing.md),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -164,7 +179,9 @@ class _ShopListScreenState extends State<ShopListScreen> {
               final outOfStock = product.stock <= 0;
               return Card(
                 clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 elevation: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,15 +194,24 @@ class _ShopListScreenState extends State<ShopListScreen> {
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                           if (outOfStock)
                             Container(
                               color: Colors.black.withValues(alpha: 0.5),
                               alignment: Alignment.center,
-                              child: const Text('OUT OF STOCK', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            )
+                              child: const Text(
+                                'OUT OF STOCK',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -194,27 +220,54 @@ class _ShopListScreenState extends State<ShopListScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(product.name, style: AppTextStyles.titleMedium(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(
+                            product.name,
+                            style: AppTextStyles.titleMedium(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           AppSpacing.vGapXs,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Flexible(child: Text('\Rs. ${product.price.toStringAsFixed(2)}', style: AppTextStyles.titleMedium(color: AppColors.primary), overflow: TextOverflow.ellipsis)),
-                              Text('${product.stock} left', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                              Flexible(
+                                child: Text(
+                                  '\Rs. ${product.price.toStringAsFixed(2)}',
+                                  style: AppTextStyles.titleMedium(
+                                    color: AppColors.primary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text(
+                                '${product.stock} left',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
                           AppSpacing.vGapXs,
                           SizedBox(
                             width: double.infinity,
                             child: Semantics(
-                              label: 'Add ${product.name} to cart for ${product.price.toStringAsFixed(2)} Rupees',
+                              label:
+                                  'Add ${product.name} to cart for ${product.price.toStringAsFixed(2)} Rupees',
                               button: true,
                               child: ElevatedButton.icon(
-                                onPressed: outOfStock ? null : () => _addToCart(product),
-                                icon: const Icon(Icons.add_shopping_cart, size: 16),
+                                onPressed: outOfStock
+                                    ? null
+                                    : () => _addToCart(product),
+                                icon: const Icon(
+                                  Icons.add_shopping_cart,
+                                  size: 16,
+                                ),
                                 label: const Text('Add'),
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
                                 ),
                               ),
                             ),

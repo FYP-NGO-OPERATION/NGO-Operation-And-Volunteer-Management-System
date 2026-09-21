@@ -559,7 +559,12 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
 
   Widget _buildMessageInput(bool isDark) {
     return Container(
-      padding: const EdgeInsetsDirectional.only(start: 8, end: 8, bottom: 12, top: 4),
+      padding: const EdgeInsetsDirectional.only(
+        start: 8,
+        end: 8,
+        bottom: 12,
+        top: 4,
+      ),
       color: Colors.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,

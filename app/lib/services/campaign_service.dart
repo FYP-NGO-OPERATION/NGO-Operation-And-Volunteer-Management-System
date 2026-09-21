@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../models/campaign_model.dart';
 import '../models/expense_model.dart';
 import '../enums/app_enums.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../utils/network_resilience_helper.dart';
 
 /// Service for Campaign and Expense CRUD operations on Firestore.
 class CampaignService {
@@ -89,6 +91,25 @@ class CampaignService {
     );
     await docRef.set(newCampaign.toMap());
     return newCampaign;
+  }
+
+  /// Get query for infinite pagination
+  Query<Map<String, dynamic>> getPaginatedCampaignsQuery({
+    String? ngoId,
+    CampaignStatus? status,
+    String? category,
+  }) {
+    Query<Map<String, dynamic>> query = _campaigns;
+    if (ngoId != null && ngoId.isNotEmpty) {
+      query = query.where('ngoId', isEqualTo: ngoId);
+    }
+    if (status != null) {
+      query = query.where('status', isEqualTo: status.name);
+    }
+    if (category != null && category != 'All Campaigns') {
+      query = query.where('category', isEqualTo: category);
+    }
+    return query.orderBy('createdAt', descending: true);
   }
 
   /// Get all campaigns (real-time stream) for a specific NGO
@@ -236,8 +257,17 @@ class CampaignService {
     // 7. Delete campaign itself
     batch.delete(_campaigns.doc(campaignId));
 
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'DELETE_CAMPAIGN',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'campaignId': campaignId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
     // Commit all deletions and updates atomically
-    await batch.commit();
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   /// Increment volunteer count

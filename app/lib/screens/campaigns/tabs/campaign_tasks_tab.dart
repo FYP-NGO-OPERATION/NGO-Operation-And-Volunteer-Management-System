@@ -357,7 +357,8 @@ class CampaignTasksTab extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () async {
-                            if (titleCtrl.text.isEmpty || descCtrl.text.isEmpty) {
+                            if (titleCtrl.text.isEmpty ||
+                                descCtrl.text.isEmpty) {
                               return;
                             }
 

@@ -424,9 +424,15 @@ class _HomeScreenState extends State<HomeScreen> {
     if (result == true) {
       if (authProvider.user != null) {
         final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-        final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
-        final sessionProvider = Provider.of<VirtualSessionProvider>(context, listen: false);
-        
+        final campaignProvider = Provider.of<CampaignProvider>(
+          context,
+          listen: false,
+        );
+        final sessionProvider = Provider.of<VirtualSessionProvider>(
+          context,
+          listen: false,
+        );
+
         await ngoProvider.clearNgo(authProvider.user!);
         // Clear sensitive cache arrays
         campaignProvider.clear();

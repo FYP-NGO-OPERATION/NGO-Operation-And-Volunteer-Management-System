@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/donation_model.dart';
 import '../models/tracking_event_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../utils/network_resilience_helper.dart';
 
 class FundAllocationService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -20,10 +22,12 @@ class FundAllocationService {
     double amountLeftToCover = expenseTotal;
 
     // 1. Fetch donations for this campaign that have unspent funds (> 0)
-    final snapshot = await _db
-        .collection('donations')
-        .where('campaignId', isEqualTo: campaignId)
-        .get(); // We fetch all and filter locally to avoid complex index requirements
+    final snapshot = await ChaosResilience.withRetry(
+      () => _db
+          .collection('donations')
+          .where('campaignId', isEqualTo: campaignId)
+          .get(),
+    ); // We fetch all and filter locally to avoid complex index requirements
 
     List<DonationModel> unspentDonations = snapshot.docs
         .map((doc) => DonationModel.fromMap(doc.data()..['id'] = doc.id))
@@ -76,8 +80,20 @@ class FundAllocationService {
       batch.set(eventRef, trackingEvent.toMap());
     }
 
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'ALLOCATE_EXPENSE',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'campaignId': campaignId,
+      'expenseTotal': expenseTotal,
+      'expenseName': expenseName,
+      'vendor': vendor ?? '',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
     // 3. Commit the batch
-    await batch.commit();
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   /// Transfers all leftover funds from a completed campaign to a new campaign.
@@ -88,10 +104,12 @@ class FundAllocationService {
   }) async {
     final batch = _db.batch();
 
-    final snapshot = await _db
-        .collection('donations')
-        .where('campaignId', isEqualTo: fromCampaignId)
-        .get();
+    final snapshot = await ChaosResilience.withRetry(
+      () => _db
+          .collection('donations')
+          .where('campaignId', isEqualTo: fromCampaignId)
+          .get(),
+    );
 
     List<DonationModel> unspentDonations = snapshot.docs
         .map((doc) => DonationModel.fromMap(doc.data()..['id'] = doc.id))
@@ -125,6 +143,16 @@ class FundAllocationService {
       batch.set(eventRef, trackingEvent.toMap());
     }
 
-    await batch.commit();
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'TRANSFER_LEFTOVER_FUNDS',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'fromCampaignId': fromCampaignId,
+      'toCampaignId': toCampaignId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 }

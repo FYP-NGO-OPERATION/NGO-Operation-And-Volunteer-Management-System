@@ -80,9 +80,7 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
               ),
             ),
             AppSpacing.vGapMd,
-            ..._predictions
-                .map((p) => _buildPredictionCard(p, isDark))
-                ,
+            ..._predictions.map((p) => _buildPredictionCard(p, isDark)),
           ],
         ),
       ),

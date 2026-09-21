@@ -54,9 +54,15 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
           responseMimeType: 'application/json',
           responseSchema: Schema.object(
             properties: {
-              'insight': Schema.string(description: 'A 3-sentence predictive insight.'),
-              'trend': Schema.string(description: 'Trend prediction for the next month.'),
-              'focus_area': Schema.string(description: 'A suggested campaign focus area.'),
+              'insight': Schema.string(
+                description: 'A 3-sentence predictive insight.',
+              ),
+              'trend': Schema.string(
+                description: 'Trend prediction for the next month.',
+              ),
+              'focus_area': Schema.string(
+                description: 'A suggested campaign focus area.',
+              ),
             },
             requiredProperties: ['insight', 'trend', 'focus_area'],
           ),
@@ -84,10 +90,12 @@ Return a valid JSON object matching the requested schema.
         setState(() {
           try {
             if (response.text == null || response.text!.isEmpty) {
-               _insight = 'No insights generated.';
+              _insight = 'No insights generated.';
             } else {
-               final Map<String, dynamic> jsonResponse = jsonDecode(response.text!);
-               _insight = jsonResponse['insight'] ?? 'No insights generated.';
+              final Map<String, dynamic> jsonResponse = jsonDecode(
+                response.text!,
+              );
+              _insight = jsonResponse['insight'] ?? 'No insights generated.';
             }
           } catch (e) {
             _insight = 'Error parsing AI response.';

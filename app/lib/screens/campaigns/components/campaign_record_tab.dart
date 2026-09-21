@@ -675,7 +675,9 @@ class CampaignRecordTab extends StatelessWidget {
                                 ),
                                 if (e.status == 'pending')
                                   Padding(
-                                    padding: const EdgeInsetsDirectional.only(start: 8.0),
+                                    padding: const EdgeInsetsDirectional.only(
+                                      start: 8.0,
+                                    ),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 6,

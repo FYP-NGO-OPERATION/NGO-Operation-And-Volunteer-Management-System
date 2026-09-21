@@ -66,10 +66,13 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_acceptedTerms) {
-      SnackbarHelper.showError(context, 'You must accept the Terms of Service & Privacy Policy.');
+      SnackbarHelper.showError(
+        context,
+        'You must accept the Terms of Service & Privacy Policy.',
+      );
       return;
     }
-    
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     authProvider.clearError();
     final cleanPhone = _phoneController.text.replaceAll('-', '');
@@ -262,10 +265,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                             ),
                             if (state.hasError)
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(start: 12.0),
+                                padding: const EdgeInsetsDirectional.only(
+                                  start: 12.0,
+                                ),
                                 child: Text(
                                   state.errorText!,
-                                  style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                                  style: TextStyle(
+                                    color: Colors.red.shade700,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                           ],

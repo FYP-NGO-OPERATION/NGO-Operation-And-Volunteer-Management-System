@@ -172,7 +172,8 @@ class _ShimmerBoxState extends State<ShimmerBox>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       _controller.stop();
     } else if (state == AppLifecycleState.resumed) {
       _controller.repeat();

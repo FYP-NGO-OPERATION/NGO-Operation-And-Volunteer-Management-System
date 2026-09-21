@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../config/app_constants.dart';
+import '../utils/network_resilience_helper.dart';
 
 /// Handles all Firestore operations for the `users` collection.
 class UserService {
@@ -72,36 +74,78 @@ class UserService {
 
   /// Change user role (admin only)
   Future<void> changeUserRole(String uid, String newRole) async {
-    await _usersRef.doc(uid).update({
+    final batch = _db.batch();
+    batch.update(_usersRef.doc(uid), {
       'role': newRole,
       'lastActiveAt': FieldValue.serverTimestamp(),
     });
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'CHANGE_USER_ROLE',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'targetUserId': uid,
+      'newRole': newRole,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   /// Activate/Deactivate user (admin only)
   Future<void> setUserActive(String uid, bool isActive) async {
-    await _usersRef.doc(uid).update({
+    final batch = _db.batch();
+    batch.update(_usersRef.doc(uid), {
       'isActive': isActive,
       'lastActiveAt': FieldValue.serverTimestamp(),
     });
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'SET_USER_ACTIVE',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'targetUserId': uid,
+      'isActive': isActive,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 
   /// Increment campaigns joined counter
   Future<void> incrementCampaignsJoined(String uid) async {
-    await _usersRef.doc(uid).update({
-      'campaignsJoined': FieldValue.increment(1),
-    });
+    await ChaosResilience.withRetry(
+      () => _usersRef.doc(uid).update({
+        'campaignsJoined': FieldValue.increment(1),
+      }),
+    );
   }
 
   /// Decrement campaigns joined counter
   Future<void> decrementCampaignsJoined(String uid) async {
-    await _usersRef.doc(uid).update({
-      'campaignsJoined': FieldValue.increment(-1),
-    });
+    await ChaosResilience.withRetry(
+      () => _usersRef.doc(uid).update({
+        'campaignsJoined': FieldValue.increment(-1),
+      }),
+    );
   }
 
   /// Delete user document
   Future<void> deleteUser(String uid) async {
-    await _usersRef.doc(uid).delete();
+    final batch = _db.batch();
+    batch.delete(_usersRef.doc(uid));
+
+    // AUDIT LOG (Zero-Trust)
+    final auditRef = _db.collection('audit_logs').doc();
+    batch.set(auditRef, {
+      'action': 'DELETE_USER',
+      'adminId': FirebaseAuth.instance.currentUser?.uid ?? 'UNKNOWN',
+      'targetUserId': uid,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await ChaosResilience.withRetry(() => batch.commit());
   }
 }

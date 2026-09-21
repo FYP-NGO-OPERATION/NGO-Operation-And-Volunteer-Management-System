@@ -1,4 +1,3 @@
-
 class InventoryItemModel {
   final String id;
   final String ngoId;

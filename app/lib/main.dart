@@ -54,7 +54,7 @@ void main() async {
       watcherMail: 'security@example.com',
       isProd: true,
     );
-    
+
     Talsec.instance.attachListener(
       TalsecThreatListener(
         onRoot: () => exit(0),
@@ -104,12 +104,14 @@ void main() async {
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // ─── Firebase App Check ───
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
     appleProvider: AppleProvider.deviceCheck,
-    webProvider: ReCaptchaV3Provider(dotenv.env['RECAPTCHA_SITE_KEY'] ?? 'fallback_key'),
+    webProvider: ReCaptchaV3Provider(
+      dotenv.env['RECAPTCHA_SITE_KEY'] ?? 'fallback_key',
+    ),
   );
 
   // Initialize Notifications

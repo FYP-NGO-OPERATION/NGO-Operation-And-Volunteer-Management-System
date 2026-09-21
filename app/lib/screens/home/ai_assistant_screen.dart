@@ -82,7 +82,6 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     }
   }
 
-  
   @override
   void dispose() {
     _controller.dispose();

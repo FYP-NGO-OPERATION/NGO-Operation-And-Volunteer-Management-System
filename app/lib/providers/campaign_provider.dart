@@ -238,6 +238,8 @@ class CampaignProvider extends ChangeNotifier {
 
   void clearError() {
     _error = null;
+  }
+
   /// Get unique categories from all campaigns
   List<String> get availableCategories {
     final categories = _campaigns
