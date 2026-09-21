@@ -45,7 +45,7 @@ class AnalyticsService {
 
         if (campaign.status == CampaignStatus.active) active++;
         if (campaign.status == CampaignStatus.completed) completed++;
-        
+
         volunteers += campaign.totalVolunteers;
         beneficiaries += campaign.beneficiaryCount;
         donations += campaign.totalDonationsAmount;

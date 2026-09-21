@@ -32,7 +32,10 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
     if (pickedFile != null) {
       setState(() => _selectedImage = File(pickedFile.path));
     }
@@ -75,12 +78,15 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
     );
 
     final user = context.read<AuthProvider>().user;
-    if (user == null || user.currentNgoId == null || user.currentNgoId!.isEmpty) return;
+    if (user == null || user.currentNgoId == null || user.currentNgoId!.isEmpty)
+      return;
 
     final provider = context.read<VirtualSessionProvider>();
-    
+
     // We need to set loading manually for the image upload part, then provider handles the rest
-    setState(() {}); // trigger rebuild to show loading if needed, but we can just let provider do it if we had a local loading state. 
+    setState(
+      () {},
+    ); // trigger rebuild to show loading if needed, but we can just let provider do it if we had a local loading state.
     // Let's add a local loading state to avoid modifying provider just for image upload.
     // Wait, the provider has _isLoading but no method to set it.
     // We can just rely on the button's own loading or create a local bool.
@@ -108,7 +114,9 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
       ngoId: user.currentNgoId!,
       createdAt: DateTime.now(),
       imageUrl: uploadedImageUrl,
-      secretCode: _codeCtrl.text.trim().isNotEmpty ? _codeCtrl.text.trim() : null,
+      secretCode: _codeCtrl.text.trim().isNotEmpty
+          ? _codeCtrl.text.trim()
+          : null,
     );
 
     final success = await provider.addSession(session);
@@ -117,7 +125,10 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
       SnackbarHelper.showSuccess(context, 'Virtual Session Scheduled!');
       Navigator.pop(context);
     } else if (mounted) {
-      SnackbarHelper.showError(context, provider.error ?? 'Failed to schedule session');
+      SnackbarHelper.showError(
+        context,
+        provider.error ?? 'Failed to schedule session',
+      );
     }
   }
 
@@ -138,7 +149,8 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
                 controller: _titleCtrl,
                 label: 'Session Title',
                 prefixIcon: Icons.title,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -146,7 +158,8 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
                 label: 'Description / Agenda',
                 prefixIcon: Icons.description,
                 maxLines: 3,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -175,13 +188,18 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
                   _selectedDate != null && _selectedTime != null
                       ? DateFormat('MMM dd, yyyy - hh:mm a').format(
                           DateTime(
-                            _selectedDate!.year, _selectedDate!.month, _selectedDate!.day,
-                            _selectedTime!.hour, _selectedTime!.minute,
+                            _selectedDate!.year,
+                            _selectedDate!.month,
+                            _selectedDate!.day,
+                            _selectedTime!.hour,
+                            _selectedTime!.minute,
                           ),
                         )
                       : 'Select Date & Time',
                   style: TextStyle(
-                    color: _selectedDate != null ? Theme.of(context).textTheme.bodyLarge?.color : Colors.grey,
+                    color: _selectedDate != null
+                        ? Theme.of(context).textTheme.bodyLarge?.color
+                        : Colors.grey,
                   ),
                 ),
                 trailing: TextButton(
@@ -198,21 +216,36 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.3),
                       style: BorderStyle.solid,
                     ),
                   ),
                   child: _selectedImage != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_selectedImage!, fit: BoxFit.cover, width: double.infinity),
+                          child: Image.file(
+                            _selectedImage!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
                         )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_photo_alternate, size: 48, color: Theme.of(context).primaryColor),
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 48,
+                              color: Theme.of(context).primaryColor,
+                            ),
                             const SizedBox(height: 8),
-                            Text('Add Cover Image (Optional)', style: TextStyle(color: Theme.of(context).primaryColor)),
+                            Text(
+                              'Add Cover Image (Optional)',
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ],
                         ),
                 ),
@@ -221,7 +254,10 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
                 TextButton.icon(
                   onPressed: () => setState(() => _selectedImage = null),
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  label: const Text('Remove Image', style: TextStyle(color: Colors.red)),
+                  label: const Text(
+                    'Remove Image',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
               const SizedBox(height: 32),
               CustomButton(

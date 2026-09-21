@@ -14,8 +14,10 @@ class ChatService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => MessageModel.fromMap(doc.data())).toList();
-    });
+          return snapshot.docs
+              .map((doc) => MessageModel.fromMap(doc.data()))
+              .toList();
+        });
   }
 
   // Send a new message
@@ -25,7 +27,7 @@ class ChatService {
         .doc(message.campaignId)
         .collection('messages')
         .doc(message.id);
-        
+
     await messageRef.set(message.toMap());
   }
 
@@ -41,7 +43,7 @@ class ChatService {
         .doc(campaignId)
         .collection('messages')
         .doc(messageId);
-        
+
     await messageRef.update({'isDeleted': true});
   }
 }

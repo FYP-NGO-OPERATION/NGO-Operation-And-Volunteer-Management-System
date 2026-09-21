@@ -65,7 +65,9 @@ class CampaignLogisticsForm extends StatelessWidget {
                 label: 'Lat (Optional)',
                 hint: 'e.g. 24.8607',
                 prefixIcon: Icons.map,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -75,7 +77,9 @@ class CampaignLogisticsForm extends StatelessWidget {
                 label: 'Lng (Optional)',
                 hint: 'e.g. 67.0011',
                 prefixIcon: Icons.map,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
             ),
           ],
@@ -117,7 +121,10 @@ class CampaignLogisticsForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('Event Date (Optional)', style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          'Event Date (Optional)',
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
         const SizedBox(height: 8),
         InkWell(
           onTap: onSelectEventDate,
@@ -132,7 +139,9 @@ class CampaignLogisticsForm extends StatelessWidget {
                   : null,
             ),
             child: Text(
-              eventDate != null ? dateFormat.format(eventDate!) : 'Select event date',
+              eventDate != null
+                  ? dateFormat.format(eventDate!)
+                  : 'Select event date',
               style: eventDate == null
                   ? TextStyle(color: Theme.of(context).hintColor)
                   : null,
@@ -140,7 +149,10 @@ class CampaignLogisticsForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('End Date (Optional)', style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          'End Date (Optional)',
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
         const SizedBox(height: 8),
         InkWell(
           onTap: () => onSelectDate(false),

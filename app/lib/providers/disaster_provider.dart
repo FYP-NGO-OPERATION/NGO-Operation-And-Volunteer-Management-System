@@ -17,14 +17,18 @@ class DisasterProvider with ChangeNotifier {
   Future<List<LatLng>> getOptimizedRoute(LatLng start, LatLng end) async {
     try {
       final url = Uri.parse(
-          'https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson');
-      
+        'https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson',
+      );
+
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['routes'] != null && data['routes'].isNotEmpty) {
-          final coordinates = data['routes'][0]['geometry']['coordinates'] as List;
-          return coordinates.map((coord) => LatLng(coord[1], coord[0])).toList();
+          final coordinates =
+              data['routes'][0]['geometry']['coordinates'] as List;
+          return coordinates
+              .map((coord) => LatLng(coord[1], coord[0]))
+              .toList();
         }
       }
     } catch (e) {

@@ -13,7 +13,11 @@ class LiveTrackingService {
 
   bool get isTracking => _positionStream != null;
 
-  Future<void> startTracking(String campaignId, String userId, String userName) async {
+  Future<void> startTracking(
+    String campaignId,
+    String userId,
+    String userName,
+  ) async {
     if (isTracking) return;
 
     bool serviceEnabled;
@@ -33,7 +37,9 @@ class LiveTrackingService {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+      throw Exception(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
     _currentCampaignId = campaignId;
@@ -45,14 +51,15 @@ class LiveTrackingService {
       distanceFilter: 10, // update every 10 meters
     );
 
-    _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (Position? position) {
-        if (position != null) {
-          _updateLocationInFirestore(position, userName);
-        }
-      }
-    );
-    
+    _positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+          (Position? position) {
+            if (position != null) {
+              _updateLocationInFirestore(position, userName);
+            }
+          },
+        );
+
     // Initial update
     Position initialPos = await Geolocator.getCurrentPosition();
     _updateLocationInFirestore(initialPos, userName);
@@ -81,7 +88,10 @@ class LiveTrackingService {
     _currentUserId = null;
   }
 
-  Future<void> _updateLocationInFirestore(Position position, String userName) async {
+  Future<void> _updateLocationInFirestore(
+    Position position,
+    String userName,
+  ) async {
     if (_currentCampaignId == null || _currentUserId == null) return;
 
     try {
@@ -90,7 +100,7 @@ class LiveTrackingService {
           .doc(_currentCampaignId)
           .collection('live_tracking')
           .doc(_currentUserId);
-          
+
       final docSnap = await docRef.get();
       DateTime? startTime;
       if (docSnap.exists && docSnap.data()!.containsKey('startTime')) {

@@ -34,14 +34,16 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
   void _startTimer(int itemCount) {
     _timer?.cancel();
     if (itemCount <= 1) return;
-    
+
     // Change banner every 3 seconds as requested
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_pageController.hasClients) {
         int nextPage = (_currentPage + 1) % itemCount;
         _pageController.animateToPage(
           nextPage,
-          duration: const Duration(milliseconds: 1000), // Smooth 1-second transition
+          duration: const Duration(
+            milliseconds: 1000,
+          ), // Smooth 1-second transition
           curve: Curves.fastOutSlowIn,
         );
       }
@@ -55,7 +57,10 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
     super.dispose();
   }
 
-  Future<void> _handleBannerClick(BuildContext context, BannerModel banner) async {
+  Future<void> _handleBannerClick(
+    BuildContext context,
+    BannerModel banner,
+  ) async {
     if (banner.targetType == 'none') return;
 
     if (banner.targetType == 'external' && banner.targetUrl != null) {
@@ -63,29 +68,48 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        if (context.mounted) SnackbarHelper.showError(context, 'Could not launch URL');
+        if (context.mounted)
+          SnackbarHelper.showError(context, 'Could not launch URL');
       }
     } else if (banner.targetType == 'campaign' && banner.targetId != null) {
       try {
-        final campaign = await CampaignService().getCampaignById(banner.targetId!);
+        final campaign = await CampaignService().getCampaignById(
+          banner.targetId!,
+        );
         if (context.mounted && campaign != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CampaignDetailScreen(campaign: campaign),
+            ),
+          );
         } else {
-          if (context.mounted) SnackbarHelper.showError(context, 'Campaign not found');
+          if (context.mounted)
+            SnackbarHelper.showError(context, 'Campaign not found');
         }
       } catch (e) {
-        if (context.mounted) SnackbarHelper.showError(context, 'Error loading campaign');
+        if (context.mounted)
+          SnackbarHelper.showError(context, 'Error loading campaign');
       }
     } else if (banner.targetType == 'session' && banner.targetId != null) {
       try {
-        final session = await VirtualSessionService().getSessionById(banner.targetId!);
+        final session = await VirtualSessionService().getSessionById(
+          banner.targetId!,
+        );
         if (context.mounted && session != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => SessionDetailsScreen(session: session)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SessionDetailsScreen(session: session),
+            ),
+          );
         } else {
-          if (context.mounted) SnackbarHelper.showError(context, 'Session not found');
+          if (context.mounted)
+            SnackbarHelper.showError(context, 'Session not found');
         }
       } catch (e) {
-        if (context.mounted) SnackbarHelper.showError(context, 'Error loading session');
+        if (context.mounted)
+          SnackbarHelper.showError(context, 'Error loading session');
       }
     }
   }
@@ -106,9 +130,9 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
 
         // Limit to 5 banners as requested
         final banners = (snapshot.data ?? []).take(5).toList();
-        
+
         if (banners.isEmpty) {
-          return const SizedBox.shrink(); 
+          return const SizedBox.shrink();
         }
 
         // Restart timer if count changes
@@ -118,7 +142,7 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isDark 
+              color: isDark
                   ? Colors.tealAccent.withValues(alpha: 0.5)
                   : AppColors.primary.withValues(alpha: 0.35),
               width: 2,
@@ -129,16 +153,16 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                 color: isDark
                     ? Colors.tealAccent.withValues(alpha: 0.35)
                     : AppColors.primary.withValues(alpha: 0.35),
-                blurRadius: 28,
+                blurRadius: 12,
                 spreadRadius: 4,
                 offset: const Offset(0, 2),
               ),
               // Top highlight
               BoxShadow(
-                color: isDark 
+                color: isDark
                     ? Colors.cyanAccent.withValues(alpha: 0.2)
                     : Colors.green.shade200.withValues(alpha: 0.5),
-                blurRadius: 20,
+                blurRadius: 10,
                 spreadRadius: 2,
                 offset: const Offset(-2, -3),
               ),
@@ -147,14 +171,16 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                 color: isDark
                     ? Colors.greenAccent.withValues(alpha: 0.15)
                     : AppColors.primary.withValues(alpha: 0.2),
-                blurRadius: 16,
+                blurRadius: 8,
                 spreadRadius: 1,
                 offset: const Offset(3, 5),
               ),
               // Depth shadow
               BoxShadow(
-                color: isDark ? Colors.black54 : Colors.black.withValues(alpha: 0.08),
-                blurRadius: 14,
+                color: isDark
+                    ? Colors.black54
+                    : Colors.black.withValues(alpha: 0.08),
+                blurRadius: 6,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -178,18 +204,21 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                         builder: (context, child) {
                           double pageOffset = 0.0;
                           if (_pageController.position.haveDimensions) {
-                            pageOffset = (_pageController.page ?? _pageController.initialPage.toDouble()) - index;
+                            pageOffset =
+                                (_pageController.page ??
+                                    _pageController.initialPage.toDouble()) -
+                                index;
                           } else {
                             pageOffset = _currentPage.toDouble() - index;
                           }
 
                           // Magical smooth zoom-scale transition (no Opacity to avoid Impeller errors)
-                          double scale = (1 - (pageOffset.abs() * 0.12)).clamp(0.88, 1.0);
-
-                          return Transform.scale(
-                            scale: scale,
-                            child: child,
+                          double scale = (1 - (pageOffset.abs() * 0.12)).clamp(
+                            0.88,
+                            1.0,
                           );
+
+                          return Transform.scale(scale: scale, child: child);
                         },
                         child: GestureDetector(
                           onTap: () => _handleBannerClick(context, banner),
@@ -204,8 +233,8 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                                   color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
-                                )
-                              ]
+                                ),
+                              ],
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(24),
@@ -218,8 +247,16 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => Container(
-                                  color: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
-                                  child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+                                  color: isDark
+                                      ? Colors.grey.shade900
+                                      : Colors.grey.shade300,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -228,16 +265,21 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                       );
                     },
                   ),
-                  
+
                   // Dark gradient overlay at bottom for indicator and arrows
                   Positioned(
-                    bottom: 0, left: 0, right: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
                     height: 60,
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                            colors: [
+                              Colors.black.withValues(alpha: 0.7),
+                              Colors.transparent,
+                            ],
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                           ),
@@ -262,7 +304,10 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                               height: 6,
                               color: AppColors.primaryLight,
                               borderRadius: BorderRadius.circular(10),
-                              dotBorder: const DotBorder(color: Colors.white, width: 1),
+                              dotBorder: const DotBorder(
+                                color: Colors.white,
+                                width: 1,
+                              ),
                             ),
                             dotDecoration: DotDecoration(
                               width: 8,
@@ -285,9 +330,16 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                       child: Center(
                         child: _buildNavArrow(Icons.chevron_left_rounded, () {
                           if (_currentPage > 0) {
-                            _pageController.previousPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOutCubic);
+                            _pageController.previousPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                            );
                           } else {
-                            _pageController.animateToPage(banners.length - 1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOutCubic);
+                            _pageController.animateToPage(
+                              banners.length - 1,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                            );
                           }
                         }),
                       ),
@@ -299,14 +351,21 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
                       child: Center(
                         child: _buildNavArrow(Icons.chevron_right_rounded, () {
                           if (_currentPage < banners.length - 1) {
-                            _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOutCubic);
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                            );
                           } else {
-                            _pageController.animateToPage(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOutCubic);
+                            _pageController.animateToPage(
+                              0,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                            );
                           }
                         }),
                       ),
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),

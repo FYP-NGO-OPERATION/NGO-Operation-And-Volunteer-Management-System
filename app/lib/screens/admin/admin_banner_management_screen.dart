@@ -15,10 +15,12 @@ class AdminBannerManagementScreen extends StatefulWidget {
   const AdminBannerManagementScreen({super.key});
 
   @override
-  State<AdminBannerManagementScreen> createState() => _AdminBannerManagementScreenState();
+  State<AdminBannerManagementScreen> createState() =>
+      _AdminBannerManagementScreenState();
 }
 
-class _AdminBannerManagementScreenState extends State<AdminBannerManagementScreen> {
+class _AdminBannerManagementScreenState
+    extends State<AdminBannerManagementScreen> {
   final BannerService _bannerService = BannerService();
   bool _isLoading = false;
 
@@ -40,10 +42,7 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
           initAspectRatio: CropAspectRatioPreset.ratio16x9,
           lockAspectRatio: true,
         ),
-        IOSUiSettings(
-          title: 'Crop Banner',
-          aspectRatioLockEnabled: true,
-        ),
+        IOSUiSettings(title: 'Crop Banner', aspectRatioLockEnabled: true),
       ],
     );
 
@@ -51,9 +50,11 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
     if (!mounted) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
-      final imageUrl = await CloudinaryService.uploadImage(File(croppedFile.path));
+      final imageUrl = await CloudinaryService.uploadImage(
+        File(croppedFile.path),
+      );
       if (imageUrl != null) {
         final newBanner = BannerModel(
           id: _bannerService.generateId(),
@@ -62,12 +63,15 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
           createdAt: DateTime.now(),
         );
         await _bannerService.createBanner(newBanner);
-        if (mounted) SnackbarHelper.showSuccess(context, 'Banner uploaded successfully');
+        if (mounted)
+          SnackbarHelper.showSuccess(context, 'Banner uploaded successfully');
       } else {
-        if (mounted) SnackbarHelper.showError(context, 'Failed to upload image');
+        if (mounted)
+          SnackbarHelper.showError(context, 'Failed to upload image');
       }
     } catch (e) {
-      if (mounted) SnackbarHelper.showError(context, 'Error uploading banner: $e');
+      if (mounted)
+        SnackbarHelper.showError(context, 'Error uploading banner: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -94,9 +98,18 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                       value: type,
                       items: const [
                         DropdownMenuItem(value: 'none', child: Text('No Link')),
-                        DropdownMenuItem(value: 'campaign', child: Text('Internal Campaign')),
-                        DropdownMenuItem(value: 'session', child: Text('Virtual Session')),
-                        DropdownMenuItem(value: 'external', child: Text('External URL')),
+                        DropdownMenuItem(
+                          value: 'campaign',
+                          child: Text('Internal Campaign'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'session',
+                          child: Text('Virtual Session'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'external',
+                          child: Text('External URL'),
+                        ),
                       ],
                       onChanged: (val) {
                         setStateSB(() => type = val ?? 'none');
@@ -106,38 +119,64 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                     const SizedBox(height: 16),
                     if (type == 'campaign')
                       FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance.collection('campaigns').get(),
+                        future: FirebaseFirestore.instance
+                            .collection('campaigns')
+                            .get(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const CircularProgressIndicator();
+                          if (!snapshot.hasData)
+                            return const CircularProgressIndicator();
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            value: docs.any((d) => d.id == idController.text) ? idController.text : null,
+                            value: docs.any((d) => d.id == idController.text)
+                                ? idController.text
+                                : null,
                             hint: const Text('Select Campaign'),
-                            items: docs.map((d) => DropdownMenuItem(value: d.id, child: Text(d['title'] ?? 'Unknown'))).toList(),
+                            items: docs
+                                .map(
+                                  (d) => DropdownMenuItem(
+                                    value: d.id,
+                                    child: Text(d['title'] ?? 'Unknown'),
+                                  ),
+                                )
+                                .toList(),
                             onChanged: (val) => idController.text = val ?? '',
                           );
-                        }
+                        },
                       ),
                     if (type == 'session')
                       FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance.collection('virtual_sessions').get(),
+                        future: FirebaseFirestore.instance
+                            .collection('virtual_sessions')
+                            .get(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const CircularProgressIndicator();
+                          if (!snapshot.hasData)
+                            return const CircularProgressIndicator();
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            value: docs.any((d) => d.id == idController.text) ? idController.text : null,
+                            value: docs.any((d) => d.id == idController.text)
+                                ? idController.text
+                                : null,
                             hint: const Text('Select Session'),
-                            items: docs.map((d) => DropdownMenuItem(value: d.id, child: Text(d['title'] ?? 'Unknown'))).toList(),
+                            items: docs
+                                .map(
+                                  (d) => DropdownMenuItem(
+                                    value: d.id,
+                                    child: Text(d['title'] ?? 'Unknown'),
+                                  ),
+                                )
+                                .toList(),
                             onChanged: (val) => idController.text = val ?? '',
                           );
-                        }
+                        },
                       ),
                     if (type == 'external')
                       TextField(
                         controller: urlController,
-                        decoration: const InputDecoration(labelText: 'External URL (https://...)'),
+                        decoration: const InputDecoration(
+                          labelText: 'External URL (https://...)',
+                        ),
                       ),
                   ],
                 ),
@@ -153,7 +192,9 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                       id: banner.id,
                       imageUrl: banner.imageUrl,
                       targetType: type,
-                      targetId: (type == 'campaign' || type == 'session') ? idController.text : null,
+                      targetId: (type == 'campaign' || type == 'session')
+                          ? idController.text
+                          : null,
                       targetUrl: type == 'external' ? urlController.text : null,
                       isActive: banner.isActive,
                       sortOrder: banner.sortOrder,
@@ -169,9 +210,9 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                 ),
               ],
             );
-          }
+          },
         );
-      }
+      },
     );
   }
 
@@ -184,7 +225,7 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
           IconButton(
             icon: const Icon(Icons.add_photo_alternate),
             onPressed: _isLoading ? null : _addBanner,
-          )
+          ),
         ],
       ),
       body: Stack(
@@ -197,7 +238,9 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
               }
               final banners = snapshot.data ?? [];
               if (banners.isEmpty) {
-                return const Center(child: Text('No banners found. Upload one!'));
+                return const Center(
+                  child: Text('No banners found. Upload one!'),
+                );
               }
 
               return ReorderableListView.builder(
@@ -206,7 +249,7 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                   if (newIndex > oldIndex) newIndex -= 1;
                   final item = banners.removeAt(oldIndex);
                   banners.insert(newIndex, item);
-                  
+
                   // Update all sort orders
                   for (int i = 0; i < banners.length; i++) {
                     await _bannerService.updateSortOrder(banners[i].id, i);
@@ -216,7 +259,10 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                   final banner = banners[index];
                   return Card(
                     key: ValueKey(banner.id),
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Row(
@@ -238,16 +284,27 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Link: ${banner.targetType.toUpperCase()}', 
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                Text(
+                                  'Link: ${banner.targetType.toUpperCase()}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  banner.targetType == 'external' ? (banner.targetUrl ?? 'No URL') :
-                                  (banner.targetType != 'none' ? (banner.targetId ?? 'No ID') : 'None'),
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  banner.targetType == 'external'
+                                      ? (banner.targetUrl ?? 'No URL')
+                                      : (banner.targetType != 'none'
+                                            ? (banner.targetId ?? 'No ID')
+                                            : 'None'),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -257,7 +314,8 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                             children: [
                               Switch(
                                 value: banner.isActive,
-                                onChanged: (val) => _bannerService.toggleBannerStatus(banner.id, val),
+                                onChanged: (val) => _bannerService
+                                    .toggleBannerStatus(banner.id, val),
                               ),
                               PopupMenuButton<String>(
                                 onSelected: (value) async {
@@ -269,19 +327,60 @@ class _AdminBannerManagementScreenState extends State<AdminBannerManagementScree
                                       builder: (ctx) => AlertDialog(
                                         title: const Text('Delete Banner?'),
                                         actions: [
-                                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: const TextStyle(color: Colors.red))),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, true),
+                                            child: const Text(
+                                              'Delete',
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
                                         ],
-                                      )
+                                      ),
                                     );
                                     if (confirm == true) {
-                                      await _bannerService.deleteBanner(banner.id);
+                                      await _bannerService.deleteBanner(
+                                        banner.id,
+                                      );
                                     }
                                   }
                                 },
                                 itemBuilder: (context) => [
-                                  const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, color: Colors.blue, size: 20), SizedBox(width: 8), Text('Edit')])),
-                                  const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 20), SizedBox(width: 8), Text('Delete')])),
+                                  const PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.edit,
+                                          color: Colors.blue,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Edit'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Delete'),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                               const Icon(Icons.drag_handle, color: Colors.grey),

@@ -83,7 +83,8 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
-      final assignedRole = _superAdmins.contains(email.trim().toLowerCase()) ? 'admin' : 'volunteer';
+      // Default to volunteer. Admin roles must be assigned securely via Firebase Console.
+      final assignedRole = 'volunteer';
 
       // 2. Create user document in Firestore
       final newUser = UserModel(
@@ -115,10 +116,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ─── Login ───
-  Future<bool> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> login({required String email, required String password}) async {
     try {
       _setLoading(true);
       _setError(null);
@@ -159,11 +157,69 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── Super Admin Emails ───
-  static List<String> get _superAdmins {
-    final emailsString = dotenv.env['SUPER_ADMIN_EMAILS'] ?? '';
-    if (emailsString.isEmpty) return [];
-    return emailsString.split(',').map((e) => e.trim().toLowerCase()).toList();
+  // ─── OTP Phone Auth ───
+  String? _verificationId;
+  String? get verificationId => _verificationId;
+
+  Future<bool> verifyPhoneNumber(String phoneNumber) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+      bool success = false;
+
+      // Wrap Firebase callback in a Completer or just let the callbacks update state
+      // Actually, since PhoneAuth takes callbacks, we can just supply them.
+      await _authService.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (credential) async {
+          // Auto-resolution (e.g. Android auto-reads SMS)
+          // You might automatically link/signIn here.
+        },
+        verificationFailed: (e) {
+          _setError(e.message ?? 'Phone verification failed');
+          _setLoading(false);
+        },
+        codeSent: (verId, resendToken) {
+          _verificationId = verId;
+          _setLoading(false);
+          success = true;
+        },
+        codeAutoRetrievalTimeout: (verId) {
+          _verificationId = verId;
+        },
+      );
+
+      // Wait slightly to let codeSent trigger
+      await Future.delayed(const Duration(seconds: 2));
+      return success || _verificationId != null;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> verifyOTP(String smsCode) async {
+    if (_verificationId == null) {
+      _setError('Verification ID is missing. Request OTP again.');
+      return false;
+    }
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      await _authService.verifyOTP(
+        verificationId: _verificationId!,
+        smsCode: smsCode,
+      );
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Invalid OTP. Please check the code and try again.');
+      _setLoading(false);
+      return false;
+    }
   }
 
   // ─── Google Sign-In ───
@@ -186,7 +242,8 @@ class AuthProvider extends ChangeNotifier {
       if (_user == null) {
         // First-time Google login → create Firestore profile
         final email = firebaseUser.email ?? '';
-        final assignedRole = _superAdmins.contains(email.toLowerCase()) ? 'admin' : 'volunteer';
+        // Default to volunteer. Admin roles must be assigned securely via Firebase Console.
+        final assignedRole = 'volunteer';
 
         final newUser = UserModel(
           uid: firebaseUser.uid,
@@ -333,7 +390,7 @@ class AuthProvider extends ChangeNotifier {
 
       // Upload to Cloudinary instead of Firebase Storage
       final downloadUrl = await CloudinaryService.uploadImageBytes(
-        imageBytes, 
+        imageBytes,
         filename: 'profile_${_user!.uid}.jpg',
       );
 
@@ -342,7 +399,9 @@ class AuthProvider extends ChangeNotifier {
       }
 
       // Update Firestore
-      await _userService.updateUser(_user!.uid, {'profileImageUrl': downloadUrl});
+      await _userService.updateUser(_user!.uid, {
+        'profileImageUrl': downloadUrl,
+      });
 
       // Update local user
       _user = _user!.copyWith(profileImageUrl: downloadUrl);

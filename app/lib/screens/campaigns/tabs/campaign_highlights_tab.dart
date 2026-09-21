@@ -29,18 +29,26 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
   }
 
   Future<void> _initializeVideoPlayer() async {
-    if (widget.campaign.videoUrl != null && widget.campaign.videoUrl!.isNotEmpty) {
+    if (widget.campaign.videoUrl != null &&
+        widget.campaign.videoUrl!.isNotEmpty) {
       try {
-        _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.campaign.videoUrl!));
+        _videoPlayerController = VideoPlayerController.networkUrl(
+          Uri.parse(widget.campaign.videoUrl!),
+        );
         await _videoPlayerController!.initialize();
-        
+
         _chewieController = ChewieController(
           videoPlayerController: _videoPlayerController!,
           autoPlay: false,
           looping: false,
           aspectRatio: _videoPlayerController!.value.aspectRatio,
           errorBuilder: (context, errorMessage) {
-            return Center(child: Text('Error loading video', style: const TextStyle(color: Colors.white)));
+            return Center(
+              child: Text(
+                'Error loading video',
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
           },
         );
 
@@ -83,18 +91,31 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
 
   @override
   Widget build(BuildContext context) {
-    final hasVideo = widget.campaign.videoUrl != null && widget.campaign.videoUrl!.isNotEmpty;
+    final hasVideo =
+        widget.campaign.videoUrl != null &&
+        widget.campaign.videoUrl!.isNotEmpty;
     final hasGallery = widget.campaign.galleryUrls.isNotEmpty;
-    final hasDoc = widget.campaign.documentUrl != null && widget.campaign.documentUrl!.isNotEmpty;
+    final hasDoc =
+        widget.campaign.documentUrl != null &&
+        widget.campaign.documentUrl!.isNotEmpty;
 
     if (!hasVideo && !hasGallery && !hasDoc) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.photo_library_outlined, size: 60, color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextHint : AppColors.lightTextHint),
+            Icon(
+              Icons.photo_library_outlined,
+              size: 60,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextHint
+                  : AppColors.lightTextHint,
+            ),
             const SizedBox(height: 12),
-            Text('Highlights', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Highlights',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 6),
             Text('No media uploaded yet', style: TextStyle(color: Colors.grey)),
           ],
@@ -108,7 +129,10 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (hasVideo) ...[
-            const Text('Highlight Video', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Highlight Video',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             Container(
               height: 250,
@@ -119,10 +143,19 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: _isVideoError
-                    ? const Center(child: Text('Failed to load video', style: TextStyle(color: Colors.white)))
+                    ? const Center(
+                        child: Text(
+                          'Failed to load video',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
                     : _isVideoInitialized
-                        ? Chewie(controller: _chewieController!)
-                        : const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                    ? Chewie(controller: _chewieController!)
+                    : const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 24),
@@ -134,7 +167,10 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
               child: ElevatedButton.icon(
                 onPressed: _launchPdf,
                 icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
-                label: const Text('View Project Record (PDF)', style: TextStyle(color: Colors.white)),
+                label: const Text(
+                  'View Project Record (PDF)',
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -145,7 +181,10 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
           ],
 
           if (hasGallery) ...[
-            const Text('Photo Gallery', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Photo Gallery',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             GridView.builder(
               shrinkWrap: true,
@@ -163,7 +202,8 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
                   child: CachedNetworkImage(
                     imageUrl: widget.campaign.galleryUrls[index],
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
                     errorWidget: (context, url, error) => Container(
                       color: Colors.grey[300],
                       child: const Icon(Icons.error, color: Colors.red),
@@ -172,7 +212,7 @@ class _CampaignHighlightsTabState extends State<CampaignHighlightsTab> {
                 );
               },
             ),
-          ]
+          ],
         ],
       ),
     );

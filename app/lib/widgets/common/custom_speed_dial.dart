@@ -37,7 +37,8 @@ class CustomSpeedDial extends StatefulWidget {
   State<CustomSpeedDial> createState() => _CustomSpeedDialState();
 }
 
-class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProviderStateMixin {
+class _CustomSpeedDialState extends State<CustomSpeedDial>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _isOpen = false;
 
@@ -91,10 +92,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
 
               return Transform.translate(
                 offset: Offset(0, 50.0 * (1.0 - itemVal)),
-                child: Opacity(
-                  opacity: itemVal,
-                  child: child,
-                ),
+                child: Opacity(opacity: itemVal, child: child),
               );
             },
             child: _isOpen
@@ -104,9 +102,13 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                 ? const Color(0xFF2C2C2C)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(8),
@@ -115,7 +117,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
                                 color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
-                              )
+                              ),
                             ],
                           ),
                           child: Text(
@@ -123,7 +125,9 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white
                                   : Colors.black87,
                             ),
@@ -132,8 +136,11 @@ class _CustomSpeedDialState extends State<CustomSpeedDial> with SingleTickerProv
                         const SizedBox(width: 16),
                         FloatingActionButton.small(
                           heroTag: 'speed_dial_action_$index',
-                          backgroundColor: action.backgroundColor ?? Theme.of(context).cardColor,
-                          foregroundColor: action.foregroundColor ?? AppColors.primary,
+                          backgroundColor:
+                              action.backgroundColor ??
+                              Theme.of(context).cardColor,
+                          foregroundColor:
+                              action.foregroundColor ?? AppColors.primary,
                           onPressed: () {
                             _toggle();
                             action.onTap();

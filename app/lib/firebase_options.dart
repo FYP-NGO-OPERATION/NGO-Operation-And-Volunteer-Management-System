@@ -66,7 +66,8 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDX8a1eHkvAqoOIHBlu1HB3N2CQsnilK4I',
-    appId: '1:169049198995:web:0607882aa56553c71a1866', // using web appId for windows
+    appId:
+        '1:169049198995:web:0607882aa56553c71a1866', // using web appId for windows
     messagingSenderId: '169049198995',
     projectId: 'ngo-volunteer-app-6284b',
     authDomain: 'ngo-volunteer-app-6284b.firebaseapp.com',

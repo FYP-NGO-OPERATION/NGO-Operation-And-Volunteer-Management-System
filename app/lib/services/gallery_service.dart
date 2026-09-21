@@ -47,8 +47,10 @@ class GalleryService {
 
     // 2. Upload to Firebase Storage
     final fileName = '${_uuid.v4()}.jpg';
-    final storageRef = _storage.ref().child('campaign_photos/$campaignId/$fileName');
-    
+    final storageRef = _storage.ref().child(
+      'campaign_photos/$campaignId/$fileName',
+    );
+
     final uploadTask = storageRef.putFile(fileToUpload);
     final snapshot = await uploadTask;
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -74,10 +76,11 @@ class GalleryService {
         .where('campaignId', isEqualTo: campaignId)
         .snapshots()
         .map((snapshot) {
-          final list = snapshot.docs
-              .map((doc) => PhotoModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          final list =
+              snapshot.docs
+                  .map((doc) => PhotoModel.fromMap(doc.data()))
+                  .toList()
+                ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return list;
         });
   }

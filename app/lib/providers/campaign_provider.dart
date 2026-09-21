@@ -15,6 +15,7 @@ class CampaignProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   CampaignStatus? _statusFilter;
+  String _categoryFilter = 'All Campaigns';
   String _searchQuery = '';
   String? _ngoFilter; // FYP-03 Multi-NGO feature
   StreamSubscription? _campaignsSubscription;
@@ -26,18 +27,35 @@ class CampaignProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   CampaignStatus? get statusFilter => _statusFilter;
+  String get categoryFilter => _categoryFilter;
   String get searchQuery => _searchQuery;
 
   int get totalCampaigns => _filteredCampaigns.length;
   int get activeCampaigns => _filteredCampaigns.where((c) => c.isActive).length;
-  int get completedCampaigns => _filteredCampaigns.where((c) => c.isCompleted).length;
-  int get upcomingCampaigns => _filteredCampaigns.where((c) => c.isUpcoming).length;
+  int get completedCampaigns =>
+      _filteredCampaigns.where((c) => c.isCompleted).length;
+  int get upcomingCampaigns =>
+      _filteredCampaigns.where((c) => c.isUpcoming).length;
 
-  double get totalDonationsOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.totalDonationsAmount);
-  int get totalBeneficiariesOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.beneficiaryCount);
-  int get totalItemsDistributedOverall => _filteredCampaigns.fold(0, (sum, c) => sum + c.distributionCount);
+  double get totalDonationsOverall =>
+      _filteredCampaigns.fold(0, (sum, c) => sum + c.totalDonationsAmount);
+  int get totalBeneficiariesOverall =>
+      _filteredCampaigns.fold(0, (sum, c) => sum + c.beneficiaryCount);
+  int get totalItemsDistributedOverall =>
+      _filteredCampaigns.fold(0, (sum, c) => sum + c.distributionCount);
 
-  /// Filtered list based on status filter, search query, and NGO
+  /// Get unique categories from all campaigns
+  List<String> get availableCategories {
+    final categories = _campaigns
+        .map((c) => c.category)
+        .where((cat) => cat.isNotEmpty)
+        .toSet()
+        .toList();
+    categories.sort();
+    return ['All Campaigns', ...categories];
+  }
+
+  /// Filtered list based on category, status filter, search query, and NGO
   List<CampaignModel> get _filteredCampaigns {
     var list = _campaigns.toList();
 
@@ -51,14 +69,34 @@ class CampaignProvider extends ChangeNotifier {
       list = list.where((c) => c.status == _statusFilter).toList();
     }
 
+    // Apply category filter
+    if (_categoryFilter != 'All Campaigns') {
+      list = list.where((c) => c.category == _categoryFilter).toList();
+    }
+
     // Apply search
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
-      list = list.where((c) =>
-          c.title.toLowerCase().contains(q) ||
-          c.description.toLowerCase().contains(q) ||
-          c.location.toLowerCase().contains(q)).toList();
+      list = list
+          .where(
+            (c) =>
+                c.title.toLowerCase().contains(q) ||
+                c.description.toLowerCase().contains(q) ||
+                c.location.toLowerCase().contains(q),
+          )
+          .toList();
     }
+
+    // Sort by Project Sequence Number (Highest/Newest first)
+    list.sort((a, b) {
+      final numA = a.projectSequenceNumber ?? 0;
+      final numB = b.projectSequenceNumber ?? 0;
+      if (numA != numB) {
+        return numB.compareTo(numA); // descending
+      }
+      // fallback to start date
+      return b.startDate.compareTo(a.startDate);
+    });
 
     return list;
   }
@@ -74,24 +112,31 @@ class CampaignProvider extends ChangeNotifier {
   void init(String ngoId) {
     _setLoading(true);
     _campaignsSubscription?.cancel();
-    _campaignsSubscription = _campaignService.getCampaignsStream(ngoId).listen(
-      (campaigns) {
-        _campaigns = campaigns;
-        _isLoading = false;
-        _error = null;
-        notifyListeners();
-      },
-      onError: (e) {
-        _error = e.toString();
-        _isLoading = false;
-        notifyListeners();
-      },
-    );
+    _campaignsSubscription = _campaignService
+        .getCampaignsStream(ngoId)
+        .listen(
+          (campaigns) {
+            _campaigns = campaigns;
+            _isLoading = false;
+            _error = null;
+            notifyListeners();
+          },
+          onError: (e) {
+            _error = e.toString();
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
   }
 
   // ─── Filter & Search ───
   void setStatusFilter(CampaignStatus? status) {
     _statusFilter = status;
+    notifyListeners();
+  }
+
+  void setCategoryFilter(String category) {
+    _categoryFilter = category;
     notifyListeners();
   }
 
@@ -102,6 +147,7 @@ class CampaignProvider extends ChangeNotifier {
 
   void clearFilters() {
     _statusFilter = null;
+    _categoryFilter = 'All Campaigns';
     _searchQuery = '';
     notifyListeners();
   }
@@ -192,6 +238,207 @@ class CampaignProvider extends ChangeNotifier {
 
   void clearError() {
     _error = null;
+  /// Get unique categories from all campaigns
+  List<String> get availableCategories {
+    final categories = _campaigns
+        .map((c) => c.category)
+        .where((cat) => cat.isNotEmpty)
+        .toSet()
+        .toList();
+    categories.sort();
+    return ['All Campaigns', ...categories];
+  }
+
+  /// Filtered list based on category, status filter, search query, and NGO
+  List<CampaignModel> get _filteredCampaigns {
+    var list = _campaigns.toList();
+
+    // Apply NGO filter
+    if (_ngoFilter != null && _ngoFilter!.isNotEmpty) {
+      list = list.where((c) => c.ngoName == _ngoFilter).toList();
+    }
+
+    // Apply status filter
+    if (_statusFilter != null) {
+      list = list.where((c) => c.status == _statusFilter).toList();
+    }
+
+    // Apply category filter
+    if (_categoryFilter != 'All Campaigns') {
+      list = list.where((c) => c.category == _categoryFilter).toList();
+    }
+
+    // Apply search
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      list = list
+          .where(
+            (c) =>
+                c.title.toLowerCase().contains(q) ||
+                c.description.toLowerCase().contains(q) ||
+                c.location.toLowerCase().contains(q),
+          )
+          .toList();
+    }
+
+    // Sort by Project Sequence Number (Highest/Newest first)
+    list.sort((a, b) {
+      final numA = a.projectSequenceNumber ?? 0;
+      final numB = b.projectSequenceNumber ?? 0;
+      if (numA != numB) {
+        return numB.compareTo(numA); // descending
+      }
+      // fallback to start date
+      return b.startDate.compareTo(a.startDate);
+    });
+
+    return list;
+  }
+
+  void setNgoFilter(String? ngoName) {
+    if (_ngoFilter != ngoName) {
+      _ngoFilter = ngoName;
+      notifyListeners();
+    }
+  }
+
+  // ─── Initialize — subscribe to real-time updates ───
+  void init(String ngoId) {
+    _setLoading(true);
+    _campaignsSubscription?.cancel();
+    _campaignsSubscription = _campaignService
+        .getCampaignsStream(ngoId)
+        .listen(
+          (campaigns) {
+            _campaigns = campaigns;
+            _isLoading = false;
+            _error = null;
+            notifyListeners();
+          },
+          onError: (e) {
+            _error = e.toString();
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
+  }
+
+  // ─── Filter & Search ───
+  void setStatusFilter(CampaignStatus? status) {
+    _statusFilter = status;
+    notifyListeners();
+  }
+
+  void setCategoryFilter(String category) {
+    _categoryFilter = category;
+    notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _statusFilter = null;
+    _categoryFilter = 'All Campaigns';
+    _searchQuery = '';
+    notifyListeners();
+  }
+
+  // ─── Create Campaign ───
+  Future<bool> createCampaign(
+    CampaignModel campaign, {
+    File? videoFile,
+    File? documentFile,
+    List<File>? galleryFiles,
+  }) async {
+    try {
+      _setLoading(true);
+      await _campaignService.createCampaign(
+        campaign,
+        videoFile: videoFile,
+        documentFile: documentFile,
+        galleryFiles: galleryFiles,
+      );
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Failed to create campaign: $e');
+      return false;
+    }
+  }
+
+  // ─── Update Campaign ───
+  Future<bool> updateCampaign(CampaignModel campaign) async {
+    try {
+      _setLoading(true);
+      await _campaignService.updateCampaign(campaign);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Failed to update campaign: $e');
+      return false;
+    }
+  }
+
+  // ─── Update Status ───
+  Future<bool> updateStatus(String campaignId, CampaignStatus status) async {
+    try {
+      await _campaignService.updateCampaignStatus(campaignId, status);
+      return true;
+    } catch (e) {
+      _setError('Failed to update status: $e');
+      return false;
+    }
+  }
+
+  // ─── Delete Campaign ───
+  Future<bool> deleteCampaign(String campaignId) async {
+    try {
+      _setLoading(true);
+      await _campaignService.deleteCampaign(campaignId);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Failed to delete campaign: $e');
+      return false;
+    }
+  }
+
+  // ─── Select Campaign (for detail view) ───
+  void selectCampaign(CampaignModel campaign) {
+    _selectedCampaign = campaign;
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    _selectedCampaign = null;
+    notifyListeners();
+  }
+
+  // ─── Helpers ───
+  void _setLoading(bool value) {
+    _isLoading = value;
+    _error = null;
+    notifyListeners();
+  }
+
+  void _setError(String message) {
+    _error = message;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
+  void clear() {
+    _campaigns = [];
+    _selectedCampaign = null;
+    _campaignsSubscription?.cancel();
     notifyListeners();
   }
 

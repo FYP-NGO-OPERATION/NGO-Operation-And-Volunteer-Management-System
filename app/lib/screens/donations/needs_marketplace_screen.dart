@@ -25,7 +25,10 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('needs_marketplace'.tr(), style: AppTextStyles.titleLarge()),
+        title: Text(
+          'needs_marketplace'.tr(),
+          style: AppTextStyles.titleLarge(),
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -49,12 +52,16 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
             itemBuilder: (ctx, i) {
               final data = needs[i].data() as Map<String, dynamic>;
               final status = data['status'] ?? 'pending';
-              
+
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: status == 'adopted' ? AppColors.success : Colors.transparent),
+                  side: BorderSide(
+                    color: status == 'adopted'
+                        ? AppColors.success
+                        : Colors.transparent,
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -65,33 +72,55 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(data['title'] ?? '', style: AppTextStyles.titleMedium()),
+                            child: Text(
+                              data['title'] ?? '',
+                              style: AppTextStyles.titleMedium(),
+                            ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: status == 'adopted' ? AppColors.success.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
+                              color: status == 'adopted'
+                                  ? AppColors.success.withOpacity(0.2)
+                                  : Colors.orange.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               status.toUpperCase(),
                               style: TextStyle(
                                 fontSize: 10,
-                                color: status == 'adopted' ? AppColors.success : Colors.orange,
+                                color: status == 'adopted'
+                                    ? AppColors.success
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(data['description'] ?? '', style: AppTextStyles.bodyMedium()),
+                      Text(
+                        data['description'] ?? '',
+                        style: AppTextStyles.bodyMedium(),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
+                          const Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: AppColors.textSecondary,
+                          ),
                           const SizedBox(width: 4),
-                          Expanded(child: Text(data['location'] ?? '', style: AppTextStyles.bodySmall())),
+                          Expanded(
+                            child: Text(
+                              data['location'] ?? '',
+                              style: AppTextStyles.bodySmall(),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -101,34 +130,56 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () => _adoptNeed(needs[i].id),
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                ),
                                 child: const Text('Adopt & Create Campaign'),
                               ),
                             ),
                           if (user?.uid == data['reporterId']) ...[
-                            if (isAdmin && status == 'pending') const SizedBox(width: 8),
+                            if (isAdmin && status == 'pending')
+                              const SizedBox(width: 8),
                             IconButton(
                               onPressed: () async {
                                 final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                     title: const Text('Delete Need'),
-                                    content: const Text('Are you sure you want to delete this need request?'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this need request?',
+                                    ),
                                     actions: [
-                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, false),
+                                        child: const Text('Cancel'),
+                                      ),
                                       ElevatedButton(
-                                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-                                        onPressed: () => Navigator.pop(ctx, true),
-                                        child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.error,
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, true),
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
                                     ],
                                   ),
                                 );
                                 if (confirm == true) {
-                                  await FirebaseFirestore.instance.collection('public_needs').doc(needs[i].id).delete();
+                                  await FirebaseFirestore.instance
+                                      .collection('public_needs')
+                                      .doc(needs[i].id)
+                                      .delete();
                                 }
                               },
-                              icon: const Icon(Icons.delete, color: AppColors.error),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: AppColors.error,
+                              ),
                               tooltip: 'Delete Need',
                             ),
                           ],
@@ -142,13 +193,18 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
           );
         },
       ),
-      floatingActionButton: !isAdmin ? FloatingActionButton.extended(
-        onPressed: () => _showPostNeedDialog(context),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text('report_need'.tr(), style: const TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ) : null,
+      floatingActionButton: !isAdmin
+          ? FloatingActionButton.extended(
+              onPressed: () => _showPostNeedDialog(context),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: Text(
+                'report_need'.tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            )
+          : null,
     );
   }
 
@@ -159,7 +215,11 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
       'adoptedBy': context.read<AuthProvider>().user?.uid,
     });
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Need adopted! Create a campaign for it.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Need adopted! Create a campaign for it.'),
+        ),
+      );
     }
   }
 
@@ -173,48 +233,69 @@ class _NeedsMarketplaceScreenState extends State<NeedsMarketplaceScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Title (e.g., Tents needed in XYZ)')),
+                TextField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title (e.g., Tents needed in XYZ)',
+                  ),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: _descController, maxLines: 3, decoration: const InputDecoration(labelText: 'Description')),
+                TextField(
+                  controller: _descController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
                 const SizedBox(height: 12),
-                TextField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location')),
+                TextField(
+                  controller: _locationController,
+                  decoration: const InputDecoration(labelText: 'Location'),
+                ),
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             ElevatedButton(
               onPressed: () async {
                 if (_titleController.text.isEmpty) return;
                 final user = context.read<AuthProvider>().user;
-                
+
                 try {
-                  await FirebaseFirestore.instance.collection('public_needs').add({
-                    'title': _titleController.text,
-                    'description': _descController.text,
-                    'location': _locationController.text,
-                    'status': 'pending',
-                    'reporterId': user?.uid,
-                    'reporterName': user?.name,
-                    'createdAt': FieldValue.serverTimestamp(),
-                  });
-                  
+                  await FirebaseFirestore.instance
+                      .collection('public_needs')
+                      .add({
+                        'title': _titleController.text,
+                        'description': _descController.text,
+                        'location': _locationController.text,
+                        'status': 'pending',
+                        'reporterId': user?.uid,
+                        'reporterName': user?.name,
+                        'createdAt': FieldValue.serverTimestamp(),
+                      });
+
                   _titleController.clear();
                   _descController.clear();
                   _locationController.clear();
-                  
+
                   if (mounted) Navigator.pop(ctx);
                 } catch (e) {
                   if (mounted) {
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: ${e.toString().contains('permission') ? 'Permission Denied. Update Firestore Rules.' : e.toString()}')),
+                      SnackBar(
+                          content: Text(
+                            'An unexpected error occurred. Please try again.',
+                          ),
+                      ),
                     );
                   }
                 }
               },
               child: const Text('Submit'),
-            )
+            ),
           ],
         );
       },

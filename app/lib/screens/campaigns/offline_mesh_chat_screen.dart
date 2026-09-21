@@ -16,25 +16,26 @@ class OfflineMeshChatScreen extends StatefulWidget {
 class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
   final TextEditingController _msgController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   bool _isOfflineMode = true; // Simulated Bluetooth Mesh mode
   bool _isScanning = false;
-  
+
   final List<Map<String, dynamic>> _messages = [
     {
       'senderName': 'System',
-      'text': 'Offline Mesh Network initialized via Bluetooth. Messages will route through nearby peers.',
+      'text':
+          'Offline Mesh Network initialized via Bluetooth. Messages will route through nearby peers.',
       'isSystem': true,
       'time': DateTime.now().subtract(const Duration(minutes: 5)),
       'status': 'synced',
-    }
+    },
   ];
 
   void _sendMessage() {
     if (_msgController.text.trim().isEmpty) return;
-    
+
     final user = context.read<AuthProvider>().user;
-    
+
     setState(() {
       _messages.add({
         'senderName': user?.name ?? 'Volunteer',
@@ -46,9 +47,9 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
       });
       _msgController.clear();
     });
-    
+
     _scrollToBottom();
-    
+
     if (_isOfflineMode) {
       // Simulate peer response
       Future.delayed(const Duration(seconds: 2), () {
@@ -88,7 +89,9 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           title: const Text('Bluetooth Permission Required'),
-          content: const Text('Emergency Comms requires access to Bluetooth and Nearby Devices to create a mesh network.\n\nAllow "HRAS Volunteer" to find, connect to, and determine the relative position of nearby devices?'),
+          content: const Text(
+            'Emergency Comms requires access to Bluetooth and Nearby Devices to create a mesh network.\n\nAllow "HRAS Volunteer" to find, connect to, and determine the relative position of nearby devices?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -151,7 +154,7 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -171,13 +174,16 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
                   style: const TextStyle(fontSize: 10, color: Colors.white70),
                 ),
               ],
-            )
+            ),
           ],
         ),
         actions: [
           Row(
             children: [
-              Text(_isOfflineMode ? 'Offline' : 'Online', style: const TextStyle(fontSize: 12)),
+              Text(
+                _isOfflineMode ? 'Offline' : 'Online',
+                style: const TextStyle(fontSize: 12),
+              ),
               Switch(
                 value: !_isOfflineMode,
                 onChanged: (_) => _toggleNetwork(),
@@ -186,7 +192,7 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
                 inactiveTrackColor: Colors.blue.withOpacity(0.5),
               ),
             ],
-          )
+          ),
         ],
       ),
       body: Column(
@@ -198,7 +204,11 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                   SizedBox(width: 12),
                   Text('Scanning for nearby mesh nodes...'),
                 ],
@@ -245,10 +255,10 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
   Widget _buildChatMessage(Map<String, dynamic> msg, bool isDark) {
     final isMe = msg['isMe'] == true;
     final status = msg['status'];
-    
+
     IconData statusIcon = Icons.check;
     Color statusColor = Colors.grey;
-    
+
     if (status == 'queued_bluetooth') {
       statusIcon = Icons.bluetooth;
       statusColor = Colors.blue;
@@ -264,10 +274,14 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isMe ? AppColors.primary : (isDark ? AppColors.darkSurface : AppColors.lightSurface),
+          color: isMe
+              ? AppColors.primary
+              : (isDark ? AppColors.darkSurface : AppColors.lightSurface),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -275,18 +289,33 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
             bottomRight: Radius.circular(isMe ? 0 : 16),
           ),
           border: Border.all(
-            color: isMe ? Colors.transparent : (isDark ? Colors.grey[800]! : Colors.grey[300]!),
+            color: isMe
+                ? Colors.transparent
+                : (isDark ? Colors.grey[800]! : Colors.grey[300]!),
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
-              Text(msg['senderName'], style: TextStyle(fontSize: 10, color: isDark ? AppColors.primaryLight : AppColors.primary, fontWeight: FontWeight.bold)),
+              Text(
+                msg['senderName'],
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isDark ? AppColors.primaryLight : AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             const SizedBox(height: 4),
             Text(
               msg['text'],
-              style: TextStyle(color: isMe ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+              style: TextStyle(
+                color: isMe
+                    ? Colors.white
+                    : (isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary),
+              ),
             ),
             const SizedBox(height: 4),
             Row(
@@ -294,12 +323,19 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
               children: [
                 Text(
                   '${msg['time'].hour}:${msg['time'].minute.toString().padLeft(2, '0')}',
-                  style: TextStyle(fontSize: 10, color: isMe ? Colors.white70 : AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isMe ? Colors.white70 : AppColors.textSecondary,
+                  ),
                 ),
                 if (isMe) ...[
                   const SizedBox(width: 4),
-                  Icon(statusIcon, size: 12, color: isMe ? Colors.white70 : statusColor),
-                ]
+                  Icon(
+                    statusIcon,
+                    size: 12,
+                    color: isMe ? Colors.white70 : statusColor,
+                  ),
+                ],
               ],
             ),
           ],
@@ -314,8 +350,12 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))
-        ]
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -328,14 +368,19 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
             child: TextField(
               controller: _msgController,
               decoration: InputDecoration(
-                hintText: _isOfflineMode ? 'Send via Bluetooth Mesh...' : 'Send message...',
+                hintText: _isOfflineMode
+                    ? 'Send via Bluetooth Mesh...'
+                    : 'Send message...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
                 fillColor: isDark ? const Color(0xFF161B22) : Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
               ),
               onSubmitted: (_) => _sendMessage(),
             ),

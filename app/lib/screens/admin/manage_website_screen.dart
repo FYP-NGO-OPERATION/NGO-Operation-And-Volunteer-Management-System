@@ -16,12 +16,12 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
   final TextEditingController _heroTitleCtrl = TextEditingController();
   final TextEditingController _heroSubtitleCtrl = TextEditingController();
   final TextEditingController _aboutCtrl = TextEditingController();
-  
+
   // New Stats
   final TextEditingController _stat1Ctrl = TextEditingController();
   final TextEditingController _stat2Ctrl = TextEditingController();
   final TextEditingController _stat3Ctrl = TextEditingController();
-  
+
   // New Footer Settings
   final TextEditingController _footerEmailCtrl = TextEditingController();
   final TextEditingController _footerPhoneCtrl = TextEditingController();
@@ -47,22 +47,32 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
 
   Future<void> _loadSettings() async {
     try {
-      final doc = await FirebaseFirestore.instance.collection('website_content').doc('settings').get();
+      final doc = await FirebaseFirestore.instance
+          .collection('website_content')
+          .doc('settings')
+          .get();
       if (doc.exists) {
         final data = doc.data()!;
         _heroTitleCtrl.text = data['heroTitle'] ?? 'Grassroots Impact';
-        _heroSubtitleCtrl.text = data['heroSubtitle'] ?? 'Empowering local communities across Pakistan through direct, transparent volunteer action.';
-        _aboutCtrl.text = data['aboutText'] ?? 'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
+        _heroSubtitleCtrl.text =
+            data['heroSubtitle'] ??
+            'Empowering local communities across Pakistan through direct, transparent volunteer action.';
+        _aboutCtrl.text =
+            data['aboutText'] ??
+            'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
         _stat1Ctrl.text = data['stat1'] ?? '100%';
         _stat2Ctrl.text = data['stat2'] ?? 'Local';
         _stat3Ctrl.text = data['stat3'] ?? 'Impact';
-        _footerEmailCtrl.text = data['footerEmail'] ?? 'contact@hras-ngo.org.pk';
+        _footerEmailCtrl.text =
+            data['footerEmail'] ?? 'contact@hras-ngo.org.pk';
         _footerPhoneCtrl.text = data['footerPhone'] ?? '+92 (300) 123-4567';
         _footerAddressCtrl.text = data['footerAddress'] ?? 'Lahore, Pakistan';
       } else {
         _heroTitleCtrl.text = 'Grassroots Impact';
-        _heroSubtitleCtrl.text = 'Empowering local communities across Pakistan through direct, transparent volunteer action.';
-        _aboutCtrl.text = 'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
+        _heroSubtitleCtrl.text =
+            'Empowering local communities across Pakistan through direct, transparent volunteer action.';
+        _aboutCtrl.text =
+            'We are a newly formed Pakistani NGO dedicated to making a real difference. We connect passionate local volunteers with urgent causes, ensuring 100% transparency.';
         _stat1Ctrl.text = '100%';
         _stat2Ctrl.text = 'Local';
         _stat3Ctrl.text = 'Impact';
@@ -71,24 +81,38 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
         _footerAddressCtrl.text = 'Lahore, Pakistan';
       }
 
-      final aboutDoc = await FirebaseFirestore.instance.collection('website_content').doc('about_page').get();
+      final aboutDoc = await FirebaseFirestore.instance
+          .collection('website_content')
+          .doc('about_page')
+          .get();
       if (aboutDoc.exists) {
         final data = aboutDoc.data()!;
         _aboutHeroTitleCtrl.text = data['heroTitle'] ?? 'Who We Are';
-        _aboutHeroSubCtrl.text = data['heroSubtitle'] ?? 'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
+        _aboutHeroSubCtrl.text =
+            data['heroSubtitle'] ??
+            'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
         _missionTitleCtrl.text = data['missionTitle'] ?? 'Our Mission';
-        _missionTextCtrl.text = data['missionText'] ?? 'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
+        _missionTextCtrl.text =
+            data['missionText'] ??
+            'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
         _val1TitleCtrl.text = data['val1Title'] ?? '100% Transparency';
-        _val1DescCtrl.text = data['val1Desc'] ?? 'Every donation is tracked on our public ledger.';
+        _val1DescCtrl.text =
+            data['val1Desc'] ??
+            'Every donation is tracked on our public ledger.';
         _val2TitleCtrl.text = data['val2Title'] ?? 'Grassroots Focus';
-        _val2DescCtrl.text = data['val2Desc'] ?? 'Addressing local problems with local solutions.';
+        _val2DescCtrl.text =
+            data['val2Desc'] ??
+            'Addressing local problems with local solutions.';
         _val3TitleCtrl.text = data['val3Title'] ?? 'Volunteer-Led';
-        _val3DescCtrl.text = data['val3Desc'] ?? 'Driven by passionate youth across Pakistan.';
+        _val3DescCtrl.text =
+            data['val3Desc'] ?? 'Driven by passionate youth across Pakistan.';
       } else {
         _aboutHeroTitleCtrl.text = 'Who We Are';
-        _aboutHeroSubCtrl.text = 'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
+        _aboutHeroSubCtrl.text =
+            'The Humanitarian Relief and Aid Society (HRAS) is a newly formed, grassroots NGO dedicated to uplifting communities across Pakistan through volunteer action.';
         _missionTitleCtrl.text = 'Our Mission';
-        _missionTextCtrl.text = 'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
+        _missionTextCtrl.text =
+            'We believe that real change starts at the local level. HRAS was founded in Pakistan to bridge the gap between those who want to help and those who need it most, ensuring transparency and direct impact.';
         _val1TitleCtrl.text = '100% Transparency';
         _val1DescCtrl.text = 'Every donation is tracked on our public ledger.';
         _val2TitleCtrl.text = 'Grassroots Focus';
@@ -96,7 +120,6 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
         _val3TitleCtrl.text = 'Volunteer-Led';
         _val3DescCtrl.text = 'Driven by passionate youth across Pakistan.';
       }
-
     } catch (e) {
       debugPrint('Error loading website settings: $e');
     }
@@ -110,39 +133,53 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('website_content').doc('settings').set({
-        'heroTitle': _heroTitleCtrl.text,
-        'heroSubtitle': _heroSubtitleCtrl.text,
-        'aboutText': _aboutCtrl.text,
-        'stat1': _stat1Ctrl.text,
-        'stat2': _stat2Ctrl.text,
-        'stat3': _stat3Ctrl.text,
-        'footerEmail': _footerEmailCtrl.text,
-        'footerPhone': _footerPhoneCtrl.text,
-        'footerAddress': _footerAddressCtrl.text,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      await FirebaseFirestore.instance
+          .collection('website_content')
+          .doc('settings')
+          .set({
+            'heroTitle': _heroTitleCtrl.text,
+            'heroSubtitle': _heroSubtitleCtrl.text,
+            'aboutText': _aboutCtrl.text,
+            'stat1': _stat1Ctrl.text,
+            'stat2': _stat2Ctrl.text,
+            'stat3': _stat3Ctrl.text,
+            'footerEmail': _footerEmailCtrl.text,
+            'footerPhone': _footerPhoneCtrl.text,
+            'footerAddress': _footerAddressCtrl.text,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
 
-      await FirebaseFirestore.instance.collection('website_content').doc('about_page').set({
-        'heroTitle': _aboutHeroTitleCtrl.text,
-        'heroSubtitle': _aboutHeroSubCtrl.text,
-        'missionTitle': _missionTitleCtrl.text,
-        'missionText': _missionTextCtrl.text,
-        'val1Title': _val1TitleCtrl.text,
-        'val1Desc': _val1DescCtrl.text,
-        'val2Title': _val2TitleCtrl.text,
-        'val2Desc': _val2DescCtrl.text,
-        'val3Title': _val3TitleCtrl.text,
-        'val3Desc': _val3DescCtrl.text,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      await FirebaseFirestore.instance
+          .collection('website_content')
+          .doc('about_page')
+          .set({
+            'heroTitle': _aboutHeroTitleCtrl.text,
+            'heroSubtitle': _aboutHeroSubCtrl.text,
+            'missionTitle': _missionTitleCtrl.text,
+            'missionText': _missionTextCtrl.text,
+            'val1Title': _val1TitleCtrl.text,
+            'val1Desc': _val1DescCtrl.text,
+            'val2Title': _val2TitleCtrl.text,
+            'val2Desc': _val2DescCtrl.text,
+            'val3Title': _val3TitleCtrl.text,
+            'val3Desc': _val3DescCtrl.text,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Website content updated! Refresh the website to see changes.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Website content updated! Refresh the website to see changes.',
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
     if (mounted) {
@@ -181,9 +218,7 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Website Content'),
-      ),
+      appBar: AppBar(title: const Text('Manage Website Content')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -191,98 +226,251 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Hero Section', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text(
+                'Hero Section',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _heroTitleCtrl,
-                decoration: const InputDecoration(labelText: 'Hero Title', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Hero Title',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (val) => val!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _heroSubtitleCtrl,
-                decoration: const InputDecoration(labelText: 'Hero Subtitle', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Hero Subtitle',
+                  border: OutlineInputBorder(),
+                ),
                 maxLines: 3,
                 validator: (val) => val!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 32),
-              
-              const Text('About Section', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+
+              const Text(
+                'About Section',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _aboutCtrl,
-                decoration: const InputDecoration(labelText: 'About Us Text', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'About Us Text',
+                  border: OutlineInputBorder(),
+                ),
                 maxLines: 5,
                 validator: (val) => val!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 32),
 
-              const Text('Impact Stats', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text(
+                'Impact Stats',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: TextFormField(controller: _stat1Ctrl, decoration: const InputDecoration(labelText: 'Stat 1 (e.g. 100%)', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _stat1Ctrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Stat 1 (e.g. 100%)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: TextFormField(controller: _stat2Ctrl, decoration: const InputDecoration(labelText: 'Stat 2 (e.g. 50k+)', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _stat2Ctrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Stat 2 (e.g. 50k+)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: TextFormField(controller: _stat3Ctrl, decoration: const InputDecoration(labelText: 'Stat 3 (e.g. \$2.5M)', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _stat3Ctrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Stat 3 (e.g. \$2.5M)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 32),
 
-              const Text('Footer Contact Info', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text(
+                'Footer Contact Info',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _footerEmailCtrl, decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder())),
+              TextFormField(
+                controller: _footerEmailCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _footerPhoneCtrl, decoration: const InputDecoration(labelText: 'Phone', border: OutlineInputBorder())),
+              TextFormField(
+                controller: _footerPhoneCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _footerAddressCtrl, decoration: const InputDecoration(labelText: 'Address', border: OutlineInputBorder())),
+              TextFormField(
+                controller: _footerAddressCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Address',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 32),
 
               const Divider(),
               const SizedBox(height: 32),
 
-              const Text('About Page Content', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)),
+              const Text(
+                'About Page Content',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
               const SizedBox(height: 16),
-              
-              const Text('Hero Section', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+
+              const Text(
+                'Hero Section',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _aboutHeroTitleCtrl, decoration: const InputDecoration(labelText: 'Hero Title (e.g. Who We Are)', border: OutlineInputBorder())),
+              TextFormField(
+                controller: _aboutHeroTitleCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Hero Title (e.g. Who We Are)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _aboutHeroSubCtrl, decoration: const InputDecoration(labelText: 'Hero Subtitle', border: OutlineInputBorder()), maxLines: 3),
+              TextFormField(
+                controller: _aboutHeroSubCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Hero Subtitle',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
               const SizedBox(height: 24),
 
-              const Text('Mission Section', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Mission Section',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _missionTitleCtrl, decoration: const InputDecoration(labelText: 'Mission Title', border: OutlineInputBorder())),
+              TextFormField(
+                controller: _missionTitleCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Mission Title',
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _missionTextCtrl, decoration: const InputDecoration(labelText: 'Mission Text', border: OutlineInputBorder()), maxLines: 4),
+              TextFormField(
+                controller: _missionTextCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Mission Text',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 4,
+              ),
               const SizedBox(height: 24),
 
-              const Text('Core Values', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Core Values',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
-              
+
               Row(
                 children: [
-                  Expanded(child: TextFormField(controller: _val1TitleCtrl, decoration: const InputDecoration(labelText: 'Value 1 Title', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val1TitleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 1 Title',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: TextFormField(controller: _val1DescCtrl, decoration: const InputDecoration(labelText: 'Value 1 Description', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val1DescCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 1 Description',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: TextFormField(controller: _val2TitleCtrl, decoration: const InputDecoration(labelText: 'Value 2 Title', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val2TitleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 2 Title',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: TextFormField(controller: _val2DescCtrl, decoration: const InputDecoration(labelText: 'Value 2 Description', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val2DescCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 2 Description',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: TextFormField(controller: _val3TitleCtrl, decoration: const InputDecoration(labelText: 'Value 3 Title', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val3TitleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 3 Title',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: TextFormField(controller: _val3DescCtrl, decoration: const InputDecoration(labelText: 'Value 3 Description', border: OutlineInputBorder()))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _val3DescCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Value 3 Description',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
 
@@ -292,10 +480,12 @@ class _ManageWebsiteScreenState extends State<ManageWebsiteScreen> {
                 height: 50,
                 child: ElevatedButton.icon(
                   onPressed: _isSaving ? null : _saveSettings,
-                  icon: _isSaving ? const CircularProgressIndicator(color: Colors.white) : const Icon(Icons.save),
+                  icon: _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Icon(Icons.save),
                   label: const Text('Save & Publish to Website'),
                 ),
-              )
+              ),
             ],
           ),
         ),

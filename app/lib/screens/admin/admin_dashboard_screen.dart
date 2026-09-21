@@ -48,11 +48,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             // Profile Header
             _AnimatedAdminBanner(user: user, theme: theme),
             AppSpacing.vGapXl,
-            
+
             // Banners Section
             Row(
               children: [
-                Icon(Icons.view_carousel_rounded, color: theme.primaryColor, size: 24),
+                Icon(
+                  Icons.view_carousel_rounded,
+                  color: theme.primaryColor,
+                  size: 24,
+                ),
                 AppSpacing.hGapSm,
                 Text('Featured Banners', style: AppTextStyles.headlineSmall()),
               ],
@@ -84,7 +88,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     if (widget.onNavigate != null) {
                       widget.onNavigate!(7); // 7 is Analytics
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AnalyticsScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AnalyticsScreen(),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -92,13 +101,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Virtual Sessions',
                   icon: Icons.video_call,
-                  color: isDark ? Colors.purpleAccent.shade200 : Colors.purple.shade500,
+                  color: isDark
+                      ? Colors.purpleAccent.shade200
+                      : Colors.purple.shade500,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
                       widget.onNavigate!(6); // 6 is Virtual Sessions
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Virtual Sessions')), body: const SessionListScreen())));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('Virtual Sessions'),
+                            ),
+                            body: const SessionListScreen(),
+                          ),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -106,13 +127,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   context,
                   title: 'Campaigns',
                   icon: Icons.campaign,
-                  color: isDark ? Colors.greenAccent.shade400 : AppColors.primary,
+                  color: isDark
+                      ? Colors.greenAccent.shade400
+                      : AppColors.primary,
                   isDark: isDark,
                   onTap: () {
                     if (widget.onNavigate != null) {
                       widget.onNavigate!(2); // 2 is Campaigns
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Campaigns')), body: const CampaignListScreen())));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Scaffold(
+                            appBar: AppBar(title: const Text('Campaigns')),
+                            body: const CampaignListScreen(),
+                          ),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -126,17 +157,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     if (widget.onNavigate != null) {
                       widget.onNavigate!(5); // 5 is Announcements
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const Scaffold(body: AnnouncementListScreen())));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const Scaffold(body: AnnouncementListScreen()),
+                        ),
+                      );
                     }
                   },
                 ),
               ],
             ),
-            
+
             AppSpacing.vGapXl,
             Text('Management', style: AppTextStyles.headlineSmall()),
             AppSpacing.vGapMd,
-            
+
             _buildListAction(
               context,
               title: 'Schedule New Session',
@@ -145,7 +182,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               color: isDark ? Colors.greenAccent.shade400 : AppColors.primary,
               isDark: isDark,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateSessionScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CreateSessionScreen(),
+                  ),
+                );
               },
             ),
           ],
@@ -170,12 +212,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isDark 
+            colors: isDark
                 ? [AppColors.darkCardBg, AppColors.darkCardBg.withOpacity(0.8)]
                 : [Colors.white, Colors.white70],
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(isDark ? 0.7 : 0.4), width: 2.5),
+          border: Border.all(
+            color: color.withOpacity(isDark ? 0.7 : 0.4),
+            width: 2.5,
+          ),
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(isDark ? 0.5 : 0.3),
@@ -208,16 +253,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(isDark ? 0.6 : 0.4), blurRadius: 20, spreadRadius: 3),
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
-                border: Border.all(color: color.withOpacity(isDark ? 0.85 : 0.6), width: 2.5),
+                border: Border.all(
+                  color: color.withOpacity(isDark ? 0.85 : 0.6),
+                  width: 2.5,
+                ),
               ),
               child: Icon(icon, color: color, size: 36),
             ),
             const SizedBox(height: 16),
             Text(
               title,
-              style: AppTextStyles.titleMedium(color: isDark ? Colors.white : Colors.black87).copyWith(fontWeight: FontWeight.bold),
+              style: AppTextStyles.titleMedium(
+                color: isDark ? Colors.white : Colors.black87,
+              ).copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ],
@@ -239,7 +293,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isDark 
+          colors: isDark
               ? [AppColors.darkCardBg, AppColors.darkCardBg.withOpacity(0.9)]
               : [Colors.white, Colors.white.withOpacity(0.9)],
           begin: Alignment.centerLeft,
@@ -249,8 +303,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         border: Border.all(color: color.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 8,
+            color: color.withValues(alpha: 0.3),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -274,264 +328,252 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           child: Icon(icon, color: color),
         ),
-        title: Text(title, style: AppTextStyles.titleSmall().copyWith(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: AppTextStyles.labelSmall(color: AppColors.textHint)),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: isDark ? Colors.white54 : Colors.black54),
+        title: Text(
+          title,
+          style: AppTextStyles.titleSmall().copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: AppTextStyles.labelSmall(color: AppColors.textHint),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: isDark ? Colors.white54 : Colors.black54,
+        ),
       ),
     );
   }
 }
 
-class _AnimatedAdminBanner extends StatefulWidget {
-  final dynamic user;
+class _AnimatedAdminBanner extends StatelessWidget {
+  final UserModel? user;
   final ThemeData theme;
+
   const _AnimatedAdminBanner({required this.user, required this.theme});
 
   @override
-  State<_AnimatedAdminBanner> createState() => _AnimatedAdminBannerState();
-}
-
-class _AnimatedAdminBannerState extends State<_AnimatedAdminBanner> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isDark = widget.theme.brightness == Brightness.dark;
-    
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final angle = _controller.value * 2 * math.pi;
-        final shiftX = math.cos(angle) * 0.5;
-        final shiftY = math.sin(angle) * 0.5;
+    final isDark = theme.brightness == Brightness.dark;
 
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: AppTokens.borderRadiusLg,
-            border: Border.all(
-              color: isDark
-                  ? Colors.tealAccent.withOpacity(0.35)
-                  : Colors.white.withOpacity(0.5),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? Colors.tealAccent.withOpacity(0.2)
-                    : const Color(0xFF2E7D32).withOpacity(0.25),
-                blurRadius: 24,
-                spreadRadius: 3,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 8),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: AppTokens.borderRadiusLg,
+        border: Border.all(
+          color: isDark
+              ? Colors.tealAccent.withOpacity(0.35)
+              : Colors.white.withOpacity(0.5),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.tealAccent.withOpacity(0.2)
+                : const Color(0xFF2E7D32).withOpacity(0.25),
+            blurRadius: 10,
+            spreadRadius: 3,
+            offset: const Offset(0, 4),
           ),
-          child: ClipRRect(
-            borderRadius: AppTokens.borderRadiusLg,
-            child: Stack(
-              children: [
-                // Animated multi-gradient background
-                Positioned.fill(
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: AppTokens.borderRadiusLg,
+        child: Stack(
+          children: [
+            // Static multi-gradient background
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [
+                            const Color(0xFF0F172A), // Deep Slate
+                            const Color(0xFF312E81), // Deep Indigo
+                            const Color(0xFF115E59), // Deep Teal
+                            const Color(0xFF0F172A),
+                          ]
+                        : [
+                            const Color(0xFF021B0B), // Extremely dark green
+                            const Color(0xFF052B14),
+                            const Color(0xFF093D1E),
+                            const Color(0xFF021B0B),
+                          ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            // Static Magical Stars
+            ...List.generate(18, (index) {
+              final opacity = 0.6 + (index % 3) * 0.15;
+              final size = 2.0 + (index % 4) * 1.5;
+
+              final top = 10.0 + (index * 31.0) % 110;
+              final left = 10.0 + (index * 83.0) % 320;
+
+              final starColors = [
+                Colors.white,
+                Colors.yellowAccent.shade100,
+                Colors.cyanAccent.shade100,
+                Colors.lightGreenAccent.shade100,
+              ];
+              final starColor = starColors[index % starColors.length];
+
+              return Positioned(
+                top: top,
+                left: left,
+                child: Opacity(
+                  opacity: opacity,
                   child: Container(
+                    width: size,
+                    height: size,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      shape: BoxShape.circle,
+                      color: starColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: starColor.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+            // Frosted glass overlay
+            Positioned.fill(
+              child: Container(
+                color: isDark
+                    ? Colors.black.withOpacity(0.15)
+                    : Colors.white.withOpacity(0.08),
+              ),
+            ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Row(
+                children: [
+                  // Profile pic with static neon ring
+                  Container(
+                    padding: const EdgeInsets.all(3.5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: SweepGradient(
                         colors: isDark
                             ? [
-                                const Color(0xFF0F172A), // Deep Slate
-                                const Color(0xFF312E81), // Deep Indigo
-                                const Color(0xFF115E59), // Deep Teal
-                                const Color(0xFF0F172A),
+                                Colors.tealAccent,
+                                Colors.cyanAccent,
+                                Colors.greenAccent,
+                                Colors.tealAccent,
                               ]
                             : [
-                                const Color(0xFF021B0B), // Extremely dark green
-                                const Color(0xFF052B14), 
-                                const Color(0xFF093D1E),
-                                const Color(0xFF021B0B),
+                                Colors.white,
+                                Colors.greenAccent,
+                                Colors.white,
+                                Colors.lightGreenAccent,
+                                Colors.white,
                               ],
-                        begin: Alignment(shiftX, shiftY),
-                        end: Alignment(-shiftX, -shiftY),
                       ),
-                    ),
-                  ),
-                ),
-                // Magical Stars
-                ...List.generate(18, (index) {
-                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 4);
-                  // Opacity: fade in and out smoothly
-                  final opacity = (math.sin(starAngle * (2 + index % 3)) + 1) / 2 * 0.9;
-                  // Scale/Zoom effect
-                  final sizeScale = (math.cos(starAngle * 3) + 1) / 2;
-                  final baseSize = 2.0 + (index % 4) * 2.0;
-                  final size = baseSize + (sizeScale * 3.5);
-                  
-                  // Distribute stars randomly across the banner
-                  final top = 10.0 + (index * 31.0) % 110;
-                  final left = 10.0 + (index * 83.0) % 320;
-                  
-                  // Multi light colors
-                  final starColors = [
-                    Colors.white,
-                    Colors.yellowAccent.shade100,
-                    Colors.cyanAccent.shade100,
-                    Colors.lightGreenAccent.shade100,
-                  ];
-                  final starColor = starColors[index % starColors.length];
-                  
-                  return Positioned(
-                    top: top,
-                    left: left,
-                    child: Opacity(
-                      opacity: opacity,
-                      child: Container(
-                        width: size,
-                        height: size,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: starColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: starColor.withOpacity(0.9),
-                              blurRadius: size * 2.0,
-                              spreadRadius: size * 0.8,
-                            ),
-                          ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark
+                              ? Colors.tealAccent.withOpacity(0.6)
+                              : Colors.greenAccent.withOpacity(0.6),
+                          blurRadius: 20,
+                          spreadRadius: 4,
                         ),
-                      ),
+                      ],
                     ),
-                  );
-                }),
-                // Frosted glass overlay
-                Positioned.fill(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                    child: Container(
-                      color: isDark
-                          ? Colors.black.withOpacity(0.15)
-                          : Colors.white.withOpacity(0.08),
+                    child: CircleAvatar(
+                      radius: 38,
+                      backgroundColor: Colors.white.withOpacity(0.15),
+                      backgroundImage: user?.profileImageUrl != null
+                          ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                          : null,
+                      child: user?.profileImageUrl == null
+                          ? Text(
+                              (user?.name ?? 'A')[0].toUpperCase(),
+                              style: AppTextStyles.displaySmall(
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
-                ),
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Row(
-                    children: [
-                      // Profile pic with animated neon ring
-                      Container(
-                        padding: const EdgeInsets.all(3.5),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: SweepGradient(
-                            startAngle: angle,
-                            endAngle: angle + math.pi * 2,
-                            colors: isDark
-                                ? [
-                                    Colors.tealAccent,
-                                    Colors.cyanAccent,
-                                    Colors.greenAccent,
-                                    Colors.tealAccent,
-                                  ]
-                                : [
-                                    Colors.white,
-                                    Colors.greenAccent,
-                                    Colors.white,
-                                    Colors.lightGreenAccent,
-                                    Colors.white,
-                                  ],
+                  AppSpacing.hGapLg,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome back,',
+                          style: AppTextStyles.bodyMedium(
+                            color: Colors.white.withOpacity(0.85),
                           ),
-                          boxShadow: [
-                            BoxShadow(
+                        ),
+                        AppSpacing.vGapXs,
+                        Text(
+                          user?.name ?? 'Admin',
+                          style: AppTextStyles.headlineLarge(
+                            color: Colors.white,
+                          ).copyWith(letterSpacing: 0.5),
+                        ),
+                        AppSpacing.vGapSm,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(
+                              isDark ? 0.08 : 0.18,
+                            ),
+                            borderRadius: AppTokens.borderRadiusPill,
+                            border: Border.all(
                               color: isDark
-                                  ? Colors.tealAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2))
-                                  : Colors.greenAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2)),
-                              blurRadius: 24,
-                              spreadRadius: 6,
+                                  ? Colors.tealAccent.withOpacity(0.4)
+                                  : Colors.white.withOpacity(0.6),
                             ),
-                          ],
+                            boxShadow: isDark
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.tealAccent.withOpacity(
+                                        0.12,
+                                      ),
+                                      blurRadius: 8,
+                                      spreadRadius: 1,
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: const Text(
+                            '\u{1F451} HRAS Admin',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
-                        child: CircleAvatar(
-                          radius: 38,
-                          backgroundColor: Colors.white.withOpacity(0.15),
-                          backgroundImage: widget.user?.profileImageUrl != null
-                              ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
-                              : null,
-                          child: widget.user?.profileImageUrl == null
-                              ? Text(
-                                  (widget.user?.name ?? 'A')[0].toUpperCase(),
-                                  style: AppTextStyles.displaySmall(color: Colors.white),
-                                )
-                              : null,
-                        ),
-                      ),
-                      AppSpacing.hGapLg,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.85)),
-                            ),
-                            AppSpacing.vGapXs,
-                            Text(
-                              widget.user?.name ?? 'Admin',
-                              style: AppTextStyles.headlineLarge(color: Colors.white).copyWith(
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            AppSpacing.vGapSm,
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(isDark ? 0.08 : 0.18),
-                                borderRadius: AppTokens.borderRadiusPill,
-                                border: Border.all(
-                                  color: isDark
-                                      ? Colors.tealAccent.withOpacity(0.4)
-                                      : Colors.white.withOpacity(0.6),
-                                ),
-                                boxShadow: isDark
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors.tealAccent.withOpacity(0.12),
-                                          blurRadius: 8,
-                                          spreadRadius: 1,
-                                        )
-                                      ]
-                                    : [],
-                              ),
-                              child: const Text(
-                                '\u{1F451} HRAS Admin',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

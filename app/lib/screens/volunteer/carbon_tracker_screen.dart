@@ -18,7 +18,7 @@ class _CarbonTrackerScreenState extends State<CarbonTrackerScreen> {
   StreamSubscription<Position>? _positionStream;
 
   // Assume 0.12 kg CO2 saved per km by walking/cycling instead of driving
-  double get _co2Saved => (_totalDistanceMeters / 1000) * 0.12; 
+  double get _co2Saved => (_totalDistanceMeters / 1000) * 0.12;
 
   Future<void> _toggleTracking() async {
     if (_isTracking) {
@@ -40,29 +40,33 @@ class _CarbonTrackerScreenState extends State<CarbonTrackerScreen> {
       }
 
       final position = await Geolocator.getCurrentPosition();
-      
+
       setState(() {
         _startPosition = position;
         _totalDistanceMeters = 0.0;
         _isTracking = true;
       });
 
-      _positionStream = Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10),
-      ).listen((Position newPosition) {
-        if (_startPosition != null) {
-          final distance = Geolocator.distanceBetween(
-            _startPosition!.latitude,
-            _startPosition!.longitude,
-            newPosition.latitude,
-            newPosition.longitude,
-          );
-          setState(() {
-            _totalDistanceMeters += distance;
-            _startPosition = newPosition; // Update for next segment
+      _positionStream =
+          Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: 10,
+            ),
+          ).listen((Position newPosition) {
+            if (_startPosition != null) {
+              final distance = Geolocator.distanceBetween(
+                _startPosition!.latitude,
+                _startPosition!.longitude,
+                newPosition.latitude,
+                newPosition.longitude,
+              );
+              setState(() {
+                _totalDistanceMeters += distance;
+                _startPosition = newPosition; // Update for next segment
+              });
+            }
           });
-        }
-      });
     }
   }
 
@@ -92,7 +96,11 @@ class _CarbonTrackerScreenState extends State<CarbonTrackerScreen> {
               const SizedBox(height: 48),
               Text(
                 '${(_totalDistanceMeters / 1000).toStringAsFixed(2)} KM',
-                style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primary),
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
               const Text('Distance Covered'),
               const SizedBox(height: 24),
@@ -107,9 +115,16 @@ class _CarbonTrackerScreenState extends State<CarbonTrackerScreen> {
                   children: [
                     Text(
                       '${_co2Saved.toStringAsFixed(3)} kg',
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.green),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
                     ),
-                    const Text('CO2 Emissions Saved', style: TextStyle(color: Colors.green)),
+                    const Text(
+                      'CO2 Emissions Saved',
+                      style: TextStyle(color: Colors.green),
+                    ),
                   ],
                 ),
               ),

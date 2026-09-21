@@ -23,7 +23,7 @@ class CampaignListScreen extends StatefulWidget {
 class _CampaignListScreenState extends State<CampaignListScreen> {
   final _searchController = TextEditingController();
   bool _showSearch = false;
-  
+
   late stt.SpeechToText _speech;
   bool _isListening = false;
 
@@ -84,7 +84,10 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? AppColors.error : null),
+                      icon: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: _isListening ? AppColors.error : null,
+                      ),
                       onPressed: () => _listen(campaignProvider),
                     ),
                     IconButton(
@@ -106,17 +109,64 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
             ),
           ),
 
-        // ─── Filter Chips ───
+        // ─── Category Tabs ───
+        if (campaignProvider.availableCategories.length > 1)
+          SizedBox(
+            height: 50,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemCount: campaignProvider.availableCategories.length,
+              itemBuilder: (context, index) {
+                final category = campaignProvider.availableCategories[index];
+                final isSelected = campaignProvider.categoryFilter == category;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(
+                      category,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    selected: isSelected,
+                    onSelected: (_) =>
+                        campaignProvider.setCategoryFilter(category),
+                    selectedColor: AppColors.primary,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : null,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+        // ─── Status Filter Chips ───
         SizedBox(
           height: 46,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             children: [
-              _buildFilterChip(null, '${'all'.tr()} (${campaignProvider.totalCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.active, '🟢 ${'active'.tr()} (${campaignProvider.activeCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.upcoming, '🔵 ${'upcoming'.tr()} (${campaignProvider.upcomingCampaigns})', campaignProvider),
-              _buildFilterChip(CampaignStatus.completed, '✅ ${'completed_status'.tr()} (${campaignProvider.completedCampaigns})', campaignProvider),
+              _buildFilterChip(
+                null,
+                '${'all'.tr()} (${campaignProvider.totalCampaigns})',
+                campaignProvider,
+              ),
+              _buildFilterChip(
+                CampaignStatus.active,
+                '🟢 ${'active'.tr()} (${campaignProvider.activeCampaigns})',
+                campaignProvider,
+              ),
+              _buildFilterChip(
+                CampaignStatus.upcoming,
+                '🔵 ${'upcoming'.tr()} (${campaignProvider.upcomingCampaigns})',
+                campaignProvider,
+              ),
+              _buildFilterChip(
+                CampaignStatus.completed,
+                '✅ ${'completed_status'.tr()} (${campaignProvider.completedCampaigns})',
+                campaignProvider,
+              ),
             ],
           ),
         ),
@@ -126,63 +176,77 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
           child: campaignProvider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : campaignProvider.campaigns.isEmpty
-                  ? _buildEmptyState(isAdmin)
-                  : Responsive.isDesktop(context)
-                      // ─── DESKTOP: Grid layout ───
-                      ? LayoutBuilder(
-                          builder: (context, constraints) {
-                            final crossAxisCount = constraints.maxWidth > 1200 ? 3 : 2;
-                            return GridView.builder(
-                              padding: const EdgeInsets.all(AppSpacing.lg),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: AppSpacing.lg,
-                                mainAxisSpacing: AppSpacing.lg,
-                                childAspectRatio: 1.6,
+              ? _buildEmptyState(isAdmin)
+              : Responsive.isDesktop(context)
+              // ─── DESKTOP: Grid layout ───
+              ? LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth > 1200 ? 3 : 2;
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: AppSpacing.lg,
+                        mainAxisSpacing: AppSpacing.lg,
+                        childAspectRatio: 1.6,
+                      ),
+                      itemCount: campaignProvider.campaigns.length,
+                      itemBuilder: (context, index) {
+                        final campaign = campaignProvider.campaigns[index];
+                        return CampaignCard(
+                          campaign: campaign,
+                          onTap: () {
+                            campaignProvider.selectCampaign(campaign);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    CampaignDetailScreen(campaign: campaign),
                               ),
-                              itemCount: campaignProvider.campaigns.length,
-                              itemBuilder: (context, index) {
-                                final campaign = campaignProvider.campaigns[index];
-                                return CampaignCard(
-                                  campaign: campaign,
-                                  onTap: () {
-                                    campaignProvider.selectCampaign(campaign);
-                                    Navigator.push(context,
-                                      MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)));
-                                  },
-                                );
-                              },
                             );
                           },
-                        )
-                      // ─── MOBILE: List layout ───
-                      : RefreshIndicator(
-                          onRefresh: () async {
-                            final ngoId = user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
-                            campaignProvider.init(ngoId);
-                          },
-                          child: ListView.builder(
-                            padding: const EdgeInsets.only(top: 4, bottom: 80),
-                            itemCount: campaignProvider.campaigns.length,
-                            itemBuilder: (context, index) {
-                              final campaign = campaignProvider.campaigns[index];
-                              return CampaignCard(
-                                campaign: campaign,
-                                onTap: () {
-                                  campaignProvider.selectCampaign(campaign);
-                                  Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)));
-                                },
-                              );
-                            },
-                          ),
-                        ),
+                        );
+                      },
+                    );
+                  },
+                )
+              // ─── MOBILE: List layout ───
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    final ngoId = user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+                    campaignProvider.init(ngoId);
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 4, bottom: 80),
+                    itemCount: campaignProvider.campaigns.length,
+                    itemBuilder: (context, index) {
+                      final campaign = campaignProvider.campaigns[index];
+                      return CampaignCard(
+                        campaign: campaign,
+                        onTap: () {
+                          campaignProvider.selectCampaign(campaign);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CampaignDetailScreen(campaign: campaign),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
         ),
       ],
     );
   }
 
-  Widget _buildFilterChip(CampaignStatus? status, String label, CampaignProvider provider) {
+  Widget _buildFilterChip(
+    CampaignStatus? status,
+    String label,
+    CampaignProvider provider,
+  ) {
     final isSelected = provider.statusFilter == status;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -191,7 +255,8 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
         child: ChoiceChip(
           label: Text(label, style: const TextStyle(fontSize: 12)),
           selected: isSelected,
-          onSelected: (_) => provider.setStatusFilter(isSelected ? null : status),
+          onSelected: (_) =>
+              provider.setStatusFilter(isSelected ? null : status),
           selectedColor: AppColors.primary.withValues(alpha: 0.2),
           labelStyle: TextStyle(
             color: isSelected ? AppColors.primary : null,
@@ -208,13 +273,21 @@ class _CampaignListScreenState extends State<CampaignListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.campaign_outlined, size: 80, color: AppColors.lightTextHint),
+          Icon(
+            Icons.campaign_outlined,
+            size: 80,
+            color: AppColors.lightTextHint,
+          ),
           AppSpacing.vGapLg,
           Text('No Campaigns Yet', style: AppTextStyles.titleLarge()),
           AppSpacing.vGapSm,
           Text(
-            isAdmin ? 'Tap + to create your first campaign.' : 'No campaigns available right now.',
-            style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary),
+            isAdmin
+                ? 'Tap + to create your first campaign.'
+                : 'No campaigns available right now.',
+            style: AppTextStyles.bodyMedium(
+              color: AppColors.lightTextSecondary,
+            ),
           ),
         ],
       ),

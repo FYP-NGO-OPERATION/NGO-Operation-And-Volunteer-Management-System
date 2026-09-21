@@ -9,7 +9,8 @@ class PredictiveDashboardScreen extends StatefulWidget {
   const PredictiveDashboardScreen({super.key});
 
   @override
-  State<PredictiveDashboardScreen> createState() => _PredictiveDashboardScreenState();
+  State<PredictiveDashboardScreen> createState() =>
+      _PredictiveDashboardScreenState();
 }
 
 class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
@@ -50,7 +51,10 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('AI Predictive Analytics', style: AppTextStyles.titleLarge()),
+        title: Text(
+          'AI Predictive Analytics',
+          style: AppTextStyles.titleLarge(),
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -68,9 +72,18 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             AppSpacing.vGapLg,
             _buildChartSection(isDark),
             AppSpacing.vGapLg,
-            Text('High-Risk Regions', style: AppTextStyles.headlineMedium(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+            Text(
+              'High-Risk Regions',
+              style: AppTextStyles.headlineMedium(
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
+              ),
+            ),
             AppSpacing.vGapMd,
-            ..._predictions.map((p) => _buildPredictionCard(p, isDark)).toList(),
+            ..._predictions
+                .map((p) => _buildPredictionCard(p, isDark))
+                .toList(),
           ],
         ),
       ),
@@ -88,7 +101,7 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             color: AppColors.primary.withOpacity(0.1),
             blurRadius: 10,
             spreadRadius: 2,
-          )
+          ),
         ],
       ),
       child: Row(
@@ -99,11 +112,22 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('AI Resource Engine', style: AppTextStyles.titleLarge(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                Text(
+                  'AI Resource Engine',
+                  style: AppTextStyles.titleLarge(
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   'Analyzing historical weather, geographic vulnerabilities, and past relief data to forecast upcoming supply demands.',
-                  style: AppTextStyles.bodyMedium(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                  style: AppTextStyles.bodyMedium(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
                 ),
               ],
             ),
@@ -124,7 +148,14 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('7-Day Demand Forecast (Food Kits)', style: AppTextStyles.titleMedium(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+          Text(
+            '7-Day Demand Forecast (Food Kits)',
+            style: AppTextStyles.titleMedium(
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: LineChart(
@@ -135,17 +166,34 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        const days = [
+                          'Mon',
+                          'Tue',
+                          'Wed',
+                          'Thu',
+                          'Fri',
+                          'Sat',
+                          'Sun',
+                        ];
                         if (value.toInt() >= 0 && value.toInt() < days.length) {
-                          return Text(days[value.toInt()], style: const TextStyle(fontSize: 10));
+                          return Text(
+                            days[value.toInt()],
+                            style: const TextStyle(fontSize: 10),
+                          );
                         }
                         return const Text('');
                       },
                     ),
                   ),
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -164,7 +212,10 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
                     barWidth: 4,
                     isStrokeCapRound: true,
                     dotData: FlDotData(show: true),
-                    belowBarData: BarAreaData(show: true, color: AppColors.error.withOpacity(0.2)),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: AppColors.error.withOpacity(0.2),
+                    ),
                   ),
                 ],
               ),
@@ -177,9 +228,12 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
 
   Widget _buildPredictionCard(Map<String, dynamic> data, bool isDark) {
     Color riskColor;
-    if (data['riskScore'] > 80) riskColor = AppColors.error;
-    else if (data['riskScore'] > 50) riskColor = AppColors.warning;
-    else riskColor = AppColors.success;
+    if (data['riskScore'] > 80)
+      riskColor = AppColors.error;
+    else if (data['riskScore'] > 50)
+      riskColor = AppColors.warning;
+    else
+      riskColor = AppColors.success;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -196,29 +250,63 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['region'], style: AppTextStyles.titleLarge(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                Text(
+                  data['region'],
+                  style: AppTextStyles.titleLarge(
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
+                ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: riskColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text('${data['riskScore']}% Risk', style: TextStyle(color: riskColor, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    '${data['riskScore']}% Risk',
+                    style: TextStyle(
+                      color: riskColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Hazard: ${data['riskType']} | ETA: ${data['eta']}', style: AppTextStyles.bodyMedium(color: riskColor)),
+            Text(
+              'Hazard: ${data['riskType']} | ETA: ${data['eta']}',
+              style: AppTextStyles.bodyMedium(color: riskColor),
+            ),
             const Divider(height: 24),
-            Text('AI Recommendation (Confidence: ${data['confidence']}%):', style: AppTextStyles.labelLarge(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+            Text(
+              'AI Recommendation (Confidence: ${data['confidence']}%):',
+              style: AppTextStyles.labelLarge(
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
                 if (data['recommendedTents'] > 0)
-                  _buildResourceBadge(Icons.home_filled, '${data['recommendedTents']} Tents', context),
+                  _buildResourceBadge(
+                    Icons.home_filled,
+                    '${data['recommendedTents']} Tents',
+                    context,
+                  ),
                 const SizedBox(width: 8),
                 if (data['recommendedFoodKits'] > 0)
-                  _buildResourceBadge(Icons.fastfood, '${data['recommendedFoodKits']} Food Kits', context),
+                  _buildResourceBadge(
+                    Icons.fastfood,
+                    '${data['recommendedFoodKits']} Food Kits',
+                    context,
+                  ),
               ],
             ),
             const SizedBox(height: 16),
@@ -227,7 +315,11 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Auto-Drafting Campaign from Prediction...')),
+                    const SnackBar(
+                      content: Text(
+                        'Auto-Drafting Campaign from Prediction...',
+                      ),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.add_task),
@@ -251,14 +343,22 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF161B22) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[300]!),
+        border: Border.all(
+          color: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: AppColors.primary),
           const SizedBox(width: 6),
-          Text(text, style: const TextStyle(fontSize: 12, color: AppColors.lightTextPrimary)),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.lightTextPrimary,
+            ),
+          ),
         ],
       ),
     );

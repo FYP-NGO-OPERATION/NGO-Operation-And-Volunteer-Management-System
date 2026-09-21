@@ -6,6 +6,8 @@ import '../../../../widgets/common/custom_text_field.dart';
 class CampaignBasicForm extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController descriptionController;
+  final TextEditingController categoryController;
+  final TextEditingController projectNumberController;
   final TextEditingController requiredSkillsController;
   final CampaignType selectedType;
   final Function(CampaignType?) onTypeChanged;
@@ -14,6 +16,8 @@ class CampaignBasicForm extends StatelessWidget {
     Key? key,
     required this.titleController,
     required this.descriptionController,
+    required this.categoryController,
+    required this.projectNumberController,
     required this.requiredSkillsController,
     required this.selectedType,
     required this.onTypeChanged,
@@ -28,9 +32,7 @@ class CampaignBasicForm extends StatelessWidget {
         const SizedBox(height: 8),
         DropdownButtonFormField<CampaignType>(
           value: selectedType,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.category),
-          ),
+          decoration: const InputDecoration(prefixIcon: Icon(Icons.category)),
           items: CampaignType.values.map((type) {
             return DropdownMenuItem(
               value: type,
@@ -50,6 +52,33 @@ class CampaignBasicForm extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: CustomTextField(
+                controller: categoryController,
+                label: 'Category',
+                hint: 'e.g., Ramadan, Eid, General',
+                prefixIcon: Icons.folder,
+                validator: (v) =>
+                    v == null || v.trim().isEmpty ? 'Category required' : null,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 1,
+              child: CustomTextField(
+                controller: projectNumberController,
+                label: 'Project No.',
+                hint: 'e.g., 1',
+                prefixIcon: Icons.numbers,
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Description', style: Theme.of(context).textTheme.labelMedium),
@@ -61,19 +90,27 @@ class CampaignBasicForm extends StatelessWidget {
                   );
                   return;
                 }
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('ai_generating'.tr())),
-                );
-                
+
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('ai_generating'.tr())));
+
                 Future.delayed(const Duration(seconds: 2), () {
                   final title = titleController.text;
                   final type = selectedType.label;
-                  descriptionController.text = "Join us for our upcoming '$title' campaign! This $type initiative aims to create a lasting impact in our community. We are looking for dedicated volunteers to support our mission. Your participation will help us bring hope and essential resources to those who need them the most. Let's work together to make a difference!";
+                  descriptionController.text =
+                      "Join us for our upcoming '$title' campaign! This $type initiative aims to create a lasting impact in our community. We are looking for dedicated volunteers to support our mission. Your participation will help us bring hope and essential resources to those who need them the most. Let's work together to make a difference!";
                 });
               },
-              icon: const Icon(Icons.auto_awesome, size: 16, color: Colors.purple),
-              label: Text('auto_generate_ai'.tr(), style: const TextStyle(color: Colors.purple, fontSize: 12)),
+              icon: const Icon(
+                Icons.auto_awesome,
+                size: 16,
+                color: Colors.purple,
+              ),
+              label: Text(
+                'auto_generate_ai'.tr(),
+                style: const TextStyle(color: Colors.purple, fontSize: 12),
+              ),
             ),
           ],
         ),

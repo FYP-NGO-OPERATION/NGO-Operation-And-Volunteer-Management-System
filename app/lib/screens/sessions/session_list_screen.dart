@@ -26,7 +26,13 @@ class SessionListScreen extends StatelessWidget {
     }
   }
 
-  void _showVerificationDialog(BuildContext context, dynamic session, String uid, String name, VirtualSessionProvider provider) {
+  void _showVerificationDialog(
+    BuildContext context,
+    dynamic session,
+    String uid,
+    String name,
+    VirtualSessionProvider provider,
+  ) {
     final ctrl = TextEditingController();
     showDialog(
       context: context,
@@ -41,22 +47,32 @@ class SessionListScreen extends StatelessWidget {
               controller: ctrl,
               keyboardType: TextInputType.number,
               maxLength: 4,
-              decoration: const InputDecoration(border: OutlineInputBorder(), hintText: '0000'),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: '0000',
+              ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (ctrl.text.trim() == session.secretCode) {
                 await provider.markAttendance(session.id, uid, name);
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Attendance Verified!')));
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    const SnackBar(content: Text('Attendance Verified!')),
+                  );
                 }
               } else {
-                ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Invalid code')));
+                ScaffoldMessenger.of(
+                  ctx,
+                ).showSnackBar(const SnackBar(content: Text('Invalid code')));
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
@@ -98,7 +114,9 @@ class SessionListScreen extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.only(bottom: 24),
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               clipBehavior: Clip.antiAlias,
               color: isDark ? AppColors.darkCardBg : Colors.white,
               child: Column(
@@ -117,7 +135,11 @@ class SessionListScreen extends StatelessWidget {
                       width: double.infinity,
                       color: AppColors.primary.withValues(alpha: 0.1),
                       child: const Center(
-                        child: Icon(Icons.videocam, size: 48, color: AppColors.primary),
+                        child: Icon(
+                          Icons.videocam,
+                          size: 48,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   Padding(
@@ -129,35 +151,57 @@ class SessionListScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
-                                color: isUpcoming ? AppColors.success.withValues(alpha: 0.1) : AppColors.textSecondary.withValues(alpha: 0.1),
+                                color: isUpcoming
+                                    ? AppColors.success.withValues(alpha: 0.1)
+                                    : AppColors.textSecondary.withValues(
+                                        alpha: 0.1,
+                                      ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 isUpcoming ? 'Upcoming' : 'Past',
                                 style: AppTextStyles.caption(
-                                  color: isUpcoming ? AppColors.success : AppColors.textSecondary,
+                                  color: isUpcoming
+                                      ? AppColors.success
+                                      : AppColors.textSecondary,
                                 ).copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
                             if (isAdmin)
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.error,
+                                ),
                                 onPressed: () {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
                                       title: const Text('Delete Session'),
-                                      content: const Text('Are you sure you want to delete this session?'),
+                                      content: const Text(
+                                        'Are you sure you want to delete this session?',
+                                      ),
                                       actions: [
-                                        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(ctx),
+                                          child: const Text('Cancel'),
+                                        ),
                                         TextButton(
                                           onPressed: () {
                                             provider.deleteSession(session.id);
                                             Navigator.pop(ctx);
                                           },
-                                          child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+                                          child: const Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                              color: AppColors.error,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -167,40 +211,75 @@ class SessionListScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text(session.title, style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          session.title,
+                          style: AppTextStyles.titleMedium().copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.access_time, size: 16, color: AppColors.primary),
+                            const Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(width: 4),
                             Text(
-                              DateFormat('EEEE, MMM d, yyyy • hh:mm a').format(session.sessionDate),
-                              style: AppTextStyles.bodyMedium(color: AppColors.primary),
+                              DateFormat(
+                                'EEEE, MMM d, yyyy • hh:mm a',
+                              ).format(session.sessionDate),
+                              style: AppTextStyles.bodyMedium(
+                                color: AppColors.primary,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text(session.description, style: AppTextStyles.bodyMedium()),
+                        Text(
+                          session.description,
+                          style: AppTextStyles.bodyMedium(),
+                        ),
                         const SizedBox(height: 8),
-                        Text("${session.rsvpUsers.length} Volunteers RSVP'd", style: AppTextStyles.caption(color: AppColors.textSecondary)),
+                        Text(
+                          "${session.rsvpUsers.length} Volunteers RSVP'd",
+                          style: AppTextStyles.caption(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                         const SizedBox(height: 20),
-                        
+
                         // Admin Actions
                         if (isAdmin)
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => SessionDetailsScreen(session: session),
-                                ));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SessionDetailsScreen(session: session),
+                                  ),
+                                );
                               },
-                              icon: const Icon(Icons.analytics, color: Colors.white),
-                              label: const Text('View Details & Participants', style: TextStyle(color: Colors.white)),
+                              icon: const Icon(
+                                Icons.analytics,
+                                color: Colors.white,
+                              ),
+                              label: const Text(
+                                'View Details & Participants',
+                                style: TextStyle(color: Colors.white),
+                              ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
                           )
@@ -210,15 +289,27 @@ class SessionListScreen extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
-                                onPressed: isUpcoming ? () async {
-                                  await provider.toggleRSVP(session.id, user.uid, user.name);
-                                } : null,
+                                onPressed: isUpcoming
+                                    ? () async {
+                                        await provider.toggleRSVP(
+                                          session.id,
+                                          user.uid,
+                                          user.name,
+                                        );
+                                      }
+                                    : null,
                                 icon: const Icon(Icons.event_available),
                                 label: const Text('RSVP Now'),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  side: const BorderSide(color: AppColors.primary),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  side: const BorderSide(
+                                    color: AppColors.primary,
+                                  ),
                                   foregroundColor: AppColors.primary,
                                 ),
                               ),
@@ -229,13 +320,25 @@ class SessionListScreen extends StatelessWidget {
                                 Expanded(
                                   flex: 1,
                                   child: OutlinedButton(
-                                    onPressed: isUpcoming ? () async {
-                                      await provider.toggleRSVP(session.id, user.uid, user.name);
-                                    } : null,
+                                    onPressed: isUpcoming
+                                        ? () async {
+                                            await provider.toggleRSVP(
+                                              session.id,
+                                              user.uid,
+                                              user.name,
+                                            );
+                                          }
+                                        : null,
                                     style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                      side: const BorderSide(color: AppColors.error),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      side: const BorderSide(
+                                        color: AppColors.error,
+                                      ),
                                       foregroundColor: AppColors.error,
                                     ),
                                     child: const Text('Cancel RSVP'),
@@ -246,66 +349,149 @@ class SessionListScreen extends StatelessWidget {
                                   flex: 2,
                                   child: session.secretCode != null
                                       ? Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
                                           children: [
                                             ElevatedButton.icon(
-                                              onPressed: isUpcoming ? () {
-                                                _launchUrl(context, session.meetingLink);
-                                              } : null,
-                                              icon: const Icon(Icons.videocam, color: Colors.white),
-                                              label: const Text('Join Meeting', style: TextStyle(color: Colors.white)),
+                                              onPressed: isUpcoming
+                                                  ? () {
+                                                      _launchUrl(
+                                                        context,
+                                                        session.meetingLink,
+                                                      );
+                                                    }
+                                                  : null,
+                                              icon: const Icon(
+                                                Icons.videocam,
+                                                color: Colors.white,
+                                              ),
+                                              label: const Text(
+                                                'Join Meeting',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColors.primary,
-                                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                backgroundColor:
+                                                    AppColors.primary,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 14,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(height: 8),
-                                            if (!session.attendedUsers.containsKey(user.uid))
+                                            if (!session.attendedUsers
+                                                .containsKey(user.uid))
                                               OutlinedButton.icon(
                                                 onPressed: () {
-                                                  _showVerificationDialog(context, session, user.uid, user.name, provider);
+                                                  _showVerificationDialog(
+                                                    context,
+                                                    session,
+                                                    user.uid,
+                                                    user.name,
+                                                    provider,
+                                                  );
                                                 },
-                                                icon: const Icon(Icons.verified),
-                                                label: const Text('Verify Attendance'),
+                                                icon: const Icon(
+                                                  Icons.verified,
+                                                ),
+                                                label: const Text(
+                                                  'Verify Attendance',
+                                                ),
                                                 style: OutlinedButton.styleFrom(
-                                                  foregroundColor: AppColors.success,
-                                                  side: const BorderSide(color: AppColors.success),
-                                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                  foregroundColor:
+                                                      AppColors.success,
+                                                  side: const BorderSide(
+                                                    color: AppColors.success,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 14,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
                                                 ),
                                               )
                                             else
                                               Container(
-                                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 14,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color: AppColors.success.withValues(alpha: 0.1),
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  color: AppColors.success
+                                                      .withValues(alpha: 0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
                                                 alignment: Alignment.center,
                                                 child: const Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
                                                   children: [
-                                                    Icon(Icons.check_circle, color: AppColors.success),
+                                                    Icon(
+                                                      Icons.check_circle,
+                                                      color: AppColors.success,
+                                                    ),
                                                     SizedBox(width: 8),
-                                                    Text('Verified', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold)),
+                                                    Text(
+                                                      'Verified',
+                                                      style: TextStyle(
+                                                        color:
+                                                            AppColors.success,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
-                                              )
+                                              ),
                                           ],
                                         )
                                       : ElevatedButton.icon(
-                                          onPressed: isUpcoming ? () async {
-                                            // Smart Join: Mark attendance, then launch meeting
-                                            await provider.markAttendance(session.id, user.uid, user.name);
-                                            if (context.mounted) _launchUrl(context, session.meetingLink);
-                                          } : null,
-                                          icon: const Icon(Icons.videocam, color: Colors.white),
-                                          label: const Text('Join Meeting', style: TextStyle(color: Colors.white)),
+                                          onPressed: isUpcoming
+                                              ? () async {
+                                                  // Smart Join: Mark attendance, then launch meeting
+                                                  await provider.markAttendance(
+                                                    session.id,
+                                                    user.uid,
+                                                    user.name,
+                                                  );
+                                                  if (context.mounted)
+                                                    _launchUrl(
+                                                      context,
+                                                      session.meetingLink,
+                                                    );
+                                                }
+                                              : null,
+                                          icon: const Icon(
+                                            Icons.videocam,
+                                            color: Colors.white,
+                                          ),
+                                          label: const Text(
+                                            'Join Meeting',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: AppColors.primary,
-                                            padding: const EdgeInsets.symmetric(vertical: 14),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 14,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
                                           ),
                                         ),
                                 ),

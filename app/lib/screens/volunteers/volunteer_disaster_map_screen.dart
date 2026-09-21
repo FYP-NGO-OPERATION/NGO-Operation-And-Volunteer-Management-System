@@ -14,10 +14,12 @@ class VolunteerDisasterMapScreen extends StatefulWidget {
   const VolunteerDisasterMapScreen({super.key});
 
   @override
-  State<VolunteerDisasterMapScreen> createState() => _VolunteerDisasterMapScreenState();
+  State<VolunteerDisasterMapScreen> createState() =>
+      _VolunteerDisasterMapScreenState();
 }
 
-class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen> with SingleTickerProviderStateMixin {
+class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
+    with SingleTickerProviderStateMixin {
   final MapController _mapController = MapController();
   LatLng? _volunteerLocation;
   List<LatLng> _currentRoute = [];
@@ -33,7 +35,7 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -60,7 +62,9 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
 
     if (permission == LocationPermission.deniedForever) return;
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
     if (mounted) {
       setState(() {
         _volunteerLocation = LatLng(position.latitude, position.longitude);
@@ -72,10 +76,13 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
   Future<void> _fetchRoute(LatLng destination) async {
     if (_volunteerLocation == null) return;
     setState(() => _isLoadingRoute = true);
-    
+
     final provider = Provider.of<DisasterProvider>(context, listen: false);
-    final route = await provider.getOptimizedRoute(_volunteerLocation!, destination);
-    
+    final route = await provider.getOptimizedRoute(
+      _volunteerLocation!,
+      destination,
+    );
+
     if (mounted) {
       setState(() {
         _currentRoute = route;
@@ -83,11 +90,13 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
       });
       // Zoom out to fit both points
       if (route.isNotEmpty) {
-        final bounds = LatLngBounds.fromPoints([_volunteerLocation!, destination]);
-        _mapController.fitCamera(CameraFit.bounds(
-          bounds: bounds,
-          padding: const EdgeInsets.all(50),
-        ));
+        final bounds = LatLngBounds.fromPoints([
+          _volunteerLocation!,
+          destination,
+        ]);
+        _mapController.fitCamera(
+          CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
+        );
       }
     }
   }
@@ -135,7 +144,11 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
                       color: AppColors.error.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.warning, color: AppColors.error, size: 28),
+                    child: const Icon(
+                      Icons.warning,
+                      color: AppColors.error,
+                      size: 28,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -144,16 +157,24 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
                       children: [
                         Text(
                           incident.title,
-                          style: AppTextStyles.headlineSmall().copyWith(fontWeight: FontWeight.bold),
+                          style: AppTextStyles.headlineSmall().copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.person, size: 14, color: AppColors.primary),
+                            const Icon(
+                              Icons.person,
+                              size: 14,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Reported by: ${incident.reportedByUserName}',
-                              style: AppTextStyles.labelMedium(color: AppColors.textSecondary),
+                              style: AppTextStyles.labelMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
@@ -165,17 +186,23 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
               const SizedBox(height: 20),
               Text(
                 'Description',
-                style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold),
+                style: AppTextStyles.titleMedium().copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 incident.description,
-                style: AppTextStyles.bodyMedium(color: isDark ? Colors.white70 : Colors.black87),
+                style: AppTextStyles.bodyMedium(
+                  color: isDark ? Colors.white70 : Colors.black87,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
                 'Location coordinates',
-                style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold),
+                style: AppTextStyles.titleMedium().copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -189,7 +216,9 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -198,7 +227,11 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
                   icon: const Icon(Icons.navigation, color: Colors.white),
                   label: const Text(
                     'NAVIGATE TO LOCATION',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
               ),
@@ -206,7 +239,7 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
             ],
           ),
         );
-      }
+      },
     );
   }
 
@@ -223,7 +256,7 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
             Text(
               'EMERGENCY DISPATCH',
               style: TextStyle(
-                color: Colors.white, 
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
@@ -239,93 +272,124 @@ class _VolunteerDisasterMapScreenState extends State<VolunteerDisasterMapScreen>
       ),
       body: Stack(
         children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: const LatLng(30.3753, 69.3451), // Pakistan default
-              initialZoom: 5.5,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.hras.volunteer',
-              ),
-              if (_currentRoute.isNotEmpty)
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: _currentRoute,
-                      color: AppColors.accent,
-                      strokeWidth: 4.0,
-                    ),
-                  ],
+          FutureBuilder(
+            future: Future.delayed(const Duration(milliseconds: 300)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              }
+              return FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: const LatLng(
+                    30.3753,
+                    69.3451,
+                  ), // Pakistan default
+                  initialZoom: 5.5,
                 ),
-              StreamBuilder<List<IncidentModel>>(
-                stream: IncidentService().getActiveIncidents(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const SizedBox();
-                  final incidents = snapshot.data!;
-                  
-                  return MarkerLayer(
-                    markers: incidents.map((incident) {
-                      final pos = LatLng(incident.latitude, incident.longitude);
-                      return Marker(
-                        point: pos,
-                        width: 60,
-                        height: 60,
-                        child: GestureDetector(
-                          onTap: () => _showIncidentDetails(incident, pos),
-                          child: ScaleTransition(
-                            scale: _pulseAnimation,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.error.withOpacity(0.3),
-                                border: Border.all(color: AppColors.error, width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.error.withOpacity(0.8),
-                                    blurRadius: 15,
-                                    spreadRadius: 5,
-                                  )
-                                ],
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
+                    userAgentPackageName: 'com.hras.volunteer',
+                  ),
+                  if (_currentRoute.isNotEmpty)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: _currentRoute,
+                          color: AppColors.accent,
+                          strokeWidth: 4.0,
+                        ),
+                      ],
+                    ),
+                  StreamBuilder<List<IncidentModel>>(
+                    stream: IncidentService().getActiveIncidents(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox();
+                      final incidents = snapshot.data!;
+
+                      return MarkerLayer(
+                        markers: incidents.map((incident) {
+                          final pos = LatLng(
+                            incident.latitude,
+                            incident.longitude,
+                          );
+                          return Marker(
+                            point: pos,
+                            width: 60,
+                            height: 60,
+                            child: GestureDetector(
+                              onTap: () => _showIncidentDetails(incident, pos),
+                              child: ScaleTransition(
+                                scale: _pulseAnimation,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.error.withOpacity(0.3),
+                                    border: Border.all(
+                                      color: AppColors.error,
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.error.withOpacity(0.8),
+                                        blurRadius: 15,
+                                        spreadRadius: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.warning,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
                               ),
-                              child: const Icon(Icons.warning, color: Colors.white, size: 30),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                  if (_volunteerLocation != null)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: _volunteerLocation!,
+                          width: 50,
+                          height: 50,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.info.withOpacity(0.3),
+                              border: Border.all(
+                                color: AppColors.info,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.info.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.person_pin_circle,
+                              color: Colors.white,
+                              size: 30,
                             ),
                           ),
                         ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              if (_volunteerLocation != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _volunteerLocation!,
-                      width: 50,
-                      height: 50,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.info.withOpacity(0.3),
-                          border: Border.all(color: AppColors.info, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.info.withOpacity(0.5),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                            )
-                          ],
-                        ),
-                        child: const Icon(Icons.person_pin_circle, color: Colors.white, size: 30),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-            ],
+                ],
+              );
+            },
           ),
           if (_isLoadingRoute)
             const Center(

@@ -60,7 +60,9 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
         volunteerEmail: _emailCtrl.text.trim().isEmpty
             ? '${_nameCtrl.text.trim().replaceAll(' ', '').toLowerCase()}@manual.hras'
             : _emailCtrl.text.trim(),
-        volunteerPhone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
+        volunteerPhone: _phoneCtrl.text.trim().isEmpty
+            ? null
+            : _phoneCtrl.text.trim(),
         statusStr: _selectedStatus,
         addedByAdminId: adminUser.uid,
       );
@@ -90,7 +92,10 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
             const Text('Add Volunteer'),
             Text(
               widget.campaignTitle,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ],
         ),
@@ -108,11 +113,17 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppColors.info.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                    const Icon(
+                      Icons.info_outline,
+                      color: AppColors.info,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -135,7 +146,8 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Name is required' : null,
               ),
               const SizedBox(height: 14),
 
@@ -167,7 +179,9 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
               // Status
               Text(
                 'Volunteer Status',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -179,11 +193,14 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                     child: ChoiceChip(
                       label: Text('${opt['icon']} ${opt['label']}'),
                       selected: isSelected,
-                      onSelected: (_) => setState(() => _selectedStatus = opt['value']!),
+                      onSelected: (_) =>
+                          setState(() => _selectedStatus = opt['value']!),
                       selectedColor: AppColors.primary.withValues(alpha: 0.15),
                       labelStyle: TextStyle(
                         color: isSelected ? AppColors.primary : null,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   );
@@ -200,7 +217,10 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : const Icon(Icons.person_add),
                   label: Text(_isSaving ? 'Saving...' : 'Add Volunteer'),
@@ -208,7 +228,9 @@ class _AddVolunteerScreenState extends State<AddVolunteerScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),

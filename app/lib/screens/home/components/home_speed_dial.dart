@@ -48,7 +48,9 @@ class HomeSpeedDial extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const CreateCampaignScreen(),
+                  ),
                 );
               },
             ),
@@ -58,10 +60,12 @@ class HomeSpeedDial extends StatelessWidget {
             backgroundColor: AppColors.warning,
             foregroundColor: Colors.white,
             onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()),
-                );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CreateAnnouncementScreen(),
+                ),
+              );
             },
           ),
           if (currentNgo?.features.contains('virtual_sessions') ?? false)
@@ -73,7 +77,9 @@ class HomeSpeedDial extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CreateSessionScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const CreateSessionScreen(),
+                  ),
                 );
               },
             ),
@@ -98,7 +104,9 @@ class HomeSpeedDial extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const PredictiveDashboardScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const PredictiveDashboardScreen(),
+                ),
               );
             },
           ),
@@ -114,7 +122,10 @@ class HomeSpeedDial extends StatelessWidget {
               );
             },
           ),
-          if (isAdmin && currentNgo != null && currentNgo!.adminId == Provider.of<AuthProvider>(context, listen: false).user?.uid)
+          if (isAdmin &&
+              currentNgo != null &&
+              currentNgo!.adminId ==
+                  Provider.of<AuthProvider>(context, listen: false).user?.uid)
             SpeedDialAction(
               icon: Icons.settings_applications,
               label: 'Workspace Settings',
@@ -123,7 +134,9 @@ class HomeSpeedDial extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const WorkspaceSettingsScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const WorkspaceSettingsScreen(),
+                  ),
                 );
               },
             ),
@@ -160,14 +173,17 @@ class HomeSpeedDial extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const NeedsMarketplaceScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const NeedsMarketplaceScreen(),
+                ),
               );
             },
           ),
         ],
       );
     } else {
-      if (FeatureFlags.isSmartMatchingEnabled || FeatureFlags.isQrAttendanceEnabled) {
+      if (FeatureFlags.isSmartMatchingEnabled ||
+          FeatureFlags.isQrAttendanceEnabled) {
         return Builder(
           builder: (context) {
             final auth = Provider.of<AuthProvider>(context, listen: false);
@@ -185,7 +201,9 @@ class HomeSpeedDial extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const BloodDonationScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const BloodDonationScreen(),
+                      ),
                     );
                   },
                 ),
@@ -197,7 +215,9 @@ class HomeSpeedDial extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const NeedsMarketplaceScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const NeedsMarketplaceScreen(),
+                      ),
                     );
                   },
                 ),
@@ -213,7 +233,8 @@ class HomeSpeedDial extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => RecommendedCampaignsScreen(user: user),
+                            builder: (_) =>
+                                RecommendedCampaignsScreen(user: user),
                           ),
                         );
                       }
@@ -248,7 +269,9 @@ class HomeSpeedDial extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AiAssistantScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const AiAssistantScreen(),
+                      ),
                     );
                   },
                 ),
@@ -264,11 +287,17 @@ class HomeSpeedDial extends StatelessWidget {
                         SnackbarHelper.showSuccess(context, 'sending_sos'.tr());
                         await SosService.sendSosAlert(user.uid, user.name);
                         if (context.mounted) {
-                          SnackbarHelper.showSuccess(context, 'sos_alert_sent'.tr());
+                          SnackbarHelper.showSuccess(
+                            context,
+                            'sos_alert_sent'.tr(),
+                          );
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          SnackbarHelper.showError(context, '${'failed_to_send_sos'.tr()} $e');
+                          SnackbarHelper.showError(
+                            context,
+                            '${'failed_to_send_sos'.tr()} $e',
+                          );
                         }
                       }
                     }

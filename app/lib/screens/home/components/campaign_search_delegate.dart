@@ -39,14 +39,21 @@ class CampaignSearchDelegate extends SearchDelegate<String> {
 
   Widget _buildSearchResults(BuildContext context) {
     final q = query.toLowerCase();
-    final results = _provider.allCampaigns.where((c) =>
-        c.title.toLowerCase().contains(q) ||
-        c.description.toLowerCase().contains(q) ||
-        c.location.toLowerCase().contains(q)).toList();
+    final results = _provider.allCampaigns
+        .where(
+          (c) =>
+              c.title.toLowerCase().contains(q) ||
+              c.description.toLowerCase().contains(q) ||
+              c.location.toLowerCase().contains(q),
+        )
+        .toList();
 
     if (results.isEmpty) {
       return const Center(
-        child: Text('No campaigns found', style: TextStyle(color: AppColors.textSecondary)),
+        child: Text(
+          'No campaigns found',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
       );
     }
 
@@ -57,7 +64,11 @@ class CampaignSearchDelegate extends SearchDelegate<String> {
         return ListTile(
           leading: const Icon(Icons.campaign, color: AppColors.primary),
           title: Text(campaign.title),
-          subtitle: Text(campaign.location, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(
+            campaign.location,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           onTap: () {
             close(context, '');
             Navigator.push(

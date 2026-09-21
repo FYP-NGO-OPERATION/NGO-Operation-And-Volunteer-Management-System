@@ -45,7 +45,9 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
   }
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
     try {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } catch (e) {
@@ -60,19 +62,29 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
     }
     setState(() => _isSearching = true);
     try {
-      final url = Uri.parse('https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&limit=5');
-      final response = await http.get(url, headers: {'User-Agent': 'org.hras.ngo_volunteer_app'});
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&limit=5',
+      );
+      final response = await http.get(
+        url,
+        headers: {'User-Agent': 'org.hras.ngo_volunteer_app'},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as List;
         setState(() {
           _searchResults = data;
         });
         if (data.isEmpty && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location not found')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Location not found')));
         }
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isSearching = false);
     }
@@ -97,9 +109,10 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) throw Exception('Location permissions are denied');
+        if (permission == LocationPermission.denied)
+          throw Exception('Location permissions are denied');
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
         throw Exception('Location permissions are permanently denied.');
       }
@@ -107,7 +120,10 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
       final position = await Geolocator.getCurrentPosition();
       _mapController.move(LatLng(position.latitude, position.longitude), 15);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) setState(() => _isSearching = false);
     }
@@ -127,7 +143,11 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isPickerMode ? 'Set Campaign Venue' : 'Live Mission: ${widget.campaignTitle}'),
+        title: Text(
+          _isPickerMode
+              ? 'Set Campaign Venue'
+              : 'Live Mission: ${widget.campaignTitle}',
+        ),
         backgroundColor: AppColors.error,
         foregroundColor: Colors.white,
         actions: [
@@ -169,11 +189,18 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                     GestureDetector(
                       onTap: () => _openGoogleMaps(lat, lng),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: isFatigued ? AppColors.error : AppColors.primary),
+                          border: Border.all(
+                            color: isFatigued
+                                ? AppColors.error
+                                : AppColors.primary,
+                          ),
                         ),
                         child: Text(
                           '${name.split(' ').first}\n(Get Route)',
@@ -181,7 +208,9 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                           style: TextStyle(
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
-                            color: isFatigued ? AppColors.error : AppColors.primary,
+                            color: isFatigued
+                                ? AppColors.error
+                                : AppColors.primary,
                           ),
                         ),
                       ),
@@ -210,7 +239,10 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.error,
                         borderRadius: BorderRadius.circular(4),
@@ -218,10 +250,18 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                       child: const Text(
                         'Campaign Venue',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    const Icon(Icons.location_on, color: AppColors.error, size: 30),
+                    const Icon(
+                      Icons.location_on,
+                      color: AppColors.error,
+                      size: 30,
+                    ),
                   ],
                 ),
               ),
@@ -231,8 +271,15 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
           // Adjust bounds if we have markers
           if (markers.isNotEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              final bounds = LatLngBounds.fromPoints(markers.map((m) => m.point).toList());
-              _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+              final bounds = LatLngBounds.fromPoints(
+                markers.map((m) => m.point).toList(),
+              );
+              _mapController.fitCamera(
+                CameraFit.bounds(
+                  bounds: bounds,
+                  padding: const EdgeInsets.all(50),
+                ),
+              );
             });
           }
 
@@ -246,7 +293,8 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.hras.volunteer',
                   ),
                   MarkerLayer(markers: markers),
@@ -259,12 +307,18 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                 left: 16,
                 right: 16,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                      ),
                     ],
                   ),
                   child: Row(
@@ -272,14 +326,19 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                       const Icon(Icons.satellite_alt, color: AppColors.error),
                       const SizedBox(width: 8),
                       Text(
-                        _isPickerMode ? 'Drag map to set venue location' : 'Active Volunteers: ${markers.length}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                        _isPickerMode
+                            ? 'Drag map to set venue location'
+                            : 'Active Volunteers: ${markers.length}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               // Picker Mode Overlay
               if (_isPickerMode) ...[
                 // Search Bar and Results
@@ -293,24 +352,42 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
                         ),
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search city, address...',
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                             suffixIcon: _isSearching
-                                ? const Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2))
+                                ? const Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
                                 : IconButton(
-                                    icon: const Icon(Icons.search, color: AppColors.primary),
-                                    onPressed: () => _searchLocation(_searchController.text),
+                                    icon: const Icon(
+                                      Icons.search,
+                                      color: AppColors.primary,
+                                    ),
+                                    onPressed: () =>
+                                        _searchLocation(_searchController.text),
                                   ),
                           ),
                           onSubmitted: _searchLocation,
                           onChanged: (val) {
-                            if (val.isEmpty) setState(() => _searchResults = []);
+                            if (val.isEmpty)
+                              setState(() => _searchResults = []);
                           },
                         ),
                       ),
@@ -321,23 +398,34 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
                           child: ListView.separated(
                             shrinkWrap: true,
                             itemCount: _searchResults.length,
-                            separatorBuilder: (ctx, i) => const Divider(height: 1),
+                            separatorBuilder: (ctx, i) =>
+                                const Divider(height: 1),
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
                               return ListTile(
-                                leading: const Icon(Icons.place, color: AppColors.primary),
+                                leading: const Icon(
+                                  Icons.place,
+                                  color: AppColors.primary,
+                                ),
                                 title: Text(
                                   result['display_name'] ?? '',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(fontSize: 13),
                                 ),
-                                onTap: () => _onSearchResultSelected(result as Map<String, dynamic>),
+                                onTap: () => _onSearchResultSelected(
+                                  result as Map<String, dynamic>,
+                                ),
                               );
                             },
                           ),
@@ -345,7 +433,7 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                     ],
                   ),
                 ),
-                
+
                 // My Location Button
                 Positioned(
                   bottom: 100,
@@ -374,11 +462,19 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                             color: Colors.black.withOpacity(0.4),
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 4, spreadRadius: 2)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                              ),
                             ],
                           ),
                         ),
-                        const Icon(Icons.location_on, color: AppColors.error, size: 50),
+                        const Icon(
+                          Icons.location_on,
+                          color: AppColors.error,
+                          size: 50,
+                        ),
                       ],
                     ),
                   ),
@@ -395,8 +491,12 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                             backgroundColor: Colors.grey,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          onPressed: () => setState(() => _isPickerMode = false),
-                          child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                          onPressed: () =>
+                              setState(() => _isPickerMode = false),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -412,12 +512,23 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                                   setState(() => _isSaving = true);
                                   try {
                                     final center = _mapController.camera.center;
-                                    await FirebaseFirestore.instance.collection('campaigns').doc(widget.campaignId).update({
-                                      'latitude': center.latitude,
-                                      'longitude': center.longitude,
-                                    });
+                                    await FirebaseFirestore.instance
+                                        .collection('campaigns')
+                                        .doc(widget.campaignId)
+                                        .update({
+                                          'latitude': center.latitude,
+                                          'longitude': center.longitude,
+                                        });
                                     if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Venue location updated!')));
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Venue location updated!',
+                                          ),
+                                        ),
+                                      );
                                       setState(() {
                                         _campaignLat = center.latitude;
                                         _campaignLng = center.longitude;
@@ -427,12 +538,27 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                                     }
                                   } catch (e) {
                                     setState(() => _isSaving = false);
-                                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                                    if (mounted)
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
                                   }
                                 },
-                          child: _isSaving 
-                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : const Text('Save Location', style: TextStyle(color: Colors.white)),
+                          child: _isSaving
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save Location',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                         ),
                       ),
                     ],

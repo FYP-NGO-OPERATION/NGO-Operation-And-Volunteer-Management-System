@@ -60,7 +60,10 @@ class DonationService {
   }
 
   /// Update donation status (approve/reject)
-  Future<void> updateDonationStatus(DonationModel donation, DonationStatus newStatus) async {
+  Future<void> updateDonationStatus(
+    DonationModel donation,
+    DonationStatus newStatus,
+  ) async {
     if (donation.status == newStatus) return;
 
     final batch = _db.batch();
@@ -99,12 +102,15 @@ class DonationService {
   Stream<List<DonationModel>> getDonationsStream(String campaignId) {
     return _donations
         .where('campaignId', isEqualTo: campaignId)
+        .orderBy('receivedAt', descending: true)
+        .limit(500) // SECURE: Added limit to prevent massive billing spikes on large campaigns
         .snapshots()
         .map((snapshot) {
-          final list = snapshot.docs
-              .map((doc) => DonationModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+          final list =
+              snapshot.docs
+                  .map((doc) => DonationModel.fromMap(doc.data()))
+                  .toList()
+                ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
           return list;
         });
   }
@@ -114,9 +120,11 @@ class DonationService {
     return _donations
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => DonationModel.fromMap(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => DonationModel.fromMap(doc.data()))
+              .toList(),
+        );
   }
 
   /// Get donation by ID
@@ -148,34 +156,5 @@ class DonationService {
     await batch.commit();
   }
 
-  // ═══════════════════════════════════════════
-  // ─── STATS ───
-  // ═══════════════════════════════════════════
 
-  /// Get donation summary for a campaign
-  Future<Map<String, dynamic>> getDonationStats(String campaignId) async {
-    final snapshot = await _donations
-        .where('campaignId', isEqualTo: campaignId)
-        .get();
-
-    double totalCash = 0, totalOnline = 0;
-    int totalCount = snapshot.docs.length;
-    Map<String, int> categoryCounts = {};
-
-    for (final doc in snapshot.docs) {
-      final data = doc.data();
-      totalCash += (data['amountCash'] ?? 0).toDouble();
-      totalOnline += (data['amountOnline'] ?? 0).toDouble();
-      final cat = data['category'] ?? 'other';
-      categoryCounts[cat] = (categoryCounts[cat] ?? 0) + 1;
-    }
-
-    return {
-      'totalCount': totalCount,
-      'totalCash': totalCash,
-      'totalOnline': totalOnline,
-      'totalAmount': totalCash + totalOnline,
-      'categoryCounts': categoryCounts,
-    };
-  }
 }

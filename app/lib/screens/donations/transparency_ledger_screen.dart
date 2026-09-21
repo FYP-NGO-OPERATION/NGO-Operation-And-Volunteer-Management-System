@@ -26,7 +26,8 @@ class LedgerEntry {
   });
 
   String get generatedHash {
-    final rawString = '$id$type$amount${date.toIso8601String()}$description$personName';
+    final rawString =
+        '$id$type$amount${date.toIso8601String()}$description$personName';
     final bytes = utf8.encode(rawString);
     final digest = sha256.convert(bytes);
     return digest.toString();
@@ -43,33 +44,47 @@ class TransparencyLedgerScreen extends StatelessWidget {
     final List<LedgerEntry> entries = [];
 
     // Fetch Donations
-    final donationDocs = await db.collection('campaigns').doc(campaignId).collection('donations').where('status', isEqualTo: 'approved').get();
+    final donationDocs = await db
+        .collection('campaigns')
+        .doc(campaignId)
+        .collection('donations')
+        .where('status', isEqualTo: 'approved')
+        .get();
     for (var doc in donationDocs.docs) {
       final d = DonationModel.fromMap(doc.data());
       if (d.isMoney) {
-        entries.add(LedgerEntry(
-          id: d.id,
-          type: 'DONATION',
-          amount: d.totalAmount,
-          date: d.createdAt,
-          description: d.isAnonymous ? 'Anonymous Donation' : 'Donation',
-          personName: d.isAnonymous ? 'Anonymous' : d.donorName,
-        ));
+        entries.add(
+          LedgerEntry(
+            id: d.id,
+            type: 'DONATION',
+            amount: d.totalAmount,
+            date: d.createdAt,
+            description: d.isAnonymous ? 'Anonymous Donation' : 'Donation',
+            personName: d.isAnonymous ? 'Anonymous' : d.donorName,
+          ),
+        );
       }
     }
 
     // Fetch Expenses
-    final expenseDocs = await db.collection('campaigns').doc(campaignId).collection('expenses').where('status', isEqualTo: 'approved').get();
+    final expenseDocs = await db
+        .collection('campaigns')
+        .doc(campaignId)
+        .collection('expenses')
+        .where('status', isEqualTo: 'approved')
+        .get();
     for (var doc in expenseDocs.docs) {
       final e = ExpenseModel.fromMap(doc.data());
-      entries.add(LedgerEntry(
-        id: e.id,
-        type: 'EXPENSE',
-        amount: e.totalAmount,
-        date: e.createdAt,
-        description: e.itemName,
-        personName: e.addedByName,
-      ));
+      entries.add(
+        LedgerEntry(
+          id: e.id,
+          type: 'EXPENSE',
+          amount: e.totalAmount,
+          date: e.createdAt,
+          description: e.itemName,
+          personName: e.addedByName,
+        ),
+      );
     }
 
     // Sort descending by date
@@ -82,13 +97,21 @@ class TransparencyLedgerScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFF6F8FA),
+      backgroundColor: isDark
+          ? const Color(0xFF0D1117)
+          : const Color(0xFFF6F8FA),
       appBar: AppBar(
         title: Row(
           children: [
             const Icon(Icons.link, color: Colors.blueAccent),
             const SizedBox(width: 8),
-            const Text('Blockchain Ledger', style: TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+            const Text(
+              'Blockchain Ledger',
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         backgroundColor: isDark ? const Color(0xFF161B22) : Colors.white,
@@ -102,7 +125,12 @@ class TransparencyLedgerScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No verified blocks found.', style: TextStyle(fontFamily: 'monospace')));
+            return const Center(
+              child: Text(
+                'No verified blocks found.',
+                style: TextStyle(fontFamily: 'monospace'),
+              ),
+            );
           }
 
           final entries = snapshot.data!;
@@ -123,8 +151,16 @@ class TransparencyLedgerScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF161B22) : Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[300]!, width: 1.5),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+                      border: Border.all(
+                        color: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                        ),
+                      ],
                     ),
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -135,17 +171,35 @@ class TransparencyLedgerScreen extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.widgets, color: Colors.amber, size: 18),
+                                const Icon(
+                                  Icons.widgets,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 6),
-                                Text('Block #$blockHeight', style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', fontSize: 16)),
+                                Text(
+                                  'Block #$blockHeight',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'monospace',
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ],
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: isDonation ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                                color: isDonation
+                                    ? Colors.green.withOpacity(0.1)
+                                    : Colors.red.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: isDonation ? Colors.green : Colors.red),
+                                border: Border.all(
+                                  color: isDonation ? Colors.green : Colors.red,
+                                ),
                               ),
                               child: Text(
                                 entry.type,
@@ -164,7 +218,13 @@ class TransparencyLedgerScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: Text(entry.description, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                              child: Text(
+                                entry.description,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                             Text(
                               '${isDonation ? '+' : '-'} Rs.${NumberFormat('#,##0').format(entry.amount)}',
@@ -178,20 +238,43 @@ class TransparencyLedgerScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text('Signer: ${entry.personName}', style: const TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'monospace')),
+                        Text(
+                          'Signer: ${entry.personName}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF0D1117) : Colors.grey[100],
+                            color: isDark
+                                ? const Color(0xFF0D1117)
+                                : Colors.grey[100],
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Hash: ${entry.generatedHash}', style: const TextStyle(fontFamily: 'monospace', fontSize: 10, color: Colors.blueAccent)),
+                              Text(
+                                'Hash: ${entry.generatedHash}',
+                                style: const TextStyle(
+                                  fontFamily: 'monospace',
+                                  fontSize: 10,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
                               const SizedBox(height: 4),
-                              Text('Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(entry.date)}', style: const TextStyle(fontFamily: 'monospace', fontSize: 10, color: Colors.grey)),
+                              Text(
+                                'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(entry.date)}',
+                                style: const TextStyle(
+                                  fontFamily: 'monospace',
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
                         ),

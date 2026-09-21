@@ -20,22 +20,40 @@ class DonationLedgerScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
+      backgroundColor: isDark
+          ? AppColors.darkScaffoldBg
+          : AppColors.lightScaffoldBg,
       appBar: AppBar(
-        title: const Text('Transparent Ledger', style: TextStyle(fontFamily: 'monospace', color: Colors.teal)),
+        title: const Text(
+          'Transparent Ledger',
+          style: TextStyle(fontFamily: 'monospace', color: Colors.teal),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.teal),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('donations').orderBy('receivedAt', descending: true).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('donations')
+            .orderBy('receivedAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.greenAccent));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.greenAccent),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No blocks mined yet.', style: TextStyle(color: Colors.greenAccent, fontFamily: 'monospace')));
+            return const Center(
+              child: Text(
+                'No blocks mined yet.',
+                style: TextStyle(
+                  color: Colors.greenAccent,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            );
           }
 
           final docs = snapshot.data!.docs;
@@ -46,13 +64,15 @@ class DonationLedgerScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               final amount = data['amount'] ?? 0;
-              final date = (data['receivedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+              final date =
+                  (data['receivedAt'] as Timestamp?)?.toDate() ??
+                  DateTime.now();
               final donor = data['donorName'] ?? 'Anonymous';
-              
+
               // Real / Mock Blockchain Data
               final dbTxHash = data['txHash'];
               final dbBlock = data['blockNumber'];
-              
+
               final txHash = dbTxHash ?? _generateHash(docs[index].id);
               final blockHeight = dbBlock ?? (18490000 + (docs.length - index));
               final confirmations = 100 + (docs.length - index) * 15;
@@ -65,7 +85,11 @@ class DonationLedgerScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.teal.withValues(alpha: 0.5)),
                   boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2)),
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -74,18 +98,48 @@ class DonationLedgerScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('BLOCK #$blockHeight', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
-                        Text('$confirmations Confirmations', style: const TextStyle(color: Colors.teal, fontSize: 12, fontFamily: 'monospace')),
+                        Text(
+                          'BLOCK #$blockHeight',
+                          style: TextStyle(
+                            color: isDark ? Colors.white70 : Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                        Text(
+                          '$confirmations Confirmations',
+                          style: const TextStyle(
+                            color: Colors.teal,
+                            fontSize: 12,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
                       ],
                     ),
                     Divider(color: isDark ? Colors.white24 : Colors.black12),
                     const SizedBox(height: 8),
                     _buildLedgerRow('TxHash', txHash, isDark),
                     _buildLedgerRow('Sender', donor, isDark),
-                    _buildLedgerRow('Value', 'Rs. ${NumberFormat('#,##0').format(amount)}', isDark),
-                    _buildLedgerRow('Timestamp', DateFormat('yyyy-MM-dd HH:mm:ss').format(date), isDark),
+                    _buildLedgerRow(
+                      'Value',
+                      'Rs. ${NumberFormat('#,##0').format(amount)}',
+                      isDark,
+                    ),
+                    _buildLedgerRow(
+                      'Timestamp',
+                      DateFormat('yyyy-MM-dd HH:mm:ss').format(date),
+                      isDark,
+                    ),
                     const SizedBox(height: 12),
-                    const Text('STATUS: MINED 🟢', style: TextStyle(color: Colors.teal, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                    const Text(
+                      'STATUS: MINED 🟢',
+                      style: TextStyle(
+                        color: Colors.teal,
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -102,8 +156,27 @@ class DonationLedgerScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 80, child: Text(label, style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 12, fontFamily: 'monospace'))),
-          Expanded(child: Text(value, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 13, fontFamily: 'monospace'))),
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isDark ? Colors.white54 : Colors.black54,
+                fontSize: 12,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 13,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
         ],
       ),
     );

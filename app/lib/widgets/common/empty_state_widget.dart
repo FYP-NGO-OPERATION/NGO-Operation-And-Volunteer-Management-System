@@ -35,7 +35,9 @@ class EmptyStateWidget extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant,
+                color: isDark
+                    ? AppColors.darkSurfaceVariant
+                    : AppColors.lightSurfaceVariant,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -58,14 +60,26 @@ class EmptyStateWidget extends StatelessWidget {
               ),
             ),
             AppSpacing.vGapXl,
-            Text(title, style: AppTextStyles.titleMedium(
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-            ), textAlign: TextAlign.center),
+            Text(
+              title,
+              style: AppTextStyles.titleMedium(
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
             if (subtitle != null) ...[
               AppSpacing.vGapSm,
-              Text(subtitle!, style: AppTextStyles.bodyMedium(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ), textAlign: TextAlign.center),
+              Text(
+                subtitle!,
+                style: AppTextStyles.bodyMedium(
+                  color: isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.lightTextSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (actionLabel != null && onAction != null) ...[
               AppSpacing.vGapXl,
@@ -73,9 +87,15 @@ class EmptyStateWidget extends StatelessWidget {
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size.zero,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                    vertical: AppSpacing.md,
+                  ),
                 ),
-                child: Text(actionLabel!, style: AppTextStyles.button(color: Colors.white)),
+                child: Text(
+                  actionLabel!,
+                  style: AppTextStyles.button(color: Colors.white),
+                ),
               ),
             ],
           ],

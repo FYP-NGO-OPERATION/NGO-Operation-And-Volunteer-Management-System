@@ -7,10 +7,13 @@ import '../models/campaign_model.dart';
 import '../utils/snackbar_helper.dart';
 
 class CsvExportService {
-  static Future<void> exportCampaignsToCsv(BuildContext context, List<CampaignModel> campaigns) async {
+  static Future<void> exportCampaignsToCsv(
+    BuildContext context,
+    List<CampaignModel> campaigns,
+  ) async {
     try {
       List<List<dynamic>> rows = [];
-      
+
       // Headers
       rows.add([
         'ID',
@@ -24,7 +27,7 @@ class CsvExportService {
         'Total Volunteers',
         'Total Donations (Rs)',
         'Total Expenses (Rs)',
-        'Created By'
+        'Created By',
       ]);
 
       // Data
@@ -47,12 +50,15 @@ class CsvExportService {
 
       final StringBuffer sb = StringBuffer();
       for (var row in rows) {
-        sb.writeln(row.map((e) => '"${e.toString().replaceAll('"', '""')}"').join(','));
+        sb.writeln(
+          row.map((e) => '"${e.toString().replaceAll('"', '""')}"').join(','),
+        );
       }
       String csvData = sb.toString();
 
       final directory = await getApplicationDocumentsDirectory();
-      final path = '${directory.path}/campaigns_export_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final path =
+          '${directory.path}/campaigns_export_${DateTime.now().millisecondsSinceEpoch}.csv';
       final file = File(path);
       await file.writeAsString(csvData);
 

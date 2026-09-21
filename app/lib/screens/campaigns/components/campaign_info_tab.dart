@@ -27,13 +27,20 @@ class CampaignInfoTab extends StatelessWidget {
 
   Color get _themeColor {
     switch (campaign.type) {
-      case CampaignType.winterDrive: return AppColors.winterDrive;
-      case CampaignType.ramadan: return AppColors.ramadan;
-      case CampaignType.eid: return AppColors.eid;
-      case CampaignType.orphanage: return AppColors.orphanage;
-      case CampaignType.medical: return AppColors.medical;
-      case CampaignType.education: return AppColors.education;
-      default: return AppColors.primary;
+      case CampaignType.winterDrive:
+        return AppColors.winterDrive;
+      case CampaignType.ramadan:
+        return AppColors.ramadan;
+      case CampaignType.eid:
+        return AppColors.eid;
+      case CampaignType.orphanage:
+        return AppColors.orphanage;
+      case CampaignType.medical:
+        return AppColors.medical;
+      case CampaignType.education:
+        return AppColors.education;
+      default:
+        return AppColors.primary;
     }
   }
 
@@ -61,7 +68,10 @@ class CampaignInfoTab extends StatelessWidget {
           ),
         ),
         SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.xl,
+          ),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 700),
@@ -71,7 +81,11 @@ class CampaignInfoTab extends StatelessWidget {
                   // Title and Badges
                   Row(
                     children: [
-                      _glassChip('${campaign.type.icon} ${campaign.type.label}', _themeColor, isDark),
+                      _glassChip(
+                        '${campaign.type.icon} ${campaign.type.label}',
+                        _themeColor,
+                        isDark,
+                      ),
                       const SizedBox(width: 8),
                       _statusBadge(isDark),
                     ],
@@ -104,14 +118,51 @@ class CampaignInfoTab extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Mission Brief', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _themeColor)),
+                        Text(
+                          'Mission Brief',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: _themeColor,
+                          ),
+                        ),
                         const SizedBox(height: 16),
-                        _infoRow(context, Icons.calendar_today, 'Start Date', dateFormat.format(campaign.startDate), isDark),
+                        _infoRow(
+                          context,
+                          Icons.calendar_today,
+                          'Start Date',
+                          dateFormat.format(campaign.startDate),
+                          isDark,
+                        ),
                         if (campaign.eventDate != null)
-                          _infoRow(context, Icons.event, 'Event Date', dateFormat.format(campaign.eventDate!), isDark),
-                        _infoRow(context, Icons.location_on, 'Location', campaign.location, isDark),
-                        _infoRow(context, Icons.flag, 'Target', campaign.targetGoal, isDark),
-                        _infoRow(context, Icons.person, 'Coordinator', campaign.createdByName, isDark),
+                          _infoRow(
+                            context,
+                            Icons.event,
+                            'Event Date',
+                            dateFormat.format(campaign.eventDate!),
+                            isDark,
+                          ),
+                        _infoRow(
+                          context,
+                          Icons.location_on,
+                          'Location',
+                          campaign.location,
+                          isDark,
+                        ),
+                        _infoRow(
+                          context,
+                          Icons.flag,
+                          'Target',
+                          campaign.targetGoal,
+                          isDark,
+                        ),
+                        _infoRow(
+                          context,
+                          Icons.person,
+                          'Coordinator',
+                          campaign.createdByName,
+                          isDark,
+                        ),
                       ],
                     ),
                   ),
@@ -122,7 +173,12 @@ class CampaignInfoTab extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Stats Grid
-                  Text('Live Statistics', style: AppTextStyles.titleLarge().copyWith(fontWeight: FontWeight.w900)),
+                  Text(
+                    'Live Statistics',
+                    style: AppTextStyles.titleLarge().copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   GridView.count(
                     shrinkWrap: true,
@@ -132,12 +188,48 @@ class CampaignInfoTab extends StatelessWidget {
                     crossAxisSpacing: 12,
                     childAspectRatio: Responsive.isMobile(context) ? 1.4 : 1.8,
                     children: [
-                      _glassStatCard('Volunteers', '${campaign.totalVolunteers}', Icons.people, AppColors.info, isDark),
-                      _glassStatCard('Impact', '${campaign.beneficiaryCount}', Icons.family_restroom, AppColors.primary, isDark),
-                      _glassStatCard('Items', '${campaign.distributionCount}', Icons.inventory_2, AppColors.success, isDark),
-                      _glassStatCard('Donations', 'Rs.${campaign.totalDonationsAmount.toInt()}', Icons.volunteer_activism, AppColors.warning, isDark),
-                      _glassStatCard('Expenses', 'Rs.${campaign.totalExpenses.toInt()}', Icons.receipt, AppColors.error, isDark),
-                      _glassStatCard('Remaining', 'Rs.${campaign.remainingBudget.toInt()}', Icons.savings, AppColors.success, isDark),
+                      _glassStatCard(
+                        'Volunteers',
+                        '${campaign.totalVolunteers}',
+                        Icons.people,
+                        AppColors.info,
+                        isDark,
+                      ),
+                      _glassStatCard(
+                        'Impact',
+                        '${campaign.beneficiaryCount}',
+                        Icons.family_restroom,
+                        AppColors.primary,
+                        isDark,
+                      ),
+                      _glassStatCard(
+                        'Items',
+                        '${campaign.distributionCount}',
+                        Icons.inventory_2,
+                        AppColors.success,
+                        isDark,
+                      ),
+                      _glassStatCard(
+                        'Donations',
+                        'Rs.${campaign.totalDonationsAmount.toInt()}',
+                        Icons.volunteer_activism,
+                        AppColors.warning,
+                        isDark,
+                      ),
+                      _glassStatCard(
+                        'Expenses',
+                        'Rs.${campaign.totalExpenses.toInt()}',
+                        Icons.receipt,
+                        AppColors.error,
+                        isDark,
+                      ),
+                      _glassStatCard(
+                        'Remaining',
+                        'Rs.${campaign.remainingBudget.toInt()}',
+                        Icons.savings,
+                        AppColors.success,
+                        isDark,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -145,14 +237,14 @@ class CampaignInfoTab extends StatelessWidget {
                   // Action Buttons (Volunteers, Beneficiaries, Gallery)
                   _buildActionTiles(context, isDark),
                   const SizedBox(height: 32),
-                  
+
                   // Map
                   _buildMapSection(context, isDark),
                   const SizedBox(height: 24),
 
                   // Live Tracking
                   _LiveTrackingCard(campaign: campaign, isDark: isDark),
-                  
+
                   const SizedBox(height: 80),
                 ],
               ),
@@ -163,12 +255,22 @@ class CampaignInfoTab extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassContainer({required Widget child, required bool isDark, EdgeInsetsGeometry padding = const EdgeInsets.all(24)}) {
+  Widget _buildGlassContainer({
+    required Widget child,
+    required bool isDark,
+    EdgeInsetsGeometry padding = const EdgeInsets.all(24),
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.7),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
         boxShadow: [
           BoxShadow(
             color: _themeColor.withValues(alpha: 0.05),
@@ -177,16 +279,7 @@ class CampaignInfoTab extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Padding(
-            padding: padding,
-            child: child,
-          ),
-        ),
-      ),
+      child: Padding(padding: padding, child: child),
     );
   }
 
@@ -199,10 +292,10 @@ class CampaignInfoTab extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
-        text, 
+        text,
         style: TextStyle(
-          color: isDark ? color.withValues(alpha: 0.9) : color, 
-          fontSize: 13, 
+          color: isDark ? color.withValues(alpha: 0.9) : color,
+          fontSize: 13,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.3,
         ),
@@ -213,14 +306,30 @@ class CampaignInfoTab extends StatelessWidget {
   Widget _statusBadge(bool isDark) {
     Color color;
     switch (campaign.status) {
-      case CampaignStatus.active: color = AppColors.success; break;
-      case CampaignStatus.completed: color = AppColors.info; break;
-      case CampaignStatus.upcoming: color = AppColors.warning; break;
+      case CampaignStatus.active:
+        color = AppColors.success;
+        break;
+      case CampaignStatus.completed:
+        color = AppColors.info;
+        break;
+      case CampaignStatus.upcoming:
+        color = AppColors.warning;
+        break;
     }
-    return _glassChip('${campaign.status.icon} ${campaign.status.label}', color, isDark);
+    return _glassChip(
+      '${campaign.status.icon} ${campaign.status.label}',
+      color,
+      isDark,
+    );
   }
 
-  Widget _infoRow(BuildContext context, IconData icon, String label, String value, bool isDark) {
+  Widget _infoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -236,21 +345,44 @@ class CampaignInfoTab extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             flex: 2,
-            child: Text(label, style: TextStyle(fontSize: 15, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w500)),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                color: isDark ? Colors.white60 : Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           Expanded(
             flex: 3,
-            child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black87), textAlign: TextAlign.right),
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _glassStatCard(String label, String value, IconData icon, Color color, bool isDark) {
+  Widget _glassStatCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.8),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.03)
+            : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: color.withValues(alpha: 0.2)),
         boxShadow: [
@@ -258,45 +390,50 @@ class CampaignInfoTab extends StatelessWidget {
             color: color.withValues(alpha: isDark ? 0.05 : 0.05),
             blurRadius: 20,
             spreadRadius: -5,
-          )
+          ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5), // Reduced blur for performance
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, color: color, size: 24),
-                const SizedBox(height: 8),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    value, 
-                    style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87, fontSize: 18), 
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontSize: 18,
                 ),
-                const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label, 
-                    style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600, letterSpacing: 0.2),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? Colors.white60 : Colors.black54,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildDonationGoalCard(BuildContext context, bool isDark) {
-    final goalAmount = double.tryParse(campaign.targetGoal.replaceAll(RegExp(r'[^0-9.]'), ''));
+    final goalAmount = double.tryParse(
+      campaign.targetGoal.replaceAll(RegExp(r'[^0-9.]'), ''),
+    );
     final collected = campaign.totalDonationsAmount;
 
     if (goalAmount == null || goalAmount <= 0) return const SizedBox.shrink();
@@ -346,18 +483,29 @@ class CampaignInfoTab extends StatelessWidget {
               const SizedBox(width: 16),
               Text(
                 'Donation Goal',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: progressColor),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: progressColor,
+                ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: progressColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '$percentage%',
-                  style: TextStyle(color: progressColor, fontWeight: FontWeight.w900, fontSize: 14),
+                  style: TextStyle(
+                    color: progressColor,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
@@ -380,7 +528,10 @@ class CampaignInfoTab extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [progressColor.withValues(alpha: 0.7), progressColor],
+                          colors: [
+                            progressColor.withValues(alpha: 0.7),
+                            progressColor,
+                          ],
                         ),
                       ),
                     ),
@@ -396,22 +547,44 @@ class CampaignInfoTab extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Collected', style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600)),
+                  Text(
+                    'Collected',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white60 : Colors.black54,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     'Rs. ${NumberFormat('#,###').format(collected)}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: progressColor),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: progressColor,
+                    ),
                   ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Goal', style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54, fontWeight: FontWeight.w600)),
+                  Text(
+                    'Goal',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white60 : Colors.black54,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     'Rs. ${NumberFormat('#,###').format(goalAmount)}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                   ),
                 ],
               ),
@@ -426,12 +599,22 @@ class CampaignInfoTab extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, size: 16, color: progressColor.withValues(alpha: 0.8)),
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: progressColor.withValues(alpha: 0.8),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    percentage < 100 ? 'Rs. ${NumberFormat('#,###').format(remaining)} more needed • $goalMessage' : goalMessage,
-                    style: TextStyle(fontSize: 13, color: progressColor, fontWeight: FontWeight.w600),
+                    percentage < 100
+                        ? 'Rs. ${NumberFormat('#,###').format(remaining)} more needed • $goalMessage'
+                        : goalMessage,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: progressColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -452,7 +635,15 @@ class CampaignInfoTab extends StatelessWidget {
           title: '${'view_volunteers'.tr()} (${campaign.totalVolunteers})',
           subtitle: 'view_volunteers_desc'.tr(),
           isDark: isDark,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VolunteerListScreen(campaignId: campaign.id, campaignTitle: campaign.title))),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => VolunteerListScreen(
+                campaignId: campaign.id,
+                campaignTitle: campaign.title,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         _actionTile(
@@ -462,7 +653,15 @@ class CampaignInfoTab extends StatelessWidget {
           title: 'view_impact'.tr(),
           subtitle: 'view_impact_desc'.tr(),
           isDark: isDark,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BeneficiaryListScreen(campaignId: campaign.id, campaignTitle: campaign.title))),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BeneficiaryListScreen(
+                campaignId: campaign.id,
+                campaignTitle: campaign.title,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         _actionTile(
@@ -472,20 +671,39 @@ class CampaignInfoTab extends StatelessWidget {
           title: 'photo_gallery'.tr(),
           subtitle: 'photo_gallery_desc'.tr(),
           isDark: isDark,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PhotoGalleryScreen(campaign: campaign))),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PhotoGalleryScreen(campaign: campaign),
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _actionTile({required BuildContext context, required IconData icon, required Color color, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) {
+  Widget _actionTile({
+    required BuildContext context,
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.7),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.03)
+            : Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.2)),
         boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.05), blurRadius: 10, spreadRadius: 0)
+          BoxShadow(
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 10,
+            spreadRadius: 0,
+          ),
         ],
       ),
       child: Material(
@@ -510,13 +728,29 @@ class CampaignInfoTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(subtitle, style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 12)),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: isDark ? Colors.white60 : Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: isDark ? Colors.white30 : Colors.black26),
+                Icon(
+                  Icons.chevron_right,
+                  color: isDark ? Colors.white30 : Colors.black26,
+                ),
               ],
             ),
           ),
@@ -527,11 +761,14 @@ class CampaignInfoTab extends StatelessWidget {
 
   Widget _buildMapSection(BuildContext context, bool isDark) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('campaigns')
+          .doc(campaign.id)
+          .snapshots(),
       builder: (context, snapshot) {
         double? lat = campaign.latitude;
         double? lng = campaign.longitude;
-        
+
         if (snapshot.hasData && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>;
           lat = data['latitude'] as double? ?? lat;
@@ -552,7 +789,14 @@ class CampaignInfoTab extends StatelessWidget {
                   children: [
                     Icon(Icons.map_rounded, color: _themeColor),
                     const SizedBox(width: 12),
-                    Text('Operation Location', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
+                    Text(
+                      'Operation Location',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -562,35 +806,56 @@ class CampaignInfoTab extends StatelessWidget {
                 child: Stack(
                   children: [
                     AbsorbPointer(
-                      child: FlutterMap(
-                        options: MapOptions(
-                          initialCenter: LatLng(lat, lng),
-                          initialZoom: 14.0,
+                      child: FutureBuilder(
+                        future: Future.delayed(
+                          const Duration(milliseconds: 300),
                         ),
-                        children: [
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'org.hras.ngo_volunteer_app',
-                          ),
-                          MarkerLayer(
-                            markers: [
-                              Marker(
-                                point: LatLng(lat, lng),
-                                width: 50,
-                                height: 50,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: AppColors.error.withValues(alpha: 0.2),
-                                    shape: BoxShape.circle,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          }
+                          return FlutterMap(
+                            options: MapOptions(
+                              initialCenter: LatLng(lat, lng),
+                              initialZoom: 14.0,
+                            ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                userAgentPackageName:
+                                    'org.hras.ngo_volunteer_app',
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    point: LatLng(lat, lng),
+                                    width: 50,
+                                    height: 50,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.location_on,
+                                          color: AppColors.error,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  child: const Center(
-                                    child: Icon(Icons.location_on, color: AppColors.error, size: 40),
-                                  ),
-                                ),
+                                ],
                               ),
                             ],
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                     Positioned.fill(
@@ -598,9 +863,14 @@ class CampaignInfoTab extends StatelessWidget {
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () async {
-                            final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                            final url = Uri.parse(
+                              'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+                            );
                             try {
-                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                              await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
                             } catch (e) {
                               debugPrint('Could not launch maps: $e');
                             }
@@ -613,18 +883,34 @@ class CampaignInfoTab extends StatelessWidget {
                       bottom: 12,
                       child: IgnorePointer(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black26, blurRadius: 8),
+                            ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: const [
-                              Icon(Icons.open_in_new, color: Colors.white, size: 16),
+                              Icon(
+                                Icons.open_in_new,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                               SizedBox(width: 8),
-                              Text('Navigate', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                              Text(
+                                'Navigate',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -644,7 +930,7 @@ class CampaignInfoTab extends StatelessWidget {
 class _LiveTrackingCard extends StatefulWidget {
   final CampaignModel campaign;
   final bool isDark;
-  
+
   const _LiveTrackingCard({required this.campaign, required this.isDark});
 
   @override
@@ -669,7 +955,11 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
       setState(() => _isTracking = false);
     } else {
       try {
-        await LiveTrackingService().startTracking(widget.campaign.id, user.uid, user.name);
+        await LiveTrackingService().startTracking(
+          widget.campaign.id,
+          user.uid,
+          user.name,
+        );
         setState(() => _isTracking = true);
       } catch (e) {
         if (mounted) {
@@ -689,7 +979,9 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
     if (isAdmin) {
       return Container(
         decoration: BoxDecoration(
-          color: widget.isDark ? AppColors.error.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.05),
+          color: widget.isDark
+              ? AppColors.error.withValues(alpha: 0.1)
+              : AppColors.error.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
         ),
@@ -720,16 +1012,34 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
                       color: AppColors.error.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.satellite_alt, color: AppColors.error),
+                    child: const Icon(
+                      Icons.satellite_alt,
+                      color: AppColors.error,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Live Mission Map', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.error)),
+                        const Text(
+                          'Live Mission Map',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                            color: AppColors.error,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('View real-time volunteer locations', style: TextStyle(color: widget.isDark ? Colors.white60 : Colors.black54, fontSize: 13)),
+                        Text(
+                          'View real-time volunteer locations',
+                          style: TextStyle(
+                            color: widget.isDark
+                                ? Colors.white60
+                                : Colors.black54,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -744,22 +1054,29 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: _isTracking 
-            ? AppColors.error.withValues(alpha: 0.1) 
-            : (widget.isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.02)),
+        color: _isTracking
+            ? AppColors.error.withValues(alpha: 0.1)
+            : (widget.isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.02)),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: _isTracking 
-              ? AppColors.error.withValues(alpha: 0.3) 
-              : (widget.isDark ? Colors.white10 : Colors.black12)
+          color: _isTracking
+              ? AppColors.error.withValues(alpha: 0.3)
+              : (widget.isDark ? Colors.white10 : Colors.black12),
         ),
       ),
       child: SwitchListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 12,
+        ),
         secondary: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: _isTracking ? AppColors.error.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.2),
+            color: _isTracking
+                ? AppColors.error.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -769,13 +1086,20 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
         ),
         title: Text(
           'Live Mission Tracking',
-          style: TextStyle(fontWeight: FontWeight.w900, color: _isTracking ? AppColors.error : (widget.isDark ? Colors.white : Colors.black87)),
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: _isTracking
+                ? AppColors.error
+                : (widget.isDark ? Colors.white : Colors.black87),
+          ),
         ),
         subtitle: Text(
           _isTracking
               ? 'Your location is being shared with Admins'
               : 'Share location during active mission',
-          style: TextStyle(color: widget.isDark ? Colors.white60 : Colors.black54),
+          style: TextStyle(
+            color: widget.isDark ? Colors.white60 : Colors.black54,
+          ),
         ),
         value: _isTracking,
         activeColor: AppColors.error,

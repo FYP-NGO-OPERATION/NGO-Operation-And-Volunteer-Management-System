@@ -18,7 +18,6 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
@@ -39,9 +38,16 @@ void main() async {
   };
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Notifications
+  // await NotificationService().initialize(); // Done in splash screen
+
+  // Temporary Seeder for all 3 Projects
+  await ProjectSeeder.seedAll();
+
+  // Load saved preferences
+  final themePrefs = await ThemeService.loadThemePrefs();
 
   // Disable Firestore persistence on the web to avoid hot-restart assertion errors
   if (kIsWeb) {
@@ -76,19 +82,25 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer2<ThemeProvider, NgoProvider>(
         builder: (context, themeProvider, ngoProvider, _) {
-          
           Color? primaryColor;
           Color? secondaryColor;
-          
+
           if (ngoProvider.currentNgo != null) {
-            String hex = ngoProvider.currentNgo!.primaryColorHex.replaceAll('#', '');
+            String hex = ngoProvider.currentNgo!.primaryColorHex.replaceAll(
+              '#',
+              '',
+            );
             if (hex.length == 6) hex = 'FF$hex';
             primaryColor = Color(int.tryParse(hex, radix: 16) ?? 0xFF1A6B3C);
-            
-            if (ngoProvider.currentNgo!.secondaryColorHex != null && ngoProvider.currentNgo!.secondaryColorHex!.isNotEmpty) {
-              String secHex = ngoProvider.currentNgo!.secondaryColorHex!.replaceAll('#', '');
+
+            if (ngoProvider.currentNgo!.secondaryColorHex != null &&
+                ngoProvider.currentNgo!.secondaryColorHex!.isNotEmpty) {
+              String secHex = ngoProvider.currentNgo!.secondaryColorHex!
+                  .replaceAll('#', '');
               if (secHex.length == 6) secHex = 'FF$secHex';
-              secondaryColor = Color(int.tryParse(secHex, radix: 16) ?? 0xFFD89216);
+              secondaryColor = Color(
+                int.tryParse(secHex, radix: 16) ?? 0xFFD89216,
+              );
             }
           }
 
@@ -108,7 +120,8 @@ class MyApp extends StatelessWidget {
             onGenerateRoute: (settings) {
               final uri = Uri.parse(settings.name ?? '/');
 
-              if (uri.pathSegments.length == 2 && uri.pathSegments.first == 'join') {
+              if (uri.pathSegments.length == 2 &&
+                  uri.pathSegments.first == 'join') {
                 final ngoId = uri.pathSegments[1];
                 return MaterialPageRoute(
                   builder: (context) => SplashScreen(inviteNgoId: ngoId),

@@ -36,21 +36,30 @@ class HomeQuickActions extends StatelessWidget {
           'Create Campaign',
           Icons.add_circle_outline,
           AppColors.primary,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateCampaignScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreateCampaignScreen()),
+          ),
         ),
         _buildActionCard(
           context,
           'Impact Metrics',
           Icons.bar_chart,
           Colors.blue,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnalyticsDashboardScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AnalyticsDashboardScreen()),
+          ),
         ),
         _buildActionCard(
           context,
           'inventory'.tr(),
           Icons.inventory,
           AppColors.success,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InventoryListScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const InventoryListScreen()),
+          ),
         ),
         if (FeatureFlags.isFyp2 || FeatureFlags.isFull)
           _buildActionCard(
@@ -58,7 +67,10 @@ class HomeQuickActions extends StatelessWidget {
             'Generate Report',
             Icons.picture_as_pdf,
             AppColors.error,
-            () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReportsScreen())),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ReportsScreen()),
+            ),
           ),
       ],
       _buildActionCard(
@@ -66,7 +78,10 @@ class HomeQuickActions extends StatelessWidget {
         'Top Volunteers',
         Icons.emoji_events,
         Colors.amber,
-        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen())),
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
+        ),
       ),
       if (ngoProvider.currentNgo?.features.contains('campaigns') ?? true)
         _buildActionCard(
@@ -81,14 +96,20 @@ class HomeQuickActions extends StatelessWidget {
         'Disaster Map',
         Icons.map,
         Colors.orange.shade700,
-        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterMapScreen())),
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DisasterMapScreen()),
+        ),
       ),
       _buildActionCard(
         context,
         'Optimize Routes',
         Icons.route,
         Colors.indigo,
-        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RouteOptimizationScreen())),
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RouteOptimizationScreen()),
+        ),
       ),
       _buildActionCard(
         context,
@@ -113,7 +134,11 @@ class HomeQuickActions extends StatelessWidget {
                 style: AppTextStyles.headlineMedium().copyWith(
                   fontWeight: FontWeight.w900,
                   shadows: [
-                    Shadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 2)),
+                    Shadow(
+                      color: AppColors.primary.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
               ),
@@ -165,12 +190,12 @@ class HomeQuickActions extends StatelessWidget {
       child: Container(
         width: 105,
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCardBg.withOpacity(0.8) : Colors.white.withOpacity(0.9),
+          color: isDark
+              ? AppColors.darkCardBg.withOpacity(0.8)
+              : Colors.white.withOpacity(0.9),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark 
-                ? color.withOpacity(0.3) 
-                : color.withOpacity(0.5),
+            color: isDark ? color.withOpacity(0.3) : color.withOpacity(0.5),
             width: 1.5,
           ),
           boxShadow: [
@@ -190,16 +215,17 @@ class HomeQuickActions extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    color.withOpacity(0.15),
-                    color.withOpacity(0.05),
-                  ],
+                  colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.2), blurRadius: 8, spreadRadius: 1),
+                  BoxShadow(
+                    color: color.withOpacity(0.2),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
                 ],
               ),
               child: Icon(icon, color: color, size: 30),
@@ -207,9 +233,9 @@ class HomeQuickActions extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: AppTextStyles.labelMedium(color: isDark ? Colors.white : Colors.black87).copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.labelMedium(
+                color: isDark ? Colors.white : Colors.black87,
+              ).copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

@@ -15,11 +15,7 @@ class QrScanScreen extends StatefulWidget {
   final String userId;
   final String userName;
 
-  const QrScanScreen({
-    super.key,
-    required this.userId,
-    required this.userName,
-  });
+  const QrScanScreen({super.key, required this.userId, required this.userName});
 
   @override
   State<QrScanScreen> createState() => _QrScanScreenState();
@@ -86,8 +82,8 @@ class _QrScanScreenState extends State<QrScanScreen> {
       body: kIsWeb
           ? _buildWebFallback(isDark)
           : _result != null
-              ? _buildResultView(isDark)
-              : _buildScannerView(),
+          ? _buildResultView(isDark)
+          : _buildScannerView(),
     );
   }
 
@@ -98,11 +94,15 @@ class _QrScanScreenState extends State<QrScanScreen> {
         children: [
           Icon(Icons.qr_code_scanner, size: 64, color: AppColors.lightTextHint),
           AppSpacing.vGapLg,
-          Text('QR Scanner is only available on mobile',
-              style: AppTextStyles.bodyLarge(color: AppColors.lightTextSecondary)),
+          Text(
+            'QR Scanner is only available on mobile',
+            style: AppTextStyles.bodyLarge(color: AppColors.lightTextSecondary),
+          ),
           AppSpacing.vGapSm,
-          Text('Please use the Android or iOS app to scan QR codes',
-              style: AppTextStyles.bodyMedium(color: AppColors.lightTextHint)),
+          Text(
+            'Please use the Android or iOS app to scan QR codes',
+            style: AppTextStyles.bodyMedium(color: AppColors.lightTextHint),
+          ),
         ],
       ),
     );
@@ -111,10 +111,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
   Widget _buildScannerView() {
     return Stack(
       children: [
-        MobileScanner(
-          controller: _controller!,
-          onDetect: _onDetect,
-        ),
+        MobileScanner(controller: _controller!, onDetect: _onDetect),
         // Overlay with scan area indicator
         Center(
           child: Container(
@@ -133,7 +130,10 @@ class _QrScanScreenState extends State<QrScanScreen> {
           right: 0,
           child: Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xl,
+                vertical: AppSpacing.md,
+              ),
               decoration: BoxDecoration(
                 color: Colors.black54,
                 borderRadius: AppTokens.borderRadiusPill,
@@ -160,7 +160,8 @@ class _QrScanScreenState extends State<QrScanScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xxl),
               decoration: BoxDecoration(
-                color: (result.success ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
+                color: (result.success ? AppColors.success : AppColors.error)
+                    .withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -180,7 +181,9 @@ class _QrScanScreenState extends State<QrScanScreen> {
             Text(
               result.message,
               style: AppTextStyles.bodyLarge(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -190,7 +193,10 @@ class _QrScanScreenState extends State<QrScanScreen> {
               icon: const Icon(Icons.qr_code_scanner),
               label: const Text('Scan Another'),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.lg),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xxl,
+                  vertical: AppSpacing.lg,
+                ),
               ),
             ),
             AppSpacing.vGapMd,

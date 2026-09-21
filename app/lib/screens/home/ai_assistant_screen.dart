@@ -28,19 +28,23 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   }
 
   Future<void> _initializeGemini() async {
-    final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+    final ngoId =
+        Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ??
+        'HRAS_DEFAULT_ID';
     final apiKey = await GeminiConfigService.getApiKey(ngoId);
     _model = GenerativeModel(
       model: 'gemini-3.6-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(
-          'You are HRAS Assistant, a helpful AI guide for NGO volunteers. Keep your answers concise, empathetic, and relevant to volunteering, emergency response, and social work. Answer in the language the user speaks (Urdu or English).'),
+        'You are HRAS Assistant, a helpful AI guide for NGO volunteers. Keep your answers concise, empathetic, and relevant to volunteering, emergency response, and social work. Answer in the language the user speaks (Urdu or English).',
+      ),
     );
     _chatSession = _model.startChat();
     setState(() {
       _messages.add({
         'role': 'assistant',
-        'text': 'Hello! I am your HRAS AI Assistant. How can I help you today? (e.g. "What to do in an earthquake?")'
+        'text':
+            'Hello! I am your HRAS AI Assistant. How can I help you today? (e.g. "What to do in an earthquake?")',
       });
     });
   }
@@ -59,7 +63,10 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       final response = await _chatSession.sendMessage(Content.text(text));
       if (mounted) {
         setState(() {
-          _messages.add({'role': 'assistant', 'text': response.text ?? 'Sorry, I could not understand that.'});
+          _messages.add({
+            'role': 'assistant',
+            'text': response.text ?? 'Sorry, I could not understand that.',
+          });
         });
       }
     } catch (e) {
@@ -99,14 +106,18 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                 final msg = _messages[index];
                 final isUser = msg['role'] == 'user';
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                    ),
                     decoration: BoxDecoration(
-                      color: isUser 
-                          ? AppColors.primary 
+                      color: isUser
+                          ? AppColors.primary
                           : (isDark ? Colors.grey[800] : Colors.grey[200]),
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
@@ -118,8 +129,8 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     child: Text(
                       msg['text'] ?? '',
                       style: TextStyle(
-                        color: isUser 
-                            ? Colors.white 
+                        color: isUser
+                            ? Colors.white
                             : (isDark ? Colors.white : Colors.black87),
                       ),
                     ),
@@ -138,7 +149,11 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             decoration: BoxDecoration(
               color: isDark ? Colors.grey[900] : Colors.white,
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
               ],
             ),
             child: Row(
@@ -154,7 +169,10 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                       ),
                       filled: true,
                       fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),

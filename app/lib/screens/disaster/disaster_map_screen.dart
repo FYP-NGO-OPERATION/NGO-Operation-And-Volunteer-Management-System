@@ -22,7 +22,6 @@ class DisasterMapScreen extends StatefulWidget {
 }
 
 class _DisasterMapScreenState extends State<DisasterMapScreen> {
-
   @override
   Widget build(BuildContext context) {
     final disasterProvider = Provider.of<DisasterProvider>(context);
@@ -50,102 +49,155 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
       ),
       body: Stack(
         children: [
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: initialCenter,
-              initialZoom: 5.5,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.hras.volunteer',
-              ),
-              if (isEmergency)
-                CircleLayer(
-                  circles: [
-                    CircleMarker(
-                      point: const LatLng(24.86, 67.01),
-                      color: Colors.red.withValues(alpha: 0.4),
-                      borderColor: Colors.red,
-                      borderStrokeWidth: 2,
-                      useRadiusInMeter: true,
-                      radius: 2000, 
-                    ),
-                    CircleMarker(
-                      point: const LatLng(24.82, 67.05),
-                      color: Colors.green.withValues(alpha: 0.4),
-                      borderColor: Colors.green,
-                      borderStrokeWidth: 2,
-                      useRadiusInMeter: true,
-                      radius: 1500, // Safe Zone
-                    ),
-                  ],
+          FutureBuilder(
+            future: Future.delayed(const Duration(milliseconds: 300)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              }
+              return FlutterMap(
+                options: MapOptions(
+                  initialCenter: initialCenter,
+                  initialZoom: 5.5,
                 ),
-              if (isEmergency)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: const LatLng(24.86, 67.01),
-                      child: const Icon(Icons.warning, color: Colors.red, size: 40),
-                    ),
-                    Marker(
-                      point: const LatLng(24.82, 67.05),
-                      child: const Icon(Icons.health_and_safety, color: Colors.green, size: 40),
-                    ),
-                  ],
-                ),
-              StreamBuilder<List<IncidentModel>>(
-                stream: IncidentService().getActiveIncidents(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const SizedBox();
-                  final incidents = snapshot.data!;
-                  return MarkerLayer(
-                    markers: incidents.map((incident) {
-                      return Marker(
-                        point: LatLng(incident.latitude, incident.longitude),
-                        width: 40,
-                        height: 40,
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text(incident.title),
-                                content: Text('${incident.description}\n\nReported by: ${incident.reportedByUserName}'),
-                                actions: [
-                                  if (user?.isAdmin == true)
-                                    TextButton(
-                                      onPressed: () {
-                                        IncidentService().resolveIncident(incident.id);
-                                        Navigator.pop(ctx);
-                                      },
-                                      child: const Text('Mark Resolved', style: TextStyle(color: AppColors.success)),
-                                    ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${incident.latitude},${incident.longitude}');
-                                      if (await canLaunchUrl(url)) {
-                                        await launchUrl(url, mode: LaunchMode.externalApplication);
-                                      } else {
-                                        if (ctx.mounted) SnackbarHelper.showError(ctx, 'Could not open Google Maps.');
-                                      }
-                                    },
-                                    child: const Text('Get Directions', style: TextStyle(color: Colors.blue)),
-                                  ),
-                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-                                ],
-                              )
-                            );
-                          },
-                          child: const Icon(Icons.location_on, color: Colors.orange, size: 40),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
+                    userAgentPackageName: 'com.hras.volunteer',
+                  ),
+                  if (isEmergency)
+                    CircleLayer(
+                      circles: [
+                        CircleMarker(
+                          point: const LatLng(24.86, 67.01),
+                          color: Colors.red.withValues(alpha: 0.4),
+                          borderColor: Colors.red,
+                          borderStrokeWidth: 2,
+                          useRadiusInMeter: true,
+                          radius: 2000,
                         ),
+                        CircleMarker(
+                          point: const LatLng(24.82, 67.05),
+                          color: Colors.green.withValues(alpha: 0.4),
+                          borderColor: Colors.green,
+                          borderStrokeWidth: 2,
+                          useRadiusInMeter: true,
+                          radius: 1500, // Safe Zone
+                        ),
+                      ],
+                    ),
+                  if (isEmergency)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: const LatLng(24.86, 67.01),
+                          child: const Icon(
+                            Icons.warning,
+                            color: Colors.red,
+                            size: 40,
+                          ),
+                        ),
+                        Marker(
+                          point: const LatLng(24.82, 67.05),
+                          child: const Icon(
+                            Icons.health_and_safety,
+                            color: Colors.green,
+                            size: 40,
+                          ),
+                        ),
+                      ],
+                    ),
+                  StreamBuilder<List<IncidentModel>>(
+                    stream: IncidentService().getActiveIncidents(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox();
+                      final incidents = snapshot.data!;
+                      return MarkerLayer(
+                        markers: incidents.map((incident) {
+                          return Marker(
+                            point: LatLng(
+                              incident.latitude,
+                              incident.longitude,
+                            ),
+                            width: 40,
+                            height: 40,
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Text(incident.title),
+                                    content: Text(
+                                      '${incident.description}\n\nReported by: ${incident.reportedByUserName}',
+                                    ),
+                                    actions: [
+                                      if (user?.isAdmin == true ||
+                                          user?.uid ==
+                                              incident.reportedByUserId)
+                                        TextButton(
+                                          onPressed: () {
+                                            IncidentService().resolveIncident(
+                                              incident.id,
+                                            );
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: const Text(
+                                            'Mark Resolved',
+                                            style: TextStyle(
+                                              color: AppColors.success,
+                                            ),
+                                          ),
+                                        ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          final url = Uri.parse(
+                                            'https://www.google.com/maps/dir/?api=1&destination=${incident.latitude},${incident.longitude}',
+                                          );
+                                          if (await canLaunchUrl(url)) {
+                                            await launchUrl(
+                                              url,
+                                              mode: LaunchMode
+                                                  .externalApplication,
+                                            );
+                                          } else {
+                                            if (ctx.mounted)
+                                              SnackbarHelper.showError(
+                                                ctx,
+                                                'Could not open Google Maps.',
+                                              );
+                                          }
+                                        },
+                                        child: const Text(
+                                          'Get Directions',
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: const Text('Close'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Colors.orange,
+                                size: 40,
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       );
-                    }).toList(),
-                  );
-                },
-              ),
-            ],
+                    },
+                  ),
+                ],
+              );
+            },
           ),
           if (isEmergency)
             Positioned(
@@ -160,7 +212,10 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                 ),
                 child: const Text(
                   'DANGER ZONE IDENTIFIED. AVOID RED AREAS. SEEK REFUGE IN GREEN ZONES.',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -171,7 +226,10 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
         onPressed: () => _showReportIncidentDialog(context, user),
         backgroundColor: Colors.orange,
         icon: const Icon(Icons.add_location, color: Colors.white),
-        label: const Text('Report Incident', style: TextStyle(color: Colors.white)),
+        label: const Text(
+          'Report Incident',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -188,41 +246,70 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: 'Title (e.g. Flooded Road)')),
+            TextField(
+              controller: titleCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Title (e.g. Flooded Road)',
+              ),
+            ),
             const SizedBox(height: 8),
-            TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Description')),
+            TextField(
+              controller: descCtrl,
+              decoration: const InputDecoration(labelText: 'Description'),
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (titleCtrl.text.isEmpty) return;
-              
+
               try {
                 // Get actual device location properly
-                bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                bool serviceEnabled =
+                    await Geolocator.isLocationServiceEnabled();
                 if (!serviceEnabled) {
-                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Please enable GPS/Location in your phone settings.');
+                  if (ctx.mounted)
+                    SnackbarHelper.showError(
+                      ctx,
+                      'Please enable GPS/Location in your phone settings.',
+                    );
                   return;
                 }
 
-                LocationPermission permission = await Geolocator.checkPermission();
+                LocationPermission permission =
+                    await Geolocator.checkPermission();
                 if (permission == LocationPermission.denied) {
                   permission = await Geolocator.requestPermission();
                   if (permission == LocationPermission.denied) {
-                    if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are denied');
+                    if (ctx.mounted)
+                      SnackbarHelper.showError(
+                        ctx,
+                        'Location permissions are denied',
+                      );
                     return;
                   }
                 }
-                
+
                 if (permission == LocationPermission.deniedForever) {
-                  if (ctx.mounted) SnackbarHelper.showError(ctx, 'Location permissions are permanently denied, we cannot request permissions.');
+                  if (ctx.mounted)
+                    SnackbarHelper.showError(
+                      ctx,
+                      'Location permissions are permanently denied, we cannot request permissions.',
+                    );
                   return;
                 }
 
-                if (ctx.mounted) SnackbarHelper.showSuccess(ctx, 'Fetching your live location... Please wait.');
-                
+                if (ctx.mounted)
+                  SnackbarHelper.showSuccess(
+                    ctx,
+                    'Fetching your live location... Please wait.',
+                  );
+
                 final pos = await Geolocator.getCurrentPosition(
                   desiredAccuracy: LocationAccuracy.high,
                   timeLimit: const Duration(seconds: 15), // don't hang forever
@@ -242,12 +329,18 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                 await service.reportIncident(incident);
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
-                  SnackbarHelper.showSuccess(ctx, 'Incident Reported Successfully!');
+                  SnackbarHelper.showSuccess(
+                    ctx,
+                    'Incident Reported Successfully!',
+                  );
                 }
               } catch (e) {
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
-                  SnackbarHelper.showError(ctx, 'Error getting location: ${e.toString()}');
+                  SnackbarHelper.showError(
+                    ctx,
+                    'An unexpected error occurred getting location. Please try again.',
+                  );
                 }
               }
             },

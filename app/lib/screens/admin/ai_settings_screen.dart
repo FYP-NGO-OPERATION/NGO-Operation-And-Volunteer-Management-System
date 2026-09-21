@@ -26,8 +26,13 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
 
   Future<void> _loadCurrentKey() async {
     try {
-      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
-      
+      final ngoId =
+          Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          ).user?.currentNgoId ??
+          'HRAS_DEFAULT_ID';
+
       final key = await GeminiConfigService.getApiKey(ngoId);
       if (mounted) {
         setState(() {
@@ -48,22 +53,37 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
   Future<void> _saveKey() async {
     final newKey = _keyController.text.trim();
     if (newKey.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('API Key cannot be empty')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('API Key cannot be empty')));
       return;
     }
 
     setState(() => _isLoading = true);
     try {
-      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
-      
+      final ngoId =
+          Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          ).user?.currentNgoId ??
+          'HRAS_DEFAULT_ID';
+
       await GeminiConfigService.setApiKey(ngoId, newKey);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('AI Key saved successfully! AI features are now active.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'AI Key saved successfully! AI features are now active.',
+            ),
+          ),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save key: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save key: $e')));
       }
     } finally {
       if (mounted) {
@@ -81,9 +101,7 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI Settings'),
-      ),
+      appBar: AppBar(title: const Text('AI Settings')),
       body: _isFetching
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -91,13 +109,18 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Gemini AI Configuration', style: AppTextStyles.titleLarge()),
+                  Text(
+                    'Gemini AI Configuration',
+                    style: AppTextStyles.titleLarge(),
+                  ),
                   AppSpacing.vGapMd,
                   Text(
                     'To prevent key leaks, the API key is not stored in the app code. '
                     'Enter your Gemini API key from Google AI Studio here. '
                     'This key will be securely stored in Firestore and used for all AI features like Chatbot, Receipt Scanner, and AI Insights.',
-                    style: AppTextStyles.bodyMedium(color: Colors.grey.shade600),
+                    style: AppTextStyles.bodyMedium(
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                   AppSpacing.vGapXl,
                   TextField(

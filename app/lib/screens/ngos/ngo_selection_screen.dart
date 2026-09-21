@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../../models/ngo_model.dart';
@@ -78,13 +80,16 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
 
           final user = Provider.of<AuthProvider>(context, listen: false).user;
           final allNgos = snapshot.data ?? [];
-          
+
           // Only show approved NGOs OR NGOs created by the current user
-          final ngos = allNgos.where((ngo) => 
-            ngo.status == 'approved' || 
-            (user != null && ngo.adminId == user.uid)
-          ).toList();
-          
+          final ngos = allNgos
+              .where(
+                (ngo) =>
+                    ngo.status == 'approved' ||
+                    (user != null && ngo.adminId == user.uid),
+              )
+              .toList();
+
           if (ngos.isEmpty) {
             return Center(
               child: Column(
@@ -92,13 +97,18 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
                 children: [
                   const Icon(Icons.business, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text('No NGOs registered yet.', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  const Text(
+                    'No NGOs registered yet.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const CreateNgoScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const CreateNgoScreen(),
+                        ),
                       );
                     },
                     child: const Text('Register the First NGO'),
@@ -137,7 +147,10 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 2),
+          border: Border.all(
+            color: primaryColor.withValues(alpha: 0.3),
+            width: 2,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -163,7 +176,10 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
                               base64Decode(ngo.logoUrl!.split(',').last),
                               fit: BoxFit.cover,
                             )
-                          : Image.network(ngo.logoUrl!, fit: BoxFit.cover),
+                          : CachedNetworkImage(
+                              imageUrl: ngo.logoUrl!,
+                              fit: BoxFit.cover,
+                            ),
                     )
                   : Icon(Icons.business, color: primaryColor, size: 30),
             ),
@@ -173,7 +189,10 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
               child: Text(
                 ngo.name,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -186,8 +205,8 @@ class _NgoSelectionScreenState extends State<NgoSelectionScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                ngo.status == 'pending' ? 'Pending Approval' : 'Enter', 
-                style: const TextStyle(color: Colors.white, fontSize: 12)
+                ngo.status == 'pending' ? 'Pending Approval' : 'Enter',
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
           ],

@@ -23,7 +23,11 @@ class LandingHeroSection extends StatelessWidget {
       decoration: const BoxDecoration(gradient: AppColors.heroGradient),
       child: Column(
         children: [
-          Icon(Icons.volunteer_activism, size: isMobile ? 56 : 72, color: Colors.white.withValues(alpha: 0.9)),
+          Icon(
+            Icons.volunteer_activism,
+            size: isMobile ? 56 : 72,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
           AppSpacing.vGapXl,
           Text(
             'Hamesha Rahein\nApke Saath',
@@ -38,7 +42,9 @@ class LandingHeroSection extends StatelessWidget {
             child: Text(
               'Join our community of volunteers and donors to deliver real, transparent impact where it matters most.',
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyLarge(color: Colors.white.withValues(alpha: 0.85)),
+              style: AppTextStyles.bodyLarge(
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxl + AppSpacing.sm),
@@ -48,26 +54,45 @@ class LandingHeroSection extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: [
               ElevatedButton.icon(
-                onPressed: () => Navigator.push(context, AppAnimations.slideUpRoute(const RegisterScreen())),
+                onPressed: () => Navigator.push(
+                  context,
+                  AppAnimations.slideUpRoute(const RegisterScreen()),
+                ),
                 icon: const Icon(Icons.favorite, size: 20),
-                label: Text('Become a Volunteer', style: AppTextStyles.button()),
+                label: Text(
+                  'Become a Volunteer',
+                  style: AppTextStyles.button(),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: AppColors.primaryDark,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.lg),
-                  shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xxl,
+                    vertical: AppSpacing.lg,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppTokens.borderRadiusMd,
+                  ),
                 ),
               ),
               OutlinedButton.icon(
-                onPressed: () => Navigator.push(context, AppAnimations.fadeRoute(const LoginScreen())),
+                onPressed: () => Navigator.push(
+                  context,
+                  AppAnimations.fadeRoute(const LoginScreen()),
+                ),
                 icon: const Icon(Icons.login, size: 20),
                 label: Text('Sign In', style: AppTextStyles.button()),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white54),
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.lg),
-                  shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xxl,
+                    vertical: AppSpacing.lg,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppTokens.borderRadiusMd,
+                  ),
                 ),
               ),
             ],

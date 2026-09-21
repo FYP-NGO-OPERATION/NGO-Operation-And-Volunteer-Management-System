@@ -24,11 +24,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _bioController = TextEditingController();
   final _addressController = TextEditingController();
   final _skillsController = TextEditingController();
-  
+
   String? _selectedBloodGroup;
-  final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Not Sure'];
+  final List<String> _bloodGroups = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+    'Not Sure',
+  ];
   bool _isBloodDonor = false;
-  
+
   bool _isLoading = false;
   Uint8List? _selectedImageBytes;
   final ImagePicker _picker = ImagePicker();
@@ -95,12 +105,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Upload image if selected
     if (_selectedImageBytes != null) {
-      final success = await authProvider.uploadProfilePicture(_selectedImageBytes!);
+      final success = await authProvider.uploadProfilePicture(
+        _selectedImageBytes!,
+      );
       if (!success) {
         if (!mounted) return;
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authProvider.error ?? 'Failed to upload profile picture.')),
+          SnackBar(
+            content: Text(
+              authProvider.error ?? 'Failed to upload profile picture.',
+            ),
+          ),
         );
         return; // Stop execution
       }
@@ -115,13 +131,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       bloodGroup: _selectedBloodGroup,
       isBloodDonor: _isBloodDonor,
     );
-    
+
     // Refresh user state
     await authProvider.checkAuthState();
 
     if (!mounted) return;
     setState(() => _isLoading = false);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully')),
     );
@@ -131,7 +147,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit Profile', style: AppTextStyles.titleLarge())),
+      appBar: AppBar(
+        title: Text('Edit Profile', style: AppTextStyles.titleLarge()),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -147,13 +165,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       backgroundColor: AppColors.primarySurface,
                       backgroundImage: _selectedImageBytes != null
                           ? MemoryImage(_selectedImageBytes!) as ImageProvider
-                          : (context.read<AuthProvider>().user?.profileImageUrl != null
-                              ? CachedNetworkImageProvider(context.read<AuthProvider>().user!.profileImageUrl!)
-                              : null),
-                      child: _selectedImageBytes == null && context.read<AuthProvider>().user?.profileImageUrl == null
+                          : (context
+                                        .read<AuthProvider>()
+                                        .user
+                                        ?.profileImageUrl !=
+                                    null
+                                ? CachedNetworkImageProvider(
+                                    context
+                                        .read<AuthProvider>()
+                                        .user!
+                                        .profileImageUrl!,
+                                  )
+                                : null),
+                      child:
+                          _selectedImageBytes == null &&
+                              context
+                                      .read<AuthProvider>()
+                                      .user
+                                      ?.profileImageUrl ==
+                                  null
                           ? Text(
-                              _nameController.text.isNotEmpty ? _nameController.text[0].toUpperCase() : 'U',
-                              style: const TextStyle(fontSize: 40, color: AppColors.primary),
+                              _nameController.text.isNotEmpty
+                                  ? _nameController.text[0].toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(
+                                fontSize: 40,
+                                color: AppColors.primary,
+                              ),
                             )
                           : null,
                     ),
@@ -165,7 +203,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: const CircleAvatar(
                           radius: 18,
                           backgroundColor: AppColors.primary,
-                          child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -177,19 +219,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 label: 'Full Name',
                 prefixIcon: Icons.person,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               AppSpacing.vGapLg,
               // Read-only email display
               InputDecorator(
                 decoration: const InputDecoration(
                   labelText: 'Email',
-                  prefixIcon: Icon(Icons.email, color: AppColors.textSecondary, size: 22),
+                  prefixIcon: Icon(
+                    Icons.email,
+                    color: AppColors.textSecondary,
+                    size: 22,
+                  ),
                   enabled: false,
                 ),
                 child: Text(
-                  Provider.of<AuthProvider>(context, listen: false).user?.email ?? '',
-                  style: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
+                  Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      ).user?.email ??
+                      '',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
               AppSpacing.vGapLg,
@@ -198,7 +252,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 label: 'Phone Number',
                 prefixIcon: Icons.phone,
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               AppSpacing.vGapLg,
               CustomTextField(
@@ -238,7 +293,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               AppSpacing.vGapLg,
               SwitchListTile(
                 title: const Text('Register as Blood Donor'),
-                subtitle: const Text('You will be notified during blood emergencies.'),
+                subtitle: const Text(
+                  'You will be notified during blood emergencies.',
+                ),
                 value: _isBloodDonor,
                 onChanged: (val) => setState(() => _isBloodDonor = val),
                 secondary: const Icon(Icons.favorite, color: Colors.red),

@@ -28,26 +28,35 @@ class CustomButton extends StatefulWidget {
   State<CustomButton> createState() => _CustomButtonState();
 }
 
-class _CustomButtonState extends State<CustomButton> with SingleTickerProviderStateMixin {
+class _CustomButtonState extends State<CustomButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pressCtrl;
   late Animation<double> _scale;
 
   @override
   void initState() {
     super.initState();
-    _pressCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
-    _scale = Tween(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut),
+    _pressCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
     );
+    _scale = Tween(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut));
   }
 
   @override
-  void dispose() { _pressCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _pressCtrl.dispose();
+    super.dispose();
+  }
 
   Widget _buildChild() {
     if (widget.isLoading) {
       return const SizedBox(
-        height: 20, width: 20,
+        height: 20,
+        width: 20,
         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
       );
     }
@@ -69,11 +78,16 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
     final disabled = widget.onPressed == null || widget.isLoading;
 
     final button = widget.isOutlined
-        ? OutlinedButton(onPressed: disabled ? null : widget.onPressed, child: _buildChild())
+        ? OutlinedButton(
+            onPressed: disabled ? null : widget.onPressed,
+            child: _buildChild(),
+          )
         : ElevatedButton(
             onPressed: disabled ? null : widget.onPressed,
             style: widget.backgroundColor != null
-                ? ElevatedButton.styleFrom(backgroundColor: widget.backgroundColor)
+                ? ElevatedButton.styleFrom(
+                    backgroundColor: widget.backgroundColor,
+                  )
                 : null,
             child: _buildChild(),
           );
@@ -84,7 +98,8 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
       onTapCancel: disabled ? null : () => _pressCtrl.reverse(),
       child: AnimatedBuilder(
         animation: _scale,
-        builder: (context, child) => Transform.scale(scale: _scale.value, child: child),
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
         child: SizedBox(
           width: widget.width ?? double.infinity,
           height: AppTokens.buttonHeightLg,

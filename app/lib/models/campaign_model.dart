@@ -6,6 +6,8 @@ class CampaignModel {
   final String id;
   final String title;
   final String description;
+  final String category; // e.g., "Ramadan", "Bakra Eid"
+  final int? projectSequenceNumber; // e.g., 1, 2, 3
   final CampaignType type;
   final CampaignStatus status;
   final DateTime startDate;
@@ -42,6 +44,8 @@ class CampaignModel {
     required this.id,
     required this.title,
     required this.description,
+    this.category = 'General',
+    this.projectSequenceNumber,
     required this.type,
     this.status = CampaignStatus.upcoming,
     required this.startDate,
@@ -81,6 +85,8 @@ class CampaignModel {
       id: map['id'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
+      category: map['category'] ?? 'General',
+      projectSequenceNumber: map['projectSequenceNumber'],
       type: CampaignType.fromString(map['type'] ?? 'custom'),
       status: CampaignStatus.fromString(map['status'] ?? 'upcoming'),
       startDate: (map['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -121,6 +127,8 @@ class CampaignModel {
       'id': id,
       'title': title,
       'description': description,
+      'category': category,
+      'projectSequenceNumber': projectSequenceNumber,
       'type': type.name,
       'status': status.name,
       'startDate': Timestamp.fromDate(startDate),
@@ -151,7 +159,9 @@ class CampaignModel {
       'ngoName': ngoName,
       'ngoId': ngoId,
       'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : FieldValue.serverTimestamp(),
+      'updatedAt': updatedAt != null
+          ? Timestamp.fromDate(updatedAt!)
+          : FieldValue.serverTimestamp(),
     };
   }
 
@@ -159,6 +169,8 @@ class CampaignModel {
   CampaignModel copyWith({
     String? title,
     String? description,
+    String? category,
+    int? projectSequenceNumber,
     CampaignType? type,
     CampaignStatus? status,
     DateTime? startDate,
@@ -191,6 +203,9 @@ class CampaignModel {
       id: id,
       title: title ?? this.title,
       description: description ?? this.description,
+      category: category ?? this.category,
+      projectSequenceNumber:
+          projectSequenceNumber ?? this.projectSequenceNumber,
       type: type ?? this.type,
       status: status ?? this.status,
       startDate: startDate ?? this.startDate,
@@ -232,10 +247,10 @@ class CampaignModel {
   double get remainingBudget => totalDonationsAmount - totalExpenses;
   bool get hasVolunteerLimit => volunteerLimit != null && volunteerLimit! > 0;
   bool get isFull => hasVolunteerLimit && totalVolunteers >= volunteerLimit!;
-  
+
   bool get isSuccessful {
     if (status != CampaignStatus.completed) return false;
-    
+
     // Check volunteer limit
     if (hasVolunteerLimit && totalVolunteers >= volunteerLimit!) return true;
 
@@ -253,5 +268,6 @@ class CampaignModel {
   }
 
   @override
-  String toString() => 'CampaignModel(id: $id, title: $title, status: ${status.label})';
+  String toString() =>
+      'CampaignModel(id: $id, title: $title, status: ${status.label})';
 }

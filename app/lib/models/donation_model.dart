@@ -16,28 +16,28 @@ class DonationModel {
 
   // ─── Donation Details ───
   final DonationCategory category;
-  final String quantity;          // "50 shirts", "20 ration packs"
-  final double amount;            // Total monetary value (Rs.)
-  final double amountCash;        // Cash / by hand amount
-  final double amountOnline;      // Online transfer amount
+  final String quantity; // "50 shirts", "20 ration packs"
+  final double amount; // Total monetary value (Rs.)
+  final double amountCash; // Cash / by hand amount
+  final double amountOnline; // Online transfer amount
   final PaymentMethod paymentMethod;
-  final String? purpose;          // Leader: "Purpose of donation"
+  final String? purpose; // Leader: "Purpose of donation"
   final String? description;
   final String? transactionId;
-  final String? txHash;           // Blockchain-simulated Tx Hash
-  final int? blockNumber;         // Blockchain-simulated Block Number
+  final String? txHash; // Blockchain-simulated Tx Hash
+  final int? blockNumber; // Blockchain-simulated Block Number
 
   // ─── UTXO Fund Allocation ───
-  final double remainingAmount;   // Unspent amount available for allocation
+  final double remainingAmount; // Unspent amount available for allocation
 
   // ─── Status & Privacy ───
   final DonationStatus status;
   final bool isAnonymous;
 
   // ─── Received By ───
-  final String receivedBy;        // User ID who collected it
-  final String receivedByName;    // Denormalized name
-  final DateTime receivedAt;      // When donation was received
+  final String receivedBy; // User ID who collected it
+  final String receivedByName; // Denormalized name
+  final DateTime receivedAt; // When donation was received
 
   // ─── Meta ───
   final DateTime createdAt;
@@ -67,8 +67,8 @@ class DonationModel {
     required this.receivedAt,
     double? remainingAmount,
     DateTime? createdAt,
-  })  : remainingAmount = remainingAmount ?? (amountCash + amountOnline),
-        createdAt = createdAt ?? DateTime.now();
+  }) : remainingAmount = remainingAmount ?? (amountCash + amountOnline),
+       createdAt = createdAt ?? DateTime.now();
 
   /// Total amount (cash + online)
   double get totalAmount => amountCash + amountOnline;
@@ -97,9 +97,10 @@ class DonationModel {
       receivedBy: map['receivedBy'] ?? '',
       receivedByName: map['receivedByName'] ?? '',
       receivedAt: (map['receivedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      remainingAmount: map['remainingAmount'] != null 
-          ? (map['remainingAmount'] as num).toDouble() 
-          : ((map['amountCash'] ?? 0).toDouble() + (map['amountOnline'] ?? 0).toDouble()),
+      remainingAmount: map['remainingAmount'] != null
+          ? (map['remainingAmount'] as num).toDouble()
+          : ((map['amountCash'] ?? 0).toDouble() +
+                (map['amountOnline'] ?? 0).toDouble()),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

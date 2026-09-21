@@ -28,6 +28,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController(text: 'General');
+  final _projectNumberController = TextEditingController();
   final _requiredSkillsController = TextEditingController();
   final _locationController = TextEditingController();
   final _targetGoalController = TextEditingController();
@@ -53,7 +55,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       label: 'videos',
       extensions: <String>['mp4', 'mov', 'avi'],
     );
-    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[typeGroup],
+    );
     if (file != null) {
       setState(() => _highlightVideo = File(file.path));
     }
@@ -73,7 +77,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       label: 'pdfs',
       extensions: <String>['pdf'],
     );
-    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[typeGroup],
+    );
     if (file != null) {
       setState(() => _projectRecordPdf = File(file.path));
     }
@@ -86,14 +92,17 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       final c = widget.campaign!;
       _titleController.text = c.title;
       _descriptionController.text = c.description;
+      _categoryController.text = c.category;
+      _projectNumberController.text = c.projectSequenceNumber?.toString() ?? '';
       _locationController.text = c.location;
       _latitudeController.text = c.latitude?.toString() ?? '';
       _longitudeController.text = c.longitude?.toString() ?? '';
       _requiredSkillsController.text = c.requiredSkills.join(', ');
       _targetGoalController.text = c.targetGoal;
       _itemsNeededController.text = c.itemsNeeded ?? '';
-      _volunteerLimitController.text =
-          c.volunteerLimit != null ? c.volunteerLimit.toString() : '';
+      _volunteerLimitController.text = c.volunteerLimit != null
+          ? c.volunteerLimit.toString()
+          : '';
       _selectedType = c.type;
       _selectedStatus = c.status;
       _startDate = c.startDate;
@@ -106,6 +115,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _categoryController.dispose();
+    _projectNumberController.dispose();
     _requiredSkillsController.dispose();
     _locationController.dispose();
     _targetGoalController.dispose();
@@ -119,7 +130,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   Future<void> _selectDate(bool isStart) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? _startDate : (_endDate ?? _startDate.add(const Duration(days: 7))),
+      initialDate: isStart
+          ? _startDate
+          : (_endDate ?? _startDate.add(const Duration(days: 7))),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
@@ -155,27 +168,45 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
+    final campaignProvider = Provider.of<CampaignProvider>(
+      context,
+      listen: false,
+    );
     final user = authProvider.user!;
 
     final volunteerLimit = _volunteerLimitController.text.isNotEmpty
         ? int.tryParse(_volunteerLimitController.text)
         : null;
 
-    final reqSkills = _requiredSkillsController.text.trim().isEmpty 
-        ? <String>[] 
-        : _requiredSkillsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    final reqSkills = _requiredSkillsController.text.trim().isEmpty
+        ? <String>[]
+        : _requiredSkillsController.text
+              .split(',')
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
 
     bool success;
 
     if (!_isEditing) {
-      if (_eventDate != null && _eventDate!.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event date cannot be in the past')));
+      if (_eventDate != null &&
+          _eventDate!.isBefore(
+            DateTime.now().subtract(const Duration(days: 1)),
+          )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event date cannot be in the past')),
+        );
         return;
       }
-      if (_endDate != null && _endDate!.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+      if (_endDate != null &&
+          _endDate!.isBefore(
+            DateTime.now().subtract(const Duration(days: 1)),
+          )) {
         _selectedStatus = CampaignStatus.completed;
-      } else if (_endDate == null && _startDate.isBefore(DateTime.now().subtract(const Duration(days: 7)))) {
+      } else if (_endDate == null &&
+          _startDate.isBefore(
+            DateTime.now().subtract(const Duration(days: 7)),
+          )) {
         // If no end date but started more than 7 days ago, assume completed for historical entry
         _selectedStatus = CampaignStatus.completed;
       } else if (_startDate.isBefore(DateTime.now())) {
@@ -187,6 +218,12 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       final updated = widget.campaign!.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        category: _categoryController.text.trim().isNotEmpty
+            ? _categoryController.text.trim()
+            : 'General',
+        projectSequenceNumber: int.tryParse(
+          _projectNumberController.text.trim(),
+        ),
         type: _selectedType,
         status: _selectedStatus,
         startDate: _startDate,
@@ -209,6 +246,12 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         ngoId: user.currentNgoId ?? 'HRAS_DEFAULT_ID',
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        category: _categoryController.text.trim().isNotEmpty
+            ? _categoryController.text.trim()
+            : 'General',
+        projectSequenceNumber: int.tryParse(
+          _projectNumberController.text.trim(),
+        ),
         type: _selectedType,
         status: _selectedStatus,
         startDate: _startDate,
@@ -272,6 +315,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     CampaignBasicForm(
                       titleController: _titleController,
                       descriptionController: _descriptionController,
+                      categoryController: _categoryController,
+                      projectNumberController: _projectNumberController,
                       requiredSkillsController: _requiredSkillsController,
                       selectedType: _selectedType,
                       onTypeChanged: (v) => setState(() => _selectedType = v!),
@@ -291,11 +336,12 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                       onSelectEventDate: _selectEventDate,
                       isEditing: _isEditing,
                       selectedStatus: _selectedStatus,
-                      onStatusChanged: (v) => setState(() => _selectedStatus = v!),
+                      onStatusChanged: (v) =>
+                          setState(() => _selectedStatus = v!),
                       onClearEndDate: () => setState(() => _endDate = null),
                       onClearEventDate: () => setState(() => _eventDate = null),
                     ),
-                    if (!_isEditing) 
+                    if (!_isEditing)
                       CampaignMediaPicker(
                         highlightVideo: _highlightVideo,
                         projectRecordPdf: _projectRecordPdf,
@@ -303,14 +349,17 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                         onPickVideo: _pickVideo,
                         onPickPdf: _pickPdf,
                         onPickGalleryImages: _pickGalleryImages,
-                        onRemoveGalleryImage: (index) => setState(() => _galleryImages.removeAt(index)),
+                        onRemoveGalleryImage: (index) =>
+                            setState(() => _galleryImages.removeAt(index)),
                       ),
                     const SizedBox(height: 12),
                     // ─── Save Button ───
                     Consumer<CampaignProvider>(
                       builder: (context, provider, _) {
                         return CustomButton(
-                          text: _isEditing ? 'Update Campaign' : 'Create Campaign',
+                          text: _isEditing
+                              ? 'Update Campaign'
+                              : 'Create Campaign',
                           isLoading: provider.isLoading,
                           onPressed: _saveCampaign,
                         );

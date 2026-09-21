@@ -33,7 +33,8 @@ class SessionDetailsScreen extends StatelessWidget {
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             Padding(
@@ -41,37 +42,54 @@ class SessionDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(session.title, style: AppTextStyles.headlineSmall().copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      if (session.secretCode != null)
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.lock, color: AppColors.warning),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Verification Code: ${session.secretCode}',
-                                  style: AppTextStyles.titleSmall().copyWith(color: AppColors.warning),
-                                ),
-                              ),
-                            ],
-                          ),
+                  Text(
+                    session.title,
+                    style: AppTextStyles.headlineSmall().copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (session.secretCode != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.3),
                         ),
-                      const SizedBox(height: 16),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lock, color: AppColors.warning),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Verification Code: ${session.secretCode}',
+                              style: AppTextStyles.titleSmall().copyWith(
+                                color: AppColors.warning,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Icon(Icons.event, color: AppColors.primary, size: 20),
+                      const Icon(
+                        Icons.event,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('EEEE, MMM d, yyyy • hh:mm a').format(session.sessionDate),
-                        style: AppTextStyles.bodyLarge(color: AppColors.primary),
+                        DateFormat(
+                          'EEEE, MMM d, yyyy • hh:mm a',
+                        ).format(session.sessionDate),
+                        style: AppTextStyles.bodyLarge(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -101,7 +119,10 @@ class SessionDetailsScreen extends StatelessWidget {
           children: [
             const Icon(Icons.people_outline, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
-            Text(emptyMessage, style: AppTextStyles.bodyLarge(color: Colors.grey)),
+            Text(
+              emptyMessage,
+              style: AppTextStyles.bodyLarge(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -119,10 +140,16 @@ class SessionDetailsScreen extends StatelessWidget {
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-            child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : '?', style: const TextStyle(color: AppColors.primary)),
+            child: Text(
+              userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+              style: const TextStyle(color: AppColors.primary),
+            ),
           ),
           title: Text(userName, style: AppTextStyles.titleMedium()),
-          subtitle: Text('ID: $userId', style: AppTextStyles.caption(color: Colors.grey)),
+          subtitle: Text(
+            'ID: $userId',
+            style: AppTextStyles.caption(color: Colors.grey),
+          ),
         );
       },
     );

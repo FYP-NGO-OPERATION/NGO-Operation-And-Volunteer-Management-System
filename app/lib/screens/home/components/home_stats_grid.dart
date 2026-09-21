@@ -30,29 +30,33 @@ class HomeStatsGrid extends StatelessWidget {
           childAspectRatio: Responsive.isMobile(context) ? 1.15 : 1.6,
           children: [
             _buildStatCard(
-                context,
-                'active_campaigns'.tr(),
-                '${campaignProvider.activeCampaigns}',
-                Icons.campaign,
-                AppColors.info),
+              context,
+              'active_campaigns'.tr(),
+              '${campaignProvider.activeCampaigns}',
+              Icons.campaign,
+              AppColors.info,
+            ),
             _buildStatCard(
-                context,
-                'donations'.tr(),
-                'Rs.${_formatCompact(campaignProvider.totalDonationsOverall)}',
-                Icons.volunteer_activism,
-                AppColors.warning),
+              context,
+              'donations'.tr(),
+              'Rs.${_formatCompact(campaignProvider.totalDonationsOverall)}',
+              Icons.volunteer_activism,
+              AppColors.warning,
+            ),
             _buildStatCard(
-                context,
-                'families_helped'.tr(),
-                '${campaignProvider.totalBeneficiariesOverall}',
-                Icons.family_restroom,
-                AppColors.success),
+              context,
+              'families_helped'.tr(),
+              '${campaignProvider.totalBeneficiariesOverall}',
+              Icons.family_restroom,
+              AppColors.success,
+            ),
             _buildStatCard(
-                context,
-                'items_distributed'.tr(),
-                '${campaignProvider.totalItemsDistributedOverall}',
-                Icons.inventory_2,
-                AppColors.primary),
+              context,
+              'items_distributed'.tr(),
+              '${campaignProvider.totalItemsDistributedOverall}',
+              Icons.inventory_2,
+              AppColors.primary,
+            ),
           ],
         ),
       ],
@@ -63,22 +67,34 @@ class HomeStatsGrid extends StatelessWidget {
   String _formatCompact(double value) {
     if (value >= 1000000) {
       final m = value / 1000000;
-      return m == m.roundToDouble() ? '${m.toInt()}M' : '${m.toStringAsFixed(1)}M';
+      return m == m.roundToDouble()
+          ? '${m.toInt()}M'
+          : '${m.toStringAsFixed(1)}M';
     } else if (value >= 1000) {
       final k = value / 1000;
-      return k == k.roundToDouble() ? '${k.toInt()}K' : '${k.toStringAsFixed(1)}K';
+      return k == k.roundToDouble()
+          ? '${k.toInt()}K'
+          : '${k.toStringAsFixed(1)}K';
     }
     return value.toStringAsFixed(0);
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: AppTokens.borderRadiusMd,
-        border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+        border: Border.all(
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
         boxShadow: AppTokens.shadowSoft,
       ),
       child: Column(
@@ -100,11 +116,15 @@ class HomeStatsGrid extends StatelessWidget {
             child: Text(value, style: AppTextStyles.statValue(color: color)),
           ),
           AppSpacing.vGapXs,
-          Text(title,
-              style: AppTextStyles.caption(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-              overflow: TextOverflow.ellipsis),
+          Text(
+            title,
+            style: AppTextStyles.caption(
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../providers/campaign_provider.dart';
 import '../../models/campaign_model.dart';
 import '../../config/app_colors.dart';
+import '../../widgets/campaign_card.dart';
 import 'campaign_detail_screen.dart';
 
 class CampaignCalendarScreen extends StatefulWidget {
@@ -34,11 +35,16 @@ class _CampaignCalendarScreenState extends State<CampaignCalendarScreen> {
   }
 
   List<CampaignModel> _getEventsForDay(DateTime day) {
-    final campaigns = Provider.of<CampaignProvider>(context, listen: false).campaigns;
+    final campaigns = Provider.of<CampaignProvider>(
+      context,
+      listen: false,
+    ).campaigns;
     return campaigns.where((campaign) {
       return isSameDay(campaign.startDate, day) ||
           (campaign.endDate != null &&
-              day.isAfter(campaign.startDate.subtract(const Duration(days: 1))) &&
+              day.isAfter(
+                campaign.startDate.subtract(const Duration(days: 1)),
+              ) &&
               day.isBefore(campaign.endDate!.add(const Duration(days: 1))));
     }).toList();
   }
@@ -58,9 +64,15 @@ class _CampaignCalendarScreenState extends State<CampaignCalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campaign Calendar'),
+        title: const Text(
+          'Campaign Calendar',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
+      extendBodyBehindAppBar: false,
       body: Column(
         children: [
           Consumer<CampaignProvider>(
@@ -75,11 +87,30 @@ class _CampaignCalendarScreenState extends State<CampaignCalendarScreen> {
                   return provider.campaigns.where((campaign) {
                     return isSameDay(campaign.startDate, day) ||
                         (campaign.endDate != null &&
-                            day.isAfter(campaign.startDate.subtract(const Duration(days: 1))) &&
-                            day.isBefore(campaign.endDate!.add(const Duration(days: 1))));
+                            day.isAfter(
+                              campaign.startDate.subtract(
+                                const Duration(days: 1),
+                              ),
+                            ) &&
+                            day.isBefore(
+                              campaign.endDate!.add(const Duration(days: 1)),
+                            ));
                   }).toList();
                 },
                 startingDayOfWeek: StartingDayOfWeek.monday,
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: true,
+                  titleCentered: true,
+                  formatButtonDecoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  formatButtonTextStyle: const TextStyle(color: Colors.white),
+                  titleTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
                 calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
                   markerDecoration: BoxDecoration(
@@ -87,7 +118,7 @@ class _CampaignCalendarScreenState extends State<CampaignCalendarScreen> {
                     shape: BoxShape.circle,
                   ),
                   todayDecoration: BoxDecoration(
-                    color: AppColors.primaryLight.withOpacity(0.5),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   selectedDecoration: BoxDecoration(
@@ -117,51 +148,39 @@ class _CampaignCalendarScreenState extends State<CampaignCalendarScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.event_busy, size: 64, color: Colors.grey.shade400),
+                        Icon(
+                          Icons.event_busy,
+                          size: 64,
+                          color: Colors.grey.shade400,
+                        ),
                         const SizedBox(height: 16),
-                        Text('No campaigns on this day', style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+                        Text(
+                          'No campaigns on this day',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   );
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(bottom: 16),
                   itemCount: value.length,
                   itemBuilder: (context, index) {
                     final campaign = value[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 2,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(16),
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.primary.withOpacity(0.1),
-                          child: Text(campaign.type.icon),
-                        ),
-                        title: Text(campaign.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                                const SizedBox(width: 4),
-                                Expanded(child: Text(campaign.location, style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis)),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${DateFormat('MMM dd').format(campaign.startDate)} ${campaign.endDate != null ? '- ${DateFormat('MMM dd').format(campaign.endDate!)}' : ''}',
-                              style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: CampaignCard(
+                        campaign: campaign,
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => CampaignDetailScreen(campaign: campaign)),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CampaignDetailScreen(campaign: campaign),
+                            ),
                           );
                         },
                       ),

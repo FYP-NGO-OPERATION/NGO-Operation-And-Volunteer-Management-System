@@ -45,9 +45,10 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -59,8 +60,12 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.12);
-    final highlightColor = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.22);
+    final baseColor = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.grey.withValues(alpha: 0.12);
+    final highlightColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.grey.withValues(alpha: 0.22);
 
     return AnimatedBuilder(
       animation: _animation,
@@ -96,10 +101,14 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
                         ),
                       ),
                     ...List.generate(widget.lines, (i) {
-                      final widthFactor = i == widget.lines - 1 ? 0.6 : (i == 0 ? 0.85 : 0.95);
+                      final widthFactor = i == widget.lines - 1
+                          ? 0.6
+                          : (i == 0 ? 0.85 : 0.95);
                       return Container(
                         height: 14,
-                        width: widget.width != null ? widget.width! * widthFactor : null,
+                        width: widget.width != null
+                            ? widget.width! * widthFactor
+                            : null,
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                         decoration: BoxDecoration(
                           color: color,
@@ -140,9 +149,10 @@ class _SkeletonCardState extends State<_SkeletonCard>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -154,8 +164,12 @@ class _SkeletonCardState extends State<_SkeletonCard>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.12);
-    final highlightColor = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.22);
+    final baseColor = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.grey.withValues(alpha: 0.12);
+    final highlightColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.grey.withValues(alpha: 0.22);
 
     return AnimatedBuilder(
       animation: _animation,
@@ -166,7 +180,9 @@ class _SkeletonCardState extends State<_SkeletonCard>
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkCardBg : Colors.white,
             borderRadius: AppTokens.borderRadiusMd,
-            border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+            border: Border.all(
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +192,9 @@ class _SkeletonCardState extends State<_SkeletonCard>
                 height: 160,
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTokens.radiusMd)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppTokens.radiusMd),
+                  ),
                 ),
               ),
               Padding(
@@ -184,11 +202,32 @@ class _SkeletonCardState extends State<_SkeletonCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(height: 16, width: 200, decoration: BoxDecoration(color: color, borderRadius: AppTokens.borderRadiusSm)),
+                    Container(
+                      height: 16,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: AppTokens.borderRadiusSm,
+                      ),
+                    ),
                     AppSpacing.vGapSm,
-                    Container(height: 12, width: 280, decoration: BoxDecoration(color: color, borderRadius: AppTokens.borderRadiusSm)),
+                    Container(
+                      height: 12,
+                      width: 280,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: AppTokens.borderRadiusSm,
+                      ),
+                    ),
                     AppSpacing.vGapMd,
-                    Container(height: 10, width: 120, decoration: BoxDecoration(color: color, borderRadius: AppTokens.borderRadiusSm)),
+                    Container(
+                      height: 10,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: AppTokens.borderRadiusSm,
+                      ),
+                    ),
                   ],
                 ),
               ),

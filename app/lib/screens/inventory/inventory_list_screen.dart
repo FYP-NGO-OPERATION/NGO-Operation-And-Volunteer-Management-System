@@ -20,15 +20,14 @@ class InventoryListScreen extends StatelessWidget {
     if (currentNgo == null) {
       return Scaffold(
         appBar: AppBar(title: Text('inventory'.tr())),
-        body: const Center(child: Text('Please select an NGO workspace first.')),
+        body: const Center(
+          child: Text('Please select an NGO workspace first.'),
+        ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('inventory'.tr()),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text('inventory'.tr()), centerTitle: true),
       body: StreamBuilder<List<InventoryItemModel>>(
         stream: InventoryService().getInventoryStream(currentNgo.id),
         builder: (context, snapshot) {
@@ -38,17 +37,26 @@ class InventoryListScreen extends StatelessWidget {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          
+
           final items = snapshot.data ?? [];
-          
+
           if (items.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.inventory_2_outlined, size: 64, color: AppColors.neutral500),
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 64,
+                    color: AppColors.neutral500,
+                  ),
                   const SizedBox(height: 16),
-                  Text('no_inventory'.tr(), style: AppTextStyles.titleMedium(color: AppColors.neutral500)),
+                  Text(
+                    'no_inventory'.tr(),
+                    style: AppTextStyles.titleMedium(
+                      color: AppColors.neutral500,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -64,9 +72,15 @@ class InventoryListScreen extends StatelessWidget {
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    child: const Icon(Icons.inventory, color: AppColors.primary),
+                    child: const Icon(
+                      Icons.inventory,
+                      color: AppColors.primary,
+                    ),
                   ),
-                  title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(
+                    item.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   subtitle: Text(item.description ?? ''),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -74,9 +88,19 @@ class InventoryListScreen extends StatelessWidget {
                     children: [
                       Text(
                         '${item.quantity}',
-                        style: AppTextStyles.titleMedium(color: item.quantity > 0 ? AppColors.success : AppColors.error),
+                        style: AppTextStyles.titleMedium(
+                          color: item.quantity > 0
+                              ? AppColors.success
+                              : AppColors.error,
+                        ),
                       ),
-                      Text(item.unit, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        item.unit,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                   onTap: () {

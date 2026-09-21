@@ -27,23 +27,31 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   bool _isLoading = false;
   late final GenerativeModel _model;
   // Real AI mode active for FYP presentation
-  final bool _useMockAI = false; 
+  final bool _useMockAI = false;
 
   @override
   void initState() {
     super.initState();
     _initializeModel();
-    
+
     // Initial greeting
-    _messages.add(ChatMessage(
-      text: "Hello! I am your AI Assistant. How can I help you with campaigns, donations, or volunteer guidelines today?", 
-      isUser: false
-    ));
+    _messages.add(
+      ChatMessage(
+        text:
+            "Hello! I am your AI Assistant. How can I help you with campaigns, donations, or volunteer guidelines today?",
+        isUser: false,
+      ),
+    );
   }
 
   Future<void> _initializeModel() async {
     if (!_useMockAI) {
-      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+      final ngoId =
+          Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          ).user?.currentNgoId ??
+          'HRAS_DEFAULT_ID';
       final apiKey = await GeminiConfigService.getApiKey(ngoId);
       _model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
     }
@@ -65,19 +73,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         // Mock AI logic for FYP presentation
         await Future.delayed(const Duration(seconds: 2));
         if (text.toLowerCase().contains('campaign')) {
-          responseText = "We currently have 3 active campaigns: Education Drive, Flood Relief, and Food Distribution. Would you like to see them?";
+          responseText =
+              "We currently have 3 active campaigns: Education Drive, Flood Relief, and Food Distribution. Would you like to see them?";
         } else if (text.toLowerCase().contains('blood')) {
-          responseText = "You can register your blood group in your profile. If there's an emergency, the admin will notify you immediately.";
+          responseText =
+              "You can register your blood group in your profile. If there's an emergency, the admin will notify you immediately.";
         } else if (text.toLowerCase().contains('urdu')) {
-          responseText = "جی ہاں، میں اردو میں بھی بات کر سکتا ہوں۔ آپ کو کس قسم کی مدد چاہیے؟";
+          responseText =
+              "جی ہاں، میں اردو میں بھی بات کر سکتا ہوں۔ آپ کو کس قسم کی مدد چاہیے؟";
         } else {
-          responseText = "That's a great question! As an AI, I suggest checking the 'Campaigns' tab for more active opportunities.";
+          responseText =
+              "That's a great question! As an AI, I suggest checking the 'Campaigns' tab for more active opportunities.";
         }
       } else {
         // Real Gemini API call
         final content = [Content.text(text)];
         final response = await _model.generateContent(content);
-        responseText = response.text ?? 'Sorry, I could not generate a response.';
+        responseText =
+            response.text ?? 'Sorry, I could not generate a response.';
       }
 
       setState(() {
@@ -85,7 +98,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       });
     } catch (e) {
       setState(() {
-        _messages.add(ChatMessage(text: "Error: Could not reach AI service.", isUser: false));
+        _messages.add(
+          ChatMessage(
+            text: "Error: Could not reach AI service.",
+            isUser: false,
+          ),
+        );
       });
     } finally {
       setState(() {
@@ -118,15 +136,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               itemBuilder: (context, index) {
                 final msg = _messages[index];
                 return Align(
-                  alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: msg.isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
+                    ),
                     decoration: BoxDecoration(
-                      color: msg.isUser 
-                          ? AppColors.primary 
-                          : (isDark ? AppColors.darkSurface : Colors.grey.shade200),
+                      color: msg.isUser
+                          ? AppColors.primary
+                          : (isDark
+                                ? AppColors.darkSurface
+                                : Colors.grey.shade200),
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
@@ -137,7 +164,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     child: Text(
                       msg.text,
                       style: TextStyle(
-                        color: msg.isUser ? Colors.white : (isDark ? Colors.white : Colors.black87),
+                        color: msg.isUser
+                            ? Colors.white
+                            : (isDark ? Colors.white : Colors.black87),
                         fontSize: 16,
                       ),
                     ),
@@ -152,7 +181,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               child: Row(
                 children: [
                   SizedBox(width: 16),
-                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                   SizedBox(width: 8),
                   Text('AI is typing...'),
                 ],
@@ -172,7 +205,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
@@ -184,7 +220,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       icon: const Icon(Icons.send, color: Colors.white),
                       onPressed: _sendMessage,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

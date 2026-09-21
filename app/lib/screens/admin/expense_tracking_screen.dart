@@ -17,7 +17,7 @@ class ExpenseTrackingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final campaignService = CampaignService();
-    
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -36,48 +36,62 @@ class ExpenseTrackingScreen extends StatelessWidget {
             Expanded(
               child: StreamBuilder<List<ExpenseModel>>(
                 stream: campaignService.getExpensesStream(campaign.id),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No expenses recorded yet.'));
-                }
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('No expenses recorded yet.'),
+                    );
+                  }
 
-                final approved = snapshot.data!.where((e) => e.status == 'approved').toList();
-                final pending = snapshot.data!.where((e) => e.status == 'pending').toList();
+                  final approved = snapshot.data!
+                      .where((e) => e.status == 'approved')
+                      .toList();
+                  final pending = snapshot.data!
+                      .where((e) => e.status == 'pending')
+                      .toList();
 
-                return TabBarView(
-                  children: [
-                    _buildExpenseList(approved, false, campaignService),
-                    _buildExpenseList(pending, true, campaignService),
-                  ],
-                );
-              },
+                  return TabBarView(
+                    children: [
+                      _buildExpenseList(approved, false, campaignService),
+                      _buildExpenseList(pending, true, campaignService),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddExpenseScreen(campaignId: campaign.id),
-            ),
-          );
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Expense'),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddExpenseScreen(campaignId: campaign.id),
+              ),
+            );
+          },
+          icon: const Icon(Icons.add),
+          label: const Text('Add Expense'),
           backgroundColor: AppColors.primary,
         ),
       ),
     );
   }
 
-  Widget _buildExpenseList(List<ExpenseModel> expenses, bool isPending, CampaignService service) {
+  Widget _buildExpenseList(
+    List<ExpenseModel> expenses,
+    bool isPending,
+    CampaignService service,
+  ) {
     if (expenses.isEmpty) {
-      return Center(child: Text(isPending ? 'No pending requests.' : 'No approved expenses.'));
+      return Center(
+        child: Text(
+          isPending ? 'No pending requests.' : 'No approved expenses.',
+        ),
+      );
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -91,7 +105,10 @@ class ExpenseTrackingScreen extends StatelessWidget {
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               child: Text(expense.category.icon),
             ),
-            title: Text(expense.itemName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              expense.itemName,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text(
               '${DateFormat('MMM dd, yyyy').format(expense.createdAt)}\nBy: ${expense.addedByName}',
             ),
@@ -100,25 +117,43 @@ class ExpenseTrackingScreen extends StatelessWidget {
               children: [
                 if (isPending)
                   IconButton(
-                    icon: const Icon(Icons.check_circle, color: AppColors.success),
+                    icon: const Icon(
+                      Icons.check_circle,
+                      color: AppColors.success,
+                    ),
                     onPressed: () {
-                      final service = CampaignService(); // In real app, create update method
+                      final service =
+                          CampaignService(); // In real app, create update method
                       // For FYP, we simulate update by deleting and re-adding, or updating via a new updateExpense method
                       // assuming updateExpense exists, we will call it.
-                      FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).collection('expenses').doc(expense.id).update({'status': 'approved'});
+                      FirebaseFirestore.instance
+                          .collection('campaigns')
+                          .doc(campaign.id)
+                          .collection('expenses')
+                          .doc(expense.id)
+                          .update({'status': 'approved'});
                     },
                   ),
                 if (isPending)
                   IconButton(
                     icon: const Icon(Icons.cancel, color: AppColors.error),
                     onPressed: () {
-                      FirebaseFirestore.instance.collection('campaigns').doc(campaign.id).collection('expenses').doc(expense.id).update({'status': 'rejected'});
+                      FirebaseFirestore.instance
+                          .collection('campaigns')
+                          .doc(campaign.id)
+                          .collection('expenses')
+                          .doc(expense.id)
+                          .update({'status': 'rejected'});
                     },
                   ),
                 if (!isPending)
                   Text(
                     'Rs. ${NumberFormat('#,##0').format(expense.totalAmount)}',
-                    style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
               ],
             ),
@@ -139,8 +174,16 @@ class ExpenseTrackingScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _summaryItem('Total Raised', campaign.totalDonationsAmount, AppColors.success),
-              _summaryItem('Total Spent', campaign.totalExpenses, AppColors.error),
+              _summaryItem(
+                'Total Raised',
+                campaign.totalDonationsAmount,
+                AppColors.success,
+              ),
+              _summaryItem(
+                'Total Spent',
+                campaign.totalExpenses,
+                AppColors.error,
+              ),
             ],
           ),
         ),

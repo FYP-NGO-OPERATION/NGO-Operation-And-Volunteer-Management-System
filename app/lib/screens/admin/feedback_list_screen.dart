@@ -15,9 +15,7 @@ class FeedbackListScreen extends StatelessWidget {
     final feedbackService = FeedbackService();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Volunteer Feedback'),
-      ),
+      appBar: AppBar(title: const Text('Volunteer Feedback')),
       body: StreamBuilder<List<FeedbackModel>>(
         stream: feedbackService.streamCampaignFeedbacks(campaign.id),
         builder: (context, snapshot) {
@@ -29,7 +27,9 @@ class FeedbackListScreen extends StatelessWidget {
           }
 
           final feedbacks = snapshot.data!;
-          final avgRating = feedbacks.map((f) => f.rating).reduce((a, b) => a + b) / feedbacks.length;
+          final avgRating =
+              feedbacks.map((f) => f.rating).reduce((a, b) => a + b) /
+              feedbacks.length;
 
           return Column(
             children: [
@@ -41,20 +41,29 @@ class FeedbackListScreen extends StatelessWidget {
                   children: [
                     Text(
                       avgRating.toStringAsFixed(1),
-                      style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primary),
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (index) {
                         return Icon(
-                          index < avgRating.round() ? Icons.star : Icons.star_border,
+                          index < avgRating.round()
+                              ? Icons.star
+                              : Icons.star_border,
                           color: Colors.amber,
                           size: 32,
                         );
                       }),
                     ),
                     const SizedBox(height: 8),
-                    Text('Based on ${feedbacks.length} reviews', style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      'Based on ${feedbacks.length} reviews',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               ),
@@ -69,16 +78,31 @@ class FeedbackListScreen extends StatelessWidget {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundColor: AppColors.primary,
-                        child: Text(feedback.volunteerName[0].toUpperCase(), style: const TextStyle(color: Colors.white)),
+                        child: Text(
+                          feedback.volunteerName[0].toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(feedback.volunteerName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                            feedback.volunteerName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           Row(
                             children: [
-                              Text(feedback.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.bold)),
-                              const Icon(Icons.star, color: Colors.amber, size: 16),
+                              Text(
+                                feedback.rating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
                             ],
                           ),
                         ],
@@ -90,8 +114,13 @@ class FeedbackListScreen extends StatelessWidget {
                           Text(feedback.comment),
                           const SizedBox(height: 4),
                           Text(
-                            DateFormat('MMM dd, yyyy').format(feedback.createdAt),
-                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            DateFormat(
+                              'MMM dd, yyyy',
+                            ).format(feedback.createdAt),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),

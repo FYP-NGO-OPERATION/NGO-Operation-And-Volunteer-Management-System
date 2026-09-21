@@ -11,12 +11,12 @@
 ///     flutter run --dart-define=APP_PHASE=FULL
 ///
 /// If no --dart-define is passed, defaults to FYP1 (safe for defense).
-/// 
+///
 /// VIVA PREP EXPLANATION:
 /// Q: Why use Feature Flags?
-/// A: Instead of creating 3 different projects or making messy Git branches, 
-/// we use "--dart-define" to inject a compile-time variable. This allows us 
-/// to hide advanced FYP-2 features during the FYP-1 defense so the app doesn't crash 
+/// A: Instead of creating 3 different projects or making messy Git branches,
+/// we use "--dart-define" to inject a compile-time variable. This allows us
+/// to hide advanced FYP-2 features during the FYP-1 defense so the app doesn't crash
 /// if the backend isn't fully ready yet. It is a standard industry practice.
 class FeatureFlags {
   FeatureFlags._(); // Prevent instantiation

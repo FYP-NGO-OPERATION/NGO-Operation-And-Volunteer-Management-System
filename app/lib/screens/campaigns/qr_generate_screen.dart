@@ -25,7 +25,8 @@ class QrGenerateScreen extends StatefulWidget {
   State<QrGenerateScreen> createState() => _QrGenerateScreenState();
 }
 
-class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerProviderStateMixin {
+class _QrGenerateScreenState extends State<QrGenerateScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -36,7 +37,7 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -58,7 +59,10 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Scan for Attendance', style: AppTextStyles.titleLarge().copyWith(color: Colors.white)),
+        title: Text(
+          'Scan for Attendance',
+          style: AppTextStyles.titleLarge().copyWith(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -67,18 +71,19 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: AppColors.heroGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppColors.heroGradient),
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.lg,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 AppSpacing.vGapXl,
-                
+
                 // Animated Glowing Background behind QR
                 Stack(
                   alignment: Alignment.center,
@@ -106,24 +111,25 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                         );
                       },
                     ),
-                    
+
                     // Glassmorphism Card containing QR
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                    SizedBox(
+                      child: SizedBox(
                         child: Container(
                           padding: const EdgeInsets.all(AppSpacing.xxl),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(32),
-                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1.5,
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 30,
                                 spreadRadius: 5,
-                              )
+                              ),
                             ],
                           ),
                           child: Column(
@@ -140,7 +146,7 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                                 overflow: TextOverflow.ellipsis,
                               ),
                               AppSpacing.vGapLg,
-                              
+
                               // Actual QR Code
                               Container(
                                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -152,7 +158,7 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                                       color: Colors.black.withOpacity(0.2),
                                       blurRadius: 15,
                                       offset: const Offset(0, 8),
-                                    )
+                                    ),
                                   ],
                                 ),
                                 child: QrImageView(
@@ -160,10 +166,13 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                                   version: QrVersions.auto,
                                   size: 240,
                                   backgroundColor: Colors.white,
-                                  embeddedImage: const AssetImage('assets/images/logo.png'),
-                                  embeddedImageStyle: const QrEmbeddedImageStyle(
-                                    size: Size(50, 50),
+                                  embeddedImage: const AssetImage(
+                                    'assets/images/logo.png',
                                   ),
+                                  embeddedImageStyle:
+                                      const QrEmbeddedImageStyle(
+                                        size: Size(50, 50),
+                                      ),
                                   errorCorrectionLevel: QrErrorCorrectLevel.H,
                                   eyeStyle: const QrEyeStyle(
                                     eyeShape: QrEyeShape.square,
@@ -175,16 +184,22 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                                   ),
                                 ),
                               ),
-                              
+
                               AppSpacing.vGapLg,
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.qr_code_scanner, color: Colors.white70, size: 20),
+                                  const Icon(
+                                    Icons.qr_code_scanner,
+                                    color: Colors.white70,
+                                    size: 20,
+                                  ),
                                   AppSpacing.hGapSm,
                                   Text(
                                     'Ready to scan',
-                                    style: AppTextStyles.bodyMedium(color: Colors.white70),
+                                    style: AppTextStyles.bodyMedium(
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -195,20 +210,20 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                     ),
                   ],
                 ),
-                
+
                 AppSpacing.vGapXxl,
-                
+
                 // Instructions Card (Glassmorphism)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                SizedBox(
+                  child: SizedBox(
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,18 +236,36 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
                                   color: AppColors.accent.withOpacity(0.2),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.info_outline, color: AppColors.accentLight, size: 20),
+                                child: const Icon(
+                                  Icons.info_outline,
+                                  color: AppColors.accentLight,
+                                  size: 20,
+                                ),
                               ),
                               AppSpacing.hGapMd,
-                              Text('How it works', style: AppTextStyles.labelLarge(color: Colors.white)),
+                              Text(
+                                'How it works',
+                                style: AppTextStyles.labelLarge(
+                                  color: Colors.white,
+                                ),
+                              ),
                             ],
                           ),
                           AppSpacing.vGapMd,
-                          _buildInstructionStep('1', 'Show this code to arriving volunteers'),
+                          _buildInstructionStep(
+                            '1',
+                            'Show this code to arriving volunteers',
+                          ),
                           AppSpacing.vGapSm,
-                          _buildInstructionStep('2', 'Volunteers scan it with their HRAS app'),
+                          _buildInstructionStep(
+                            '2',
+                            'Volunteers scan it with their HRAS app',
+                          ),
                           AppSpacing.vGapSm,
-                          _buildInstructionStep('3', 'Attendance is instantly recorded'),
+                          _buildInstructionStep(
+                            '3',
+                            'Attendance is instantly recorded',
+                          ),
                         ],
                       ),
                     ),
@@ -252,7 +285,9 @@ class _QrGenerateScreenState extends State<QrGenerateScreen> with SingleTickerPr
       children: [
         Text(
           '$step.',
-          style: AppTextStyles.bodyMedium(color: Colors.white70).copyWith(fontWeight: FontWeight.bold),
+          style: AppTextStyles.bodyMedium(
+            color: Colors.white70,
+          ).copyWith(fontWeight: FontWeight.bold),
         ),
         AppSpacing.hGapSm,
         Expanded(

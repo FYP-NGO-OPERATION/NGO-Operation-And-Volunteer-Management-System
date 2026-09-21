@@ -23,21 +23,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: Icons.volunteer_activism,
       color: AppColors.primary,
       title: 'Donate with Purpose',
-      subtitle: 'Every contribution reaches families in need.\nTracked transparently from your wallet to their hands.',
+      subtitle:
+          'Every contribution reaches families in need.\nTracked transparently from your wallet to their hands.',
     ),
     _OnboardingPage(
       image: 'assets/images/onboarding2.png',
       icon: Icons.groups_3,
       color: AppColors.secondary,
       title: 'Volunteer Your Time',
-      subtitle: 'Join campaigns, attend events, and earn recognition\nfor making a real impact in your community.',
+      subtitle:
+          'Join campaigns, attend events, and earn recognition\nfor making a real impact in your community.',
     ),
     _OnboardingPage(
       image: 'assets/images/onboarding3.png',
       icon: Icons.insights,
       color: AppColors.accent,
       title: 'Track Real Impact',
-      subtitle: 'See exactly how many families helped, items\ndistributed, and lives changed — all in real-time.',
+      subtitle:
+          'See exactly how many families helped, items\ndistributed, and lives changed all in real-time.',
     ),
   ];
 
@@ -45,7 +48,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('has_seen_onboarding', true);
     if (mounted) {
-      Navigator.pushReplacement(context, AppAnimations.fadeRoute(const LoginScreen()));
+      Navigator.pushReplacement(
+        context,
+        AppAnimations.fadeRoute(const LoginScreen()),
+      );
     }
   }
 
@@ -67,13 +73,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Align(
                   alignment: Alignment.topRight,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: TextButton(
                       onPressed: _finishOnboarding,
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey,
+                      style: TextButton.styleFrom(foregroundColor: Colors.grey),
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      child: const Text('Skip', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ),
@@ -97,11 +110,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               tween: Tween<double>(begin: 0.8, end: 1.0),
                               duration: const Duration(milliseconds: 600),
                               curve: Curves.elasticOut,
-                              builder: (context, val, child) => Transform.scale(scale: val, child: child),
+                              builder: (context, val, child) =>
+                                  Transform.scale(scale: val, child: child),
                               child: Container(
                                 padding: const EdgeInsets.all(32),
                                 decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF1E1E2C) : Colors.white,
+                                  color: isDark
+                                      ? const Color(0xFF1E1E2C)
+                                      : Colors.white,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
@@ -110,13 +126,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       offset: const Offset(0, 15),
                                     ),
                                     BoxShadow(
-                                      color: isDark ? Colors.black26 : Colors.black12,
+                                      color: isDark
+                                          ? Colors.black26
+                                          : Colors.black12,
                                       blurRadius: 10,
                                       offset: const Offset(0, 5),
                                     ),
                                   ],
                                 ),
-                                child: Icon(page.icon, size: 80, color: page.color),
+                                child: Icon(
+                                  page.icon,
+                                  size: 80,
+                                  color: page.color,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 60),
@@ -128,7 +150,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
-                                color: isDark ? Colors.white : const Color(0xFF1F2937),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1F2937),
                                 height: 1.2,
                               ),
                             ),
@@ -140,7 +164,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                color: isDark
+                                    ? Colors.grey.shade400
+                                    : Colors.grey.shade600,
                                 height: 1.5,
                               ),
                             ),
@@ -168,7 +194,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             height: 8,
                             width: isActive ? 32 : 8,
                             decoration: BoxDecoration(
-                              color: isActive ? _pages[_currentPage].color : Colors.grey.withValues(alpha: 0.3),
+                              color: isActive
+                                  ? _pages[_currentPage].color
+                                  : Colors.grey.withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           );
@@ -186,7 +214,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: _pages[_currentPage].color.withValues(alpha: 0.4),
+                              color: _pages[_currentPage].color.withValues(
+                                alpha: 0.4,
+                              ),
                               blurRadius: 15,
                               offset: const Offset(0, 8),
                             ),
@@ -216,7 +246,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     )
-                                  : const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
+                                  : const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
                             ),
                           ),
                         ),

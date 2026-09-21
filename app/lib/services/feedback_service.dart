@@ -14,12 +14,17 @@ class FeedbackService {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => FeedbackModel.fromMap(doc.data())).toList();
-    });
+          return snapshot.docs
+              .map((doc) => FeedbackModel.fromMap(doc.data()))
+              .toList();
+        });
   }
 
   // Check if user already submitted feedback
-  Future<bool> hasUserSubmittedFeedback(String campaignId, String volunteerId) async {
+  Future<bool> hasUserSubmittedFeedback(
+    String campaignId,
+    String volunteerId,
+  ) async {
     final query = await _firestore
         .collection('campaigns')
         .doc(campaignId)
@@ -37,7 +42,7 @@ class FeedbackService {
         .doc(feedback.campaignId)
         .collection('feedbacks')
         .doc(feedback.id);
-        
+
     await feedbackRef.set(feedback.toMap());
   }
 

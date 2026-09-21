@@ -12,12 +12,12 @@ class NgoModel {
   final String status; // 'pending', 'approved', 'rejected'
   final List<String> features;
   final DateTime createdAt;
-  
+
   // Customization texts
   final String? welcomeText;
   final String? missionStatement;
   final String? websiteUrl;
-  
+
   // Settings
   final String? geminiApiKey;
 
@@ -70,7 +70,10 @@ class NgoModel {
       bannerUrl: map['bannerUrl'],
       adminId: map['adminId'] ?? '',
       status: map['status'] ?? 'pending',
-      features: List<String>.from(map['features'] ?? ['campaigns', 'donations', 'volunteers', 'leaderboard']),
+      features: List<String>.from(
+        map['features'] ??
+            ['campaigns', 'donations', 'volunteers', 'leaderboard'],
+      ),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       welcomeText: map['welcomeText'],
       missionStatement: map['missionStatement'],

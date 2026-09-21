@@ -35,14 +35,18 @@ class HomeJoinedCampaigns extends StatelessWidget {
                 color: AppColors.secondary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.campaign_rounded, color: AppColors.secondary, size: 20),
+              child: const Icon(
+                Icons.campaign_rounded,
+                color: AppColors.secondary,
+                size: 20,
+              ),
             ),
             AppSpacing.hGapSm,
             Text(
               'my_campaigns'.tr(),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
           ],
         ),
@@ -67,11 +71,17 @@ class HomeJoinedCampaigns extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      Icon(Icons.campaign_outlined, size: 40, color: AppColors.lightTextHint),
+                      Icon(
+                        Icons.campaign_outlined,
+                        size: 40,
+                        color: AppColors.lightTextHint,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         'not_joined_campaign'.tr(),
-                        style: const TextStyle(color: AppColors.lightTextSecondary),
+                        style: const TextStyle(
+                          color: AppColors.lightTextSecondary,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
@@ -84,18 +94,44 @@ class HomeJoinedCampaigns extends StatelessWidget {
               );
             }
 
-            final attended = records.where((r) => r.status.toString() == 'VolunteerStatus.attended').length;
+            final attended = records
+                .where((r) => r.status.toString() == 'VolunteerStatus.attended')
+                .length;
             final totalPoints = attended * 10;
 
             return Column(
               children: [
                 Row(
                   children: [
-                    Expanded(child: _buildStatCard(context, 'Joined', '${records.length}', Icons.handshake, AppColors.info)),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        'Joined',
+                        '${records.length}',
+                        Icons.handshake,
+                        AppColors.info,
+                      ),
+                    ),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildStatCard(context, 'Attended', '$attended', Icons.check_circle, AppColors.success)),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        'Attended',
+                        '$attended',
+                        Icons.check_circle,
+                        AppColors.success,
+                      ),
+                    ),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildStatCard(context, 'Points', '$totalPoints', Icons.stars, Colors.amber)),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        'Points',
+                        '$totalPoints',
+                        Icons.stars,
+                        Colors.amber,
+                      ),
+                    ),
                   ],
                 ),
                 if (attended >= 5) ...[
@@ -104,11 +140,16 @@ class HomeJoinedCampaigns extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () async {
-                        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                        final authProvider = Provider.of<AuthProvider>(
+                          context,
+                          listen: false,
+                        );
                         final user = authProvider.user;
                         if (user != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Generating Certificate...')),
+                            const SnackBar(
+                              content: Text('Generating Certificate...'),
+                            ),
                           );
                           await CertificateService.generateAndDownloadCertificate(
                             volunteerName: user.name,
@@ -116,8 +157,17 @@ class HomeJoinedCampaigns extends StatelessWidget {
                           );
                         }
                       },
-                      icon: const Icon(Icons.workspace_premium, color: Colors.white),
-                      label: const Text('Download Gold Certificate', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      icon: const Icon(
+                        Icons.workspace_premium,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Download Gold Certificate',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber[700],
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -134,10 +184,15 @@ class HomeJoinedCampaigns extends StatelessWidget {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: _volunteerStatusColor(record.status).withValues(alpha: 0.1),
+                          color: _volunteerStatusColor(
+                            record.status,
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(Icons.campaign, color: _volunteerStatusColor(record.status)),
+                        child: Icon(
+                          Icons.campaign,
+                          color: _volunteerStatusColor(record.status),
+                        ),
                       ),
                       title: Text(
                         record.campaignTitle,
@@ -153,7 +208,10 @@ class HomeJoinedCampaigns extends StatelessWidget {
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () async {
-                        final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
+                        final campaignProvider = Provider.of<CampaignProvider>(
+                          context,
+                          listen: false,
+                        );
                         final campaign = campaignProvider.campaigns.firstWhere(
                           (c) => c.id == record.campaignId,
                           orElse: () => campaignProvider.campaigns.first,
@@ -161,7 +219,8 @@ class HomeJoinedCampaigns extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => CampaignDetailScreen(campaign: campaign),
+                            builder: (_) =>
+                                CampaignDetailScreen(campaign: campaign),
                           ),
                         );
                       },
@@ -178,23 +237,37 @@ class HomeJoinedCampaigns extends StatelessWidget {
 
   Color _volunteerStatusColor(dynamic status) {
     switch (status.toString()) {
-      case 'VolunteerStatus.pending': return AppColors.textHint;
-      case 'VolunteerStatus.registered': return AppColors.info;
-      case 'VolunteerStatus.confirmed': return AppColors.warning;
-      case 'VolunteerStatus.attended': return AppColors.success;
-      case 'VolunteerStatus.absent': return AppColors.error;
-      default: return AppColors.info;
+      case 'VolunteerStatus.pending':
+        return AppColors.textHint;
+      case 'VolunteerStatus.registered':
+        return AppColors.info;
+      case 'VolunteerStatus.confirmed':
+        return AppColors.warning;
+      case 'VolunteerStatus.attended':
+        return AppColors.success;
+      case 'VolunteerStatus.absent':
+        return AppColors.error;
+      default:
+        return AppColors.info;
     }
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: AppTokens.borderRadiusMd,
-        border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+        border: Border.all(
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
         boxShadow: AppTokens.shadowSoft,
       ),
       child: Column(
@@ -216,11 +289,15 @@ class HomeJoinedCampaigns extends StatelessWidget {
             child: Text(value, style: AppTextStyles.statValue(color: color)),
           ),
           AppSpacing.vGapXs,
-          Text(title,
-              style: AppTextStyles.caption(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-              overflow: TextOverflow.ellipsis),
+          Text(
+            title,
+            style: AppTextStyles.caption(
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

@@ -29,9 +29,9 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
   final _logoCtrl = TextEditingController();
   Uint8List? _selectedLogoBytes;
   bool _isUploadingLogo = false;
-  
+
   String _selectedColor = '#1A6B3C'; // Default HRAS Green
-  
+
   final Map<String, bool> _selectedFeatures = {
     'campaigns': true,
     'donations': true,
@@ -73,7 +73,9 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
 
     final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
 
-    String? finalLogoUrl = _logoCtrl.text.trim().isEmpty ? null : _logoCtrl.text.trim();
+    String? finalLogoUrl = _logoCtrl.text.trim().isEmpty
+        ? null
+        : _logoCtrl.text.trim();
 
     if (_selectedLogoBytes != null) {
       try {
@@ -81,9 +83,12 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
         // Bypass Firebase Storage rules by saving as Base64 in Firestore
         final base64String = base64Encode(_selectedLogoBytes!);
         finalLogoUrl = 'data:image/jpeg;base64,$base64String';
-        await Future.delayed(const Duration(milliseconds: 500)); // Simulate upload
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+        ); // Simulate upload
       } catch (e) {
-        if (mounted) SnackbarHelper.showError(context, 'Failed to process logo: $e');
+        if (mounted)
+          SnackbarHelper.showError(context, 'Failed to process logo: $e');
         setState(() => _isUploadingLogo = false);
         return;
       }
@@ -97,12 +102,15 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
       logoUrl: finalLogoUrl == "Local file selected" ? null : finalLogoUrl,
       adminId: user.uid,
       status: 'pending',
-      features: _selectedFeatures.entries.where((e) => e.value).map((e) => e.key).toList(),
+      features: _selectedFeatures.entries
+          .where((e) => e.value)
+          .map((e) => e.key)
+          .toList(),
       createdAt: DateTime.now(),
     );
 
     final createdNgo = await ngoProvider.createNgo(ngo);
-    
+
     if (createdNgo != null && mounted) {
       if (mounted) {
         setState(() => _isUploadingLogo = false);
@@ -146,9 +154,18 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('setup_ngo_profile'.tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              Text(
+                'setup_ngo_profile'.tr(),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              Text('setup_ngo_desc'.tr(), style: const TextStyle(color: Colors.grey)),
+              Text(
+                'setup_ngo_desc'.tr(),
+                style: const TextStyle(color: Colors.grey),
+              ),
               const SizedBox(height: 24),
 
               CustomTextField(
@@ -158,7 +175,7 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              
+
               CustomTextField(
                 controller: _descCtrl,
                 label: 'description'.tr(),
@@ -183,7 +200,9 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                   Container(
                     height: 55,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.withValues(alpha: 0.5)),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.5),
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
@@ -200,7 +219,12 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                   child: Stack(
                     children: [
                       ClipOval(
-                        child: Image.memory(_selectedLogoBytes!, height: 100, width: 100, fit: BoxFit.cover),
+                        child: Image.memory(
+                          _selectedLogoBytes!,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       Positioned(
                         right: 0,
@@ -213,19 +237,32 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                             });
                           },
                           child: Container(
-                            decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
                             padding: const EdgeInsets.all(4),
-                            child: const Icon(Icons.close, size: 16, color: Colors.white),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
               ],
               const SizedBox(height: 24),
 
-              Text('select_theme_color'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'select_theme_color'.tr(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 12,
@@ -246,17 +283,29 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
                           width: 3,
                         ),
                         boxShadow: [
-                          if (isSelected) BoxShadow(color: _parseColor(hex).withValues(alpha: 0.5), blurRadius: 8)
+                          if (isSelected)
+                            BoxShadow(
+                              color: _parseColor(hex).withValues(alpha: 0.5),
+                              blurRadius: 8,
+                            ),
                         ],
                       ),
-                      child: isSelected ? const Icon(Icons.check, color: Colors.white) : null,
+                      child: isSelected
+                          ? const Icon(Icons.check, color: Colors.white)
+                          : null,
                     ),
                   );
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              
-              Text('select_features'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+              Text(
+                'select_features'.tr(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               ..._selectedFeatures.keys.map((feature) {
                 return CheckboxListTile(
@@ -277,8 +326,12 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(
-                  text: _isUploadingLogo ? 'please_wait'.tr() : 'register_ngo'.tr(),
-                  isLoading: Provider.of<NgoProvider>(context).isLoading || _isUploadingLogo,
+                  text: _isUploadingLogo
+                      ? 'please_wait'.tr()
+                      : 'register_ngo'.tr(),
+                  isLoading:
+                      Provider.of<NgoProvider>(context).isLoading ||
+                      _isUploadingLogo,
                   onPressed: _isUploadingLogo ? () {} : _registerNgo,
                 ),
               ),

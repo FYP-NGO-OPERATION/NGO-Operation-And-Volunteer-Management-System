@@ -5,8 +5,12 @@ import 'dart:convert';
 class WeatherWarningCard extends StatefulWidget {
   final double latitude;
   final double longitude;
-  
-  const WeatherWarningCard({super.key, required this.latitude, required this.longitude});
+
+  const WeatherWarningCard({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+  });
 
   @override
   State<WeatherWarningCard> createState() => _WeatherWarningCardState();
@@ -26,23 +30,30 @@ class _WeatherWarningCardState extends State<WeatherWarningCard> {
   Future<void> _fetchWeather() async {
     try {
       // Free Open-Meteo API (no key required)
-      final url = Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=${widget.latitude}&longitude=${widget.longitude}&current_weather=true&daily=precipitation_sum,temperature_2m_max&timezone=auto');
+      final url = Uri.parse(
+        'https://api.open-meteo.com/v1/forecast?latitude=${widget.latitude}&longitude=${widget.longitude}&current_weather=true&daily=precipitation_sum,temperature_2m_max&timezone=auto',
+      );
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final currentTemp = data['current_weather']['temperature'] as double;
-        final isRaining = data['current_weather']['weathercode'] >= 50; // WMO codes >= 50 indicate rain/snow/storm
+        final isRaining =
+            data['current_weather']['weathercode'] >=
+            50; // WMO codes >= 50 indicate rain/snow/storm
 
         if (isRaining) {
           _hasHazard = true;
-          _warningMessage = 'Heavy precipitation detected in the campaign area. Please bring rain gear.';
+          _warningMessage =
+              'Heavy precipitation detected in the campaign area. Please bring rain gear.';
         } else if (currentTemp > 38.0) {
           _hasHazard = true;
-          _warningMessage = 'Extreme heat alert ($currentTemp°C). Please carry extra water and stay hydrated.';
+          _warningMessage =
+              'Extreme heat alert ($currentTemp°C). Please carry extra water and stay hydrated.';
         } else if (currentTemp < 5.0) {
           _hasHazard = true;
-          _warningMessage = 'Extreme cold alert ($currentTemp°C). Wear warm clothes and carry thermal blankets.';
+          _warningMessage =
+              'Extreme cold alert ($currentTemp°C). Wear warm clothes and carry thermal blankets.';
         }
       }
     } catch (e) {
@@ -68,7 +79,11 @@ class _WeatherWarningCardState extends State<WeatherWarningCard> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.orange,
+            size: 28,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -76,7 +91,10 @@ class _WeatherWarningCardState extends State<WeatherWarningCard> {
               children: [
                 const Text(
                   'Live Weather Hazard',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrange,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(

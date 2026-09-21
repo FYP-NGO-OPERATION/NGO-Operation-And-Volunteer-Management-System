@@ -27,7 +27,7 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
 
   Future<void> _pickAndUploadImage() async {
     final picker = ImagePicker();
-    
+
     // Show dialog to choose source
     final source = await showDialog<ImageSource>(
       context: context,
@@ -42,7 +42,10 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library, color: AppColors.primary),
+              leading: const Icon(
+                Icons.photo_library,
+                color: AppColors.primary,
+              ),
               title: const Text('Gallery'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
@@ -70,11 +73,16 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
           title: const Text('Add Caption'),
           content: TextField(
             controller: ctrl,
-            decoration: const InputDecoration(hintText: 'e.g., Food distribution at Camp A'),
+            decoration: const InputDecoration(
+              hintText: 'e.g., Food distribution at Camp A',
+            ),
             autofocus: true,
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, ''), child: const Text('Skip')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, ''),
+              child: const Text('Skip'),
+            ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
               child: const Text('Save'),
@@ -102,9 +110,11 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
         uploadedBy: user.uid,
         uploaderName: user.name,
       );
-      if (mounted) SnackbarHelper.showSuccess(context, 'Photo uploaded successfully!');
+      if (mounted)
+        SnackbarHelper.showSuccess(context, 'Photo uploaded successfully!');
     } catch (e) {
-      if (mounted) SnackbarHelper.showError(context, 'Failed to upload photo: $e');
+      if (mounted)
+        SnackbarHelper.showError(context, 'Failed to upload photo: $e');
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -115,9 +125,14 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Photo'),
-        content: const Text('Are you sure you want to permanently delete this photo?'),
+        content: const Text(
+          'Are you sure you want to permanently delete this photo?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -132,7 +147,8 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
         await _galleryService.deletePhoto(photo);
         if (mounted) SnackbarHelper.showInfo(context, 'Photo deleted');
       } catch (e) {
-        if (mounted) SnackbarHelper.showError(context, 'Failed to delete photo');
+        if (mounted)
+          SnackbarHelper.showError(context, 'Failed to delete photo');
       }
     }
   }
@@ -142,16 +158,14 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
     final isAdmin = context.read<AuthProvider>().user?.isAdmin ?? false;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gallery'),
-      ),
+      appBar: AppBar(title: const Text('Gallery')),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             width: double.infinity,
-            color: Theme.of(context).brightness == Brightness.dark 
-                ? Colors.grey[900] 
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[900]
                 : AppColors.primarySurface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,16 +173,20 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                 Text(
                   widget.campaign.title,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, 
+                    fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Campaign Photos & Memories',
                   style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : AppColors.textSecondary, 
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : AppColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -177,7 +195,7 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
           ),
           if (_isUploading)
             const LinearProgressIndicator(color: AppColors.primary),
-          
+
           Expanded(
             child: StreamBuilder<List<PhotoModel>>(
               stream: _galleryService.getCampaignPhotos(widget.campaign.id),
@@ -235,12 +253,17 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                                 placeholder: (context, url) => Container(
                                   color: Colors.grey.shade300,
                                   child: const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => Container(
                                   color: Colors.grey.shade300,
-                                  child: const Icon(Icons.error, color: AppColors.error),
+                                  child: const Icon(
+                                    Icons.error,
+                                    color: AppColors.error,
+                                  ),
                                 ),
                               ),
                             ),
@@ -257,7 +280,11 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                                     color: Colors.black.withValues(alpha: 0.6),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.close, size: 16, color: Colors.white),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),

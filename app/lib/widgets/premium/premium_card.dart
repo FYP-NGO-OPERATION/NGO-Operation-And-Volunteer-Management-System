@@ -34,18 +34,27 @@ class _PremiumCardState extends State<PremiumCard> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = widget.backgroundColor ??
+    final bgColor =
+        widget.backgroundColor ??
         (isDark ? AppColors.darkCardBg : AppColors.lightCardBg);
 
     return MouseRegion(
-      onEnter: widget.enableHover ? (_) => setState(() => _isHovered = true) : null,
-      onExit: widget.enableHover ? (_) => setState(() => _isHovered = false) : null,
+      onEnter: widget.enableHover
+          ? (_) => setState(() => _isHovered = true)
+          : null,
+      onExit: widget.enableHover
+          ? (_) => setState(() => _isHovered = false)
+          : null,
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: AppAnimations.normal,
           curve: AppAnimations.easeOut,
-          transform: Matrix4.translationValues(0.0, _isHovered ? -2.0 : 0.0, 0.0),
+          transform: Matrix4.translationValues(
+            0.0,
+            _isHovered ? -2.0 : 0.0,
+            0.0,
+          ),
           padding: widget.padding ?? AppSpacing.cardPadding,
           decoration: BoxDecoration(
             color: bgColor,
@@ -55,7 +64,9 @@ class _PremiumCardState extends State<PremiumCard> {
                   ? AppColors.primary.withValues(alpha: 0.2)
                   : (isDark ? AppColors.darkDivider : AppColors.lightDivider),
             ),
-            boxShadow: _isHovered ? AppTokens.shadowMedium : (widget.shadow ?? AppTokens.shadowSoft),
+            boxShadow: _isHovered
+                ? AppTokens.shadowMedium
+                : (widget.shadow ?? AppTokens.shadowSoft),
           ),
           child: widget.child,
         ),
@@ -100,12 +111,20 @@ class StatsCard extends StatelessWidget {
           const Spacer(),
           Text(value, style: AppTextStyles.statValue(color: color)),
           AppSpacing.vGapXs,
-          Text(title, style: AppTextStyles.caption(
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          )),
+          Text(
+            title,
+            style: AppTextStyles.caption(
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
+          ),
           if (subtitle != null) ...[
             AppSpacing.vGapXs,
-            Text(subtitle!, style: AppTextStyles.labelSmall(color: AppColors.success)),
+            Text(
+              subtitle!,
+              style: AppTextStyles.labelSmall(color: AppColors.success),
+            ),
           ],
         ],
       ),

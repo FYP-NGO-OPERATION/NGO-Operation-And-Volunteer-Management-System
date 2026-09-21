@@ -20,17 +20,20 @@ class EngagementTabScreen extends StatelessWidget {
               unselectedLabelColor: AppColors.textSecondary,
               indicatorColor: AppColors.primary,
               tabs: [
-                Tab(icon: const Icon(Icons.announcement), text: 'announcements'.tr()),
-                Tab(icon: const Icon(Icons.videocam), text: 'virtual_sessions'.tr()),
+                Tab(
+                  icon: const Icon(Icons.announcement),
+                  text: 'announcements'.tr(),
+                ),
+                Tab(
+                  icon: const Icon(Icons.videocam),
+                  text: 'virtual_sessions'.tr(),
+                ),
               ],
             ),
           ),
           const Expanded(
             child: TabBarView(
-              children: [
-                AnnouncementListScreen(),
-                SessionListScreen(),
-              ],
+              children: [AnnouncementListScreen(), SessionListScreen()],
             ),
           ),
         ],

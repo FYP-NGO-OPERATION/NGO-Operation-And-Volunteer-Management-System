@@ -28,25 +28,36 @@ class CampaignMediaPicker extends StatelessWidget {
       children: [
         const Divider(),
         const SizedBox(height: 16),
-        Text('Multimedia (Optional)', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          'Multimedia (Optional)',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
-        
+
         // Highlight Video
         ListTile(
           leading: const Icon(Icons.video_library),
           title: const Text('Highlight Video (MP4)'),
-          subtitle: Text(highlightVideo != null ? highlightVideo!.path.split('\\').last.split('/').last : 'No video selected'),
+          subtitle: Text(
+            highlightVideo != null
+                ? highlightVideo!.path.split('\\').last.split('/').last
+                : 'No video selected',
+          ),
           trailing: OutlinedButton(
             onPressed: onPickVideo,
             child: const Text('Pick Video'),
           ),
         ),
-        
+
         // Project Record PDF
         ListTile(
           leading: const Icon(Icons.picture_as_pdf),
           title: const Text('Project Record (PDF)'),
-          subtitle: Text(projectRecordPdf != null ? projectRecordPdf!.path.split('\\').last.split('/').last : 'No PDF selected'),
+          subtitle: Text(
+            projectRecordPdf != null
+                ? projectRecordPdf!.path.split('\\').last.split('/').last
+                : 'No PDF selected',
+          ),
           trailing: OutlinedButton(
             onPressed: onPickPdf,
             child: const Text('Pick PDF'),
@@ -76,7 +87,12 @@ class CampaignMediaPicker extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.file(galleryImages[index], width: 70, height: 70, fit: BoxFit.cover),
+                        child: Image.file(
+                          galleryImages[index],
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       Positioned(
                         top: 0,
@@ -86,7 +102,11 @@ class CampaignMediaPicker extends StatelessWidget {
                           child: const CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.red,
-                            child: Icon(Icons.close, size: 12, color: Colors.white),
+                            child: Icon(
+                              Icons.close,
+                              size: 12,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

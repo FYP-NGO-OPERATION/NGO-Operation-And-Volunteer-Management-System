@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
 import 'campaign_detail_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/location_service.dart';
 
 class CampaignMapScreen extends StatefulWidget {
@@ -44,7 +45,11 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
       }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to get real device location. Showing default map.')),
+        const SnackBar(
+          content: Text(
+            'Failed to get real device location. Showing default map.',
+          ),
+        ),
       );
     }
   }
@@ -64,7 +69,7 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
             onPressed: () {
               _initLocation();
             },
-          )
+          ),
         ],
       ),
       body: StreamBuilder<List<CampaignModel>>(
@@ -76,12 +81,15 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
 
           final allCampaigns = snapshot.data ?? [];
           // Filter campaigns that have valid coordinates
-          final mappedCampaigns = allCampaigns.where((c) => 
-            c.latitude != null && 
-            c.longitude != null && 
-            !c.latitude!.isNaN && 
-            !c.longitude!.isNaN
-          ).toList();
+          final mappedCampaigns = allCampaigns
+              .where(
+                (c) =>
+                    c.latitude != null &&
+                    c.longitude != null &&
+                    !c.latitude!.isNaN &&
+                    !c.longitude!.isNaN,
+              )
+              .toList();
 
           return FlutterMap(
             mapController: _mapController,
@@ -101,23 +109,27 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                     point: _currentCenter,
                     width: 50,
                     height: 50,
-                    child: const Icon(Icons.person_pin_circle, color: Colors.blue, size: 40),
+                    child: const Icon(
+                      Icons.person_pin_circle,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
                   ),
                   ...mappedCampaigns.map((campaign) {
-                  return Marker(
-                    point: LatLng(campaign.latitude!, campaign.longitude!),
-                    width: 50,
-                    height: 50,
-                    child: GestureDetector(
-                      onTap: () => _showCampaignDetails(context, campaign),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: AppColors.primary,
-                        size: 40,
+                    return Marker(
+                      point: LatLng(campaign.latitude!, campaign.longitude!),
+                      width: 50,
+                      height: 50,
+                      child: GestureDetector(
+                        onTap: () => _showCampaignDetails(context, campaign),
+                        child: const Icon(
+                          Icons.location_on,
+                          color: AppColors.primary,
+                          size: 40,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
                 ],
               ),
             ],
@@ -125,6 +137,21 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _launchMaps(double lat, double lng) async {
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open Maps.')));
+      }
+    }
   }
 
   void _showCampaignDetails(BuildContext context, CampaignModel campaign) {
@@ -146,20 +173,30 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                   Expanded(
                     child: Text(
                       campaign.title,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       campaign.status.name.toUpperCase(),
-                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12),
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -169,13 +206,22 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                 children: [
                   const Icon(Icons.location_on, size: 16, color: Colors.grey),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(campaign.location, style: const TextStyle(color: Colors.grey))),
+                  Expanded(
+                    child: Text(
+                      campaign.location,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     DateFormat('MMM dd, yyyy').format(campaign.startDate),
@@ -184,20 +230,33 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CampaignDetailScreen(campaign: campaign),
-                      ),
-                    );
-                  },
-                  child: const Text('View Campaign Details'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () =>
+                          _launchMaps(campaign.latitude!, campaign.longitude!),
+                      icon: const Icon(Icons.directions),
+                      label: const Text('Get Directions'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CampaignDetailScreen(campaign: campaign),
+                          ),
+                        );
+                      },
+                      child: const Text('View Details'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

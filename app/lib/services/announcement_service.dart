@@ -27,20 +27,24 @@ class AnnouncementService {
     return _announcementsRef
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AnnouncementModel.fromMap(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AnnouncementModel.fromMap(doc.data()))
+              .toList(),
+        );
   }
-  
+
   /// Stream latest N announcements (for dashboard)
   Stream<List<AnnouncementModel>> getLatestAnnouncements(int limit) {
     return _announcementsRef
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AnnouncementModel.fromMap(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AnnouncementModel.fromMap(doc.data()))
+              .toList(),
+        );
   }
 
   /// Delete an announcement

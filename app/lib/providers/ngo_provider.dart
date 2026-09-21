@@ -41,7 +41,7 @@ class NgoProvider extends ChangeNotifier {
     try {
       await _userService.updateUser(user.uid, {'currentNgoId': ngo.id});
       _currentNgo = ngo;
-      
+
       _isLoading = false;
       notifyListeners();
       return true;
@@ -128,13 +128,14 @@ class NgoProvider extends ChangeNotifier {
       return false;
     }
   }
+
   /// Update NGO Profile (Settings)
   Future<bool> updateNgoProfile(String ngoId, Map<String, dynamic> data) async {
     _isLoading = true;
     notifyListeners();
     try {
       await _ngoService.updateNgo(ngoId, data);
-      
+
       // Update in local list
       final index = _ngos.indexWhere((n) => n.id == ngoId);
       if (index != -1) {
@@ -144,7 +145,8 @@ class NgoProvider extends ChangeNotifier {
           name: data['name'] ?? existing.name,
           description: data['description'] ?? existing.description,
           primaryColorHex: data['primaryColorHex'] ?? existing.primaryColorHex,
-          secondaryColorHex: data['secondaryColorHex'] ?? existing.secondaryColorHex,
+          secondaryColorHex:
+              data['secondaryColorHex'] ?? existing.secondaryColorHex,
           logoUrl: data['logoUrl'] ?? existing.logoUrl,
           bannerUrl: data['bannerUrl'] ?? existing.bannerUrl,
           adminId: existing.adminId,
@@ -152,19 +154,22 @@ class NgoProvider extends ChangeNotifier {
           features: existing.features,
           createdAt: existing.createdAt,
           welcomeText: data['welcomeText'] ?? existing.welcomeText,
-          missionStatement: data['missionStatement'] ?? existing.missionStatement,
+          missionStatement:
+              data['missionStatement'] ?? existing.missionStatement,
           websiteUrl: data['websiteUrl'] ?? existing.websiteUrl,
         );
       }
-      
+
       // Update currentNgo if it's the one being modified
       if (_currentNgo?.id == ngoId) {
         _currentNgo = NgoModel(
           id: _currentNgo!.id,
           name: data['name'] ?? _currentNgo!.name,
           description: data['description'] ?? _currentNgo!.description,
-          primaryColorHex: data['primaryColorHex'] ?? _currentNgo!.primaryColorHex,
-          secondaryColorHex: data['secondaryColorHex'] ?? _currentNgo!.secondaryColorHex,
+          primaryColorHex:
+              data['primaryColorHex'] ?? _currentNgo!.primaryColorHex,
+          secondaryColorHex:
+              data['secondaryColorHex'] ?? _currentNgo!.secondaryColorHex,
           logoUrl: data['logoUrl'] ?? _currentNgo!.logoUrl,
           bannerUrl: data['bannerUrl'] ?? _currentNgo!.bannerUrl,
           adminId: _currentNgo!.adminId,
@@ -172,12 +177,13 @@ class NgoProvider extends ChangeNotifier {
           features: _currentNgo!.features,
           createdAt: _currentNgo!.createdAt,
           welcomeText: data['welcomeText'] ?? _currentNgo!.welcomeText,
-          missionStatement: data['missionStatement'] ?? _currentNgo!.missionStatement,
+          missionStatement:
+              data['missionStatement'] ?? _currentNgo!.missionStatement,
           websiteUrl: data['websiteUrl'] ?? _currentNgo!.websiteUrl,
           geminiApiKey: data['geminiApiKey'] ?? _currentNgo!.geminiApiKey,
         );
       }
-      
+
       _isLoading = false;
       notifyListeners();
       return true;

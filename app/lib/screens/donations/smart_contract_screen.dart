@@ -19,9 +19,14 @@ class SmartContractScreen extends StatelessWidget {
 
     // Use a hacker/crypto style terminal vibe
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.blueGrey.shade900,
+      backgroundColor: isDark
+          ? const Color(0xFF0D1117)
+          : Colors.blueGrey.shade900,
       appBar: AppBar(
-        title: const Text('Web3 Explorer', style: TextStyle(fontFamily: 'monospace', color: Colors.greenAccent)),
+        title: const Text(
+          'Web3 Explorer',
+          style: TextStyle(fontFamily: 'monospace', color: Colors.greenAccent),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.greenAccent),
@@ -32,12 +37,20 @@ class SmartContractScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.currency_bitcoin, color: Colors.orangeAccent, size: 64),
+            const Icon(
+              Icons.currency_bitcoin,
+              color: Colors.orangeAccent,
+              size: 64,
+            ),
             const SizedBox(height: 16),
             const Text(
               'DECENTRALIZED DONATION CONTRACT',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, letterSpacing: 2, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white70,
+                letterSpacing: 2,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 32),
             _buildInfoRow('Contract Address', contractAddress),
@@ -45,7 +58,11 @@ class SmartContractScreen extends StatelessWidget {
             _buildInfoRow('Amount Transferred', amountCrypto),
             _buildInfoRow('Gas Fee', '0.00012 ETH (\$0.45)'),
             _buildInfoRow('Block Height', '18493021'),
-            _buildInfoRow('Confirmations', '142 Confirmations', color: Colors.greenAccent),
+            _buildInfoRow(
+              'Confirmations',
+              '142 Confirmations',
+              color: Colors.greenAccent,
+            ),
             _buildInfoRow('Timestamp', 'Oct 14, 2023 14:32:00 UTC'),
             const SizedBox(height: 32),
             Container(
@@ -53,12 +70,21 @@ class SmartContractScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black45,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: Colors.greenAccent.withValues(alpha: 0.3),
+                ),
               ),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('RAW SMART CONTRACT LOGS', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(
+                    'RAW SMART CONTRACT LOGS',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   SizedBox(height: 12),
                   Text(
                     '> Executing transfer()...\n'
@@ -67,7 +93,12 @@ class SmartContractScreen extends StatelessWidget {
                     '> Emitting DonationReceived event...\n'
                     '> Transaction mined in block 18493021.\n'
                     '> STATUS: SUCCESS 🟢',
-                    style: TextStyle(fontFamily: 'monospace', color: Colors.green, fontSize: 13, height: 1.5),
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      color: Colors.green,
+                      fontSize: 13,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -78,14 +109,29 @@ class SmartContractScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {Color color = Colors.white}) {
+  Widget _buildInfoRow(
+    String label,
+    String value, {
+    Color color = Colors.white,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white54, fontSize: 14)),
-          Text(value, style: TextStyle(fontFamily: 'monospace', color: color, fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white54, fontSize: 14),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'monospace',
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );

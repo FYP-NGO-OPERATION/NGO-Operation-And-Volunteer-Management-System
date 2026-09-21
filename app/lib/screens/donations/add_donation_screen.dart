@@ -45,7 +45,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
   String _allocationPolicy = 'campaign_specific';
   bool _refundableIfTargetMet = false;
   DateTime _receivedDate = DateTime.now();
-  
+
   bool _isLoading = false;
   bool _isAdmin = false;
   bool _isAnonymous = false;
@@ -61,7 +61,8 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
           _isAdmin = auth.isAdmin;
           if (!_isAdmin) {
             _donorNameController.text = user.name;
-            _selectedPaymentMethod = PaymentMethod.jazzCash; // Default to online for volunteers
+            _selectedPaymentMethod =
+                PaymentMethod.jazzCash; // Default to online for volunteers
           }
         });
       }
@@ -115,9 +116,11 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
 
     final user = Provider.of<AuthProvider>(context, listen: false).user!;
     final isMoney = _selectedCategory == DonationCategory.money;
-    
+
     // Volunteers cannot hand in cash digitally, so cash is forced to 0 for them
-    final amountCash = _isAdmin ? (double.tryParse(_amountCashController.text) ?? 0) : 0.0;
+    final amountCash = _isAdmin
+        ? (double.tryParse(_amountCashController.text) ?? 0)
+        : 0.0;
     final amountOnline = double.tryParse(_amountOnlineController.text) ?? 0;
 
     if (isMoney && amountCash == 0 && amountOnline == 0) {
@@ -126,8 +129,14 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
     }
 
     String? transactionId = _transactionIdController.text.trim();
-    if (isMoney && !_isAdmin && transactionId.isEmpty && _selectedPaymentMethod != PaymentMethod.cash) {
-      SnackbarHelper.showError(context, 'Please enter Transaction ID (TID) to verify payment.');
+    if (isMoney &&
+        !_isAdmin &&
+        transactionId.isEmpty &&
+        _selectedPaymentMethod != PaymentMethod.cash) {
+      SnackbarHelper.showError(
+        context,
+        'Please enter Transaction ID (TID) to verify payment.',
+      );
       return;
     }
 
@@ -135,13 +144,15 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
 
     try {
       final baseDesc = _descriptionController.text.trim();
-      
+
       final donation = DonationModel(
         id: '',
         campaignId: widget.campaignId,
         campaignTitle: widget.campaignTitle,
         donorName: _donorNameController.text.trim(),
-        donorPhone: _donorPhoneController.text.trim().isEmpty ? null : _donorPhoneController.text.trim(),
+        donorPhone: _donorPhoneController.text.trim().isEmpty
+            ? null
+            : _donorPhoneController.text.trim(),
         category: _selectedCategory,
         quantity: _quantityController.text.trim(),
         amount: amountCash + amountOnline,
@@ -164,7 +175,10 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
       if (_isAdmin) {
         SnackbarHelper.showSuccess(context, 'Donation added successfully!');
       } else {
-        SnackbarHelper.showSuccess(context, 'Donation submitted! Awaiting admin verification.');
+        SnackbarHelper.showSuccess(
+          context,
+          'Donation submitted! Awaiting admin verification.',
+        );
       }
       Navigator.pop(context);
     } catch (e) {
@@ -181,7 +195,12 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
     final isMoney = _selectedCategory == DonationCategory.money;
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isAdmin ? 'Add Donation' : 'Donate Now', style: AppTextStyles.titleLarge())),
+      appBar: AppBar(
+        title: Text(
+          _isAdmin ? 'Add Donation' : 'Donate Now',
+          style: AppTextStyles.titleLarge(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -204,7 +223,10 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         ),
                         child: const Text(
                           'Please transfer your funds to our official JazzCash/Easypaisa number: 0300-1234567, then enter the Transaction ID (TID) below.',
-                          style: TextStyle(color: AppColors.warning, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -213,7 +235,9 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: AppTokens.borderRadiusMd,
-                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -222,7 +246,9 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                           Expanded(
                             child: Text(
                               widget.campaignTitle,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -230,11 +256,16 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    Text('Donation Type', style: Theme.of(context).textTheme.labelLarge),
+                    Text(
+                      'Donation Type',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<DonationCategory>(
                       value: _selectedCategory,
-                      decoration: const InputDecoration(prefixIcon: Icon(Icons.category)),
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.category),
+                      ),
                       items: DonationCategory.values.map((cat) {
                         return DropdownMenuItem(
                           value: cat,
@@ -250,16 +281,27 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       label: 'Donor Name',
                       hint: 'Full name of the donor',
                       prefixIcon: Icons.person,
-                      enabled: _isAdmin, // Volunteers cant change their name easily here
-                      validator: (v) => v == null || v.trim().isEmpty ? 'Donor name required' : null,
+                      enabled:
+                          _isAdmin, // Volunteers cant change their name easily here
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Donor name required'
+                          : null,
                     ),
                     AppSpacing.vGapLg,
 
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Donate Anonymously', style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: const Text('Hide your name from the public list'),
-                      secondary: const Icon(Icons.visibility_off, color: AppColors.textSecondary),
+                      title: const Text(
+                        'Donate Anonymously',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                        'Hide your name from the public list',
+                      ),
+                      secondary: const Icon(
+                        Icons.visibility_off,
+                        color: AppColors.textSecondary,
+                      ),
                       value: _isAnonymous,
                       activeColor: AppColors.primary,
                       onChanged: (v) => setState(() => _isAnonymous = v),
@@ -271,25 +313,37 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       label: 'Quantity / Items',
                       hint: isMoney ? 'e.g., Rs. 5,000' : 'e.g., 50 shirts',
                       prefixIcon: Icons.inventory,
-                      validator: (v) => v == null || v.trim().isEmpty ? 'Quantity required' : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Quantity required'
+                          : null,
                     ),
                     AppSpacing.vGapLg,
 
                     if (isMoney) ...[
-                      Text('Payment Method', style: Theme.of(context).textTheme.labelLarge),
+                      Text(
+                        'Payment Method',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<PaymentMethod>(
                         value: _selectedPaymentMethod,
-                        decoration: const InputDecoration(prefixIcon: Icon(Icons.payment)),
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.payment),
+                        ),
                         items: PaymentMethod.values
-                            .where((method) => _isAdmin || method != PaymentMethod.cash)
+                            .where(
+                              (method) =>
+                                  _isAdmin || method != PaymentMethod.cash,
+                            )
                             .map((method) {
-                          return DropdownMenuItem(
-                            value: method,
-                            child: Text('${method.icon}  ${method.label}'),
-                          );
-                        }).toList(),
-                        onChanged: (v) => setState(() => _selectedPaymentMethod = v!),
+                              return DropdownMenuItem(
+                                value: method,
+                                child: Text('${method.icon}  ${method.label}'),
+                              );
+                            })
+                            .toList(),
+                        onChanged: (v) =>
+                            setState(() => _selectedPaymentMethod = v!),
                       ),
                       AppSpacing.vGapLg,
 
@@ -306,7 +360,9 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
 
                       CustomTextField(
                         controller: _amountOnlineController,
-                        label: _isAdmin ? 'Online Amount (Rs.)' : 'Amount Transferred (Rs.)',
+                        label: _isAdmin
+                            ? 'Online Amount (Rs.)'
+                            : 'Amount Transferred (Rs.)',
                         hint: '0',
                         prefixIcon: Icons.account_balance,
                         keyboardType: TextInputType.number,
@@ -324,12 +380,19 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       ],
                     ],
 
-                    Text('Received Date', style: Theme.of(context).textTheme.labelLarge),
+                    Text(
+                      'Received Date',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                     const SizedBox(height: 8),
                     InkWell(
-                      onTap: _isAdmin ? _selectDate : null, // Volunteers cannot change date
+                      onTap: _isAdmin
+                          ? _selectDate
+                          : null, // Volunteers cannot change date
                       child: InputDecorator(
-                        decoration: const InputDecoration(prefixIcon: Icon(Icons.calendar_today)),
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
                         child: Text(dateFormat.format(_receivedDate)),
                       ),
                     ),

@@ -32,7 +32,9 @@ class _UserListScreenState extends State<UserListScreen> {
               ListTile(
                 title: const Text('Admin'),
                 leading: Icon(
-                  user.role == 'admin' ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  user.role == 'admin'
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
                   color: AppColors.primary,
                 ),
                 onTap: () {
@@ -43,7 +45,9 @@ class _UserListScreenState extends State<UserListScreen> {
               ListTile(
                 title: const Text('Volunteer'),
                 leading: Icon(
-                  user.role == 'volunteer' ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  user.role == 'volunteer'
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
                   color: AppColors.primary,
                 ),
                 onTap: () {
@@ -70,7 +74,9 @@ class _UserListScreenState extends State<UserListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('$action User'),
-        content: Text('Are you sure you want to ${action.toLowerCase()} ${user.name}?'),
+        content: Text(
+          'Are you sure you want to ${action.toLowerCase()} ${user.name}?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -79,7 +85,9 @@ class _UserListScreenState extends State<UserListScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: user.isActive ? AppColors.error : AppColors.success,
+              backgroundColor: user.isActive
+                  ? AppColors.error
+                  : AppColors.success,
               foregroundColor: Colors.white,
             ),
             child: Text(action.toUpperCase()),
@@ -118,7 +126,8 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     ),
-                    onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                    onChanged: (val) =>
+                        setState(() => _searchQuery = val.toLowerCase()),
                   ),
                 ),
               ),
@@ -138,14 +147,17 @@ class _UserListScreenState extends State<UserListScreen> {
           var users = snapshot.data ?? [];
           // Mobile filter (desktop uses PremiumDataTable built-in search)
           if (!isDesktop && _searchQuery.isNotEmpty) {
-            users = users.where((u) => u.name.toLowerCase().contains(_searchQuery)).toList();
+            users = users
+                .where((u) => u.name.toLowerCase().contains(_searchQuery))
+                .toList();
           }
 
           if (users.isEmpty) {
             return const EmptyStateWidget(
               icon: Icons.person_off,
               title: 'No Users Found',
-              subtitle: 'Try a different search query or there are no registered users.',
+              subtitle:
+                  'Try a different search query or there are no registered users.',
             );
           }
 
@@ -168,9 +180,17 @@ class _UserListScreenState extends State<UserListScreen> {
                       children: [
                         CircleAvatar(
                           radius: 16,
-                          backgroundColor: user.isAdmin ? AppColors.primarySurface : AppColors.info.withValues(alpha: 0.1),
-                          child: Text(user.name[0].toUpperCase(),
-                            style: AppTextStyles.labelSmall(color: user.isAdmin ? AppColors.primary : AppColors.info)),
+                          backgroundColor: user.isAdmin
+                              ? AppColors.primarySurface
+                              : AppColors.info.withValues(alpha: 0.1),
+                          child: Text(
+                            user.name[0].toUpperCase(),
+                            style: AppTextStyles.labelSmall(
+                              color: user.isAdmin
+                                  ? AppColors.primary
+                                  : AppColors.info,
+                            ),
+                          ),
                         ),
                         AppSpacing.hGapMd,
                         Expanded(
@@ -178,9 +198,16 @@ class _UserListScreenState extends State<UserListScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(user.name, style: AppTextStyles.bodyMedium()),
-                              Text(user.email, style: AppTextStyles.caption(
-                                color: AppColors.lightTextSecondary)),
+                              Text(
+                                user.name,
+                                style: AppTextStyles.bodyMedium(),
+                              ),
+                              Text(
+                                user.email,
+                                style: AppTextStyles.caption(
+                                  color: AppColors.lightTextSecondary,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -191,26 +218,48 @@ class _UserListScreenState extends State<UserListScreen> {
                     header: 'ROLE',
                     flex: 1,
                     builder: (user) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: user.isAdmin ? AppColors.primary.withValues(alpha: 0.1) : AppColors.info.withValues(alpha: 0.1),
+                        color: user.isAdmin
+                            ? AppColors.primary.withValues(alpha: 0.1)
+                            : AppColors.info.withValues(alpha: 0.1),
                         borderRadius: AppTokens.borderRadiusPill,
                       ),
-                      child: Text(user.isAdmin ? '👑 Admin' : '🤝 Volunteer',
-                        style: AppTextStyles.labelSmall(color: user.isAdmin ? AppColors.primary : AppColors.info)),
+                      child: Text(
+                        user.isAdmin ? '👑 Admin' : '🤝 Volunteer',
+                        style: AppTextStyles.labelSmall(
+                          color: user.isAdmin
+                              ? AppColors.primary
+                              : AppColors.info,
+                        ),
+                      ),
                     ),
                   ),
                   PremiumColumn<UserModel>(
                     header: 'STATUS',
                     flex: 1,
                     builder: (user) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: user.isActive ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+                        color: user.isActive
+                            ? AppColors.success.withValues(alpha: 0.1)
+                            : AppColors.error.withValues(alpha: 0.1),
                         borderRadius: AppTokens.borderRadiusPill,
                       ),
-                      child: Text(user.isActive ? 'Active' : 'Inactive',
-                        style: AppTextStyles.labelSmall(color: user.isActive ? AppColors.success : AppColors.error)),
+                      child: Text(
+                        user.isActive ? 'Active' : 'Inactive',
+                        style: AppTextStyles.labelSmall(
+                          color: user.isActive
+                              ? AppColors.success
+                              : AppColors.error,
+                        ),
+                      ),
                     ),
                   ),
                   PremiumColumn<UserModel>(
@@ -225,8 +274,13 @@ class _UserListScreenState extends State<UserListScreen> {
                           iconSize: 18,
                         ),
                         IconButton(
-                          icon: Icon(user.isActive ? Icons.block : Icons.check_circle, size: 18,
-                            color: user.isActive ? AppColors.error : AppColors.success),
+                          icon: Icon(
+                            user.isActive ? Icons.block : Icons.check_circle,
+                            size: 18,
+                            color: user.isActive
+                                ? AppColors.error
+                                : AppColors.success,
+                          ),
                           tooltip: user.isActive ? 'Deactivate' : 'Activate',
                           onPressed: () => _toggleUserActive(user),
                           iconSize: 18,
@@ -249,11 +303,15 @@ class _UserListScreenState extends State<UserListScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: user.isAdmin ? AppColors.primarySurface : AppColors.info.withValues(alpha: 0.1),
+                    backgroundColor: user.isAdmin
+                        ? AppColors.primarySurface
+                        : AppColors.info.withValues(alpha: 0.1),
                     child: Text(
                       user.name[0].toUpperCase(),
                       style: TextStyle(
-                        color: user.isAdmin ? AppColors.primary : AppColors.info,
+                        color: user.isAdmin
+                            ? AppColors.primary
+                            : AppColors.info,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -268,12 +326,18 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       if (!user.isActive)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.error,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text('INACTIVE', style: TextStyle(color: Colors.white, fontSize: 10)),
+                          child: const Text(
+                            'INACTIVE',
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                          ),
                         ),
                     ],
                   ),
@@ -308,7 +372,9 @@ class _UserListScreenState extends State<UserListScreen> {
                             Icon(
                               user.isActive ? Icons.block : Icons.check_circle,
                               size: 20,
-                              color: user.isActive ? AppColors.error : AppColors.success,
+                              color: user.isActive
+                                  ? AppColors.error
+                                  : AppColors.success,
                             ),
                             SizedBox(width: 8),
                             Text(user.isActive ? 'Deactivate' : 'Activate'),

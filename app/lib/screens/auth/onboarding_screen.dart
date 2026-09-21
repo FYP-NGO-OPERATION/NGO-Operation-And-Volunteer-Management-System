@@ -25,7 +25,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _finishOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showHome', true);
-    
+
     if (mounted) {
       Navigator.pushReplacement(
         context,
@@ -49,19 +49,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: Colors.teal.shade100,
               icon: Icons.volunteer_activism,
               title: 'Welcome to HRAS',
-              subtitle: 'Join hands with Hamesha Rahein Apke Saath to make a lasting impact in our community.',
+              subtitle:
+                  'Join hands with Hamesha Rahein Apke Saath to make a lasting impact in our community.',
             ),
             _buildPage(
               color: Colors.orange.shade100,
               icon: Icons.event_available,
               title: 'Discover Campaigns',
-              subtitle: 'Find and participate in local NGO campaigns ranging from food distribution to education.',
+              subtitle:
+                  'Find and participate in local NGO campaigns ranging from food distribution to education.',
             ),
             _buildPage(
               color: Colors.blue.shade100,
               icon: Icons.emoji_events,
               title: 'Earn Badges & Certs',
-              subtitle: 'Track your hours, earn gamified badges, and download official certificates for your CV.',
+              subtitle:
+                  'Track your hours, earn gamified badges, and download official certificates for your CV.',
             ),
           ],
         ),
@@ -69,7 +72,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       bottomSheet: isLastPage
           ? TextButton(
               style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
                 foregroundColor: Colors.white,
                 backgroundColor: AppColors.primary,
                 minimumSize: const Size.fromHeight(80),
@@ -116,7 +121,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage({required Color color, required IconData icon, required String title, required String subtitle}) {
+  Widget _buildPage({
+    required Color color,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     return Container(
       color: color,
       child: Column(
@@ -124,7 +134,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           Icon(icon, size: 150, color: AppColors.primary),
           const SizedBox(height: 64),
-          Text(title, style: AppTextStyles.headlineMedium().copyWith(fontWeight: FontWeight.bold, color: Colors.black87)),
+          Text(
+            title,
+            style: AppTextStyles.headlineMedium().copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
           const SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),

@@ -31,10 +31,12 @@ class BannerService {
         .collection('banners')
         .orderBy('sortOrder')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
-            .where((banner) => banner.isActive)
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
+              .where((banner) => banner.isActive)
+              .toList(),
+        );
   }
 
   Stream<List<BannerModel>> getAllBanners() {
@@ -42,8 +44,10 @@ class BannerService {
         .collection('banners')
         .orderBy('sortOrder')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => BannerModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 }

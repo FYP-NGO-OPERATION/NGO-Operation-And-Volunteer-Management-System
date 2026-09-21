@@ -21,48 +21,73 @@ class AnalyticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Responsive.isMobile(context) ? AppBar(
-        title: const Text('Analytics & Reports'),
-        actions: [
-          Consumer<CampaignProvider>(
-            builder: (context, provider, child) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.table_chart, color: AppColors.success),
-                    tooltip: 'export_csv'.tr(),
-                    onPressed: () {
-                      CsvExportService.exportCampaignsToCsv(context, provider.allCampaigns);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.picture_as_pdf, color: Theme.of(context).brightness == Brightness.dark ? AppColors.primaryLight : AppColors.primary),
-                    tooltip: 'Download PDF Report',
-                    onPressed: () async {
-                      try {
-                        final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-                        final ngoId = ngoProvider.currentNgo?.id;
-                        if (ngoId != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF...')));
-                          await PdfReportService.generateAndDownloadReport(ngoId: ngoId);
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Failed to generate PDF: $e'),
-                            backgroundColor: AppColors.error,
-                          ));
-                        }
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ) : null,
+      appBar: Responsive.isMobile(context)
+          ? AppBar(
+              title: const Text('Analytics & Reports'),
+              actions: [
+                Consumer<CampaignProvider>(
+                  builder: (context, provider, child) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.table_chart,
+                            color: AppColors.success,
+                          ),
+                          tooltip: 'export_csv'.tr(),
+                          onPressed: () {
+                            CsvExportService.exportCampaignsToCsv(
+                              context,
+                              provider.allCampaigns,
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.picture_as_pdf,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.primaryLight
+                                : AppColors.primary,
+                          ),
+                          tooltip: 'Download PDF Report',
+                          onPressed: () async {
+                            try {
+                              final ngoProvider = Provider.of<NgoProvider>(
+                                context,
+                                listen: false,
+                              );
+                              final ngoId = ngoProvider.currentNgo?.id;
+                              if (ngoId != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Generating PDF...'),
+                                  ),
+                                );
+                                await PdfReportService.generateAndDownloadReport(
+                                  ngoId: ngoId,
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to generate PDF: $e'),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            )
+          : null,
       body: Consumer<CampaignProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -70,11 +95,15 @@ class AnalyticsScreen extends StatelessWidget {
           }
 
           if (provider.allCampaigns.isEmpty) {
-            return const Center(child: Text('No data available for analytics.'));
+            return const Center(
+              child: Text('No data available for analytics.'),
+            );
           }
 
           return SingleChildScrollView(
-            padding: EdgeInsets.all(Responsive.isDesktop(context) ? AppSpacing.xl : AppSpacing.lg),
+            padding: EdgeInsets.all(
+              Responsive.isDesktop(context) ? AppSpacing.xl : AppSpacing.lg,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -82,7 +111,10 @@ class AnalyticsScreen extends StatelessWidget {
                 AppSpacing.vGapXl,
                 AiInsightsCard(
                   totalCampaigns: provider.totalCampaigns,
-                  totalVolunteers: provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers),
+                  totalVolunteers: provider.allCampaigns.fold(
+                    0,
+                    (sum, c) => sum + c.totalVolunteers,
+                  ),
                   totalFunds: provider.totalDonationsOverall,
                 ),
                 AppSpacing.vGapXl,
@@ -95,7 +127,10 @@ class AnalyticsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
+                            Text(
+                              'Campaigns by Status',
+                              style: AppTextStyles.titleLarge(),
+                            ),
                             AppSpacing.vGapLg,
                             _buildCampaignStatusBarChart(provider, context),
                           ],
@@ -106,7 +141,10 @@ class AnalyticsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
+                            Text(
+                              'Campaign Success Rate',
+                              style: AppTextStyles.titleLarge(),
+                            ),
                             AppSpacing.vGapLg,
                             _buildSuccessRateChart(provider, context),
                           ],
@@ -115,11 +153,17 @@ class AnalyticsScreen extends StatelessWidget {
                     ],
                   )
                 else ...[
-                  Text('Campaigns by Status', style: AppTextStyles.titleLarge()),
+                  Text(
+                    'Campaigns by Status',
+                    style: AppTextStyles.titleLarge(),
+                  ),
                   AppSpacing.vGapLg,
                   _buildCampaignStatusBarChart(provider, context),
                   AppSpacing.vGapXxl,
-                  Text('Campaign Success Rate', style: AppTextStyles.titleLarge()),
+                  Text(
+                    'Campaign Success Rate',
+                    style: AppTextStyles.titleLarge(),
+                  ),
                   AppSpacing.vGapLg,
                   _buildSuccessRateChart(provider, context),
                 ],
@@ -146,14 +190,40 @@ class AnalyticsScreen extends StatelessWidget {
   Widget _buildSummaryCards(CampaignProvider provider, BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    Color getColor(Color base) => isDark && base == AppColors.primary ? AppColors.primaryLight : base;
+
+    Color getColor(Color base) =>
+        isDark && base == AppColors.primary ? AppColors.primaryLight : base;
 
     final cards = [
-      _summaryCard('Total Campaigns', '${provider.totalCampaigns}', Icons.campaign, getColor(AppColors.primary), isDark),
-      _summaryCard('Volunteers', '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}', Icons.people, getColor(AppColors.info), isDark),
-      _summaryCard('Funds Raised', 'Rs.${_formatCompact(provider.totalDonationsOverall)}', Icons.volunteer_activism, getColor(AppColors.success), isDark),
-      if (isDesktop) _summaryCard('Beneficiaries', '${provider.totalBeneficiariesOverall}+', Icons.family_restroom, getColor(AppColors.accent), isDark),
+      _summaryCard(
+        'Total Campaigns',
+        '${provider.totalCampaigns}',
+        Icons.campaign,
+        getColor(AppColors.primary),
+        isDark,
+      ),
+      _summaryCard(
+        'Volunteers',
+        '${provider.allCampaigns.fold(0, (sum, c) => sum + c.totalVolunteers)}',
+        Icons.people,
+        getColor(AppColors.info),
+        isDark,
+      ),
+      _summaryCard(
+        'Funds Raised',
+        'Rs.${_formatCompact(provider.totalDonationsOverall)}',
+        Icons.volunteer_activism,
+        getColor(AppColors.success),
+        isDark,
+      ),
+      if (isDesktop)
+        _summaryCard(
+          'Beneficiaries',
+          '${provider.totalBeneficiariesOverall}+',
+          Icons.family_restroom,
+          getColor(AppColors.accent),
+          isDark,
+        ),
     ];
 
     if (isDesktop) {
@@ -180,13 +250,25 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _summaryCard(String title, String value, IconData icon, Color color, bool isDark) {
+  Widget _summaryCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.1),
+        color: isDark
+            ? color.withValues(alpha: 0.15)
+            : color.withValues(alpha: 0.1),
         borderRadius: AppTokens.borderRadiusMd,
-        border: Border.all(color: isDark ? color.withValues(alpha: 0.4) : color.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: isDark
+              ? color.withValues(alpha: 0.4)
+              : color.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,25 +276,44 @@ class AnalyticsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xs + 2),
             decoration: BoxDecoration(
-              color: isDark ? color.withValues(alpha: 0.25) : color.withValues(alpha: 0.15),
+              color: isDark
+                  ? color.withValues(alpha: 0.25)
+                  : color.withValues(alpha: 0.15),
               borderRadius: AppTokens.borderRadiusSm,
             ),
-            child: Icon(icon, color: isDark ? color : color, size: AppTokens.iconMd),
+            child: Icon(
+              icon,
+              color: isDark ? color : color,
+              size: AppTokens.iconMd,
+            ),
           ),
           AppSpacing.vGapSm,
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(value, style: AppTextStyles.statValue(color: isDark ? Colors.white : color)),
+            child: Text(
+              value,
+              style: AppTextStyles.statValue(
+                color: isDark ? Colors.white : color,
+              ),
+            ),
           ),
           AppSpacing.vGapXs,
-          Text(title, style: AppTextStyles.caption(color: isDark ? Colors.white70 : color)),
+          Text(
+            title,
+            style: AppTextStyles.caption(
+              color: isDark ? Colors.white70 : color,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCampaignStatusBarChart(CampaignProvider provider, BuildContext context) {
+  Widget _buildCampaignStatusBarChart(
+    CampaignProvider provider,
+    BuildContext context,
+  ) {
     int active = provider.activeCampaigns;
     int completed = provider.completedCampaigns;
     int upcoming = provider.upcomingCampaigns;
@@ -239,7 +340,11 @@ class AnalyticsScreen extends StatelessWidget {
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     return BarTooltipItem(
                       rod.toY.round().toString(),
-                      TextStyle(color: isDark ? Colors.white : rod.color, fontWeight: FontWeight.bold, fontSize: 14),
+                      TextStyle(
+                        color: isDark ? Colors.white : rod.color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     );
                   },
                 ),
@@ -250,25 +355,71 @@ class AnalyticsScreen extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (double value, TitleMeta meta) {
-                      final style = TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black87);
+                      final style = TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      );
                       switch (value.toInt()) {
-                        case 0: return Text('Upcoming', style: style);
-                        case 1: return Text('Active', style: style);
-                        case 2: return Text('Completed', style: style);
-                        default: return const Text('');
+                        case 0:
+                          return Text('Upcoming', style: style);
+                        case 1:
+                          return Text('Active', style: style);
+                        case 2:
+                          return Text('Completed', style: style);
+                        default:
+                          return const Text('');
                       }
                     },
                   ),
                 ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               borderData: FlBorderData(show: false),
               barGroups: [
-                BarChartGroupData(x: 0, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: upcoming.toDouble(), color: AppColors.info, width: 20, borderRadius: BorderRadius.circular(4))]),
-                BarChartGroupData(x: 1, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: active.toDouble(), color: AppColors.success, width: 20, borderRadius: BorderRadius.circular(4))]),
-                BarChartGroupData(x: 2, showingTooltipIndicators: [0], barRods: [BarChartRodData(toY: completed.toDouble(), color: AppColors.primary, width: 20, borderRadius: BorderRadius.circular(4))]),
+                BarChartGroupData(
+                  x: 0,
+                  showingTooltipIndicators: [0],
+                  barRods: [
+                    BarChartRodData(
+                      toY: upcoming.toDouble(),
+                      color: AppColors.info,
+                      width: 20,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+                BarChartGroupData(
+                  x: 1,
+                  showingTooltipIndicators: [0],
+                  barRods: [
+                    BarChartRodData(
+                      toY: active.toDouble(),
+                      color: AppColors.success,
+                      width: 20,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+                BarChartGroupData(
+                  x: 2,
+                  showingTooltipIndicators: [0],
+                  barRods: [
+                    BarChartRodData(
+                      toY: completed.toDouble(),
+                      color: AppColors.primary,
+                      width: 20,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -277,9 +428,14 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSuccessRateChart(CampaignProvider provider, BuildContext context) {
+  Widget _buildSuccessRateChart(
+    CampaignProvider provider,
+    BuildContext context,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final completedCampaigns = provider.allCampaigns.where((c) => c.status == CampaignStatus.completed).toList();
+    final completedCampaigns = provider.allCampaigns
+        .where((c) => c.status == CampaignStatus.completed)
+        .toList();
     if (completedCampaigns.isEmpty) {
       return const SizedBox(
         height: 200,
@@ -290,7 +446,10 @@ class AnalyticsScreen extends StatelessWidget {
     int successful = 0;
     int unsuccessful = 0;
     for (var c in completedCampaigns) {
-      if (c.isSuccessful) successful++; else unsuccessful++;
+      if (c.isSuccessful)
+        successful++;
+      else
+        unsuccessful++;
     }
 
     final total = successful + unsuccessful;
@@ -316,14 +475,22 @@ class AnalyticsScreen extends StatelessWidget {
                       color: AppColors.success,
                       title: '$succPct%',
                       radius: 50,
-                      titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                      titleStyle: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     PieChartSectionData(
                       value: unsuccessful.toDouble(),
                       color: AppColors.error,
                       title: '$failPct%',
                       radius: 50,
-                      titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                      titleStyle: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -333,9 +500,17 @@ class AnalyticsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _indicator(color: AppColors.success, text: 'Successful ($successful)', isDark: isDark),
+                _indicator(
+                  color: AppColors.success,
+                  text: 'Successful ($successful)',
+                  isDark: isDark,
+                ),
                 const SizedBox(height: 8),
-                _indicator(color: AppColors.error, text: 'Unsuccessful ($unsuccessful)', isDark: isDark),
+                _indicator(
+                  color: AppColors.error,
+                  text: 'Unsuccessful ($unsuccessful)',
+                  isDark: isDark,
+                ),
               ],
             ),
             const SizedBox(width: 16),
@@ -345,12 +520,27 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _indicator({required Color color, required String text, required bool isDark}) {
+  Widget _indicator({
+    required Color color,
+    required String text,
+    required bool isDark,
+  }) {
     return Row(
       children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
         const SizedBox(width: 8),
-        Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: isDark ? Colors.white70 : Colors.black87)),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: isDark ? Colors.white70 : Colors.black87,
+          ),
+        ),
       ],
     );
   }

@@ -40,11 +40,11 @@ class TaskModel {
       campaignId: map['campaignId'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      assignedToIds: map['assignedToIds'] != null 
-          ? List<String>.from(map['assignedToIds']) 
+      assignedToIds: map['assignedToIds'] != null
+          ? List<String>.from(map['assignedToIds'])
           : (map['assignedToId'] != null ? [map['assignedToId']] : []),
-      assignedToNames: map['assignedToNames'] != null 
-          ? List<String>.from(map['assignedToNames']) 
+      assignedToNames: map['assignedToNames'] != null
+          ? List<String>.from(map['assignedToNames'])
           : (map['assignedToName'] != null ? [map['assignedToName']] : []),
       isCompleted: map['isCompleted'] ?? false,
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),

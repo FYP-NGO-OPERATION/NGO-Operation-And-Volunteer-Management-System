@@ -44,7 +44,8 @@ class VolunteerModel {
         (e) => e.name == (map['status'] ?? 'registered'),
         orElse: () => VolunteerStatus.registered,
       ),
-      registeredAt: (map['registeredAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      registeredAt:
+          (map['registeredAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       confirmedAt: (map['confirmedAt'] as Timestamp?)?.toDate(),
       attendedAt: (map['attendedAt'] as Timestamp?)?.toDate(),
       notes: map['notes'],
@@ -62,7 +63,9 @@ class VolunteerModel {
       'userPhone': userPhone,
       'status': status.name,
       'registeredAt': Timestamp.fromDate(registeredAt),
-      'confirmedAt': confirmedAt != null ? Timestamp.fromDate(confirmedAt!) : null,
+      'confirmedAt': confirmedAt != null
+          ? Timestamp.fromDate(confirmedAt!)
+          : null,
       'attendedAt': attendedAt != null ? Timestamp.fromDate(attendedAt!) : null,
       'notes': notes,
     };
@@ -98,5 +101,6 @@ class VolunteerModel {
   bool get isAbsent => status == VolunteerStatus.absent;
 
   @override
-  String toString() => 'VolunteerModel(user: $userName, campaign: $campaignTitle, status: ${status.label})';
+  String toString() =>
+      'VolunteerModel(user: $userName, campaign: $campaignTitle, status: ${status.label})';
 }

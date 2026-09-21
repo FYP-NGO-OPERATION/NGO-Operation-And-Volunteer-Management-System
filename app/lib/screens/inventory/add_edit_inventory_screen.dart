@@ -21,7 +21,7 @@ class _AddEditInventoryScreenState extends State<AddEditInventoryScreen> {
   final _quantityController = TextEditingController();
   final _unitController = TextEditingController();
   final _descController = TextEditingController();
-  
+
   bool _isLoading = false;
 
   @override
@@ -50,7 +50,10 @@ class _AddEditInventoryScreenState extends State<AddEditInventoryScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final currentNgo = Provider.of<NgoProvider>(context, listen: false).currentNgo;
+      final currentNgo = Provider.of<NgoProvider>(
+        context,
+        listen: false,
+      ).currentNgo;
       if (currentNgo == null) throw Exception("No NGO selected");
 
       final item = InventoryItemModel(
@@ -66,15 +69,15 @@ class _AddEditInventoryScreenState extends State<AddEditInventoryScreen> {
       await InventoryService().saveItem(item);
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('saved_successfully'.tr())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('saved_successfully'.tr())));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -99,12 +102,21 @@ class _AddEditInventoryScreenState extends State<AddEditInventoryScreen> {
                     title: Text('delete_item'.tr()),
                     content: Text('are_you_sure'.tr()),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                      TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
                     ],
                   ),
                 );
-                
+
                 if (confirm == true) {
                   setState(() => _isLoading = true);
                   await InventoryService().deleteItem(widget.item!.id);
@@ -114,78 +126,84 @@ class _AddEditInventoryScreenState extends State<AddEditInventoryScreen> {
             ),
         ],
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'item_name'.tr(),
-                      border: const OutlineInputBorder(),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'item_name'.tr(),
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? 'required_field'.tr() : null,
                     ),
-                    validator: (v) => v!.isEmpty ? 'required_field'.tr() : null,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _quantityController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'quantity'.tr(),
-                            border: const OutlineInputBorder(),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _quantityController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'quantity'.tr(),
+                              border: const OutlineInputBorder(),
+                            ),
+                            validator: (v) =>
+                                v!.isEmpty ? 'required_field'.tr() : null,
                           ),
-                          validator: (v) => v!.isEmpty ? 'required_field'.tr() : null,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            controller: _unitController,
+                            decoration: InputDecoration(
+                              labelText: 'unit'.tr(),
+                              hintText: 'e.g. kg, boxes',
+                              border: const OutlineInputBorder(),
+                            ),
+                            validator: (v) =>
+                                v!.isEmpty ? 'required_field'.tr() : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _descController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'description'.tr(),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _saveItem,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          'save'.tr(),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        flex: 1,
-                        child: TextFormField(
-                          controller: _unitController,
-                          decoration: InputDecoration(
-                            labelText: 'unit'.tr(),
-                            hintText: 'e.g. kg, boxes',
-                            border: const OutlineInputBorder(),
-                          ),
-                          validator: (v) => v!.isEmpty ? 'required_field'.tr() : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _descController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'description'.tr(),
-                      border: const OutlineInputBorder(),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _saveItem,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: Text('save'.tr(), style: const TextStyle(fontSize: 16)),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
     );
   }
 }

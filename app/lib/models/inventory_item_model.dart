@@ -38,8 +38,8 @@ class InventoryItemModel {
       name: map['name'] ?? '',
       quantity: map['quantity']?.toInt() ?? 0,
       unit: map['unit'] ?? '',
-      lastUpdated: map['lastUpdated'] != null 
-          ? DateTime.parse(map['lastUpdated']) 
+      lastUpdated: map['lastUpdated'] != null
+          ? DateTime.parse(map['lastUpdated'])
           : DateTime.now(),
       description: map['description'],
     );

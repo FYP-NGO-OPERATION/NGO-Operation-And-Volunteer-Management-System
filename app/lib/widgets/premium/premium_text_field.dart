@@ -65,19 +65,27 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fillColor = isDark ? AppColors.darkInputFill : AppColors.lightInputFill;
+    final fillColor = isDark
+        ? AppColors.darkInputFill
+        : AppColors.lightInputFill;
     final borderColor = _hasError
         ? AppColors.error
         : _isFocused
-            ? AppColors.primary
-            : (isDark ? AppColors.darkDivider : AppColors.lightDivider);
+        ? AppColors.primary
+        : (isDark ? AppColors.darkDivider : AppColors.lightDivider);
 
     return AnimatedContainer(
       duration: AppAnimations.normal,
       decoration: BoxDecoration(
         borderRadius: AppTokens.borderRadiusMd,
         boxShadow: _isFocused
-            ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.12), blurRadius: 12, offset: const Offset(0, 2))]
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
+                ),
+              ]
             : [],
       ),
       child: TextFormField(
@@ -90,7 +98,9 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
         onChanged: widget.onChanged,
         textInputAction: widget.textInputAction,
         style: AppTextStyles.bodyMedium(
-          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+          color: isDark
+              ? AppColors.darkTextPrimary
+              : AppColors.lightTextPrimary,
         ),
         validator: (val) {
           final result = widget.validator?.call(val);
@@ -105,19 +115,33 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
           filled: true,
           fillColor: fillColor,
           labelStyle: AppTextStyles.labelMedium(
-            color: _isFocused ? AppColors.primary : (isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+            color: _isFocused
+                ? AppColors.primary
+                : (isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
           ),
           hintStyle: AppTextStyles.bodyMedium(
             color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint,
           ),
           prefixIcon: widget.prefixIcon != null
-              ? Icon(widget.prefixIcon, size: AppTokens.iconMd,
-                  color: _isFocused ? AppColors.primary : (isDark ? AppColors.darkTextHint : AppColors.lightTextHint))
+              ? Icon(
+                  widget.prefixIcon,
+                  size: AppTokens.iconMd,
+                  color: _isFocused
+                      ? AppColors.primary
+                      : (isDark
+                            ? AppColors.darkTextHint
+                            : AppColors.lightTextHint),
+                )
               : null,
           suffixIcon: widget.suffixIcon != null
               ? IconButton(
-                  icon: Icon(widget.suffixIcon, size: AppTokens.iconMd,
-                    color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                  icon: Icon(
+                    widget.suffixIcon,
+                    size: AppTokens.iconMd,
+                    color: isDark
+                        ? AppColors.darkTextHint
+                        : AppColors.lightTextHint,
+                  ),
                   onPressed: widget.onSuffixTap,
                 )
               : null,
@@ -128,7 +152,9 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: AppTokens.borderRadiusMd,
-            borderSide: BorderSide(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: AppTokens.borderRadiusMd,
@@ -144,7 +170,10 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: AppTokens.borderRadiusMd,
-            borderSide: BorderSide(color: (isDark ? AppColors.darkDivider : AppColors.lightDivider).withValues(alpha: 0.5)),
+            borderSide: BorderSide(
+              color: (isDark ? AppColors.darkDivider : AppColors.lightDivider)
+                  .withValues(alpha: 0.5),
+            ),
           ),
         ),
       ),
@@ -186,11 +215,19 @@ class PremiumSearchField extends StatelessWidget {
           ),
           prefixIcon: const Icon(Icons.search, color: AppColors.neutral400),
           suffixIcon: controller != null && controller!.text.isNotEmpty
-              ? IconButton(icon: const Icon(Icons.close, size: 18), onPressed: onClear)
+              ? IconButton(
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: onClear,
+                )
               : null,
           filled: true,
-          fillColor: isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant,
-          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+          fillColor: isDark
+              ? AppColors.darkSurfaceVariant
+              : AppColors.lightSurfaceVariant,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           border: OutlineInputBorder(
             borderRadius: AppTokens.borderRadiusPill,
             borderSide: BorderSide.none,

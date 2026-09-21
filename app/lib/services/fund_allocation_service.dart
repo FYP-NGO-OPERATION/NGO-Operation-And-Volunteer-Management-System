@@ -55,14 +55,15 @@ class FundAllocationService {
       batch.update(donationRef, {'remainingAmount': newRemaining});
 
       // Generate tracking event for this specific donor
-      String message = 'Supply Chain Verified: Rs. ${amountToTake.toStringAsFixed(0)} utilized for $expenseName.';
+      String message =
+          'Supply Chain Verified: Rs. ${amountToTake.toStringAsFixed(0)} utilized for $expenseName.';
       if (vendor != null && vendor.isNotEmpty) {
         message += ' (Vendor: $vendor)';
       }
 
       final eventId = const Uuid().v4();
       final eventRef = _db.collection('donation_tracking_events').doc(eventId);
-      
+
       final trackingEvent = TrackingEventModel(
         id: eventId,
         donationId: donation.id,
@@ -99,7 +100,7 @@ class FundAllocationService {
 
     for (var donation in unspentDonations) {
       final amount = donation.remainingAmount;
-      
+
       // Update donation document to reflect transfer (optionally you could zero it out and create a new donation in the new campaign, but for UTXO tracking, we just update the campaignId)
       final donationRef = _db.collection('donations').doc(donation.id);
       batch.update(donationRef, {
@@ -110,12 +111,13 @@ class FundAllocationService {
       // Generate tracking event
       final eventId = const Uuid().v4();
       final eventRef = _db.collection('donation_tracking_events').doc(eventId);
-      
+
       final trackingEvent = TrackingEventModel(
         id: eventId,
         donationId: donation.id,
         title: 'Funds Transferred',
-        description: 'Campaign ended. Your unspent Rs. ${amount.toStringAsFixed(0)} was securely transferred to: $toCampaignName.',
+        description:
+            'Campaign ended. Your unspent Rs. ${amount.toStringAsFixed(0)} was securely transferred to: $toCampaignName.',
         isCompleted: true,
         timestamp: DateTime.now(),
       );

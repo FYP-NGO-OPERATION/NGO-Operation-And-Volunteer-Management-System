@@ -26,7 +26,8 @@ import '../../../../widgets/common/dynamic_banner_carousel.dart';
 class HomeDashboardTab extends StatefulWidget {
   final Function(int) onTabChange;
 
-  const HomeDashboardTab({Key? key, required this.onTabChange}) : super(key: key);
+  const HomeDashboardTab({Key? key, required this.onTabChange})
+    : super(key: key);
 
   @override
   State<HomeDashboardTab> createState() => _HomeDashboardTabState();
@@ -52,7 +53,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
         setState(() {}); // trigger rebuild
       },
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,7 +63,11 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             if (user != null)
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                child: _AnimatedUserBanner(user: user, currentNgo: currentNgo, theme: Theme.of(context)),
+                child: _AnimatedUserBanner(
+                  user: user,
+                  currentNgo: currentNgo,
+                  theme: Theme.of(context),
+                ),
               ),
 
             // TOP DYNAMIC BANNER CAROUSEL
@@ -78,7 +85,11 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                             color: Colors.amber.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.auto_awesome, color: Colors.amber, size: 20),
+                          child: const Icon(
+                            Icons.auto_awesome,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
                         ),
                         AppSpacing.hGapSm,
                         Text(
@@ -100,8 +111,16 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkScaffoldBg : AppColors.lightScaffoldBg,
-                border: Border(bottom: BorderSide(color: isDark ? AppColors.darkDivider : AppColors.lightDivider)),
+                color: isDark
+                    ? AppColors.darkScaffoldBg
+                    : AppColors.lightScaffoldBg,
+                border: Border(
+                  bottom: BorderSide(
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
+                  ),
+                ),
               ),
               child: HomeQuickActions(
                 user: user,
@@ -124,11 +143,15 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.dynamic_feed_rounded, color: AppColors.primary, size: 20),
+                        child: const Icon(
+                          Icons.dynamic_feed_rounded,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
                       ),
                       AppSpacing.hGapSm,
                       Text(
-                        "Today's Feed", 
+                        "Today's Feed",
                         style: AppTextStyles.headlineMedium().copyWith(
                           fontWeight: FontWeight.w900,
                         ),
@@ -136,18 +159,109 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                     ],
                   ),
                   AppSpacing.vGapLg,
-                  
+
+                  // My Active SOS Alerts
+                  if (user != null)
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('sos_alerts')
+                          .where('userId', isEqualTo: user.uid)
+                          .where('status', isEqualTo: 'active')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+                          return const SizedBox.shrink();
+                        return Column(
+                          children: snapshot.data!.docs
+                              .map(
+                                (doc) => Container(
+                                  width: double.infinity,
+                                  margin: const EdgeInsets.only(
+                                    bottom: AppSpacing.lg,
+                                  ),
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error,
+                                    borderRadius: AppTokens.borderRadiusLg,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.error.withOpacity(0.5),
+                                        blurRadius: 10,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      const Expanded(
+                                        child: Text(
+                                          "Your SOS Alert is Active!",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: AppColors.error,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          FirebaseFirestore.instance
+                                              .collection('sos_alerts')
+                                              .doc(doc.id)
+                                              .update({'status': 'resolved'});
+                                        },
+                                        child: const Text(
+                                          "CANCEL SOS",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        );
+                      },
+                    ),
+
                   // Emergency Alerts (Volunteers only)
                   if (user?.isAdmin != true)
                     StreamBuilder<List<IncidentModel>>(
                       stream: IncidentService().getActiveIncidents(),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) return const SizedBox.shrink();
+                        if (!snapshot.hasData || snapshot.data!.isEmpty)
+                          return const SizedBox.shrink();
                         return Column(
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Scaffold(body: SafeArea(child: VolunteerDisasterMapScreen()))));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const Scaffold(
+                                      body: SafeArea(
+                                        child: VolunteerDisasterMapScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                );
                               },
                               child: Container(
                                 width: double.infinity,
@@ -156,23 +270,47 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                                   gradient: AppColors.emergencyGradient,
                                   borderRadius: AppTokens.borderRadiusLg,
                                   boxShadow: [
-                                    BoxShadow(color: AppColors.error.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
+                                    BoxShadow(
+                                      color: AppColors.error.withOpacity(0.5),
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
+                                    ),
                                   ],
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 40),
+                                    const Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Colors.white,
+                                      size: 40,
+                                    ),
                                     const SizedBox(width: AppSpacing.md),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          const Text('EMERGENCY MISSION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                                          Text('${snapshot.data!.length} active disaster(s) near you.', style: const TextStyle(color: Colors.white70)),
+                                          const Text(
+                                            'EMERGENCY MISSION',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${snapshot.data!.length} active disaster(s) near you.',
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Colors.white,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -180,14 +318,17 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                             AppSpacing.vGapLg,
                           ],
                         );
-                      }
+                      },
                     ),
 
                   // Upcoming Sessions
                   Consumer<VirtualSessionProvider>(
                     builder: (context, sessionProvider, child) {
-                      final upcomingSessions = sessionProvider.sessions.where((s) => s.isUpcoming).toList();
-                      if (upcomingSessions.isEmpty) return const SizedBox.shrink();
+                      final upcomingSessions = sessionProvider.sessions
+                          .where((s) => s.isUpcoming)
+                          .toList();
+                      if (upcomingSessions.isEmpty)
+                        return const SizedBox.shrink();
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,10 +336,25 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Upcoming Sessions', style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold)),
+                              Text(
+                                'Upcoming Sessions',
+                                style: AppTextStyles.titleMedium().copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text('Virtual Sessions')), body: const SessionListScreen())));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => Scaffold(
+                                        appBar: AppBar(
+                                          title: const Text('Virtual Sessions'),
+                                        ),
+                                        body: const SessionListScreen(),
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: const Text('View All'),
                               ),
@@ -208,10 +364,16 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                             height: 160,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: upcomingSessions.length > 3 ? 3 : upcomingSessions.length,
+                              itemCount: upcomingSessions.length > 3
+                                  ? 3
+                                  : upcomingSessions.length,
                               itemBuilder: (context, index) {
                                 final session = upcomingSessions[index];
-                                return _buildSessionCardMini(context, session, isDark);
+                                return _buildSessionCardMini(
+                                  context,
+                                  session,
+                                  isDark,
+                                );
                               },
                             ),
                           ),
@@ -234,7 +396,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                       }
 
                       return Column(
-                        children: announcements.map((a) => _buildFeedCard(context, a, isDark)).toList(),
+                        children: announcements
+                            .map((a) => _buildFeedCard(context, a, isDark))
+                            .toList(),
                       );
                     },
                   ),
@@ -245,7 +409,7 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                       userId: user.uid,
                       onTabChange: widget.onTabChange,
                     ),
-                  
+
                   const SizedBox(height: 40), // Bottom padding
                 ],
               ),
@@ -256,7 +420,12 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
     );
   }
 
-  Widget _buildWelcomeSlide(BuildContext context, user, currentNgo, bool isDark) {
+  Widget _buildWelcomeSlide(
+    BuildContext context,
+    user,
+    currentNgo,
+    bool isDark,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -265,7 +434,10 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             ? DecorationImage(
                 image: CachedNetworkImageProvider(user!.profileImageUrl!),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.6),
+                  BlendMode.darken,
+                ),
               )
             : null,
       ),
@@ -280,10 +452,13 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.white24,
-                  child: Text((user?.name ?? 'U')[0].toUpperCase(), style: AppTextStyles.displayMedium(color: Colors.white)),
+                  child: Text(
+                    (user?.name ?? 'U')[0].toUpperCase(),
+                    style: AppTextStyles.displayMedium(color: Colors.white),
+                  ),
                 ),
               if (user?.profileImageUrl == null) AppSpacing.vGapLg,
-              
+
               Text(
                 'Welcome Back',
                 style: AppTextStyles.headlineSmall(color: Colors.white70),
@@ -296,14 +471,19 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
               ),
               AppSpacing.vGapLg,
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white24,
                   borderRadius: AppTokens.borderRadiusPill,
                   border: Border.all(color: Colors.white38),
                 ),
                 child: Text(
-                  user?.isAdmin == true ? '👑 Administrator' : '🤝 Community Volunteer',
+                  user?.isAdmin == true
+                      ? '👑 Administrator'
+                      : '🤝 Community Volunteer',
                   style: AppTextStyles.titleSmall(color: Colors.white),
                 ),
               ),
@@ -323,7 +503,10 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             ? DecorationImage(
                 image: CachedNetworkImageProvider(currentNgo!.bannerUrl!),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.5),
+                  BlendMode.darken,
+                ),
               )
             : null,
       ),
@@ -368,18 +551,32 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             children: [
               Icon(Icons.emoji_events, size: 80, color: Colors.amber.shade400),
               AppSpacing.vGapLg,
-              Text('Your Impact', style: AppTextStyles.displaySmall(color: isDark ? Colors.white : Colors.black87)),
+              Text(
+                'Your Impact',
+                style: AppTextStyles.displaySmall(
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
               AppSpacing.vGapMd,
-              Text('Every action makes a difference.', style: AppTextStyles.titleMedium(color: isDark ? Colors.white70 : Colors.black54)),
+              Text(
+                'Every action makes a difference.',
+                style: AppTextStyles.titleMedium(
+                  color: isDark ? Colors.white70 : Colors.black54,
+                ),
+              ),
               AppSpacing.vGapXl,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildStatCircle('Level', '${user?.level ?? 1}', isDark),
                   _buildStatCircle('XP', '${user?.xp ?? 0}', isDark),
-                  _buildStatCircle('Hours', '${user?.volunteerHours ?? 0}', isDark),
+                  _buildStatCircle(
+                    'Hours',
+                    '${user?.volunteerHours ?? 0}',
+                    isDark,
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -397,26 +594,48 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
             color: isDark ? Colors.white12 : Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
-              if (!isDark) BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
             ],
           ),
           child: Center(
-            child: Text(value, style: AppTextStyles.headlineMedium(color: isDark ? Colors.white : AppColors.primary)),
+            child: Text(
+              value,
+              style: AppTextStyles.headlineMedium(
+                color: isDark ? Colors.white : AppColors.primary,
+              ),
+            ),
           ),
         ),
         AppSpacing.vGapSm,
-        Text(label, style: AppTextStyles.labelLarge(color: isDark ? Colors.white70 : Colors.black87)),
+        Text(
+          label,
+          style: AppTextStyles.labelLarge(
+            color: isDark ? Colors.white70 : Colors.black87,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildFeedCard(BuildContext context, AnnouncementModel a, bool isDark) {
+  Widget _buildFeedCard(
+    BuildContext context,
+    AnnouncementModel a,
+    bool isDark,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.primary.withOpacity(0.15), width: 1.5),
+        side: BorderSide(
+          color: AppColors.primary.withOpacity(0.15),
+          width: 1.5,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -433,7 +652,10 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnouncementListScreen()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -458,8 +680,14 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                         radius: 22,
                         backgroundColor: AppColors.primary,
                         child: Text(
-                          a.authorName.isNotEmpty ? a.authorName[0].toUpperCase() : 'A',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                          a.authorName.isNotEmpty
+                              ? a.authorName[0].toUpperCase()
+                              : 'A',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -470,28 +698,48 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                         children: [
                           Text(
                             a.authorName,
-                            style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold),
+                            style: AppTextStyles.titleMedium().copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
-                            DateFormat('MMM dd, yyyy • hh:mm a').format(a.createdAt),
-                            style: AppTextStyles.labelSmall(color: AppColors.textHint),
+                            DateFormat(
+                              'MMM dd, yyyy • hh:mm a',
+                            ).format(a.createdAt),
+                            style: AppTextStyles.labelSmall(
+                              color: AppColors.textHint,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.2),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.campaign, color: AppColors.primary, size: 14),
+                          const Icon(
+                            Icons.campaign,
+                            color: AppColors.primary,
+                            size: 14,
+                          ),
                           const SizedBox(width: 4),
-                          Text('Update', style: AppTextStyles.labelSmall(color: AppColors.primary).copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            'Update',
+                            style: AppTextStyles.labelSmall(
+                              color: AppColors.primary,
+                            ).copyWith(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -528,7 +776,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                       errorWidget: (context, url, error) => Container(
                         height: 180,
                         color: AppColors.neutral200,
-                        child: const Center(child: Icon(Icons.error, color: AppColors.error)),
+                        child: const Center(
+                          child: Icon(Icons.error, color: AppColors.error),
+                        ),
                       ),
                     ),
                   ),
@@ -541,22 +791,36 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
     );
   }
 
-  Widget _buildSessionCardMini(BuildContext context, dynamic session, bool isDark) {
+  Widget _buildSessionCardMini(
+    BuildContext context,
+    dynamic session,
+    bool isDark,
+  ) {
     return Container(
       width: 260,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+        border: Border.all(
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
         boxShadow: [
-          if (!isDark) BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
         ],
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const SessionListScreen()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SessionListScreen()),
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,16 +844,31 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(session.title, style: AppTextStyles.titleSmall().copyWith(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    session.title,
+                    style: AppTextStyles.titleSmall().copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.access_time, size: 12, color: AppColors.primary),
+                      const Icon(
+                        Icons.access_time,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          DateFormat('MMM d • hh:mm a').format(session.sessionDate),
-                          style: AppTextStyles.caption(color: AppColors.primary),
+                          DateFormat(
+                            'MMM d • hh:mm a',
+                          ).format(session.sessionDate),
+                          style: AppTextStyles.caption(
+                            color: AppColors.primary,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -606,260 +885,239 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
   }
 }
 
-class _AnimatedUserBanner extends StatefulWidget {
+class _AnimatedUserBanner extends StatelessWidget {
   final dynamic user;
   final dynamic currentNgo;
   final ThemeData theme;
-  const _AnimatedUserBanner({required this.user, required this.currentNgo, required this.theme});
 
-  @override
-  State<_AnimatedUserBanner> createState() => _AnimatedUserBannerState();
-}
-
-class _AnimatedUserBannerState extends State<_AnimatedUserBanner> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const _AnimatedUserBanner({
+    required this.user,
+    required this.currentNgo,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.theme.brightness == Brightness.dark;
-    
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final angle = _controller.value * 2 * math.pi;
-        final shiftX = math.cos(angle) * 0.5;
-        final shiftY = math.sin(angle) * 0.5;
+    final isDark = theme.brightness == Brightness.dark;
 
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: AppTokens.borderRadiusLg,
-            border: Border.all(
-              color: isDark
-                  ? Colors.tealAccent.withOpacity(0.35)
-                  : Colors.white.withOpacity(0.5),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? Colors.tealAccent.withOpacity(0.2)
-                    : const Color(0xFF2E7D32).withOpacity(0.25),
-                blurRadius: 24,
-                spreadRadius: 3,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 8),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: AppTokens.borderRadiusLg,
+        border: Border.all(
+          color: isDark
+              ? Colors.tealAccent.withOpacity(0.35)
+              : Colors.white.withOpacity(0.5),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.tealAccent.withOpacity(0.2)
+                : const Color(0xFF2E7D32).withOpacity(0.25),
+            blurRadius: 24,
+            spreadRadius: 3,
+            offset: const Offset(0, 4),
           ),
-          child: ClipRRect(
-            borderRadius: AppTokens.borderRadiusLg,
-            child: Stack(
-              children: [
-                // Animated multi-gradient background
-                Positioned.fill(
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: AppTokens.borderRadiusLg,
+        child: Stack(
+          children: [
+            // Static multi-gradient background
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [
+                            const Color(0xFF0F172A), // Deep Slate
+                            const Color(0xFF312E81), // Deep Indigo
+                            const Color(0xFF115E59), // Deep Teal
+                            const Color(0xFF0F172A),
+                          ]
+                        : [
+                            const Color(0xFF021B0B), // Extremely dark green
+                            const Color(0xFF052B14),
+                            const Color(0xFF093D1E),
+                            const Color(0xFF021B0B),
+                          ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            // Static Magical Stars
+            ...List.generate(18, (index) {
+              final opacity = 0.6 + (index % 3) * 0.15;
+              final size = 2.0 + (index % 4) * 1.5;
+
+              final top = 10.0 + (index * 31.0) % 110;
+              final left = 10.0 + (index * 83.0) % 320;
+
+              final starColors = [
+                Colors.white,
+                Colors.yellowAccent.shade100,
+                Colors.cyanAccent.shade100,
+                Colors.lightGreenAccent.shade100,
+              ];
+              final starColor = starColors[index % starColors.length];
+
+              return Positioned(
+                top: top,
+                left: left,
+                child: Opacity(
+                  opacity: opacity,
                   child: Container(
+                    width: size,
+                    height: size,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      shape: BoxShape.circle,
+                      color: starColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: starColor.withOpacity(0.8),
+                          blurRadius: size * 1.5,
+                          spreadRadius: size * 0.5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+            // Frosted glass overlay
+            Positioned.fill(
+              child: Container(
+                color: isDark
+                    ? Colors.black.withOpacity(0.15)
+                    : Colors.white.withOpacity(0.08),
+              ),
+            ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Row(
+                children: [
+                  // Profile pic with static neon ring
+                  Container(
+                    padding: const EdgeInsets.all(3.5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: SweepGradient(
                         colors: isDark
                             ? [
-                                const Color(0xFF0F172A), // Deep Slate
-                                const Color(0xFF312E81), // Deep Indigo
-                                const Color(0xFF115E59), // Deep Teal
-                                const Color(0xFF0F172A),
+                                Colors.tealAccent,
+                                Colors.cyanAccent,
+                                Colors.greenAccent,
+                                Colors.tealAccent,
                               ]
                             : [
-                                const Color(0xFF021B0B), // Extremely dark green
-                                const Color(0xFF052B14), 
-                                const Color(0xFF093D1E),
-                                const Color(0xFF021B0B),
+                                Colors.white,
+                                Colors.greenAccent,
+                                Colors.white,
+                                Colors.lightGreenAccent,
+                                Colors.white,
                               ],
-                        begin: Alignment(shiftX, shiftY),
-                        end: Alignment(-shiftX, -shiftY),
                       ),
-                    ),
-                  ),
-                ),
-                // Magical Stars
-                ...List.generate(18, (index) {
-                  final starAngle = angle * (index % 2 == 0 ? 1 : -1) + (index * math.pi / 4);
-                  // Opacity: fade in and out smoothly
-                  final opacity = (math.sin(starAngle * (2 + index % 3)) + 1) / 2 * 0.9;
-                  // Scale/Zoom effect
-                  final sizeScale = (math.cos(starAngle * 3) + 1) / 2;
-                  final baseSize = 2.0 + (index % 4) * 2.0;
-                  final size = baseSize + (sizeScale * 3.5);
-                  
-                  // Distribute stars randomly across the banner
-                  final top = 10.0 + (index * 31.0) % 110;
-                  final left = 10.0 + (index * 83.0) % 320;
-                  
-                  // Multi light colors
-                  final starColors = [
-                    Colors.white,
-                    Colors.yellowAccent.shade100,
-                    Colors.cyanAccent.shade100,
-                    Colors.lightGreenAccent.shade100,
-                  ];
-                  final starColor = starColors[index % starColors.length];
-                  
-                  return Positioned(
-                    top: top,
-                    left: left,
-                    child: Opacity(
-                      opacity: opacity,
-                      child: Container(
-                        width: size,
-                        height: size,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: starColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: starColor.withOpacity(0.9),
-                              blurRadius: size * 2.0,
-                              spreadRadius: size * 0.8,
-                            ),
-                          ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark
+                              ? Colors.tealAccent.withOpacity(0.6)
+                              : Colors.greenAccent.withOpacity(0.6),
+                          blurRadius: 20,
+                          spreadRadius: 4,
                         ),
-                      ),
+                      ],
                     ),
-                  );
-                }),
-                // Frosted glass overlay
-                Positioned.fill(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                    child: Container(
-                      color: isDark
-                          ? Colors.black.withOpacity(0.15)
-                          : Colors.white.withOpacity(0.08),
+                    child: CircleAvatar(
+                      radius: 38,
+                      backgroundColor: Colors.white.withOpacity(0.15),
+                      backgroundImage: user?.profileImageUrl != null
+                          ? CachedNetworkImageProvider(user!.profileImageUrl!)
+                          : null,
+                      child: user?.profileImageUrl == null
+                          ? Text(
+                              (user?.name ?? 'V')[0].toUpperCase(),
+                              style: AppTextStyles.displaySmall(
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
-                ),
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Row(
-                    children: [
-                      // Profile pic with animated neon ring
-                      Container(
-                        padding: const EdgeInsets.all(3.5),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: SweepGradient(
-                            startAngle: angle,
-                            endAngle: angle + math.pi * 2,
-                            colors: isDark
-                                ? [
-                                    Colors.tealAccent,
-                                    Colors.cyanAccent,
-                                    Colors.greenAccent,
-                                    Colors.tealAccent,
-                                  ]
-                                : [
-                                    Colors.white,
-                                    Colors.greenAccent,
-                                    Colors.white,
-                                    Colors.lightGreenAccent,
-                                    Colors.white,
-                                  ],
+                  AppSpacing.hGapLg,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome back,',
+                          style: AppTextStyles.bodyMedium(
+                            color: Colors.white.withOpacity(0.85),
                           ),
-                          boxShadow: [
-                            BoxShadow(
+                        ),
+                        AppSpacing.vGapXs,
+                        Text(
+                          user?.name ?? 'Volunteer',
+                          style: AppTextStyles.headlineLarge(
+                            color: Colors.white,
+                          ).copyWith(letterSpacing: 0.5),
+                        ),
+                        AppSpacing.vGapSm,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(
+                              isDark ? 0.08 : 0.18,
+                            ),
+                            borderRadius: AppTokens.borderRadiusPill,
+                            border: Border.all(
                               color: isDark
-                                  ? Colors.tealAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2))
-                                  : Colors.greenAccent.withOpacity(0.55 + 0.25 * math.sin(angle * 2)),
-                              blurRadius: 24,
-                              spreadRadius: 6,
+                                  ? Colors.tealAccent.withOpacity(0.4)
+                                  : Colors.white.withOpacity(0.6),
                             ),
-                          ],
+                            boxShadow: isDark
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.tealAccent.withOpacity(
+                                        0.12,
+                                      ),
+                                      blurRadius: 8,
+                                      spreadRadius: 1,
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Text(
+                            '🤝 ${currentNgo?.name ?? 'Community Volunteer'}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        child: CircleAvatar(
-                          radius: 38,
-                          backgroundColor: Colors.white.withOpacity(0.15),
-                          backgroundImage: widget.user?.profileImageUrl != null
-                              ? CachedNetworkImageProvider(widget.user!.profileImageUrl!)
-                              : null,
-                          child: widget.user?.profileImageUrl == null
-                              ? Text(
-                                  (widget.user?.name ?? 'V')[0].toUpperCase(),
-                                  style: AppTextStyles.displaySmall(color: Colors.white),
-                                )
-                              : null,
-                        ),
-                      ),
-                      AppSpacing.hGapLg,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: AppTextStyles.bodyMedium(color: Colors.white.withOpacity(0.85)),
-                            ),
-                            AppSpacing.vGapXs,
-                            Text(
-                              widget.user?.name ?? 'Volunteer',
-                              style: AppTextStyles.headlineLarge(color: Colors.white).copyWith(
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            AppSpacing.vGapSm,
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(isDark ? 0.08 : 0.18),
-                                borderRadius: AppTokens.borderRadiusPill,
-                                border: Border.all(
-                                  color: isDark
-                                      ? Colors.tealAccent.withOpacity(0.4)
-                                      : Colors.white.withOpacity(0.6),
-                                ),
-                                boxShadow: isDark
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors.tealAccent.withOpacity(0.12),
-                                          blurRadius: 8,
-                                          spreadRadius: 1,
-                                        )
-                                      ]
-                                    : [],
-                              ),
-                              child: Text(
-                                '🤝 ${widget.currentNgo?.name ?? 'Community Volunteer'}',
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
-

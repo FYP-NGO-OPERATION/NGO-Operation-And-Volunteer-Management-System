@@ -35,7 +35,8 @@ class DistributionModel {
       unit: map['unit'] ?? 'pieces',
       distributedTo: map['distributedTo'] ?? 0,
       distributedBy: map['distributedBy'] ?? '',
-      distributedAt: (map['distributedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      distributedAt:
+          (map['distributedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       location: map['location'] ?? '',
       notes: map['notes'],
     );

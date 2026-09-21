@@ -104,11 +104,12 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     setState(() => _isPlayingTts = true);
     await _flutterTts.setLanguage("en-US");
     await _flutterTts.setPitch(1.0);
-    
+
     // In case user wants urdu, we can attempt:
     // if (context.locale.languageCode == 'ur') await _flutterTts.setLanguage("ur-PK");
 
-    String textToRead = "Campaign Title: ${_campaign.title}. "
+    String textToRead =
+        "Campaign Title: ${_campaign.title}. "
         "Location: ${_campaign.location}. "
         "Description: ${_campaign.description}.";
 
@@ -119,8 +120,13 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     await _flutterTts.speak(textToRead);
   }
 
-  bool get _hasJoined => _myVolunteerRecord != null && (_myVolunteerRecord!.isRegistered || _myVolunteerRecord!.isConfirmed || _myVolunteerRecord!.hasAttended);
-  bool get _isPending => _myVolunteerRecord != null && _myVolunteerRecord!.isPending;
+  bool get _hasJoined =>
+      _myVolunteerRecord != null &&
+      (_myVolunteerRecord!.isRegistered ||
+          _myVolunteerRecord!.isConfirmed ||
+          _myVolunteerRecord!.hasAttended);
+  bool get _isPending =>
+      _myVolunteerRecord != null && _myVolunteerRecord!.isPending;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +139,10 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         title: Text(_campaign.title, overflow: TextOverflow.ellipsis),
         actions: [
           IconButton(
-            icon: Icon(_isPlayingTts ? Icons.stop_circle : Icons.volume_up, color: _isPlayingTts ? AppColors.error : null),
+            icon: Icon(
+              _isPlayingTts ? Icons.stop_circle : Icons.volume_up,
+              color: _isPlayingTts ? AppColors.error : null,
+            ),
             tooltip: 'Read Aloud',
             onPressed: _speakCampaignDetails,
           ),
@@ -141,8 +150,10 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
             icon: const Icon(Icons.share),
             tooltip: 'share_campaign'.tr(),
             onPressed: () {
-              final String deepLink = "https://hras.org/campaign/${_campaign.id}";
-              final String shareText = "🌟 Join this amazing campaign: ${_campaign.title}!\n\n"
+              final String deepLink =
+                  "https://hras.org/campaign/${_campaign.id}";
+              final String shareText =
+                  "🌟 Join this amazing campaign: ${_campaign.title}!\n\n"
                   "${_campaign.description}\n\n"
                   "📍 Location: ${_campaign.location}\n"
                   "🎯 Goal: ${_campaign.targetGoal}\n\n"
@@ -155,7 +166,13 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
               icon: const Icon(Icons.live_tv, color: Colors.red),
               tooltip: 'Join Live Stream',
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => LiveStreamScreen(campaign: _campaign, isHost: isAdmin)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        LiveStreamScreen(campaign: _campaign, isHost: isAdmin),
+                  ),
+                );
               },
             ),
           if (isAdmin)
@@ -167,13 +184,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => QrGenerateScreen(campaignId: _campaign.id, campaignTitle: _campaign.title),
+                      builder: (_) => QrGenerateScreen(
+                        campaignId: _campaign.id,
+                        campaignTitle: _campaign.title,
+                      ),
                     ),
                   );
                 }
               },
             ),
-          if (!isAdmin && _hasJoined && _campaign.status == CampaignStatus.active)
+          if (!isAdmin &&
+              _hasJoined &&
+              _campaign.status == CampaignStatus.active)
             IconButton(
               icon: const Icon(Icons.emergency, color: AppColors.error),
               tooltip: 'emergency_sos'.tr(),
@@ -185,12 +207,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                       children: [
                         const Icon(Icons.warning, color: AppColors.error),
                         const SizedBox(width: 8),
-                        Text('emergency_sos'.tr(), style: const TextStyle(color: AppColors.error)),
+                        Text(
+                          'emergency_sos'.tr(),
+                          style: const TextStyle(color: AppColors.error),
+                        ),
                       ],
                     ),
                     content: Text('sos_desc'.tr()),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr())),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text('cancel'.tr()),
+                      ),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(ctx);
@@ -202,7 +230,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                             ),
                           );
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error,
+                        ),
                         child: Text('send_sos_alarm'.tr()),
                       ),
                     ],
@@ -214,18 +244,45 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
             PopupMenuButton<String>(
               onSelected: (action) => _handleAction(action),
               itemBuilder: (_) => [
-                const PopupMenuItem(value: 'edit', child: Text('✏️ Edit Campaign')),
-                const PopupMenuItem(value: 'ledger', child: Text('⛓️ Transparency Ledger')),
-                const PopupMenuItem(value: 'expenses', child: Text('💸 Expense Log')),
-                const PopupMenuItem(value: 'pdf_report', child: Text('📄 Download PDF Report')),
-                const PopupMenuItem(value: 'offline_mesh', child: Text('📡 Offline Mesh Chat')),
-                const PopupMenuItem(value: 'scan_inventory', child: Text('📦 Scan Inventory')),
-                const PopupMenuItem(value: 'status', child: Text('🔄 Change Status')),
+                const PopupMenuItem(
+                  value: 'edit',
+                  child: Text('✏️ Edit Campaign'),
+                ),
+                const PopupMenuItem(
+                  value: 'ledger',
+                  child: Text('⛓️ Transparency Ledger'),
+                ),
+                const PopupMenuItem(
+                  value: 'expenses',
+                  child: Text('💸 Expense Log'),
+                ),
+                const PopupMenuItem(
+                  value: 'pdf_report',
+                  child: Text('📄 Download PDF Report'),
+                ),
+                const PopupMenuItem(
+                  value: 'offline_mesh',
+                  child: Text('📡 Offline Mesh Chat'),
+                ),
+                const PopupMenuItem(
+                  value: 'scan_inventory',
+                  child: Text('📦 Scan Inventory'),
+                ),
+                const PopupMenuItem(
+                  value: 'status',
+                  child: Text('🔄 Change Status'),
+                ),
                 if (FeatureFlags.isQrAttendanceEnabled)
-                  const PopupMenuItem(value: 'qr', child: Text('📱 Generate QR Code')),
+                  const PopupMenuItem(
+                    value: 'qr',
+                    child: Text('📱 Generate QR Code'),
+                  ),
                 const PopupMenuItem(
                   value: 'delete',
-                  child: Text('🗑️ Delete', style: TextStyle(color: AppColors.error)),
+                  child: Text(
+                    '🗑️ Delete',
+                    style: TextStyle(color: AppColors.error),
+                  ),
                 ),
               ],
             ),
@@ -244,20 +301,31 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: Responsive.isDesktop(context) ? 1100 : double.infinity),
+          constraints: BoxConstraints(
+            maxWidth: Responsive.isDesktop(context) ? 1100 : double.infinity,
+          ),
           child: Column(
             children: [
               // Real weather hazard checking via API
-              if (_campaign.status == CampaignStatus.active && _campaign.latitude != null && _campaign.longitude != null)
-                WeatherWarningCard(latitude: _campaign.latitude!, longitude: _campaign.longitude!),
+              if (_campaign.status == CampaignStatus.active &&
+                  _campaign.latitude != null &&
+                  _campaign.longitude != null)
+                WeatherWarningCard(
+                  latitude: _campaign.latitude!,
+                  longitude: _campaign.longitude!,
+                ),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
                     CampaignInfoTab(campaign: _campaign),
                     CampaignTasksTab(campaign: _campaign, isAdmin: isAdmin),
-                    (!isAdmin && !_hasJoined) 
-                        ? const Center(child: Text('You must join this campaign to access the chat room.')) 
+                    (!isAdmin && !_hasJoined)
+                        ? const Center(
+                            child: Text(
+                              'You must join this campaign to access the chat room.',
+                            ),
+                          )
                         : CampaignChatTab(campaign: _campaign),
                     CampaignRecordTab(campaign: _campaign, isAdmin: isAdmin),
                     CampaignHighlightsTab(campaign: _campaign),
@@ -271,97 +339,157 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       // Join / Leave / Feedback button for volunteers
       floatingActionButton: (!isAdmin)
           ? _campaign.isCompleted
-              ? (_myVolunteerRecord?.status == VolunteerStatus.attended)
-                  ? Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      child: FloatingActionButton.extended(
-                        onPressed: () {
-                          SnackbarHelper.showSuccess(context, 'Feedback received! (Simulated)');
-                        },
-                        icon: const Icon(Icons.star),
-                        label: Text('leave_feedback'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        backgroundColor: Colors.amber[700],
-                        foregroundColor: Colors.white,
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                    )
-                  : (_myVolunteerRecord == null)
+                ? (_myVolunteerRecord?.status == VolunteerStatus.attended)
+                      ? Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          child: FloatingActionButton.extended(
+                            onPressed: () {
+                              SnackbarHelper.showSuccess(
+                                context,
+                                'Feedback received! (Simulated)',
+                              );
+                            },
+                            icon: const Icon(Icons.star),
+                            label: Text(
+                              'leave_feedback'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            backgroundColor: Colors.amber[700],
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        )
+                      : (_myVolunteerRecord == null)
                       ? Container(
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(horizontal: 24),
                           child: FloatingActionButton.extended(
                             onPressed: _isJoining ? null : _joinCampaign,
-                            icon: _isJoining 
-                                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            icon: _isJoining
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
                                 : const Icon(Icons.history_edu),
                             label: Text(
-                              _isJoining ? 'please_wait'.tr() : 'i_participated'.tr(),
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
+                              _isJoining
+                                  ? 'please_wait'.tr()
+                                  : 'i_participated'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                             backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             elevation: 8,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                         )
                       : _isPending
-                          ? Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.symmetric(horizontal: 24),
-                              child: FloatingActionButton.extended(
-                                onPressed: _isJoining ? null : _leaveCampaign,
-                                icon: _isJoining
-                                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                    : const Icon(Icons.cancel_schedule_send),
-                                label: Text(
-                                  _isJoining ? 'please_wait'.tr() : 'cancel_request'.tr(),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
-                                ),
-                                backgroundColor: AppColors.warning,
-                                foregroundColor: Colors.white,
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ? Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          child: FloatingActionButton.extended(
+                            onPressed: _isJoining ? null : _leaveCampaign,
+                            icon: _isJoining
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.cancel_schedule_send),
+                            label: Text(
+                              _isJoining
+                                  ? 'please_wait'.tr()
+                                  : 'cancel_request'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            backgroundColor: AppColors.warning,
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        )
+                      : null
+                : Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    child: FloatingActionButton.extended(
+                      onPressed: _isJoining
+                          ? null
+                          : _hasJoined
+                          ? _leaveCampaign
+                          : _joinCampaign,
+                      icon: _isJoining
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
                               ),
                             )
-                          : null
-              : Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  child: FloatingActionButton.extended(
-                    onPressed: _isJoining
-                        ? null
-                        : _hasJoined
-                            ? _leaveCampaign
-                            : _joinCampaign,
-                    icon: _isJoining
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : Icon(_hasJoined ? Icons.exit_to_app : (_campaign.status == CampaignStatus.upcoming ? Icons.notifications_active : Icons.how_to_reg)),
-                    label: Text(
-                      _isJoining
-                          ? 'please_wait'.tr()
-                          : _hasJoined
-                              ? (_campaign.status == CampaignStatus.upcoming ? 'cancel_request'.tr() : 'leave_campaign'.tr())
-                              : _campaign.isFull
-                                  ? 'campaign_full'.tr()
-                                  : (_campaign.status == CampaignStatus.upcoming ? 'pre_register'.tr() : 'join_campaign'.tr()),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
+                          : Icon(
+                              _hasJoined
+                                  ? Icons.exit_to_app
+                                  : (_campaign.status == CampaignStatus.upcoming
+                                        ? Icons.notifications_active
+                                        : Icons.how_to_reg),
+                            ),
+                      label: Text(
+                        _isJoining
+                            ? 'please_wait'.tr()
+                            : _hasJoined
+                            ? (_campaign.status == CampaignStatus.upcoming
+                                  ? 'cancel_request'.tr()
+                                  : 'leave_campaign'.tr())
+                            : _campaign.isFull
+                            ? 'campaign_full'.tr()
+                            : (_campaign.status == CampaignStatus.upcoming
+                                  ? 'pre_register'.tr()
+                                  : 'join_campaign'.tr()),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      backgroundColor: _hasJoined
+                          ? AppColors.error
+                          : _campaign.isFull
+                          ? AppColors.lightTextHint
+                          : AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    backgroundColor: _hasJoined
-                        ? AppColors.error
-                        : _campaign.isFull
-                            ? AppColors.lightTextHint
-                            : AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                )
+                  )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -404,7 +532,10 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
     } catch (e) {
       if (mounted) {
         setState(() => _isJoining = false);
-        SnackbarHelper.showError(context, e.toString().replaceAll('Exception: ', ''));
+        SnackbarHelper.showError(
+          context,
+          e.toString().replaceAll('Exception: ', ''),
+        );
       }
     }
   }
@@ -448,7 +579,9 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
         final isUpcoming = _campaign.status == CampaignStatus.upcoming;
         SnackbarHelper.showInfo(
           context,
-          isUpcoming ? 'You cancelled your interest.' : 'You left the campaign.',
+          isUpcoming
+              ? 'You cancelled your interest.'
+              : 'You left the campaign.',
         );
       }
     } catch (e) {
@@ -475,11 +608,20 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
 
       case 'pdf_report':
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Generating PDF Report... Please wait.')),
+          const SnackBar(
+            content: Text('Generating PDF Report... Please wait.'),
+          ),
         );
         try {
-          final donationsSnap = await FirebaseFirestore.instance.collection('campaigns').doc(_campaign.id).collection('donations').get();
-          final donationsAmount = donationsSnap.docs.fold(0.0, (sum, d) => sum + ((d.data()['amount'] as num?)?.toDouble() ?? 0.0));
+          final donationsSnap = await FirebaseFirestore.instance
+              .collection('campaigns')
+              .doc(_campaign.id)
+              .collection('donations')
+              .get();
+          final donationsAmount = donationsSnap.docs.fold(
+            0.0,
+            (sum, d) => sum + ((d.data()['amount'] as num?)?.toDouble() ?? 0.0),
+          );
           await PdfReportService.generateAndPrintCampaignReport(
             campaigns: [_campaign],
             totalBeneficiaries: 0,
@@ -494,28 +636,36 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       case 'offline_mesh':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => OfflineMeshChatScreen(campaignId: _campaign.id)),
+          MaterialPageRoute(
+            builder: (_) => OfflineMeshChatScreen(campaignId: _campaign.id),
+          ),
         );
         break;
 
       case 'scan_inventory':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => InventoryScannerScreen(campaignId: _campaign.id)),
+          MaterialPageRoute(
+            builder: (_) => InventoryScannerScreen(campaignId: _campaign.id),
+          ),
         );
         break;
 
       case 'ledger':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => TransparencyLedgerScreen(campaignId: _campaign.id)),
+          MaterialPageRoute(
+            builder: (_) => TransparencyLedgerScreen(campaignId: _campaign.id),
+          ),
         );
         break;
 
       case 'expenses':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ExpenseTrackingScreen(campaign: _campaign)),
+          MaterialPageRoute(
+            builder: (_) => ExpenseTrackingScreen(campaign: _campaign),
+          ),
         );
         break;
 
@@ -552,19 +702,30 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
             final isSelected = _campaign.status == status;
             return ListTile(
               leading: Icon(
-                isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                isSelected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
                 color: AppColors.primary,
               ),
               title: Text('${status.icon} ${status.label}'),
               onTap: () async {
                 Navigator.pop(ctx);
-                final provider = Provider.of<CampaignProvider>(context, listen: false);
-                final success = await provider.updateStatus(_campaign.id, status);
+                final provider = Provider.of<CampaignProvider>(
+                  context,
+                  listen: false,
+                );
+                final success = await provider.updateStatus(
+                  _campaign.id,
+                  status,
+                );
                 if (mounted && success) {
                   setState(() {
                     _campaign = _campaign.copyWith(status: status);
                   });
-                  SnackbarHelper.showSuccess(context, 'Status updated to ${status.label}');
+                  SnackbarHelper.showSuccess(
+                    context,
+                    'Status updated to ${status.label}',
+                  );
                 }
               },
             );
@@ -579,9 +740,14 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Campaign'),
-        content: Text('Are you sure you want to delete "${_campaign.title}"? This cannot be undone.'),
+        content: Text(
+          'Are you sure you want to delete "${_campaign.title}"? This cannot be undone.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),

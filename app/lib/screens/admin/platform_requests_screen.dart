@@ -30,7 +30,9 @@ class _PlatformRequestsScreenState extends State<PlatformRequestsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final pendingNgos = ngoProvider.ngos.where((n) => n.status == 'pending').toList();
+          final pendingNgos = ngoProvider.ngos
+              .where((n) => n.status == 'pending')
+              .toList();
 
           if (pendingNgos.isEmpty) {
             return const Center(child: Text('No pending NGO requests.'));
@@ -48,14 +50,28 @@ class _PlatformRequestsScreenState extends State<PlatformRequestsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(ngo.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(
+                        ngo.name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text(ngo.description, style: const TextStyle(color: Colors.grey)),
+                      Text(
+                        ngo.description,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                       const SizedBox(height: 16),
-                      const Text('Requested Features:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Requested Features:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       Wrap(
                         spacing: 8,
-                        children: ngo.features.map((f) => Chip(label: Text(f))).toList(),
+                        children: ngo.features
+                            .map((f) => Chip(label: Text(f)))
+                            .toList(),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -63,21 +79,38 @@ class _PlatformRequestsScreenState extends State<PlatformRequestsScreen> {
                         children: [
                           TextButton(
                             onPressed: () async {
-                              await ngoProvider.updateNgoStatus(ngo.id, 'rejected');
-                              if (context.mounted) SnackbarHelper.showError(context, 'Request Rejected');
+                              await ngoProvider.updateNgoStatus(
+                                ngo.id,
+                                'rejected',
+                              );
+                              if (context.mounted)
+                                SnackbarHelper.showError(
+                                  context,
+                                  'Request Rejected',
+                                );
                             },
-                            child: const Text('Reject', style: TextStyle(color: Colors.red)),
+                            child: const Text(
+                              'Reject',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
                             onPressed: () async {
-                              await ngoProvider.updateNgoStatus(ngo.id, 'approved');
-                              if (context.mounted) SnackbarHelper.showSuccess(context, 'NGO Approved!');
+                              await ngoProvider.updateNgoStatus(
+                                ngo.id,
+                                'approved',
+                              );
+                              if (context.mounted)
+                                SnackbarHelper.showSuccess(
+                                  context,
+                                  'NGO Approved!',
+                                );
                             },
                             child: const Text('Approve'),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),

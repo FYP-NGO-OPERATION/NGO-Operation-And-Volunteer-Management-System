@@ -19,7 +19,8 @@ class LandingFooterSection extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.neutral900, Color(0xFF0D0D0D)],
-          begin: Alignment.topCenter, end: Alignment.bottomCenter,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
       width: double.infinity,
@@ -37,19 +38,50 @@ class LandingFooterSection extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: Column(
-                           crossAxisAlignment: CrossAxisAlignment.start,
-                           children: [
-                              Text('HRAS', style: AppTextStyles.headlineMedium(color: Colors.white)),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'HRAS',
+                                style: AppTextStyles.headlineMedium(
+                                  color: Colors.white,
+                                ),
+                              ),
                               AppSpacing.vGapSm,
-                              Text(AppConstants.appTagline, style: AppTextStyles.bodySmall(color: AppColors.neutral400)),
+                              Text(
+                                AppConstants.appTagline,
+                                style: AppTextStyles.bodySmall(
+                                  color: AppColors.neutral400,
+                                ),
+                              ),
                               AppSpacing.vGapLg,
                               Row(
                                 children: [
-                                  _SocialBtn(const FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 20), 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                                  _SocialBtn(
+                                    const FaIcon(
+                                      FontAwesomeIcons.instagram,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    'https://www.instagram.com/hras_hamesharaheinapkesaath',
+                                  ),
                                   AppSpacing.hGapMd,
-                                  _SocialBtn(const Icon(Icons.facebook, color: Colors.white, size: 20), 'https://www.facebook.com/share/18JqaHAKdM/'),
+                                  _SocialBtn(
+                                    const Icon(
+                                      Icons.facebook,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    'https://www.facebook.com/share/18JqaHAKdM/',
+                                  ),
                                   AppSpacing.hGapMd,
-                                  _SocialBtn(const FaIcon(FontAwesomeIcons.tiktok, color: Colors.white, size: 20), 'https://www.tiktok.com/@hras_official'),
+                                  _SocialBtn(
+                                    const FaIcon(
+                                      FontAwesomeIcons.tiktok,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    'https://www.tiktok.com/@hras_official',
+                                  ),
                                 ],
                               ),
                             ],
@@ -60,7 +92,12 @@ class LandingFooterSection extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Quick Links', style: AppTextStyles.labelLarge(color: Colors.white)),
+                              Text(
+                                'Quick Links',
+                                style: AppTextStyles.labelLarge(
+                                  color: Colors.white,
+                                ),
+                              ),
                               AppSpacing.vGapMd,
                               _footerLink('About Us'),
                               _footerLink('Our Campaigns'),
@@ -74,7 +111,12 @@ class LandingFooterSection extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Resources', style: AppTextStyles.labelLarge(color: Colors.white)),
+                              Text(
+                                'Resources',
+                                style: AppTextStyles.labelLarge(
+                                  color: Colors.white,
+                                ),
+                              ),
                               AppSpacing.vGapMd,
                               _footerLink('Privacy Policy'),
                               _footerLink('Terms of Service'),
@@ -88,11 +130,25 @@ class LandingFooterSection extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Contact', style: AppTextStyles.labelLarge(color: Colors.white)),
+                              Text(
+                                'Contact',
+                                style: AppTextStyles.labelLarge(
+                                  color: Colors.white,
+                                ),
+                              ),
                               AppSpacing.vGapMd,
-                              _footerContactRow(Icons.email_outlined, 'hras.ngo@gmail.com'),
-                              _footerContactRow(Icons.phone_outlined, '+92 300 1234567'),
-                              _footerContactRow(Icons.location_on_outlined, 'Karachi, Pakistan'),
+                              _footerContactRow(
+                                Icons.email_outlined,
+                                'hras.ngo@gmail.com',
+                              ),
+                              _footerContactRow(
+                                Icons.phone_outlined,
+                                '+92 300 1234567',
+                              ),
+                              _footerContactRow(
+                                Icons.location_on_outlined,
+                                'Karachi, Pakistan',
+                              ),
                             ],
                           ),
                         ),
@@ -100,18 +156,49 @@ class LandingFooterSection extends StatelessWidget {
                     )
                   : Column(
                       children: [
-                        Text('HRAS', style: AppTextStyles.headlineMedium(color: Colors.white)),
+                        Text(
+                          'HRAS',
+                          style: AppTextStyles.headlineMedium(
+                            color: Colors.white,
+                          ),
+                        ),
                         AppSpacing.vGapSm,
-                        Text(AppConstants.appTagline, style: AppTextStyles.caption(color: AppColors.neutral400)),
+                        Text(
+                          AppConstants.appTagline,
+                          style: AppTextStyles.caption(
+                            color: AppColors.neutral400,
+                          ),
+                        ),
                         AppSpacing.vGapXl,
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _SocialBtn(const FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 20), 'https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                            _SocialBtn(
+                              const FaIcon(
+                                FontAwesomeIcons.instagram,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              'https://www.instagram.com/hras_hamesharaheinapkesaath',
+                            ),
                             AppSpacing.hGapLg,
-                            _SocialBtn(const Icon(Icons.facebook, color: Colors.white, size: 20), 'https://www.facebook.com/share/18JqaHAKdM/'),
+                            _SocialBtn(
+                              const Icon(
+                                Icons.facebook,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              'https://www.facebook.com/share/18JqaHAKdM/',
+                            ),
                             AppSpacing.hGapLg,
-                            _SocialBtn(const FaIcon(FontAwesomeIcons.tiktok, color: Colors.white, size: 20), 'https://www.tiktok.com/@hras_official'),
+                            _SocialBtn(
+                              const FaIcon(
+                                FontAwesomeIcons.tiktok,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              'https://www.tiktok.com/@hras_official',
+                            ),
                           ],
                         ),
                       ],
@@ -133,7 +220,10 @@ class LandingFooterSection extends StatelessWidget {
   static Widget _footerLink(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Text(text, style: AppTextStyles.bodySmall(color: AppColors.neutral400)),
+      child: Text(
+        text,
+        style: AppTextStyles.bodySmall(color: AppColors.neutral400),
+      ),
     );
   }
 
@@ -144,7 +234,12 @@ class LandingFooterSection extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: AppColors.neutral500),
           AppSpacing.hGapSm,
-          Expanded(child: Text(text, style: AppTextStyles.bodySmall(color: AppColors.neutral400))),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.bodySmall(color: AppColors.neutral400),
+            ),
+          ),
         ],
       ),
     );
@@ -161,7 +256,9 @@ class _SocialBtn extends StatelessWidget {
     return InkWell(
       onTap: () async {
         final uri = Uri.parse(url);
-        if (!await launchUrl(uri)) { debugPrint('Could not launch $url'); }
+        if (!await launchUrl(uri)) {
+          debugPrint('Could not launch $url');
+        }
       },
       borderRadius: BorderRadius.circular(AppTokens.radiusPill),
       child: Container(

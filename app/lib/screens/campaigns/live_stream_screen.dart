@@ -7,7 +7,11 @@ class LiveStreamScreen extends StatefulWidget {
   final CampaignModel campaign;
   final bool isHost;
 
-  const LiveStreamScreen({super.key, required this.campaign, this.isHost = false});
+  const LiveStreamScreen({
+    super.key,
+    required this.campaign,
+    this.isHost = false,
+  });
 
   @override
   State<LiveStreamScreen> createState() => _LiveStreamScreenState();
@@ -52,7 +56,7 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                 child: Icon(Icons.videocam, size: 100, color: Colors.white24),
               ),
             ),
-            
+
             // Header
             Positioned(
               top: 16,
@@ -61,20 +65,42 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: const Row(
                       children: [
-                        Icon(Icons.fiber_manual_record, color: Colors.white, size: 12),
+                        Icon(
+                          Icons.fiber_manual_record,
+                          color: Colors.white,
+                          size: 12,
+                        ),
                         SizedBox(width: 4),
-                        Text('LIVE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text(
+                          'LIVE',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: const Row(
                       children: [
                         Icon(Icons.visibility, color: Colors.white, size: 16),
@@ -87,7 +113,7 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -111,7 +137,10 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Campaign Info
-                    Text(widget.campaign.title, style: AppTextStyles.titleMedium(color: Colors.white)),
+                    Text(
+                      widget.campaign.title,
+                      style: AppTextStyles.titleMedium(color: Colors.white),
+                    ),
                     const SizedBox(height: 16),
 
                     // Chat List
@@ -124,7 +153,10 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
                               _comments[index],
-                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                           );
                         },
@@ -147,25 +179,41 @@ class _LiveStreamScreenState extends State<LiveStreamScreen> {
                                 borderRadius: BorderRadius.circular(30),
                                 borderSide: BorderSide.none,
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         IconButton(
-                          icon: const Icon(Icons.send, color: AppColors.primary),
+                          icon: const Icon(
+                            Icons.send,
+                            color: AppColors.primary,
+                          ),
                           onPressed: _sendComment,
                         ),
                         if (!widget.isHost)
                           ElevatedButton.icon(
-                            icon: const Icon(Icons.favorite, color: Colors.white, size: 16),
+                            icon: const Icon(
+                              Icons.favorite,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                             label: const Text('Donate'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                             ),
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Donation link triggered')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Donation link triggered'),
+                                ),
+                              );
                             },
                           ),
                       ],

@@ -13,7 +13,8 @@ class AnalyticsDashboardScreen extends StatefulWidget {
   const AnalyticsDashboardScreen({super.key});
 
   @override
-  State<AnalyticsDashboardScreen> createState() => _AnalyticsDashboardScreenState();
+  State<AnalyticsDashboardScreen> createState() =>
+      _AnalyticsDashboardScreenState();
 }
 
 class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
@@ -50,37 +51,46 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Impact Metrics'),
-      ),
+      appBar: AppBar(title: const Text('Impact Metrics')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
-              : _data == null
-                  ? const Center(child: Text('No data available'))
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildStatCards(),
-                            AppSpacing.vGapXl,
-                            Text('Campaigns Overview', style: AppTextStyles.titleLarge()),
-                            AppSpacing.vGapLg,
-                            _buildPieChart(),
-                            AppSpacing.vGapXl,
-                            Text('Campaigns By Category', style: AppTextStyles.titleLarge()),
-                            AppSpacing.vGapLg,
-                            _buildBarChart(),
-                            AppSpacing.vGapXxl,
-                          ],
-                        ),
-                      ),
+          ? Center(
+              child: Text(
+                'Error: $_error',
+                style: const TextStyle(color: Colors.red),
+              ),
+            )
+          : _data == null
+          ? const Center(child: Text('No data available'))
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStatCards(),
+                    AppSpacing.vGapXl,
+                    Text(
+                      'Campaigns Overview',
+                      style: AppTextStyles.titleLarge(),
                     ),
+                    AppSpacing.vGapLg,
+                    _buildPieChart(),
+                    AppSpacing.vGapXl,
+                    Text(
+                      'Campaigns By Category',
+                      style: AppTextStyles.titleLarge(),
+                    ),
+                    AppSpacing.vGapLg,
+                    _buildBarChart(),
+                    AppSpacing.vGapXxl,
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -92,17 +102,47 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
           spacing: AppSpacing.lg,
           runSpacing: AppSpacing.lg,
           children: [
-            _statCard('Total Campaigns', _data!.totalCampaigns.toString(), Icons.campaign, Colors.blue, width),
-            _statCard('Volunteers', _data!.totalVolunteers.toString(), Icons.people, Colors.green, width),
-            _statCard('Beneficiaries', _data!.totalBeneficiaries.toString(), Icons.favorite, Colors.red, width),
-            _statCard('Donations', 'Rs. ${_data!.totalDonations.toStringAsFixed(0)}', Icons.attach_money, Colors.amber, width),
+            _statCard(
+              'Total Campaigns',
+              _data!.totalCampaigns.toString(),
+              Icons.campaign,
+              Colors.blue,
+              width,
+            ),
+            _statCard(
+              'Volunteers',
+              _data!.totalVolunteers.toString(),
+              Icons.people,
+              Colors.green,
+              width,
+            ),
+            _statCard(
+              'Beneficiaries',
+              _data!.totalBeneficiaries.toString(),
+              Icons.favorite,
+              Colors.red,
+              width,
+            ),
+            _statCard(
+              'Donations',
+              'Rs. ${_data!.totalDonations.toStringAsFixed(0)}',
+              Icons.attach_money,
+              Colors.amber,
+              width,
+            ),
           ],
         );
       },
     );
   }
 
-  Widget _statCard(String title, String value, IconData icon, Color color, double width) {
+  Widget _statCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    double width,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: width,
@@ -119,7 +159,10 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
           Icon(icon, color: color, size: 28),
           AppSpacing.vGapSm,
           Text(value, style: AppTextStyles.headlineMedium()),
-          Text(title, style: AppTextStyles.bodySmall(color: Theme.of(context).hintColor)),
+          Text(
+            title,
+            style: AppTextStyles.bodySmall(color: Theme.of(context).hintColor),
+          ),
         ],
       ),
     );
@@ -127,7 +170,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
 
   Widget _buildPieChart() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     int active = _data!.activeCampaigns;
     int completed = _data!.completedCampaigns;
     int upcoming = _data!.totalCampaigns - (active + completed);
@@ -153,11 +196,41 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
                 centerSpaceRadius: 40,
                 sections: [
                   if (active > 0)
-                    PieChartSectionData(color: Colors.green, value: active.toDouble(), title: '$active', radius: 50, titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    PieChartSectionData(
+                      color: Colors.green,
+                      value: active.toDouble(),
+                      title: '$active',
+                      radius: 50,
+                      titleStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   if (completed > 0)
-                    PieChartSectionData(color: Colors.blue, value: completed.toDouble(), title: '$completed', radius: 50, titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    PieChartSectionData(
+                      color: Colors.blue,
+                      value: completed.toDouble(),
+                      title: '$completed',
+                      radius: 50,
+                      titleStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   if (upcoming > 0)
-                    PieChartSectionData(color: Colors.orange, value: upcoming.toDouble(), title: '$upcoming', radius: 50, titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    PieChartSectionData(
+                      color: Colors.orange,
+                      value: upcoming.toDouble(),
+                      title: '$upcoming',
+                      radius: 50,
+                      titleStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -172,7 +245,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
               AppSpacing.vGapSm,
               _indicator(Colors.orange, 'Upcoming'),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -181,7 +254,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
   Widget _indicator(Color color, String text) {
     return Row(
       children: [
-        Container(width: 16, height: 16, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
         const SizedBox(width: 8),
         Text(text, style: const TextStyle(fontSize: 14)),
       ],
@@ -217,7 +294,12 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
 
     return Container(
       height: 300,
-      padding: const EdgeInsets.only(top: AppSpacing.xl, right: AppSpacing.xl, left: AppSpacing.sm, bottom: AppSpacing.sm),
+      padding: const EdgeInsets.only(
+        top: AppSpacing.xl,
+        right: AppSpacing.xl,
+        left: AppSpacing.sm,
+        bottom: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: AppTokens.borderRadiusLg,
@@ -251,12 +333,19 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
                 reservedSize: 30,
                 getTitlesWidget: (value, meta) {
                   if (value % 1 != 0) return const SizedBox();
-                  return Text(value.toInt().toString(), style: const TextStyle(fontSize: 12));
+                  return Text(
+                    value.toInt().toString(),
+                    style: const TextStyle(fontSize: 12),
+                  );
                 },
               ),
             ),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
           ),
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),

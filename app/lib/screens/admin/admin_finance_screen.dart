@@ -22,26 +22,27 @@ class AdminFinanceScreen extends StatefulWidget {
 }
 
 class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
-  final NumberFormat _currencyFormat = NumberFormat.currency(symbol: 'Rs. ', decimalDigits: 0);
-  
+  final NumberFormat _currencyFormat = NumberFormat.currency(
+    symbol: 'Rs. ',
+    decimalDigits: 0,
+  );
+
   @override
   Widget build(BuildContext context) {
     final campaigns = Provider.of<CampaignProvider>(context).campaigns;
-    
+
     double totalDonations = 0;
     double totalExpenses = 0;
-    
+
     for (var c in campaigns) {
       totalDonations += c.totalDonationsAmount;
       totalExpenses += c.totalExpenses;
     }
-    
+
     final balance = totalDonations - totalExpenses;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('NGO Finance Ledger'),
-      ),
+      appBar: AppBar(title: const Text('NGO Finance Ledger')),
       body: SingleChildScrollView(
         padding: AppSpacing.pagePadding,
         child: Column(
@@ -56,19 +57,28 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                 Row(
                   children: [
                     TextButton.icon(
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageTrackingEventsScreen())),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ManageTrackingEventsScreen(),
+                        ),
+                      ),
                       icon: const Icon(Icons.settings),
                       label: const Text('Manage Tracker'),
                     ),
                     AppSpacing.hGapSm,
                     ElevatedButton.icon(
-                      onPressed: () => _showAddExpenseDialog(context, campaigns),
+                      onPressed: () =>
+                          _showAddExpenseDialog(context, campaigns),
                       icon: const Icon(Icons.add),
                       label: const Text('Log Expense'),
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
             AppSpacing.vGapMd,
@@ -82,16 +92,42 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
   Widget _buildSummaryCards(double donations, double expenses, double balance) {
     return Row(
       children: [
-        Expanded(child: _buildCard('Total Incoming', _currencyFormat.format(donations), Colors.green.shade100, Colors.green.shade800)),
+        Expanded(
+          child: _buildCard(
+            'Total Incoming',
+            _currencyFormat.format(donations),
+            Colors.green.shade100,
+            Colors.green.shade800,
+          ),
+        ),
         AppSpacing.hGapMd,
-        Expanded(child: _buildCard('Total Expenses', _currencyFormat.format(expenses), Colors.red.shade100, Colors.red.shade800)),
+        Expanded(
+          child: _buildCard(
+            'Total Expenses',
+            _currencyFormat.format(expenses),
+            Colors.red.shade100,
+            Colors.red.shade800,
+          ),
+        ),
         AppSpacing.hGapMd,
-        Expanded(child: _buildCard('Net Balance', _currencyFormat.format(balance), Colors.blue.shade100, Colors.blue.shade800)),
+        Expanded(
+          child: _buildCard(
+            'Net Balance',
+            _currencyFormat.format(balance),
+            Colors.blue.shade100,
+            Colors.blue.shade800,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildCard(String title, String amount, Color bgColor, Color textColor) {
+  Widget _buildCard(
+    String title,
+    String amount,
+    Color bgColor,
+    Color textColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -102,9 +138,19 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
-          Text(amount, style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w900)),
+          Text(
+            amount,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
         ],
       ),
     );
@@ -112,10 +158,15 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
 
   Widget _buildExpensesList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('expenses').orderBy('createdAt', descending: true).limit(20).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('expenses')
+          .orderBy('createdAt', descending: true)
+          .limit(20)
+          .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-        
+        if (!snapshot.hasData)
+          return const Center(child: CircularProgressIndicator());
+
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) return const Text('No expenses logged yet.');
 
@@ -126,14 +177,29 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
           itemBuilder: (context, index) {
             final data = docs[index].data() as Map<String, dynamic>;
             final expense = ExpenseModel.fromMap(data);
-            
+
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading: const CircleAvatar(backgroundColor: Colors.redAccent, child: Icon(Icons.money_off, color: Colors.white)),
-                title: Text(expense.itemName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Qty: ${expense.quantity} | Campaign ID: ${expense.campaignId.substring(0, 5)}...'),
-                trailing: Text(_currencyFormat.format(expense.totalAmount), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16)),
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.redAccent,
+                  child: Icon(Icons.money_off, color: Colors.white),
+                ),
+                title: Text(
+                  expense.itemName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Qty: ${expense.quantity} | Campaign ID: ${expense.campaignId.substring(0, 5)}...',
+                ),
+                trailing: Text(
+                  _currencyFormat.format(expense.totalAmount),
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             );
           },
@@ -142,9 +208,16 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
     );
   }
 
-  void _showAddExpenseDialog(BuildContext context, List<CampaignModel> campaigns) {
+  void _showAddExpenseDialog(
+    BuildContext context,
+    List<CampaignModel> campaigns,
+  ) {
     if (campaigns.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Create a campaign first to log expenses against it.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Create a campaign first to log expenses against it.'),
+        ),
+      );
       return;
     }
 
@@ -166,13 +239,20 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedCampaignId,
                 decoration: const InputDecoration(labelText: 'Select Campaign'),
-                items: campaigns.map((c) => DropdownMenuItem(value: c.id, child: Text(c.title))).toList(),
+                items: campaigns
+                    .map(
+                      (c) =>
+                          DropdownMenuItem(value: c.id, child: Text(c.title)),
+                    )
+                    .toList(),
                 onChanged: (v) => _selectedCampaignId = v!,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _itemCtrl,
-                decoration: const InputDecoration(labelText: 'Item Name (e.g. 50 Tents)'),
+                decoration: const InputDecoration(
+                  labelText: 'Item Name (e.g. 50 Tents)',
+                ),
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
@@ -189,7 +269,9 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _priceCtrl,
-                      decoration: const InputDecoration(labelText: 'Unit Price'),
+                      decoration: const InputDecoration(
+                        labelText: 'Unit Price',
+                      ),
                       keyboardType: TextInputType.number,
                       validator: (v) => v!.isEmpty ? 'Required' : null,
                     ),
@@ -200,17 +282,25 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 final qty = int.parse(_qtyCtrl.text);
                 final price = double.parse(_priceCtrl.text);
                 final total = qty * price;
-                
-                final user = Provider.of<AuthProvider>(context, listen: false).user!;
-                
-                final docRef = FirebaseFirestore.instance.collection('expenses').doc();
+
+                final user = Provider.of<AuthProvider>(
+                  context,
+                  listen: false,
+                ).user!;
+
+                final docRef = FirebaseFirestore.instance
+                    .collection('expenses')
+                    .doc();
                 final expense = ExpenseModel(
                   id: docRef.id,
                   campaignId: _selectedCampaignId,
@@ -223,13 +313,14 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                   addedByName: user.name,
                   createdAt: DateTime.now(),
                 );
-                
+
                 await docRef.set(expense.toMap());
-                
-                await FirebaseFirestore.instance.collection('campaigns').doc(_selectedCampaignId).update({
-                  'totalExpenses': FieldValue.increment(total),
-                });
-                
+
+                await FirebaseFirestore.instance
+                    .collection('campaigns')
+                    .doc(_selectedCampaignId)
+                    .update({'totalExpenses': FieldValue.increment(total)});
+
                 // Allocate funds via UTXO logic
                 final allocationService = FundAllocationService();
                 await allocationService.allocateExpense(
@@ -237,13 +328,15 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                   expenseTotal: total,
                   expenseName: _itemCtrl.text,
                 );
-                
+
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense Logged Successfully!')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Expense Logged Successfully!')),
+                );
               }
             },
             child: const Text('Save Expense'),
-          )
+          ),
         ],
       ),
     );

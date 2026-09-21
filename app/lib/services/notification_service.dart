@@ -32,11 +32,12 @@ class NotificationService {
   NotificationService._();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   /// Initialize FCM — call once after Firebase.initializeApp().
-  Future<void> initialize(String userId) async {
+  Future<void> initialize(String userId, {bool isAdmin = false}) async {
     if (_initialized) return;
 
     try {
@@ -62,18 +63,24 @@ class NotificationService {
       // Initialize local notifications for foreground display
       const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
       const darwinInit = DarwinInitializationSettings();
-      const initSettings = InitializationSettings(android: androidInit, iOS: darwinInit);
+      const initSettings = InitializationSettings(
+        android: androidInit,
+        iOS: darwinInit,
+      );
       await _localNotifications.initialize(initSettings);
 
       // Create a high importance channel for Android
       const channel = AndroidNotificationChannel(
         'high_importance_channel', // id
         'High Importance Notifications', // title
-        description: 'This channel is used for important notifications.', // description
+        description:
+            'This channel is used for important notifications.', // description
         importance: Importance.max,
       );
       await _localNotifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
 
       // Get and store FCM token
@@ -91,6 +98,11 @@ class NotificationService {
       // Subscribe to global campaign topic
       await _messaging.subscribeToTopic('campaigns');
       debugPrint('[FCM] Subscribed to campaigns topic');
+
+      if (isAdmin) {
+        await _messaging.subscribeToTopic('admin');
+        debugPrint('[FCM] Subscribed to admin topic');
+      }
 
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
@@ -129,7 +141,8 @@ class NotificationService {
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'High Importance Notifications',
-            channelDescription: 'This channel is used for important notifications.',
+            channelDescription:
+                'This channel is used for important notifications.',
             importance: Importance.max,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -148,6 +161,7 @@ class NotificationService {
   Future<void> unsubscribe() async {
     try {
       await _messaging.unsubscribeFromTopic('campaigns');
+      await _messaging.unsubscribeFromTopic('admin');
       await _messaging.deleteToken();
       _initialized = false;
       debugPrint('[FCM] Unsubscribed and token deleted');

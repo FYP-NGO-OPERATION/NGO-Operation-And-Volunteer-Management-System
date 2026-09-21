@@ -66,14 +66,15 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
     if (_livenessScore < 1.0) return;
 
     setState(() => _isProcessing = true);
-    
+
     try {
       final user = Provider.of<AuthProvider>(context, listen: false).user;
       if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-          'isIdVerified': true,
-        });
-        
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'isIdVerified': true});
+
         if (mounted) {
           SnackbarHelper.showSuccess(context, 'e-KYC Verification Successful!');
           Navigator.pop(context, true); // true = verified
@@ -90,16 +91,18 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('e-KYC Verification'),
-      ),
+      appBar: AppBar(title: const Text('e-KYC Verification')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.face_retouching_natural, size: 80, color: AppColors.primary),
+              const Icon(
+                Icons.face_retouching_natural,
+                size: 80,
+                color: AppColors.primary,
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Verify Your Identity',
@@ -118,7 +121,10 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
                   icon: const Icon(Icons.camera_alt),
                   label: const Text('Open Camera'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
                   ),
                 )
               else ...[
@@ -131,7 +137,9 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _livenessScore == 1.0 ? AppColors.success : AppColors.primary,
+                          color: _livenessScore == 1.0
+                              ? AppColors.success
+                              : AppColors.primary,
                           width: 4,
                         ),
                         image: DecorationImage(
@@ -153,14 +161,18 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _livenessScore == 1.0 ? AppColors.success : Colors.grey,
+                    color: _livenessScore == 1.0
+                        ? AppColors.success
+                        : Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 16),
                 if (_livenessScore > 0)
                   LinearProgressIndicator(
                     value: _livenessScore,
-                    color: _livenessScore == 1.0 ? AppColors.success : AppColors.primary,
+                    color: _livenessScore == 1.0
+                        ? AppColors.success
+                        : AppColors.primary,
                     minHeight: 8,
                   ),
                 const SizedBox(height: 32),
@@ -169,11 +181,14 @@ class _EkycVerificationScreenState extends State<EkycVerificationScreen> {
                     onPressed: _submitVerification,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.success,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 16,
+                      ),
                     ),
                     child: const Text('Submit Verification'),
                   ),
-              ]
+              ],
             ],
           ),
         ),

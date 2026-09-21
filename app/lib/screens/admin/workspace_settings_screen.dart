@@ -16,12 +16,13 @@ class WorkspaceSettingsScreen extends StatefulWidget {
   const WorkspaceSettingsScreen({super.key});
 
   @override
-  State<WorkspaceSettingsScreen> createState() => _WorkspaceSettingsScreenState();
+  State<WorkspaceSettingsScreen> createState() =>
+      _WorkspaceSettingsScreenState();
 }
 
 class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _nameController;
   late TextEditingController _descController;
   late TextEditingController _welcomeController;
@@ -30,26 +31,28 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
 
   Color _primaryColor = AppColors.primary;
   Color _secondaryColor = AppColors.secondary;
-  
+
   String? _logoUrl;
   String? _bannerUrl;
-  
+
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     final ngo = Provider.of<NgoProvider>(context, listen: false).currentNgo;
-    
+
     _nameController = TextEditingController(text: ngo?.name ?? '');
     _descController = TextEditingController(text: ngo?.description ?? '');
     _welcomeController = TextEditingController(text: ngo?.welcomeText ?? '');
-    _missionController = TextEditingController(text: ngo?.missionStatement ?? '');
+    _missionController = TextEditingController(
+      text: ngo?.missionStatement ?? '',
+    );
     _websiteController = TextEditingController(text: ngo?.websiteUrl ?? '');
-    
+
     _logoUrl = ngo?.logoUrl;
     _bannerUrl = ngo?.bannerUrl;
-    
+
     if (ngo?.primaryColorHex != null && ngo!.primaryColorHex.isNotEmpty) {
       _primaryColor = _hexToColor(ngo.primaryColorHex);
     }
@@ -80,21 +83,27 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
 
   Future<void> _pickImage(bool isLogo) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
     if (pickedFile != null) {
       setState(() => _isLoading = true);
       try {
-        final ngoId = Provider.of<NgoProvider>(context, listen: false).currentNgo?.id;
+        final ngoId = Provider.of<NgoProvider>(
+          context,
+          listen: false,
+        ).currentNgo?.id;
         if (ngoId == null) throw Exception("No NGO selected");
 
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child('ngos/$ngoId/${isLogo ? 'logo' : 'banner'}_${DateTime.now().millisecondsSinceEpoch}.jpg');
-            
+        final ref = FirebaseStorage.instance.ref().child(
+          'ngos/$ngoId/${isLogo ? 'logo' : 'banner'}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        );
+
         await ref.putFile(File(pickedFile.path));
         final url = await ref.getDownloadURL();
-        
+
         setState(() {
           if (isLogo) {
             _logoUrl = url;
@@ -103,7 +112,9 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
           }
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       } finally {
         setState(() => _isLoading = false);
       }
@@ -149,12 +160,12 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
 
   Future<void> _saveSettings() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final ngo = Provider.of<NgoProvider>(context, listen: false).currentNgo;
     if (ngo == null) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     final data = {
       'name': _nameController.text.trim(),
       'description': _descController.text.trim(),
@@ -166,11 +177,14 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
       'logoUrl': _logoUrl,
       'bannerUrl': _bannerUrl,
     };
-    
-    final success = await Provider.of<NgoProvider>(context, listen: false).updateNgoProfile(ngo.id, data);
-    
+
+    final success = await Provider.of<NgoProvider>(
+      context,
+      listen: false,
+    ).updateNgoProfile(ngo.id, data);
+
     setState(() => _isLoading = false);
-    
+
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Workspace Settings Updated!')),
@@ -186,20 +200,25 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final ngo = Provider.of<NgoProvider>(context).currentNgo;
-    
+
     if (ngo == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Workspace Settings')),
         body: const Center(child: Text('No active workspace.')),
       );
     }
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Workspace Settings'),
         actions: [
           if (_isLoading)
-            const Center(child: Padding(padding: EdgeInsets.only(right: 16), child: CircularProgressIndicator(color: Colors.white)))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            )
           else
             IconButton(icon: const Icon(Icons.save), onPressed: _saveSettings),
         ],
@@ -213,7 +232,7 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
             children: [
               Text('Branding & Media', style: AppTextStyles.titleMedium()),
               const SizedBox(height: 16),
-              
+
               // Images
               Row(
                 children: [
@@ -230,13 +249,13 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
                       title: 'Hero Banner',
                       imageUrl: _bannerUrl,
                       onTap: () => _pickImage(false),
-                      aspectRatio: 16/9,
+                      aspectRatio: 16 / 9,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Colors
               Text('Theme Colors', style: AppTextStyles.titleMedium()),
               const SizedBox(height: 16),
@@ -260,44 +279,62 @@ class _WorkspaceSettingsScreenState extends State<WorkspaceSettingsScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Texts
               Text('Identity & Content', style: AppTextStyles.titleMedium()),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'NGO Name', border: OutlineInputBorder()),
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                decoration: const InputDecoration(
+                  labelText: 'NGO Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _descController,
                 maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Short Description', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Short Description',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _welcomeController,
-                decoration: const InputDecoration(labelText: 'Dashboard Welcome Text', hintText: 'e.g. Welcome to our Mission!', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Dashboard Welcome Text',
+                  hintText: 'e.g. Welcome to our Mission!',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _missionController,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Mission Statement', hintText: 'Displayed on dashboard to inspire volunteers.', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Mission Statement',
+                  hintText: 'Displayed on dashboard to inspire volunteers.',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _websiteController,
-                decoration: const InputDecoration(labelText: 'Website URL', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Website URL',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 32),
-              
+
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -345,11 +382,16 @@ class _ImagePickerBox extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey[400]!),
                 image: imageUrl != null
-                    ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover)
+                    ? DecorationImage(
+                        image: NetworkImage(imageUrl!),
+                        fit: BoxFit.cover,
+                      )
                     : null,
               ),
               child: imageUrl == null
-                  ? const Center(child: Icon(Icons.add_a_photo, color: Colors.grey))
+                  ? const Center(
+                      child: Icon(Icons.add_a_photo, color: Colors.grey),
+                    )
                   : null,
             ),
           ),

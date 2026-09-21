@@ -26,10 +26,10 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
   final _messageCtrl = TextEditingController();
   final _chatService = ChatService();
   final _picker = ImagePicker();
-  
+
   bool _isSending = false;
   File? _selectedImage;
-  
+
   // Mentions logic
   bool _showMentions = false;
   List<VolunteerModel> _allVolunteers = [];
@@ -51,7 +51,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
   }
 
   void _loadVolunteers() async {
-    final snapshot = await VolunteerService().getVolunteersStream(widget.campaign.id).first;
+    final snapshot = await VolunteerService()
+        .getVolunteersStream(widget.campaign.id)
+        .first;
     if (mounted) {
       setState(() {
         _allVolunteers = snapshot;
@@ -62,15 +64,16 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
   void _onTextChanged() {
     final text = _messageCtrl.text;
     final selection = _messageCtrl.selection;
-    
+
     if (selection.baseOffset == -1) return;
-    
+
     final currentPos = selection.baseOffset;
     final textBeforeCursor = text.substring(0, currentPos);
-    
+
     final lastAtSign = textBeforeCursor.lastIndexOf('@');
-    
-    if (lastAtSign != -1 && (lastAtSign == 0 || textBeforeCursor[lastAtSign - 1] == ' ')) {
+
+    if (lastAtSign != -1 &&
+        (lastAtSign == 0 || textBeforeCursor[lastAtSign - 1] == ' ')) {
       final query = textBeforeCursor.substring(lastAtSign + 1).toLowerCase();
       if (!query.contains(' ')) {
         // Show mentions
@@ -84,7 +87,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
         return;
       }
     }
-    
+
     if (_showMentions) {
       setState(() {
         _showMentions = false;
@@ -96,12 +99,14 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
     final text = _messageCtrl.text;
     final textBefore = text.substring(0, _mentionStartIndex);
     final textAfter = text.substring(_messageCtrl.selection.baseOffset);
-    
+
     final mentionText = '@${volunteer.userName} ';
-    
+
     _messageCtrl.text = '$textBefore$mentionText$textAfter';
-    _messageCtrl.selection = TextSelection.collapsed(offset: textBefore.length + mentionText.length);
-    
+    _messageCtrl.selection = TextSelection.collapsed(
+      offset: textBefore.length + mentionText.length,
+    );
+
     setState(() {
       _showMentions = false;
     });
@@ -121,7 +126,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
     try {
       final XFile? image = await _picker.pickImage(
         source: source,
-        imageQuality: 70, 
+        imageQuality: 70,
       );
       if (image != null) {
         setState(() {
@@ -130,20 +135,24 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
       }
     }
   }
 
   void _sendMessage() async {
     final user = Provider.of<AuthProvider>(context, listen: false).user;
-    if (user == null || (_messageCtrl.text.trim().isEmpty && _selectedImage == null)) return;
+    if (user == null ||
+        (_messageCtrl.text.trim().isEmpty && _selectedImage == null))
+      return;
 
     setState(() => _isSending = true);
 
     try {
       String? imageUrl;
-      
+
       // Upload image if selected
       if (_selectedImage != null) {
         imageUrl = await CloudinaryService.uploadImage(_selectedImage!);
@@ -151,7 +160,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
 
       final text = _messageCtrl.text.trim();
       final mentionedIds = _extractMentionedUserIds(text);
-      
+
       final message = MessageModel(
         id: _chatService.generateId(),
         campaignId: widget.campaign.id,
@@ -172,7 +181,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to send: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to send: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSending = false);
@@ -183,7 +194,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // WhatsApp-like background colors
     final bgColor = isDark ? const Color(0xFF0b141a) : const Color(0xFFefeae2);
 
@@ -195,26 +206,34 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
             child: Stack(
               children: [
                 StreamBuilder<List<MessageModel>>(
-                  stream: _chatService.streamCampaignMessages(widget.campaign.id),
+                  stream: _chatService.streamCampaignMessages(
+                    widget.campaign.id,
+                  ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return const Center(
-                        child: Text('No messages yet. Say hello! 👋', style: TextStyle(color: Colors.grey)),
+                        child: Text(
+                          'No messages yet. Say hello! 👋',
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       );
                     }
 
                     final messages = snapshot.data!;
                     return ListView.builder(
                       reverse: true,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final msg = messages[index];
                         final isMe = msg.senderId == user?.uid;
-                        
+
                         return _buildMessageBubble(msg, isMe, isDark);
                       },
                     );
@@ -227,12 +246,19 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                     right: 0,
                     child: Container(
                       constraints: const BoxConstraints(maxHeight: 200),
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 4, spreadRadius: 1)
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            spreadRadius: 1,
+                          ),
                         ],
                       ),
                       child: ListView.builder(
@@ -243,7 +269,10 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundColor: AppColors.primary,
-                              child: Text(v.userName[0].toUpperCase(), style: const TextStyle(color: Colors.white)),
+                              child: Text(
+                                v.userName[0].toUpperCase(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                             title: Text(v.userName),
                             onTap: () => _insertMention(v),
@@ -276,7 +305,12 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(_selectedImage!, width: 80, height: 80, fit: BoxFit.cover),
+            child: Image.file(
+              _selectedImage!,
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+            ),
           ),
           const Spacer(),
           IconButton(
@@ -293,9 +327,13 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
     final canDelete = !msg.isDeleted && (isMe || (user?.isAdmin == true));
 
     // WhatsApp bubble colors
-    final myBubbleColor = isDark ? const Color(0xFF005c4b) : const Color(0xFFd9fdd3);
-    final otherBubbleColor = isDark ? const Color(0xFF202c33) : const Color(0xFFffffff);
-    
+    final myBubbleColor = isDark
+        ? const Color(0xFF005c4b)
+        : const Color(0xFFd9fdd3);
+    final otherBubbleColor = isDark
+        ? const Color(0xFF202c33)
+        : const Color(0xFFffffff);
+
     final textColor = isDark ? Colors.white : Colors.black87;
     final mentionColor = isDark ? Colors.lightBlueAccent : Colors.blue.shade700;
 
@@ -305,7 +343,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           margin: const EdgeInsets.only(bottom: 4, top: 4),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
           padding: EdgeInsets.only(
             left: msg.imageUrl != null ? 4 : 12,
             right: msg.imageUrl != null ? 4 : 12,
@@ -313,7 +353,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
             bottom: msg.imageUrl != null ? 4 : 8,
           ),
           decoration: BoxDecoration(
-            color: msg.isDeleted ? (isDark ? Colors.grey.shade800 : Colors.grey.shade300) : (isMe ? myBubbleColor : otherBubbleColor),
+            color: msg.isDeleted
+                ? (isDark ? Colors.grey.shade800 : Colors.grey.shade300)
+                : (isMe ? myBubbleColor : otherBubbleColor),
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(12),
               topRight: const Radius.circular(12),
@@ -325,7 +367,7 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                 color: Colors.black.withValues(alpha: 0.1),
                 offset: const Offset(0, 1),
                 blurRadius: 1,
-              )
+              ),
             ],
           ),
           child: Column(
@@ -333,13 +375,18 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
             children: [
               if (!isMe && !msg.isDeleted)
                 Padding(
-                  padding: EdgeInsets.only(bottom: 2, left: msg.imageUrl != null ? 8 : 0),
+                  padding: EdgeInsets.only(
+                    bottom: 2,
+                    left: msg.imageUrl != null ? 8 : 0,
+                  ),
                   child: Text(
                     msg.senderName,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: msg.isAdmin ? Colors.orange.shade800 : (isDark ? Colors.tealAccent : Colors.teal.shade700),
+                      color: msg.isAdmin
+                          ? Colors.orange.shade800
+                          : (isDark ? Colors.tealAccent : Colors.teal.shade700),
                     ),
                   ),
                 ),
@@ -353,7 +400,11 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                       const SizedBox(width: 4),
                       Text(
                         'This message was deleted',
-                        style: TextStyle(color: Colors.grey.shade500, fontStyle: FontStyle.italic, fontSize: 14),
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
@@ -370,7 +421,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                         placeholder: (context, url) => Container(
                           height: 200,
                           color: Colors.grey.withValues(alpha: 0.2),
-                          child: const Center(child: CircularProgressIndicator()),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
                         errorWidget: (context, url, error) => Container(
                           height: 200,
@@ -387,16 +440,24 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                     if (msg.text.isNotEmpty)
                       Padding(
                         padding: EdgeInsets.only(
-                          left: msg.imageUrl != null ? 8 : 0, 
-                          right: 8.0, 
-                          bottom: 2
+                          left: msg.imageUrl != null ? 8 : 0,
+                          right: 8.0,
+                          bottom: 2,
                         ),
-                        child: _buildRichText(msg.text, textColor, mentionColor),
+                        child: _buildRichText(
+                          msg.text,
+                          textColor,
+                          mentionColor,
+                        ),
                       ),
                     Padding(
                       padding: EdgeInsets.only(
-                        left: (msg.imageUrl != null && msg.text.isEmpty) ? 8 : 0,
-                        right: (msg.imageUrl != null && msg.text.isEmpty) ? 4 : 0,
+                        left: (msg.imageUrl != null && msg.text.isEmpty)
+                            ? 8
+                            : 0,
+                        right: (msg.imageUrl != null && msg.text.isEmpty)
+                            ? 4
+                            : 0,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -405,16 +466,22 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                             DateFormat('HH:mm').format(msg.timestamp),
                             style: TextStyle(
                               fontSize: 11,
-                              color: isDark ? Colors.white60 : Colors.grey.shade600,
+                              color: isDark
+                                  ? Colors.white60
+                                  : Colors.grey.shade600,
                             ),
                           ),
                           if (isMe) ...[
                             const SizedBox(width: 4),
-                            Icon(Icons.done_all, size: 14, color: isDark ? Colors.blueAccent : Colors.blue),
-                          ]
+                            Icon(
+                              Icons.done_all,
+                              size: 14,
+                              color: isDark ? Colors.blueAccent : Colors.blue,
+                            ),
+                          ],
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -434,9 +501,19 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
     for (int i = 0; i < words.length; i++) {
       final word = words[i];
       if (word.startsWith('@') && word.length > 1) {
-        spans.add(TextSpan(text: '$word ', style: TextStyle(color: mentionColor, fontWeight: FontWeight.bold)));
+        spans.add(
+          TextSpan(
+            text: '$word ',
+            style: TextStyle(color: mentionColor, fontWeight: FontWeight.bold),
+          ),
+        );
       } else {
-        spans.add(TextSpan(text: '$word ', style: TextStyle(color: defaultColor)));
+        spans.add(
+          TextSpan(
+            text: '$word ',
+            style: TextStyle(color: defaultColor),
+          ),
+        );
       }
     }
 
@@ -465,7 +542,10 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
               try {
                 await _chatService.deleteMessage(msg.campaignId, msg.id);
               } catch (e) {
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                if (mounted)
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -496,22 +576,35 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
                       controller: _messageCtrl,
                       maxLines: 5,
                       minLines: 1,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Message',
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        hintStyle: TextStyle(
+                          color: isDark ? Colors.white54 : Colors.grey,
+                        ),
                       ),
                       textCapitalization: TextCapitalization.sentences,
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.attach_file, color: isDark ? Colors.white54 : Colors.grey.shade600),
+                    icon: Icon(
+                      Icons.attach_file,
+                      color: isDark ? Colors.white54 : Colors.grey.shade600,
+                    ),
                     onPressed: () => _pickImage(ImageSource.gallery),
                   ),
                   IconButton(
-                    icon: Icon(Icons.camera_alt, color: isDark ? Colors.white54 : Colors.grey.shade600),
+                    icon: Icon(
+                      Icons.camera_alt,
+                      color: isDark ? Colors.white54 : Colors.grey.shade600,
+                    ),
                     onPressed: () => _pickImage(ImageSource.camera),
                   ),
                   const SizedBox(width: 4),
@@ -527,8 +620,15 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: _isSending 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              icon: _isSending
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : const Icon(Icons.send, color: Colors.white, size: 20),
               onPressed: _sendMessage,
             ),

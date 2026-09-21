@@ -50,7 +50,10 @@ class NgoService {
     return _ngos
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => NgoModel.fromMap(doc.data())).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => NgoModel.fromMap(doc.data())).toList(),
+        );
   }
 
   /// Update NGO

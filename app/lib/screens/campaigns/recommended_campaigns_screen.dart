@@ -17,10 +17,12 @@ class RecommendedCampaignsScreen extends StatefulWidget {
   const RecommendedCampaignsScreen({super.key, required this.user});
 
   @override
-  State<RecommendedCampaignsScreen> createState() => _RecommendedCampaignsScreenState();
+  State<RecommendedCampaignsScreen> createState() =>
+      _RecommendedCampaignsScreenState();
 }
 
-class _RecommendedCampaignsScreenState extends State<RecommendedCampaignsScreen> {
+class _RecommendedCampaignsScreenState
+    extends State<RecommendedCampaignsScreen> {
   List<MatchResult> _results = [];
   bool _loading = true;
 
@@ -32,8 +34,12 @@ class _RecommendedCampaignsScreenState extends State<RecommendedCampaignsScreen>
 
   Future<void> _loadRecommendations() async {
     try {
-      final campaigns = await CampaignService().fetchAllCampaigns(widget.user.currentNgoId);
-      final registrations = await VolunteerService().fetchUserRegistrations(widget.user.uid);
+      final campaigns = await CampaignService().fetchAllCampaigns(
+        widget.user.currentNgoId,
+      );
+      final registrations = await VolunteerService().fetchUserRegistrations(
+        widget.user.uid,
+      );
 
       final results = await MatchingService.getRecommendations(
         user: widget.user,
@@ -64,31 +70,43 @@ class _RecommendedCampaignsScreenState extends State<RecommendedCampaignsScreen>
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _results.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off, size: 64, color: AppColors.lightTextHint),
-                      AppSpacing.vGapLg,
-                      Text('No recommendations available',
-                          style: AppTextStyles.bodyLarge(color: AppColors.lightTextSecondary)),
-                      AppSpacing.vGapSm,
-                      Text('Add skills to your profile for better matches',
-                          style: AppTextStyles.bodyMedium(color: AppColors.lightTextHint)),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64,
+                    color: AppColors.lightTextHint,
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadRecommendations,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    itemCount: _results.length,
-                    itemBuilder: (context, index) {
-                      final result = _results[index];
-                      return _MatchCard(result: result, isDark: isDark);
-                    },
+                  AppSpacing.vGapLg,
+                  Text(
+                    'No recommendations available',
+                    style: AppTextStyles.bodyLarge(
+                      color: AppColors.lightTextSecondary,
+                    ),
                   ),
-                ),
+                  AppSpacing.vGapSm,
+                  Text(
+                    'Add skills to your profile for better matches',
+                    style: AppTextStyles.bodyMedium(
+                      color: AppColors.lightTextHint,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadRecommendations,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                itemCount: _results.length,
+                itemBuilder: (context, index) {
+                  final result = _results[index];
+                  return _MatchCard(result: result, isDark: isDark);
+                },
+              ),
+            ),
     );
   }
 }
@@ -112,7 +130,9 @@ class _MatchCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: AppTokens.borderRadiusMd,
-        side: BorderSide(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+        side: BorderSide(
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
       ),
       child: InkWell(
         onTap: () {
@@ -142,7 +162,10 @@ class _MatchCard extends StatelessWidget {
                   ),
                   AppSpacing.hGapMd,
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.xs,
+                    ),
                     decoration: BoxDecoration(
                       color: _scoreColor.withValues(alpha: 0.15),
                       borderRadius: AppTokens.borderRadiusPill,
@@ -166,17 +189,41 @@ class _MatchCard extends StatelessWidget {
               // Campaign meta
               Row(
                 children: [
-                  Icon(Icons.category, size: 16, color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                  Icon(
+                    Icons.category,
+                    size: 16,
+                    color: isDark
+                        ? AppColors.darkTextHint
+                        : AppColors.lightTextHint,
+                  ),
                   AppSpacing.hGapSm,
-                  Text(result.campaign.type.label,
-                      style: AppTextStyles.bodySmall(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                  Text(
+                    result.campaign.type.label,
+                    style: AppTextStyles.bodySmall(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
                   AppSpacing.hGapLg,
-                  Icon(Icons.location_on, size: 16, color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                  Icon(
+                    Icons.location_on,
+                    size: 16,
+                    color: isDark
+                        ? AppColors.darkTextHint
+                        : AppColors.lightTextHint,
+                  ),
                   AppSpacing.hGapSm,
                   Expanded(
-                    child: Text(result.campaign.location,
-                        style: AppTextStyles.bodySmall(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                        overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      result.campaign.location,
+                      style: AppTextStyles.bodySmall(
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.lightTextSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -208,13 +255,29 @@ class _MatchCard extends StatelessWidget {
               AppSpacing.vGapMd,
               Row(
                 children: [
-                  _ScoreBar(label: 'Skills', value: result.breakdown['skills'] ?? 0, color: AppColors.primary),
+                  _ScoreBar(
+                    label: 'Skills',
+                    value: result.breakdown['skills'] ?? 0,
+                    color: AppColors.primary,
+                  ),
                   AppSpacing.hGapSm,
-                  _ScoreBar(label: 'Location', value: result.breakdown['location'] ?? 0, color: AppColors.warning),
+                  _ScoreBar(
+                    label: 'Location',
+                    value: result.breakdown['location'] ?? 0,
+                    color: AppColors.warning,
+                  ),
                   AppSpacing.hGapSm,
-                  _ScoreBar(label: 'Activity', value: result.breakdown['past_activity'] ?? 0, color: AppColors.info),
+                  _ScoreBar(
+                    label: 'Activity',
+                    value: result.breakdown['past_activity'] ?? 0,
+                    color: AppColors.info,
+                  ),
                   AppSpacing.hGapSm,
-                  _ScoreBar(label: 'Available', value: result.breakdown['availability'] ?? 0, color: AppColors.success),
+                  _ScoreBar(
+                    label: 'Available',
+                    value: result.breakdown['availability'] ?? 0,
+                    color: AppColors.success,
+                  ),
                 ],
               ),
             ],
@@ -229,7 +292,11 @@ class _ScoreBar extends StatelessWidget {
   final String label;
   final double value;
   final Color color;
-  const _ScoreBar({required this.label, required this.value, required this.color});
+  const _ScoreBar({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {

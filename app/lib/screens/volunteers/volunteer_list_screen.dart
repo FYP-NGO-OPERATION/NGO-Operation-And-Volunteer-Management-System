@@ -40,9 +40,7 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Volunteers — ${widget.campaignTitle}'),
-      ),
+      appBar: AppBar(title: Text('Volunteers — ${widget.campaignTitle}')),
       body: StreamBuilder<List<VolunteerModel>>(
         stream: _volunteerService.getVolunteersStream(widget.campaignId),
         builder: (context, snapshot) {
@@ -60,10 +58,16 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           final volunteers = _searchQuery.isEmpty
               ? allVolunteers
               : allVolunteers
-                  .where((v) =>
-                      v.userName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                      v.userEmail.toLowerCase().contains(_searchQuery.toLowerCase()))
-                  .toList();
+                    .where(
+                      (v) =>
+                          v.userName.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ) ||
+                          v.userEmail.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ),
+                    )
+                    .toList();
 
           return Column(
             children: [
@@ -94,7 +98,10 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
                 child: volunteers.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         itemCount: volunteers.length,
                         itemBuilder: (context, index) {
                           return _buildVolunteerTile(
@@ -141,8 +148,16 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
     int absent = volunteers.where((v) => v.isAbsent).length;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: AppTokens.borderRadiusMd,
@@ -176,20 +191,28 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
       children: [
         Text(count, style: AppTextStyles.titleMedium(color: color)),
         AppSpacing.vGapXs,
-        Text(label, style: AppTextStyles.labelSmall(
-          color: color.withValues(alpha: 0.8))),
+        Text(
+          label,
+          style: AppTextStyles.labelSmall(color: color.withValues(alpha: 0.8)),
+        ),
       ],
     );
   }
 
   /// Individual volunteer card
   Widget _buildVolunteerTile(
-      VolunteerModel volunteer, int index, bool isAdmin, ThemeData theme) {
+    VolunteerModel volunteer,
+    int index,
+    bool isAdmin,
+    ThemeData theme,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 6),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _statusColor(volunteer.status).withValues(alpha: 0.15),
+          backgroundColor: _statusColor(
+            volunteer.status,
+          ).withValues(alpha: 0.15),
           child: Text(
             volunteer.userName[0].toUpperCase(),
             style: TextStyle(
@@ -207,19 +230,25 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           children: [
             Text(
               volunteer.userEmail,
-              style: TextStyle(fontSize: 12, color: theme.textTheme.bodySmall?.color),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.textTheme.bodySmall?.color,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
               'Joined: ${DateFormat('MMM dd, yyyy').format(volunteer.registeredAt)}',
-              style: TextStyle(fontSize: 11, color: theme.textTheme.bodySmall?.color),
+              style: TextStyle(
+                fontSize: 11,
+                color: theme.textTheme.bodySmall?.color,
+              ),
             ),
           ],
         ),
         trailing: isAdmin
             ? (volunteer.isPending
-                ? _buildApprovalButtons(volunteer)
-                : _buildAttendanceDropdown(volunteer))
+                  ? _buildApprovalButtons(volunteer)
+                  : _buildAttendanceDropdown(volunteer))
             : _buildStatusChip(volunteer.status),
         isThreeLine: true,
       ),
@@ -236,12 +265,19 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           tooltip: 'Approve',
           onPressed: () async {
             try {
-              await _volunteerService.updateVolunteerStatus(volunteer.id, VolunteerStatus.registered);
+              await _volunteerService.updateVolunteerStatus(
+                volunteer.id,
+                VolunteerStatus.registered,
+              );
               if (mounted) {
-                SnackbarHelper.showSuccess(context, '${volunteer.userName} Approved');
+                SnackbarHelper.showSuccess(
+                  context,
+                  '${volunteer.userName} Approved',
+                );
               }
             } catch (e) {
-              if (mounted) SnackbarHelper.showError(context, 'Failed to approve: $e');
+              if (mounted)
+                SnackbarHelper.showError(context, 'Failed to approve: $e');
             }
           },
         ),
@@ -250,12 +286,19 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           tooltip: 'Reject',
           onPressed: () async {
             try {
-              await _volunteerService.rejectVolunteer(volunteer.id, volunteer.campaignId);
+              await _volunteerService.rejectVolunteer(
+                volunteer.id,
+                volunteer.campaignId,
+              );
               if (mounted) {
-                SnackbarHelper.showInfo(context, '${volunteer.userName} Rejected');
+                SnackbarHelper.showInfo(
+                  context,
+                  '${volunteer.userName} Rejected',
+                );
               }
             } catch (e) {
-              if (mounted) SnackbarHelper.showError(context, 'Failed to reject: $e');
+              if (mounted)
+                SnackbarHelper.showError(context, 'Failed to reject: $e');
             }
           },
         ),
@@ -329,7 +372,9 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
         decoration: BoxDecoration(
           color: _statusColor(volunteer.status).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _statusColor(volunteer.status).withValues(alpha: 0.4)),
+          border: Border.all(
+            color: _statusColor(volunteer.status).withValues(alpha: 0.4),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -343,7 +388,11 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, size: 16, color: _statusColor(volunteer.status)),
+            Icon(
+              Icons.arrow_drop_down,
+              size: 16,
+              color: _statusColor(volunteer.status),
+            ),
           ],
         ),
       ),
@@ -360,8 +409,12 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
           AppSpacing.vGapMd,
           Text('No Volunteers Yet', style: AppTextStyles.titleLarge()),
           AppSpacing.vGapSm,
-          Text('No one has joined this campaign yet.',
-            style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary)),
+          Text(
+            'No one has joined this campaign yet.',
+            style: AppTextStyles.bodyMedium(
+              color: AppColors.lightTextSecondary,
+            ),
+          ),
         ],
       ),
     );

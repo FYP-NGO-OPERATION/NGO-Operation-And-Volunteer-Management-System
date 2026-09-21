@@ -13,20 +13,31 @@ class VirtualSessionProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  void clear() {
+    _sessions = [];
+    _error = null;
+    notifyListeners();
+  }
+
   // Real-time subscription
   void init(String ngoId) {
     _isLoading = true;
     notifyListeners();
 
-    _service.streamSessionsByNgo(ngoId).listen((data) {
-      _sessions = data;
-      _isLoading = false;
-      notifyListeners();
-    }, onError: (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-    });
+    _service
+        .streamSessionsByNgo(ngoId)
+        .listen(
+          (data) {
+            _sessions = data;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (e) {
+            _error = e.toString();
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
   }
 
   Future<bool> addSession(VirtualSessionModel session) async {
@@ -59,7 +70,11 @@ class VirtualSessionProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> toggleRSVP(String sessionId, String userId, String userName) async {
+  Future<bool> toggleRSVP(
+    String sessionId,
+    String userId,
+    String userName,
+  ) async {
     try {
       await _service.toggleRSVP(sessionId, userId, userName);
       return true;
@@ -70,7 +85,11 @@ class VirtualSessionProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> markAttendance(String sessionId, String userId, String userName) async {
+  Future<void> markAttendance(
+    String sessionId,
+    String userId,
+    String userName,
+  ) async {
     try {
       await _service.markAttendance(sessionId, userId, userName);
     } catch (e) {

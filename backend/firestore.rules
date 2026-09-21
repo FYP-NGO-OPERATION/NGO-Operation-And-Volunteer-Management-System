@@ -24,9 +24,10 @@ service cloud.firestore {
     match /users/{userId} {
       // Anyone logged in can read user profiles (needed for name display)
       allow read: if isLoggedIn();
-      // Users can update their own profile; admins can update anyone
+      // Users can update their own profile; admins can update anyone. 
+      // Prevent users from elevating their own role.
       allow create: if isLoggedIn() && isOwner(userId);
-      allow update: if isLoggedIn() && (isOwner(userId) || isAdmin());
+      allow update: if isLoggedIn() && (isAdmin() || (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])));
       // Only admin can delete users
       allow delete: if isAdmin();
     }
@@ -54,7 +55,9 @@ service cloud.firestore {
 
       // Subcollections (tasks, messages, feedbacks)
       match /{document=**} {
-        allow read, write: if isLoggedIn();
+        allow read: if isLoggedIn();
+        allow create, update: if isLoggedIn();
+        allow delete: if isAdmin();
       }
     }
 
@@ -62,8 +65,8 @@ service cloud.firestore {
     match /donations/{donationId} {
       // Admins can read all; volunteers see campaign-scoped via queries
       allow read: if isLoggedIn();
-      // Only admins can create/delete donations
-      allow create: if isAdmin();
+      // Users can only create pending donations, admins can create any
+      allow create: if isAdmin() || (isLoggedIn() && request.resource.data.status == 'pending');
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -130,22 +133,30 @@ service cloud.firestore {
 
     // ─── Virtual Sessions Collection ───
     match /virtual_sessions/{sessionId} {
-      allow read, write: if isLoggedIn();
+      allow read: if isLoggedIn();
+      allow create, update: if isLoggedIn();
+      allow delete: if isAdmin();
       
       // Participants subcollection
       match /{document=**} {
-        allow read, write: if isLoggedIn();
+        allow read: if isLoggedIn();
+        allow create, update: if isLoggedIn();
+        allow delete: if isAdmin();
       }
     }
 
     // ─── Campaign Volunteers Collection ───
     match /campaign_volunteers/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read: if isLoggedIn();
+      allow create: if isLoggedIn();
+      allow update, delete: if isAdmin();
     }
 
     // ─── Incidents Collection ───
     match /incidents/{incidentId} {
-      allow read, write: if isLoggedIn();
+      allow read: if isLoggedIn();
+      allow create, update: if isLoggedIn();
+      allow delete: if isAdmin();
     }
 
     // ─── Banners Collection ───

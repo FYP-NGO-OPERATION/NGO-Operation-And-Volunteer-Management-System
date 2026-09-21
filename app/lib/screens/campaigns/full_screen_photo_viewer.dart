@@ -38,8 +38,8 @@ class FullScreenPhotoViewer extends StatelessWidget {
                 value: event == null
                     ? 0
                     : event.expectedTotalBytes != null
-                        ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
-                        : null,
+                    ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                    : null,
               ),
             ),
           ),
@@ -50,7 +50,10 @@ class FullScreenPhotoViewer extends StatelessWidget {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(20),

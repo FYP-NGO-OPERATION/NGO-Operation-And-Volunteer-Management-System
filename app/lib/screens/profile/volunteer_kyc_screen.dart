@@ -33,11 +33,15 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
 
     try {
       final inputImage = InputImage.fromFilePath(image.path);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      
+      final textRecognizer = TextRecognizer(
+        script: TextRecognitionScript.latin,
+      );
+      final RecognizedText recognizedText = await textRecognizer.processImage(
+        inputImage,
+      );
+
       String extractedText = recognizedText.text.toUpperCase();
-      
+
       await textRecognizer.close();
 
       // Basic matching logic: check if user's name or a CNIC format exists
@@ -72,10 +76,10 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
         }
       } else {
         setState(() {
-          _scanResult = 'Verification Failed. Name or ID number not clearly visible. Please try again in good lighting.';
+          _scanResult =
+              'Verification Failed. Name or ID number not clearly visible. Please try again in good lighting.';
         });
       }
-
     } catch (e) {
       setState(() {
         _scanResult = 'Error during scanning: $e';
@@ -98,9 +102,7 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        child: isVerified
-            ? _buildVerifiedState()
-            : _buildUnverifiedState(),
+        child: isVerified ? _buildVerifiedState() : _buildUnverifiedState(),
       ),
     );
   }
@@ -114,7 +116,9 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
           AppSpacing.vGapLg,
           Text(
             'You are Verified!',
-            style: AppTextStyles.headlineMedium().copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyles.headlineMedium().copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           AppSpacing.vGapMd,
           const Text(
@@ -141,7 +145,9 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
         Text(
           'e-KYC Verification',
           textAlign: TextAlign.center,
-          style: AppTextStyles.headlineMedium().copyWith(fontWeight: FontWeight.bold),
+          style: AppTextStyles.headlineMedium().copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         AppSpacing.vGapSm,
         const Text(
@@ -154,14 +160,18 @@ class _VolunteerKycScreenState extends State<VolunteerKycScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _scanResult.contains('Successful') ? Colors.green.shade50 : Colors.red.shade50,
+              color: _scanResult.contains('Successful')
+                  ? Colors.green.shade50
+                  : Colors.red.shade50,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               _scanResult,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: _scanResult.contains('Successful') ? Colors.green.shade800 : Colors.red.shade800,
+                color: _scanResult.contains('Successful')
+                    ? Colors.green.shade800
+                    : Colors.red.shade800,
                 fontWeight: FontWeight.bold,
               ),
             ),

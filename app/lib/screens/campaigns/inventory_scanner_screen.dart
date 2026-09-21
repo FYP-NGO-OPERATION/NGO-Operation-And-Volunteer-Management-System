@@ -15,7 +15,8 @@ class InventoryScannerScreen extends StatefulWidget {
   State<InventoryScannerScreen> createState() => _InventoryScannerScreenState();
 }
 
-class _InventoryScannerScreenState extends State<InventoryScannerScreen> with SingleTickerProviderStateMixin {
+class _InventoryScannerScreenState extends State<InventoryScannerScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   final MobileScannerController _scannerController = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
@@ -67,9 +68,16 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.check_circle, color: AppColors.success, size: 60),
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.success,
+                size: 60,
+              ),
               const SizedBox(height: 16),
-              Text('Scanned Code: $scannedCode', style: AppTextStyles.bodyMedium()),
+              Text(
+                'Scanned Code: $scannedCode',
+                style: AppTextStyles.bodyMedium(),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: nameController,
@@ -101,23 +109,32 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () async {
                 final qty = int.tryParse(quantityController.text) ?? 1;
                 final itemName = nameController.text.trim();
                 final user = context.read<AuthProvider>().user;
-                
-                await FirebaseFirestore.instance.collection('campaigns').doc(widget.campaignId).collection('inventory').add({
-                  'itemName': itemName,
-                  'quantity': qty,
-                  'scannedBy': user?.name ?? 'Volunteer',
-                  'timestamp': FieldValue.serverTimestamp(),
-                  'barcode': scannedCode,
-                });
-                
+
+                await FirebaseFirestore.instance
+                    .collection('campaigns')
+                    .doc(widget.campaignId)
+                    .collection('inventory')
+                    .add({
+                      'itemName': itemName,
+                      'quantity': qty,
+                      'scannedBy': user?.name ?? 'Volunteer',
+                      'timestamp': FieldValue.serverTimestamp(),
+                      'barcode': scannedCode,
+                    });
+
                 if (mounted) {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$qty x $itemName added!')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$qty x $itemName added!')),
+                  );
                   Navigator.pop(context); // Go back to previous screen
                 }
               },
@@ -149,7 +166,7 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
               onDetect: _onDetect,
             ),
           ),
-          
+
           // Scanner Box
           Container(
             width: 250,
@@ -159,7 +176,7 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          
+
           // Scanning Line
           if (_isScanning)
             AnimatedBuilder(
@@ -173,14 +190,18 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
                     decoration: BoxDecoration(
                       color: Colors.redAccent,
                       boxShadow: [
-                        BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
                       ],
                     ),
                   ),
                 );
               },
             ),
-            
+
           // Instructions
           Positioned(
             bottom: 100,
@@ -188,7 +209,7 @@ class _InventoryScannerScreenState extends State<InventoryScannerScreen> with Si
               _isScanning ? 'Align barcode within the frame' : 'Processing...',
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
-          )
+          ),
         ],
       ),
     );

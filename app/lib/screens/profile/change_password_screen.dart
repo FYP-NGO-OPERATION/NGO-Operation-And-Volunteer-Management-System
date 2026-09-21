@@ -19,7 +19,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscureCurrent = true;
   bool _obscureNew = true;
@@ -57,7 +57,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
       Navigator.pop(context);
     } else {
-      final error = context.read<AuthProvider>().error ?? 'Failed to change password';
+      final error =
+          context.read<AuthProvider>().error ?? 'Failed to change password';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error),
@@ -72,7 +73,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Change Password', style: AppTextStyles.titleLarge())),
+      appBar: AppBar(
+        title: Text('Change Password', style: AppTextStyles.titleLarge()),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -88,13 +91,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     color: AppColors.primary.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.shield_outlined, size: 48, color: AppColors.primary),
+                  child: const Icon(
+                    Icons.shield_outlined,
+                    size: 48,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               AppSpacing.vGapLg,
               Center(
-                child: Text('Keep your account secure',
-                  style: AppTextStyles.bodyMedium(color: AppColors.lightTextSecondary)),
+                child: Text(
+                  'Keep your account secure',
+                  style: AppTextStyles.bodyMedium(
+                    color: AppColors.lightTextSecondary,
+                  ),
+                ),
               ),
               AppSpacing.vGapXxl,
               TextFormField(
@@ -104,11 +115,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'Current Password',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureCurrent ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                    icon: Icon(
+                      _obscureCurrent ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureCurrent = !_obscureCurrent),
                   ),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               AppSpacing.vGapLg,
               TextFormField(
@@ -118,11 +133,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'New Password',
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureNew ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(
+                      _obscureNew ? Icons.visibility : Icons.visibility_off,
+                    ),
                     onPressed: () => setState(() => _obscureNew = !_obscureNew),
                   ),
                 ),
-                validator: (val) => val != null && val.length < 6 ? 'Min 6 chars' : null,
+                validator: (val) =>
+                    val != null && val.length < 6 ? 'Min 6 chars' : null,
               ),
               AppSpacing.vGapLg,
               TextFormField(
@@ -133,7 +151,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   prefixIcon: Icon(Icons.lock_reset),
                 ),
                 validator: (val) {
-                  if (val != _newPasswordController.text) return 'Passwords do not match';
+                  if (val != _newPasswordController.text)
+                    return 'Passwords do not match';
                   return null;
                 },
               ),

@@ -79,5 +79,6 @@ class ExpenseModel {
   }
 
   @override
-  String toString() => 'ExpenseModel(item: $itemName, qty: $quantity × Rs.$unitPrice = Rs.$totalAmount, status: $status)';
+  String toString() =>
+      'ExpenseModel(item: $itemName, qty: $quantity × Rs.$unitPrice = Rs.$totalAmount, status: $status)';
 }

@@ -3,7 +3,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
-  final StreamController<bool> _connectionController = StreamController<bool>.broadcast();
+  final StreamController<bool> _connectionController =
+      StreamController<bool>.broadcast();
 
   Stream<bool> get connectionStream => _connectionController.stream;
 
@@ -12,7 +13,9 @@ class ConnectivityService {
   }
 
   void _init() {
-    _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+    _connectivity.onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
       bool isConnected = true;
       if (results.contains(ConnectivityResult.none)) {
         isConnected = false;

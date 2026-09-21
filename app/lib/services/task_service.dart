@@ -14,8 +14,10 @@ class TaskService {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => TaskModel.fromMap(doc.data())).toList();
-    });
+          return snapshot.docs
+              .map((doc) => TaskModel.fromMap(doc.data()))
+              .toList();
+        });
   }
 
   // Stream tasks assigned to a specific volunteer across all campaigns
@@ -26,8 +28,10 @@ class TaskService {
         .where('isCompleted', isEqualTo: false)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => TaskModel.fromMap(doc.data())).toList();
-    });
+          return snapshot.docs
+              .map((doc) => TaskModel.fromMap(doc.data()))
+              .toList();
+        });
   }
 
   // Create a new task
@@ -37,7 +41,7 @@ class TaskService {
         .doc(task.campaignId)
         .collection('tasks')
         .doc(task.id);
-        
+
     await taskRef.set(task.toMap());
   }
 
@@ -48,7 +52,7 @@ class TaskService {
         .doc(task.campaignId)
         .collection('tasks')
         .doc(task.id);
-        
+
     await taskRef.update(task.toMap());
   }
 
@@ -59,7 +63,7 @@ class TaskService {
         .doc(campaignId)
         .collection('tasks')
         .doc(taskId);
-        
+
     await taskRef.delete();
   }
 

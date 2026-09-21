@@ -25,10 +25,10 @@ import '../config/feature_flags.dart';
 /// Platform Support:
 ///   - Mobile: Uses mobile_scanner for native camera QR scanning
 ///   - Web: Fallback message shown (camera scanning not supported)
-/// 
+///
 /// VIVA PREP EXPLANATION (QR Attendance):
 /// Q: How does the QR Attendance work under the hood?
-/// A: 
+/// A:
 /// 1. The Admin creates a campaign. A unique JSON payload is generated encoding the Campaign ID.
 /// 2. This JSON is visually represented as a QR code using the 'qr_flutter' package.
 /// 3. When a Volunteer arrives, they open the app and scan it using the 'mobile_scanner' package.
@@ -63,18 +63,19 @@ class QrService {
       final data = jsonDecode(rawData) as Map<String, dynamic>;
       if (data['type'] != 'hras_attendance') return null;
       if (data['campaignId'] == null) return null;
-      
+
       // FYP-03 Security Fix: TTL Expiry Check (Guarded by Phase Flag)
       if (FeatureFlags.isSecureQrEnabled && data['generatedAt'] != null) {
         final generatedAt = DateTime.parse(data['generatedAt']);
         final difference = DateTime.now().difference(generatedAt).inSeconds;
-        
+
         // If QR is older than 60 seconds, it's considered an expired screenshot
-        if (difference > 60 || difference < -5) { // -5 allows for slight clock skew
+        if (difference > 60 || difference < -5) {
+          // -5 allows for slight clock skew
           return {'error': 'EXPIRED_QR'};
         }
       }
-      
+
       return data;
     } catch (_) {
       return null;
@@ -98,16 +99,18 @@ class QrService {
         message: 'Invalid QR code. This is not an HRAS attendance code.',
       );
     }
-    
+
     if (payload['error'] == 'EXPIRED_QR') {
       return QrScanResult(
         success: false,
-        message: 'Security Alert: This QR code has expired (Screenshot detected). Ask the admin to refresh their screen.',
+        message:
+            'Security Alert: This QR code has expired (Screenshot detected). Ask the admin to refresh their screen.',
       );
     }
 
     final campaignId = payload['campaignId'] as String;
-    final campaignTitle = payload['campaignTitle'] as String? ?? 'Unknown Campaign';
+    final campaignTitle =
+        payload['campaignTitle'] as String? ?? 'Unknown Campaign';
 
     try {
       // Find volunteer registration for this campaign
@@ -121,7 +124,8 @@ class QrService {
       if (snapshot.docs.isEmpty) {
         return QrScanResult(
           success: false,
-          message: 'You are not registered for "$campaignTitle". Please register first.',
+          message:
+              'You are not registered for "$campaignTitle". Please register first.',
         );
       }
 

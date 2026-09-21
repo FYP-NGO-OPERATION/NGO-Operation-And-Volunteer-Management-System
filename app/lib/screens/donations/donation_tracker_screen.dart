@@ -7,7 +7,7 @@ import '../../theme/app_text_styles.dart';
 class DonationTrackerScreen extends StatefulWidget {
   final String donationId;
   final double amount;
-  
+
   const DonationTrackerScreen({
     super.key,
     required this.donationId,
@@ -28,13 +28,15 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
 
     setState(() => _isSaving = true);
     try {
-      await FirebaseFirestore.instance.collection('donation_tracking_events').add({
-        'donationId': widget.donationId,
-        'title': _titleController.text.trim(),
-        'description': _descController.text.trim(),
-        'timestamp': FieldValue.serverTimestamp(),
-        'isCompleted': true,
-      });
+      await FirebaseFirestore.instance
+          .collection('donation_tracking_events')
+          .add({
+            'donationId': widget.donationId,
+            'title': _titleController.text.trim(),
+            'description': _descController.text.trim(),
+            'timestamp': FieldValue.serverTimestamp(),
+            'isCompleted': true,
+          });
       if (mounted) {
         Navigator.pop(context);
         _titleController.clear();
@@ -42,7 +44,9 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -60,12 +64,16 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title (e.g. Material Purchased)'),
+                decoration: const InputDecoration(
+                  labelText: 'Title (e.g. Material Purchased)',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _descController,
-                decoration: const InputDecoration(labelText: 'Description (e.g. Vendor Invoice #123)'),
+                decoration: const InputDecoration(
+                  labelText: 'Description (e.g. Vendor Invoice #123)',
+                ),
                 maxLines: 2,
               ),
             ],
@@ -77,10 +85,19 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
             ),
             ElevatedButton(
               onPressed: _isSaving ? null : _addEvent,
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-              child: _isSaving 
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Add Event'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+              ),
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text('Add Event'),
             ),
           ],
         );
@@ -115,13 +132,15 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
           }
 
           var docs = snapshot.data?.docs.toList() ?? [];
-          
+
           // Sort locally to avoid Firestore Composite Index requirements
           docs.sort((a, b) {
             final aData = a.data() as Map<String, dynamic>;
             final bData = b.data() as Map<String, dynamic>;
-            final aTime = (aData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
-            final bTime = (bData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final aTime =
+                (aData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final bTime =
+                (bData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
             return aTime.compareTo(bTime);
           });
 
@@ -134,7 +153,9 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurface : Colors.green.shade50,
+                    color: isDark
+                        ? AppColors.darkSurface
+                        : Colors.green.shade50,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.green),
                   ),
@@ -142,7 +163,10 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                     children: [
                       const Icon(Icons.security, color: Colors.green, size: 40),
                       const SizedBox(height: 8),
-                      Text('Supply Chain Verified', style: AppTextStyles.titleMedium(color: Colors.green)),
+                      Text(
+                        'Supply Chain Verified',
+                        style: AppTextStyles.titleMedium(color: Colors.green),
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         'Amount Tracked: Rs.${widget.amount.toStringAsFixed(0)}',
@@ -158,9 +182,11 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                   const Padding(
                     padding: EdgeInsets.only(top: 32.0),
                     child: Center(
-                      child: Text('No tracking events found yet.\nAdmin will update this soon.', 
-                        textAlign: TextAlign.center, 
-                        style: TextStyle(color: Colors.grey)),
+                      child: Text(
+                        'No tracking events found yet.\nAdmin will update this soon.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
                   ),
 
@@ -172,8 +198,10 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                       final title = data['title'] ?? 'Event';
                       final desc = data['description'] ?? '';
                       final isCompleted = data['isCompleted'] ?? true;
-                      final date = (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
-                      
+                      final date =
+                          (data['timestamp'] as Timestamp?)?.toDate() ??
+                          DateTime.now();
+
                       return _buildTimelineNode(
                         title: title,
                         description: desc,
@@ -183,8 +211,8 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                         isLast: i == docs.length - 1,
                       );
                     },
-                  )
-                ]
+                  ),
+                ],
               ],
             ),
           );
@@ -212,7 +240,9 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isFirst ? Colors.transparent : (isCompleted ? Colors.green : Colors.grey),
+                    color: isFirst
+                        ? Colors.transparent
+                        : (isCompleted ? Colors.green : Colors.grey),
                   ),
                 ),
                 Container(
@@ -227,7 +257,9 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isLast ? Colors.transparent : (isCompleted ? Colors.green : Colors.grey),
+                    color: isLast
+                        ? Colors.transparent
+                        : (isCompleted ? Colors.green : Colors.grey),
                   ),
                 ),
               ],
@@ -243,10 +275,19 @@ class _DonationTrackerScreenState extends State<DonationTrackerScreen> {
                   Text(title, style: AppTextStyles.titleMedium()),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(description, style: AppTextStyles.bodyMedium(color: Colors.grey)),
+                    Text(
+                      description,
+                      style: AppTextStyles.bodyMedium(color: Colors.grey),
+                    ),
                   ],
                   const SizedBox(height: 4),
-                  Text(date, style: const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                  Text(
+                    date,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
                 ],
               ),
             ),

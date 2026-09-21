@@ -48,18 +48,31 @@ class VolunteerService {
       registeredAt: DateTime.now(),
     );
 
-    // Write volunteer doc and increment campaign counter in batch
-    final batch = _db.batch();
-    batch.set(docRef, volunteer.toMap());
-    batch.update(_campaigns.doc(campaignId), {
-      'totalVolunteers': FieldValue.increment(1),
-      'updatedAt': FieldValue.serverTimestamp(),
+    final campaignRef = _campaigns.doc(campaignId);
+    final userRef = _db.collection('users').doc(userId);
+
+    // SECURE: Enforce volunteer limits using a transaction to prevent race conditions
+    await _db.runTransaction((transaction) async {
+      final campaignSnapshot = await transaction.get(campaignRef);
+      if (!campaignSnapshot.exists) throw Exception('Campaign not found.');
+
+      final data = campaignSnapshot.data() as Map<String, dynamic>;
+      final volunteerLimit = data['volunteerLimit'] as int?;
+      final totalVolunteers = data['totalVolunteers'] as int? ?? 0;
+
+      if (volunteerLimit != null && volunteerLimit > 0 && totalVolunteers >= volunteerLimit) {
+        throw Exception('Campaign is full. Cannot join.');
+      }
+
+      transaction.set(docRef, volunteer.toMap());
+      transaction.update(campaignRef, {
+        'totalVolunteers': totalVolunteers + 1,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      transaction.update(userRef, {
+        'campaignsJoined': FieldValue.increment(1),
+      });
     });
-    // Also increment user's campaignsJoined
-    batch.update(_db.collection('users').doc(userId), {
-      'campaignsJoined': FieldValue.increment(1),
-    });
-    await batch.commit();
 
     return volunteer;
   }
@@ -133,7 +146,9 @@ class VolunteerService {
 
   /// Check if user already joined a campaign
   Future<VolunteerModel?> getUserVolunteerRecord(
-      String campaignId, String userId) async {
+    String campaignId,
+    String userId,
+  ) async {
     final snapshot = await _volunteers
         .where('campaignId', isEqualTo: campaignId)
         .where('userId', isEqualTo: userId)
@@ -147,28 +162,30 @@ class VolunteerService {
   Stream<List<VolunteerModel>> getVolunteersStream(String campaignId) {
     return _volunteers
         .where('campaignId', isEqualTo: campaignId)
+        .limit(500) // SECURE: Added limit to prevent billing spikes
         .snapshots()
         .map((snapshot) {
-          final list = snapshot.docs
-              .map((doc) => VolunteerModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => a.registeredAt.compareTo(b.registeredAt));
+          final list =
+              snapshot.docs
+                  .map((doc) => VolunteerModel.fromMap(doc.data()))
+                  .toList()
+                ..sort((a, b) => a.registeredAt.compareTo(b.registeredAt));
           return list;
         });
   }
 
   /// Get all campaigns a user has joined
   Stream<List<VolunteerModel>> getUserCampaignsStream(String userId) {
-    return _volunteers
-        .where('userId', isEqualTo: userId)
-        .snapshots()
-        .map((snapshot) {
-          final list = snapshot.docs
+    return _volunteers.where('userId', isEqualTo: userId).limit(500).snapshots().map((
+      snapshot,
+    ) {
+      final list =
+          snapshot.docs
               .map((doc) => VolunteerModel.fromMap(doc.data()))
               .toList()
             ..sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
-          return list;
-        });
+      return list;
+    });
   }
 
   /// Get volunteer count for a campaign
@@ -186,10 +203,10 @@ class VolunteerService {
 
   /// Mark attendance for a volunteer
   Future<void> markAttendance(
-      String volunteerId, VolunteerStatus status) async {
-    final Map<String, dynamic> data = {
-      'status': status.name,
-    };
+    String volunteerId,
+    VolunteerStatus status,
+  ) async {
+    final Map<String, dynamic> data = {'status': status.name};
     if (status == VolunteerStatus.attended) {
       data['attendedAt'] = FieldValue.serverTimestamp();
     }
@@ -201,7 +218,9 @@ class VolunteerService {
 
   /// Bulk mark attendance for multiple volunteers
   Future<void> markBulkAttendance(
-      List<String> volunteerIds, VolunteerStatus status) async {
+    List<String> volunteerIds,
+    VolunteerStatus status,
+  ) async {
     final batch = _db.batch();
     for (final id in volunteerIds) {
       final Map<String, dynamic> data = {'status': status.name};
@@ -213,44 +232,11 @@ class VolunteerService {
     await batch.commit();
   }
 
-  /// Get attendance stats for a campaign
-  Future<Map<String, int>> getAttendanceStats(String campaignId) async {
-    final snapshot = await _volunteers
-        .where('campaignId', isEqualTo: campaignId)
-        .get();
 
-    int registered = 0, confirmed = 0, attended = 0, absent = 0;
-    for (final doc in snapshot.docs) {
-      final status = doc.data()['status'] ?? 'registered';
-      switch (status) {
-        case 'registered':
-          registered++;
-          break;
-        case 'confirmed':
-          confirmed++;
-          break;
-        case 'attended':
-          attended++;
-          break;
-        case 'absent':
-          absent++;
-          break;
-      }
-    }
-    return {
-      'registered': registered,
-      'confirmed': confirmed,
-      'attended': attended,
-      'absent': absent,
-      'total': registered + confirmed + attended + absent,
-    };
-  }
 
   /// Fetch all registrations for a user as a one-time list (for matching algorithm).
   Future<List<VolunteerModel>> fetchUserRegistrations(String userId) async {
-    final snapshot = await _volunteers
-        .where('userId', isEqualTo: userId)
-        .get();
+    final snapshot = await _volunteers.where('userId', isEqualTo: userId).limit(500).get();
     return snapshot.docs
         .map((doc) => VolunteerModel.fromMap(doc.data()))
         .toList();
@@ -258,7 +244,9 @@ class VolunteerService {
 
   /// Update volunteer status (alias used by QR service).
   Future<void> updateVolunteerStatus(
-      String volunteerId, VolunteerStatus status) async {
+    String volunteerId,
+    VolunteerStatus status,
+  ) async {
     await markAttendance(volunteerId, status);
   }
 
@@ -269,7 +257,7 @@ class VolunteerService {
     batch.update(_campaigns.doc(campaignId), {
       'totalVolunteers': FieldValue.increment(-1),
     });
-    
+
     await batch.commit();
   }
 }

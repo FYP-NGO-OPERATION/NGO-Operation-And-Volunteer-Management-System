@@ -11,9 +11,7 @@ class ManageTrackingEventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Tracking Events'),
-      ),
+      appBar: AppBar(title: const Text('Manage Tracking Events')),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('donation_tracking_events')
@@ -54,19 +52,35 @@ class ManageTrackingEventsScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               event.title,
-                              style: AppTextStyles.titleMedium(color: Colors.green),
+                              style: AppTextStyles.titleMedium(
+                                color: Colors.green,
+                              ),
                             ),
                           ),
                           Text(
-                            DateFormat('MMM dd, hh:mm a').format(event.timestamp),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            DateFormat(
+                              'MMM dd, hh:mm a',
+                            ).format(event.timestamp),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(event.description, style: AppTextStyles.bodyMedium()),
+                      Text(
+                        event.description,
+                        style: AppTextStyles.bodyMedium(),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Donation ID: ${event.donationId}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        'Donation ID: ${event.donationId}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
                       const Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -78,8 +92,15 @@ class ManageTrackingEventsScreen extends StatelessWidget {
                           ),
                           TextButton.icon(
                             onPressed: () => _deleteEvent(context, event.id),
-                            icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                            label: const Text('Delete', style: TextStyle(color: Colors.red)),
+                            icon: const Icon(
+                              Icons.delete,
+                              size: 18,
+                              color: Colors.red,
+                            ),
+                            label: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                         ],
                       ),
@@ -118,7 +139,10 @@ class ManageTrackingEventsScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -126,11 +150,14 @@ class ManageTrackingEventsScreen extends StatelessWidget {
                     .collection('donation_tracking_events')
                     .doc(event.id)
                     .update({
-                  'title': titleCtrl.text.trim(),
-                  'description': descCtrl.text.trim(),
-                });
+                      'title': titleCtrl.text.trim(),
+                      'description': descCtrl.text.trim(),
+                    });
                 Navigator.pop(ctx);
-                SnackbarHelper.showSuccess(context, 'Event updated successfully');
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Event updated successfully',
+                );
               } catch (e) {
                 SnackbarHelper.showError(context, 'Failed to update: $e');
               }
@@ -147,9 +174,14 @@ class ManageTrackingEventsScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Event?'),
-        content: const Text('This will permanently remove the tracking event from the donor\'s timeline. Are you sure?'),
+        content: const Text(
+          'This will permanently remove the tracking event from the donor\'s timeline. Are you sure?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
@@ -159,7 +191,10 @@ class ManageTrackingEventsScreen extends StatelessWidget {
                     .doc(eventId)
                     .delete();
                 Navigator.pop(ctx);
-                SnackbarHelper.showSuccess(context, 'Event deleted successfully');
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Event deleted successfully',
+                );
               } catch (e) {
                 SnackbarHelper.showError(context, 'Failed to delete: $e');
               }

@@ -50,7 +50,9 @@ class MessageModel {
       isAdmin: map['isAdmin'] ?? false,
       timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isDeleted: map['isDeleted'] ?? false,
-      mentionedUserIds: map['mentionedUserIds'] != null ? List<String>.from(map['mentionedUserIds']) : [],
+      mentionedUserIds: map['mentionedUserIds'] != null
+          ? List<String>.from(map['mentionedUserIds'])
+          : [],
       imageUrl: map['imageUrl'],
     );
   }

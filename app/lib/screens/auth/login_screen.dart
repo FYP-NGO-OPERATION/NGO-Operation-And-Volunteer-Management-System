@@ -17,8 +17,7 @@ import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
-import '../home/home_screen.dart';
-import '../../widgets/admin/admin_layout.dart';
+import 'otp_verification_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/ngo_service.dart';
 
@@ -30,7 +29,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -43,10 +43,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _fadeCtrl = AnimationController(vsync: this, duration: AppAnimations.medium);
-    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: AppAnimations.easeOut);
-    _slideAnim = Tween(begin: const Offset(0, 0.05), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _fadeCtrl, curve: AppAnimations.easeOut));
+    _fadeCtrl = AnimationController(
+      vsync: this,
+      duration: AppAnimations.medium,
+    );
+    _fadeAnim = CurvedAnimation(
+      parent: _fadeCtrl,
+      curve: AppAnimations.easeOut,
+    );
+    _slideAnim = Tween(
+      begin: const Offset(0, 0.05),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _fadeCtrl, curve: AppAnimations.easeOut));
     _fadeCtrl.forward();
   }
 
@@ -70,46 +78,27 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     if (!mounted) return;
 
     if (success) {
-      SnackbarHelper.showSuccess(context, 'Welcome back, ${authProvider.user?.name ?? ''}!');
-      await _handlePostAuth();
+      if (authProvider.user?.phone == null ||
+          authProvider.user!.phone.isEmpty) {
+        SnackbarHelper.showError(
+          context,
+          'No phone number attached to this account.',
+        );
+        // We could let them in or force them to add one. For now let's just let them in if no phone.
+        // Or we could redirect to OTP with a prompt. Let's assume they must have a phone.
+      }
+      Navigator.pushReplacement(
+        context,
+        AppAnimations.slideLeftRoute(
+          OtpVerificationScreen(phoneNumber: authProvider.user?.phone ?? ''),
+        ),
+      );
     } else {
       SnackbarHelper.showError(context, authProvider.error ?? 'Login failed.');
     }
   }
 
-  Future<void> _handlePostAuth() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-    final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
-    
-    final prefs = await SharedPreferences.getInstance();
-    final pendingNgoId = prefs.getString('pending_invite_ngo_id');
-    
-    if (pendingNgoId != null && authProvider.user != null) {
-      final targetNgo = await NgoService().getNgo(pendingNgoId);
-      if (targetNgo != null) {
-        await ngoProvider.selectNgo(authProvider.user!, targetNgo);
-        await prefs.remove('pending_invite_ngo_id');
-        // Force refresh user from DB since we updated currentNgoId
-        await authProvider.checkAuthState();
-      }
-    }
-    
-    if (authProvider.user == null) return;
-    await ngoProvider.loadNgoForUser(authProvider.user!);
-    if (!mounted) return;
-    
-    final ngoId = authProvider.user!.currentNgoId ?? 'HRAS_DEFAULT_ID';
-    campaignProvider.init(ngoId);
-    Provider.of<VirtualSessionProvider>(context, listen: false).init(ngoId);
-    Widget nextScreen = authProvider.isAdmin ? const AdminLayout() : const HomeScreen();
-
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => nextScreen),
-      (route) => false,
-    );
-  }
+  // Post auth is now handled in OtpVerificationScreen
 
   Future<void> _signInWithGoogle() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -119,10 +108,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     if (!mounted) return;
 
     if (success) {
-      SnackbarHelper.showSuccess(context, 'Welcome, ${authProvider.user?.name ?? ''}!');
-      await _handlePostAuth();
+      Navigator.pushReplacement(
+        context,
+        AppAnimations.slideLeftRoute(
+          OtpVerificationScreen(phoneNumber: authProvider.user?.phone ?? ''),
+        ),
+      );
     } else {
-      SnackbarHelper.showError(context, authProvider.error ?? 'Google sign-in failed.');
+      SnackbarHelper.showError(
+        context,
+        authProvider.error ?? 'Google sign-in failed.',
+      );
     }
   }
 
@@ -154,10 +150,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             height: logoSize,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              boxShadow: AppTokens.shadowGlow(AppColors.primary),
+                              boxShadow: AppTokens.shadowGlow(
+                                AppColors.primary,
+                              ),
                             ),
                             child: ClipOval(
-                              child: Image.asset(AppConstants.logoPath, fit: BoxFit.contain),
+                              child: Image.asset(
+                                AppConstants.logoPath,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
@@ -167,7 +168,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         Text(
                           'Welcome Back',
                           style: AppTextStyles.headlineLarge(
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -175,7 +178,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         Text(
                           'Sign in to continue making an impact',
                           style: AppTextStyles.bodyMedium(
-                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -204,10 +209,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           validator: Validators.password,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              _obscurePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
                               size: AppTokens.iconMd,
                             ),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
                         ),
 
@@ -216,9 +225,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () => Navigator.push(
-                              context, AppAnimations.slideLeftRoute(const ForgotPasswordScreen()),
+                              context,
+                              AppAnimations.slideLeftRoute(
+                                const ForgotPasswordScreen(),
+                              ),
                             ),
-                            child: Text('Forgot Password?', style: AppTextStyles.labelMedium(color: AppColors.primary)),
+                            child: Text(
+                              'Forgot Password?',
+                              style: AppTextStyles.labelMedium(
+                                color: AppColors.primary,
+                              ),
+                            ),
                           ),
                         ),
                         AppSpacing.vGapMd,
@@ -238,12 +255,31 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         // ─── Divider ───
                         Row(
                           children: [
-                            Expanded(child: Divider(color: isDark ? AppColors.darkDivider : AppColors.lightDivider)),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                              child: Text('or', style: AppTextStyles.caption(color: AppColors.neutral400)),
+                            Expanded(
+                              child: Divider(
+                                color: isDark
+                                    ? AppColors.darkDivider
+                                    : AppColors.lightDivider,
+                              ),
                             ),
-                            Expanded(child: Divider(color: isDark ? AppColors.darkDivider : AppColors.lightDivider)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                              ),
+                              child: Text(
+                                'or',
+                                style: AppTextStyles.caption(
+                                  color: AppColors.neutral400,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: isDark
+                                    ? AppColors.darkDivider
+                                    : AppColors.lightDivider,
+                              ),
+                            ),
                           ],
                         ),
                         AppSpacing.vGapLg,
@@ -255,17 +291,34 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               width: double.infinity,
                               height: AppTokens.buttonHeightMd,
                               child: OutlinedButton.icon(
-                                onPressed: auth.isLoading ? null : _signInWithGoogle,
+                                onPressed: auth.isLoading
+                                    ? null
+                                    : _signInWithGoogle,
                                 icon: Image.network(
                                   'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
                                   width: 20,
                                   height: 20,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, size: 24),
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.g_mobiledata, size: 24),
                                 ),
-                                label: Text('Continue with Google', style: AppTextStyles.button(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)),
+                                label: Text(
+                                  'Continue with Google',
+                                  style: AppTextStyles.button(
+                                    color: isDark
+                                        ? AppColors.darkTextPrimary
+                                        : AppColors.lightTextPrimary,
+                                  ),
+                                ),
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: isDark ? AppColors.darkDivider : AppColors.lightDivider, width: 1.5),
-                                  shape: RoundedRectangleBorder(borderRadius: AppTokens.borderRadiusMd),
+                                  side: BorderSide(
+                                    color: isDark
+                                        ? AppColors.darkDivider
+                                        : AppColors.lightDivider,
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: AppTokens.borderRadiusMd,
+                                  ),
                                 ),
                               ),
                             );
@@ -278,7 +331,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           text: 'Create New Account',
                           isOutlined: true,
                           onPressed: () => Navigator.push(
-                            context, AppAnimations.slideUpRoute(const RegisterScreen()),
+                            context,
+                            AppAnimations.slideUpRoute(const RegisterScreen()),
                           ),
                         ),
                         AppSpacing.vGapLg,

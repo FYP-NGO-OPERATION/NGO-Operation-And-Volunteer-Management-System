@@ -46,25 +46,44 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     // Logo: scale + fade in (0–1.2s)
-    _logoController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _logoController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
     _logoScale = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: const Cubic(0.34, 1.56, 0.64, 1.0)),
+      CurvedAnimation(
+        parent: _logoController,
+        curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+      ),
     );
     _logoFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)),
+      CurvedAnimation(
+        parent: _logoController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
     );
 
     // Content: fade + slide up (0.6–1.4s)
-    _contentController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _contentController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _contentController, curve: Curves.easeOut),
     );
-    _contentSlide = Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
-      CurvedAnimation(parent: _contentController, curve: Curves.easeOutCubic),
-    );
+    _contentSlide =
+        Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _contentController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     // Pulse glow for loading ring
-    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
     _pulseAnim = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -109,13 +128,20 @@ class _SplashScreenState extends State<SplashScreen>
 
     Widget nextScreen;
     if (isLoggedIn) {
-      if (FeatureFlags.isPushNotificationsEnabled && authProvider.userId != null) {
-        NotificationService().initialize(authProvider.userId!);
+      if (FeatureFlags.isPushNotificationsEnabled &&
+          authProvider.userId != null) {
+        NotificationService().initialize(
+          authProvider.userId!,
+          isAdmin: authProvider.user?.role == 'admin',
+        );
       }
-      
+
       final ngoProvider = Provider.of<NgoProvider>(context, listen: false);
-      final campaignProvider = Provider.of<CampaignProvider>(context, listen: false);
-      
+      final campaignProvider = Provider.of<CampaignProvider>(
+        context,
+        listen: false,
+      );
+
       // Handle Deep Link Auto-Join
       if (widget.inviteNgoId != null) {
         final ngoService = NgoService();
@@ -128,11 +154,11 @@ class _SplashScreenState extends State<SplashScreen>
 
       await ngoProvider.loadNgoForUser(authProvider.user!);
       if (!mounted) return;
-      
+
       final ngoId = authProvider.user!.currentNgoId ?? 'HRAS_DEFAULT_ID';
       campaignProvider.init(ngoId);
       Provider.of<VirtualSessionProvider>(context, listen: false).init(ngoId);
-      
+
       if (authProvider.isAdmin) {
         nextScreen = const AdminLayout();
       } else {
@@ -151,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _navigateToNext(Widget nextScreen) {
     if (!mounted) return;
-    
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
@@ -218,7 +244,10 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   child: ClipOval(
-                    child: Image.asset(AppConstants.logoPath, fit: BoxFit.contain),
+                    child: Image.asset(
+                      AppConstants.logoPath,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -238,15 +267,22 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs + 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.xs + 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: AppTokens.borderRadiusPill,
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Text(
                           AppConstants.appTagline,
-                          style: AppTextStyles.labelMedium(color: Colors.white.withValues(alpha: 0.9)),
+                          style: AppTextStyles.labelMedium(
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
                         ),
                       ),
                     ],
@@ -260,15 +296,13 @@ class _SplashScreenState extends State<SplashScreen>
               AnimatedBuilder(
                 animation: _pulseAnim,
                 builder: (context, child) {
-                  return Opacity(
-                    opacity: _pulseAnim.value,
-                    child: child,
-                  );
+                  return Opacity(opacity: _pulseAnim.value, child: child);
                 },
                 child: Column(
                   children: [
                     SizedBox(
-                      width: 24, height: 24,
+                      width: 24,
+                      height: 24,
                       child: CircularProgressIndicator(
                         color: Colors.white.withValues(alpha: 0.8),
                         strokeWidth: 2,
@@ -277,7 +311,9 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Preparing your experience...',
-                      style: AppTextStyles.caption(color: Colors.white.withValues(alpha: 0.6)),
+                      style: AppTextStyles.caption(
+                        color: Colors.white.withValues(alpha: 0.6),
+                      ),
                     ),
                   ],
                 ),

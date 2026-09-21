@@ -39,7 +39,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _selectedUnit = 'pieces';
   bool _isLoading = false;
 
-  final List<String> _units = ['pieces', 'kg', 'liters', 'packs', 'boxes', 'Rs', 'other'];
+  final List<String> _units = [
+    'pieces',
+    'kg',
+    'liters',
+    'packs',
+    'boxes',
+    'Rs',
+    'other',
+  ];
 
   @override
   void dispose() {
@@ -57,23 +65,26 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     if (image == null) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
       final bytes = await image.readAsBytes();
-      
-      final ngoId = context.read<AuthProvider>().user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+
+      final ngoId =
+          context.read<AuthProvider>().user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
       final apiKey = await GeminiConfigService.getApiKey(ngoId);
       final model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
-      
-      final prompt = TextPart("Analyze this receipt. Extract the final TOTAL amount. Respond ONLY with the numeric value (no currency symbols, no text).");
+
+      final prompt = TextPart(
+        "Analyze this receipt. Extract the final TOTAL amount. Respond ONLY with the numeric value (no currency symbols, no text).",
+      );
       final imagePart = DataPart('image/jpeg', bytes);
 
       final response = await model.generateContent([
-        Content.multi([prompt, imagePart])
+        Content.multi([prompt, imagePart]),
       ]);
-      
+
       final extractedText = response.text?.trim() ?? '';
-      
+
       // Clean up the text to extract just the number
       final numberStr = extractedText.replaceAll(RegExp(r'[^0-9.]'), '');
       final amount = double.tryParse(numberStr) ?? 0.0;
@@ -83,10 +94,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           setState(() {
             _unitPriceController.text = amount.toString();
           });
-          SnackbarHelper.showSuccess(context, 'Extracted Amount via AI: $amount');
+          SnackbarHelper.showSuccess(
+            context,
+            'Extracted Amount via AI: $amount',
+          );
         }
       } else {
-        if (mounted) SnackbarHelper.showError(context, 'Could not detect an amount clearly.');
+        if (mounted)
+          SnackbarHelper.showError(
+            context,
+            'Could not detect an amount clearly.',
+          );
       }
     } catch (e) {
       if (mounted) SnackbarHelper.showError(context, 'AI OCR Failed: $e');
@@ -115,8 +133,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         unit: _selectedUnit,
         unitPrice: price,
         totalAmount: total,
-        vendor: _vendorController.text.trim().isEmpty ? null : _vendorController.text.trim(),
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        vendor: _vendorController.text.trim().isEmpty
+            ? null
+            : _vendorController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         addedBy: user.uid,
         addedByName: user.name,
         status: user.isAdmin ? 'approved' : 'pending',
@@ -152,7 +174,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Expense', style: AppTextStyles.titleLarge())),
+      appBar: AppBar(
+        title: Text('Add Expense', style: AppTextStyles.titleLarge()),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Form(
@@ -172,16 +196,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ],
               ),
               AppSpacing.vGapLg,
-              
+
               CustomTextField(
                 controller: _itemNameController,
                 label: 'Item Name',
                 hint: 'e.g., Blankets, Transport, Food Boxes',
                 prefixIcon: Icons.shopping_bag,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              
+
               DropdownButtonFormField<ExpenseCategory>(
                 // ignore: deprecated_member_use
                 value: _selectedCategory,
@@ -250,7 +275,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               const SizedBox(height: 24),
 
-              const Text('Optional Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Optional Information',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
 
               CustomTextField(

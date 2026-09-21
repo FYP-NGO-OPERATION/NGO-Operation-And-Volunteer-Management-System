@@ -38,7 +38,13 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Impact & Reach'),
-              Text(widget.campaignTitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+              Text(
+                widget.campaignTitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
             ],
           ),
           bottom: const TabBar(
@@ -78,7 +84,11 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => AddDistributionScreen(campaignId: widget.campaignId)),
+                        MaterialPageRoute(
+                          builder: (_) => AddDistributionScreen(
+                            campaignId: widget.campaignId,
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.add),
@@ -89,9 +99,7 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
 
             if (distributions.isEmpty)
               const Expanded(
-                child: Center(
-                  child: Text('No distributions recorded yet.'),
-                ),
+                child: Center(child: Text('No distributions recorded yet.')),
               )
             else
               Expanded(
@@ -102,7 +110,9 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                     final d = distributions[i];
                     return Dismissible(
                       key: Key(d.id),
-                      direction: isAdmin ? DismissDirection.endToStart : DismissDirection.none,
+                      direction: isAdmin
+                          ? DismissDirection.endToStart
+                          : DismissDirection.none,
                       background: Container(
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
@@ -114,12 +124,19 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                           context: context,
                           builder: (ctx) => AlertDialog(
                             title: const Text('Delete Record'),
-                            content: const Text('Are you sure you want to delete this distribution record?'),
+                            content: const Text(
+                              'Are you sure you want to delete this distribution record?',
+                            ),
                             actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
                               ElevatedButton(
                                 onPressed: () => Navigator.pop(ctx, true),
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.error,
+                                ),
                                 child: const Text('Delete'),
                               ),
                             ],
@@ -128,19 +145,41 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                       },
                       onDismissed: (_) async {
                         final messenger = ScaffoldMessenger.of(context);
-                        await _distributionService.deleteDistribution(d.id, widget.campaignId, d.quantity);
-                        messenger.showSnackBar(const SnackBar(content: Text('Record deleted')));
+                        await _distributionService.deleteDistribution(
+                          d.id,
+                          widget.campaignId,
+                          d.quantity,
+                        );
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Record deleted')),
+                        );
                       },
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: AppColors.success.withValues(alpha: 0.1),
-                            child: const Icon(Icons.inventory_2, color: AppColors.success),
+                            backgroundColor: AppColors.success.withValues(
+                              alpha: 0.1,
+                            ),
+                            child: const Icon(
+                              Icons.inventory_2,
+                              color: AppColors.success,
+                            ),
                           ),
-                          title: Text('${d.quantity} ${d.unit} of ${d.itemType.toUpperCase()}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text('Location: ${d.location}\nDate: ${DateFormat('dd MMM, yyyy').format(d.distributedAt)}'),
-                          trailing: Text('${d.distributedTo} People', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.info)),
+                          title: Text(
+                            '${d.quantity} ${d.unit} of ${d.itemType.toUpperCase()}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            'Location: ${d.location}\nDate: ${DateFormat('dd MMM, yyyy').format(d.distributedAt)}',
+                          ),
+                          trailing: Text(
+                            '${d.distributedTo} People',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.info,
+                            ),
+                          ),
                           isThreeLine: true,
                         ),
                       ),
@@ -174,21 +213,26 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => AddBeneficiaryScreen(campaignId: widget.campaignId)),
+                        MaterialPageRoute(
+                          builder: (_) => AddBeneficiaryScreen(
+                            campaignId: widget.campaignId,
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Add Beneficiary'),
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.info, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.info,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ),
               ),
 
             if (beneficiaries.isEmpty)
               const Expanded(
-                child: Center(
-                  child: Text('No beneficiaries recorded yet.'),
-                ),
+                child: Center(child: Text('No beneficiaries recorded yet.')),
               )
             else
               Expanded(
@@ -199,7 +243,9 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                     final b = beneficiaries[i];
                     return Dismissible(
                       key: Key(b.id),
-                      direction: isAdmin ? DismissDirection.endToStart : DismissDirection.none,
+                      direction: isAdmin
+                          ? DismissDirection.endToStart
+                          : DismissDirection.none,
                       background: Container(
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
@@ -213,10 +259,15 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                             title: const Text('Delete Beneficiary'),
                             content: Text('Remove ${b.name}?'),
                             actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
                               ElevatedButton(
                                 onPressed: () => Navigator.pop(ctx, true),
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.error,
+                                ),
                                 child: const Text('Delete'),
                               ),
                             ],
@@ -225,19 +276,39 @@ class _BeneficiaryListScreenState extends State<BeneficiaryListScreen> {
                       },
                       onDismissed: (_) async {
                         final messenger = ScaffoldMessenger.of(context);
-                        await _distributionService.deleteBeneficiary(b.id, widget.campaignId, b.familySize);
-                        messenger.showSnackBar(const SnackBar(content: Text('Beneficiary deleted')));
+                        await _distributionService.deleteBeneficiary(
+                          b.id,
+                          widget.campaignId,
+                          b.familySize,
+                        );
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Beneficiary deleted')),
+                        );
                       },
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: AppColors.info.withValues(alpha: 0.1),
-                            child: const Icon(Icons.person, color: AppColors.info),
+                            backgroundColor: AppColors.info.withValues(
+                              alpha: 0.1,
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              color: AppColors.info,
+                            ),
                           ),
-                          title: Text(b.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text('Family Size: ${b.familySize}\nItems: ${b.itemsReceived}'),
-                          trailing: const Icon(Icons.check_circle, color: AppColors.success, size: 20),
+                          title: Text(
+                            b.name,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            'Family Size: ${b.familySize}\nItems: ${b.itemsReceived}',
+                          ),
+                          trailing: const Icon(
+                            Icons.check_circle,
+                            color: AppColors.success,
+                            size: 20,
+                          ),
                           isThreeLine: true,
                         ),
                       ),

@@ -40,7 +40,9 @@ class AppTheme {
         scrolledUnderElevation: 1,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: AppTextStyles.titleLarge(color: AppColors.lightTextPrimary),
+        titleTextStyle: AppTextStyles.titleLarge(
+          color: AppColors.lightTextPrimary,
+        ),
         iconTheme: IconThemeData(color: primary),
       ),
 
@@ -52,7 +54,9 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedLabelStyle: AppTextStyles.labelSmall(color: primary),
-        unselectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.neutral400),
+        unselectedLabelStyle: AppTextStyles.labelSmall(
+          color: AppColors.neutral400,
+        ),
       ),
 
       // Cards
@@ -61,7 +65,9 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppTokens.borderRadiusMd,
-          side: BorderSide(color: AppColors.lightDivider.withValues(alpha: 0.5)),
+          side: BorderSide(
+            color: AppColors.lightDivider.withValues(alpha: 0.5),
+          ),
         ),
         margin: AppSpacing.cardMargin,
         surfaceTintColor: Colors.transparent,
@@ -117,21 +123,32 @@ class AppTheme {
           borderRadius: AppTokens.borderRadiusMd,
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        labelStyle: AppTextStyles.labelMedium(color: AppColors.lightTextSecondary),
+        labelStyle: AppTextStyles.labelMedium(
+          color: AppColors.lightTextSecondary,
+        ),
         hintStyle: AppTextStyles.bodyMedium(color: AppColors.lightTextHint),
         errorStyle: AppTextStyles.caption(color: AppColors.error),
       ),
 
       // Divider
-      dividerTheme: const DividerThemeData(color: AppColors.lightDivider, thickness: 1, space: 1),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.lightDivider,
+        thickness: 1,
+        space: 1,
+      ),
 
       // Chip
       chipTheme: ChipThemeData(
         backgroundColor: primary.withOpacity(0.1),
         labelStyle: AppTextStyles.labelMedium(color: primary),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTokens.radiusPill)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTokens.radiusPill),
+        ),
         side: BorderSide.none,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
       ),
 
       // Dialog
@@ -181,7 +198,9 @@ class AppTheme {
         selectedIconTheme: IconThemeData(color: primary),
         unselectedIconTheme: const IconThemeData(color: AppColors.neutral400),
         selectedLabelTextStyle: AppTextStyles.labelMedium(color: primary),
-        unselectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.neutral400),
+        unselectedLabelTextStyle: AppTextStyles.labelMedium(
+          color: AppColors.neutral400,
+        ),
         indicatorColor: primary.withOpacity(0.1),
       ),
     );
@@ -218,7 +237,9 @@ class AppTheme {
         scrolledUnderElevation: 1,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: AppTextStyles.titleLarge(color: AppColors.darkTextPrimary),
+        titleTextStyle: AppTextStyles.titleLarge(
+          color: AppColors.darkTextPrimary,
+        ),
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -228,7 +249,9 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedLabelStyle: AppTextStyles.labelSmall(color: primaryLight),
-        unselectedLabelStyle: AppTextStyles.labelSmall(color: AppColors.neutral500),
+        unselectedLabelStyle: AppTextStyles.labelSmall(
+          color: AppColors.neutral500,
+        ),
       ),
 
       cardTheme: CardThemeData(
@@ -288,19 +311,30 @@ class AppTheme {
           borderRadius: AppTokens.borderRadiusMd,
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        labelStyle: AppTextStyles.labelMedium(color: AppColors.darkTextSecondary),
+        labelStyle: AppTextStyles.labelMedium(
+          color: AppColors.darkTextSecondary,
+        ),
         hintStyle: AppTextStyles.bodyMedium(color: AppColors.darkTextHint),
         errorStyle: AppTextStyles.caption(color: AppColors.error),
       ),
 
-      dividerTheme: const DividerThemeData(color: AppColors.darkDivider, thickness: 1, space: 1),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.darkDivider,
+        thickness: 1,
+        space: 1,
+      ),
 
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
         labelStyle: AppTextStyles.labelMedium(color: primaryLight),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTokens.radiusPill)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTokens.radiusPill),
+        ),
         side: const BorderSide(color: AppColors.darkDivider),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
       ),
 
       dialogTheme: DialogThemeData(
@@ -344,7 +378,9 @@ class AppTheme {
         selectedIconTheme: IconThemeData(color: primaryLight),
         unselectedIconTheme: const IconThemeData(color: AppColors.neutral500),
         selectedLabelTextStyle: AppTextStyles.labelMedium(color: primaryLight),
-        unselectedLabelTextStyle: AppTextStyles.labelMedium(color: AppColors.neutral500),
+        unselectedLabelTextStyle: AppTextStyles.labelMedium(
+          color: AppColors.neutral500,
+        ),
         indicatorColor: primaryLight.withOpacity(0.15),
       ),
     );

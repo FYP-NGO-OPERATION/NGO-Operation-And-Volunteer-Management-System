@@ -33,20 +33,23 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
       _error = null;
     });
     try {
-      final ngoId = Provider.of<AuthProvider>(context, listen: false).user?.currentNgoId ?? 'HRAS_DEFAULT_ID';
+      final ngoId =
+          Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          ).user?.currentNgoId ??
+          'HRAS_DEFAULT_ID';
 
       final apiKey = await GeminiConfigService.getApiKey(ngoId);
       if (apiKey == null || apiKey.isEmpty) {
         setState(() => _error = 'AI API key is not configured.');
         return;
       }
-      
-      final model = GenerativeModel(
-        model: 'gemini-3.6-flash',
-        apiKey: apiKey,
-      );
 
-      final prompt = '''
+      final model = GenerativeModel(model: 'gemini-3.6-flash', apiKey: apiKey);
+
+      final prompt =
+          '''
 Act as an expert NGO strategist. Given our current platform data:
 - Total Campaigns: ${widget.totalCampaigns}
 - Total Volunteers: ${widget.totalVolunteers}
@@ -56,7 +59,7 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
 ''';
 
       final response = await model.generateContent([Content.text(prompt)]);
-      
+
       if (mounted) {
         setState(() {
           _insight = response.text?.trim() ?? 'No insights generated.';
@@ -84,7 +87,10 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
     return Card(
       color: isDark ? AppColors.darkCardBg : Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: primaryColor.withValues(alpha: 0.3))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -95,8 +101,13 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
                 Icon(Icons.auto_awesome, color: primaryColor),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text('AI Predictive Insights', 
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor),
+                  child: Text(
+                    'AI Predictive Insights',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -119,18 +130,35 @@ Write a short, engaging 3-sentence predictive insight. Predict the trend for nex
                   const SizedBox(height: 8),
                   TextButton.icon(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AiSettingsScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AiSettingsScreen(),
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.settings),
                     label: const Text('Configure AI API Key'),
-                    style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                    ),
                   ),
                 ],
               )
             else if (_insight.isEmpty)
-              Text('Tap generate to get Gemini AI strategic predictions for next month.', style: TextStyle(color: isDark ? Colors.white54 : Colors.grey))
+              Text(
+                'Tap generate to get Gemini AI strategic predictions for next month.',
+                style: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
+              )
             else
-              Text(_insight, style: TextStyle(fontSize: 15, height: 1.4, color: isDark ? Colors.white : Colors.black87)),
+              Text(
+                _insight,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.4,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
           ],
         ),
       ),

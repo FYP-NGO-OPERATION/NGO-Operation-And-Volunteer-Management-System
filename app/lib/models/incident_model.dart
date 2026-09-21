@@ -66,8 +66,11 @@ class IncidentService {
         .collection('incidents')
         .where('isResolved', isEqualTo: false)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => IncidentModel.fromMap(doc.data())).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => IncidentModel.fromMap(doc.data()))
+              .toList(),
+        );
   }
 
   Future<void> resolveIncident(String id) async {

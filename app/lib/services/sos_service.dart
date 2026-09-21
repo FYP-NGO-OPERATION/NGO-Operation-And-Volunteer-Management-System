@@ -8,7 +8,9 @@ class SosService {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw Exception('Location services are disabled. Please enable them to send SOS.');
+      throw Exception(
+        'Location services are disabled. Please enable them to send SOS.',
+      );
     }
 
     permission = await Geolocator.checkPermission();
@@ -18,12 +20,16 @@ class SosService {
         throw Exception('Location permissions are denied.');
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+      throw Exception(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
-    final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     await FirebaseFirestore.instance.collection('sos_alerts').add({
       'userId': userId,

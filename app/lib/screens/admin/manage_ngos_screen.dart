@@ -19,10 +19,18 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Approve NGO'),
-        content: Text('Are you sure you want to approve "${ngo.name}"? They will gain access to their workspace.'),
+        content: Text(
+          'Are you sure you want to approve "${ngo.name}"? They will gain access to their workspace.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Approve')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Approve'),
+          ),
         ],
       ),
     );
@@ -30,7 +38,9 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
     if (confirm == true) {
       await _ngoService.updateNgo(ngo.id, {'status': 'approved'});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('NGO Approved successfully.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('NGO Approved successfully.')),
+        );
       }
     }
   }
@@ -42,9 +52,12 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
         title: const Text('Reject NGO'),
         content: Text('Are you sure you want to reject "${ngo.name}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           TextButton(
-            onPressed: () => Navigator.pop(ctx, true), 
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Reject', style: TextStyle(color: Colors.red)),
           ),
         ],
@@ -54,7 +67,9 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
     if (confirm == true) {
       await _ngoService.updateNgo(ngo.id, {'status': 'rejected'});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('NGO Rejected.')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('NGO Rejected.')));
       }
     }
   }
@@ -72,27 +87,41 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
 
           final ngos = snapshot.data ?? [];
           final pendingNgos = ngos.where((n) => n.status == 'pending').toList();
-          final approvedNgos = ngos.where((n) => n.status == 'approved').toList();
+          final approvedNgos = ngos
+              .where((n) => n.status == 'approved')
+              .toList();
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Pending Approvals (${pendingNgos.length})', style: AppTextStyles.titleLarge()),
+              Text(
+                'Pending Approvals (${pendingNgos.length})',
+                style: AppTextStyles.titleLarge(),
+              ),
               const SizedBox(height: 8),
               if (pendingNgos.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text('No pending NGOs.', style: TextStyle(color: Colors.grey)),
+                  child: Text(
+                    'No pending NGOs.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ...pendingNgos.map((ngo) => _buildNgoTile(ngo)),
-              
+
               const SizedBox(height: 32),
-              Text('Approved NGOs (${approvedNgos.length})', style: AppTextStyles.titleLarge()),
+              Text(
+                'Approved NGOs (${approvedNgos.length})',
+                style: AppTextStyles.titleLarge(),
+              ),
               const SizedBox(height: 8),
               if (approvedNgos.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text('No approved NGOs yet.', style: TextStyle(color: Colors.grey)),
+                  child: Text(
+                    'No approved NGOs yet.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ...approvedNgos.map((ngo) => _buildNgoTile(ngo)),
             ],
@@ -110,27 +139,35 @@ class _ManageNgosScreenState extends State<ManageNgosScreen> {
           backgroundColor: Colors.grey.withValues(alpha: 0.2),
           child: const Icon(Icons.business),
         ),
-        title: Text(ngo.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(ngo.status.toUpperCase(), style: TextStyle(
-          color: ngo.status == 'pending' ? Colors.orange : Colors.green,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        )),
-        trailing: ngo.status == 'pending' ? Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.red),
-              onPressed: () => _rejectNgo(ngo),
-              tooltip: 'Reject',
-            ),
-            IconButton(
-              icon: const Icon(Icons.check, color: Colors.green),
-              onPressed: () => _approveNgo(ngo),
-              tooltip: 'Approve',
-            ),
-          ],
-        ) : null,
+        title: Text(
+          ngo.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          ngo.status.toUpperCase(),
+          style: TextStyle(
+            color: ngo.status == 'pending' ? Colors.orange : Colors.green,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+        trailing: ngo.status == 'pending'
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () => _rejectNgo(ngo),
+                    tooltip: 'Reject',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.check, color: Colors.green),
+                    onPressed: () => _approveNgo(ngo),
+                    tooltip: 'Approve',
+                  ),
+                ],
+              )
+            : null,
       ),
     );
   }

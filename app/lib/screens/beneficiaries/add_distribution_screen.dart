@@ -30,8 +30,22 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
   String _selectedUnit = 'pieces';
   bool _isLoading = false;
 
-  final List<String> _itemTypes = ['blankets', 'food', 'clothes', 'money', 'medicine', 'other'];
-  final List<String> _units = ['pieces', 'kg', 'packs', 'boxes', 'Rs', 'liters'];
+  final List<String> _itemTypes = [
+    'blankets',
+    'food',
+    'clothes',
+    'money',
+    'medicine',
+    'other',
+  ];
+  final List<String> _units = [
+    'pieces',
+    'kg',
+    'packs',
+    'boxes',
+    'Rs',
+    'liters',
+  ];
 
   @override
   void dispose() {
@@ -62,13 +76,18 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
         distributedBy: user.uid,
         distributedAt: DateTime.now(),
         location: _locationController.text.trim(),
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
       );
 
       await _distributionService.addDistribution(distribution);
 
       if (mounted) {
-        SnackbarHelper.showSuccess(context, 'Distribution recorded successfully!');
+        SnackbarHelper.showSuccess(
+          context,
+          'Distribution recorded successfully!',
+        );
         Navigator.pop(context);
       }
     } catch (e) {
@@ -93,9 +112,12 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Distribution Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Distribution Details',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
-              
+
               Row(
                 children: [
                   Expanded(
@@ -114,13 +136,14 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                           child: Text(type.toUpperCase()),
                         );
                       }).toList(),
-                      onChanged: (val) => setState(() => _selectedItemType = val!),
+                      onChanged: (val) =>
+                          setState(() => _selectedItemType = val!),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               Row(
                 children: [
                   Expanded(
@@ -132,7 +155,8 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                       prefixIcon: Icons.numbers,
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
-                        if (int.tryParse(val) == null || int.parse(val) < 1) return 'Invalid';
+                        if (int.tryParse(val) == null || int.parse(val) < 1)
+                          return 'Invalid';
                         return null;
                       },
                     ),
@@ -164,7 +188,8 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                 prefixIcon: Icons.people_alt,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
-                  if (int.tryParse(val) == null || int.parse(val) < 1) return 'Invalid';
+                  if (int.tryParse(val) == null || int.parse(val) < 1)
+                    return 'Invalid';
                   return null;
                 },
               ),
@@ -174,11 +199,15 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                 controller: _locationController,
                 label: 'Distribution Location',
                 prefixIcon: Icons.location_on,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 24),
 
-              const Text('Optional Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Optional Information',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
 
               CustomTextField(

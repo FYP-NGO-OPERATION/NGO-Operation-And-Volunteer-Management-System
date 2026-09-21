@@ -24,7 +24,9 @@ class HomeLatestAnnouncements extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const AnnouncementListScreen(),
+                  ),
                 );
               },
               child: Text('see_all'.tr()),
@@ -51,11 +53,19 @@ class HomeLatestAnnouncements extends StatelessWidget {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: AppColors.warning.withValues(alpha: 0.3)),
+                    side: BorderSide(
+                      color: AppColors.warning.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: ListTile(
-                    leading: const Icon(Icons.campaign, color: AppColors.warning),
-                    title: Text(a.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    leading: const Icon(
+                      Icons.campaign,
+                      color: AppColors.warning,
+                    ),
+                    title: Text(
+                      a.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     subtitle: Text(
                       a.message,
                       maxLines: 2,
@@ -63,12 +73,17 @@ class HomeLatestAnnouncements extends StatelessWidget {
                     ),
                     trailing: Text(
                       DateFormat('MMM dd').format(a.createdAt),
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const AnnouncementListScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const AnnouncementListScreen(),
+                        ),
                       );
                     },
                   ),

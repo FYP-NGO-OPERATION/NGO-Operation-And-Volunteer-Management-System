@@ -56,9 +56,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final campaigns = await _reportService.getCampaignsForReport(user.currentNgoId ?? '', _startDate, _endDate);
-      final donations = await _reportService.getDonationsForReport(_startDate, _endDate);
-      final expenses = await _reportService.getExpensesForReport(_startDate, _endDate);
+      final campaigns = await _reportService.getCampaignsForReport(
+        user.currentNgoId ?? '',
+        _startDate,
+        _endDate,
+      );
+      final donations = await _reportService.getDonationsForReport(
+        _startDate,
+        _endDate,
+      );
+      final expenses = await _reportService.getExpensesForReport(
+        _startDate,
+        _endDate,
+      );
 
       final pdfBytes = await PdfGeneratorService.generateReport(
         title: 'Monthly Operations Report',
@@ -102,9 +112,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reports & Analytics'),
-      ),
+      appBar: AppBar(title: const Text('Reports & Analytics')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -122,16 +130,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
             const SizedBox(height: 32),
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Icon(Icons.date_range, size: 48, color: AppColors.primary),
+                    const Icon(
+                      Icons.date_range,
+                      size: 48,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       '${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton(
@@ -148,13 +165,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _generateAndPreviewPdf,
                 icon: _isLoading
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Icon(Icons.picture_as_pdf),
-                label: Text(_isLoading ? 'Generating...' : 'Generate PDF Report', style: const TextStyle(fontSize: 18)),
+                label: Text(
+                  _isLoading ? 'Generating...' : 'Generate PDF Report',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),

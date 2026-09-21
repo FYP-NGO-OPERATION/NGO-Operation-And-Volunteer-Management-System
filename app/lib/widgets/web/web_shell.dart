@@ -54,11 +54,16 @@ class _WebShellState extends State<WebShell> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth >= AppConstants.desktopBreakpoint;
-    final isTablet = screenWidth >= AppConstants.mobileBreakpoint && screenWidth < AppConstants.desktopBreakpoint;
+    final isTablet =
+        screenWidth >= AppConstants.mobileBreakpoint &&
+        screenWidth < AppConstants.desktopBreakpoint;
 
     // On mobile, just return the tab content — bottom nav handles navigation
     if (!isWide && !isTablet) {
-      return widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0]['screen'] as Widget;
+      return widget.tabs[widget.currentIndex < widget.tabs.length
+              ? widget.currentIndex
+              : 0]['screen']
+          as Widget;
     }
 
     // Tablet: narrow rail. Desktop: full sidebar.
@@ -75,7 +80,9 @@ class _WebShellState extends State<WebShell> {
               color: isDark ? AppColors.darkCardBg : Colors.white,
               border: Border(
                 right: BorderSide(
-                  color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
                 ),
               ),
               boxShadow: [
@@ -90,18 +97,38 @@ class _WebShellState extends State<WebShell> {
               children: [
                 // Logo header
                 _buildLogoHeader(isDark, isWide && _sidebarExpanded),
-                Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                Divider(
+                  height: 1,
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
+                ),
 
                 // Navigation items
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                    children: _items.map((item) => _buildNavItem(item, isDark, isWide && _sidebarExpanded)).toList(),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
+                    children: _items
+                        .map(
+                          (item) => _buildNavItem(
+                            item,
+                            isDark,
+                            isWide && _sidebarExpanded,
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
 
                 // Bottom section
-                Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                Divider(
+                  height: 1,
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
+                ),
                 _buildUserFooter(isDark, isWide && _sidebarExpanded),
               ],
             ),
@@ -113,10 +140,19 @@ class _WebShellState extends State<WebShell> {
               children: [
                 // Top bar
                 _buildTopBar(isDark, isWide),
-                Divider(height: 1, color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                Divider(
+                  height: 1,
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
+                ),
                 // Content
                 Expanded(
-                  child: widget.tabs[widget.currentIndex < widget.tabs.length ? widget.currentIndex : 0]['screen'] as Widget,
+                  child:
+                      widget.tabs[widget.currentIndex < widget.tabs.length
+                              ? widget.currentIndex
+                              : 0]['screen']
+                          as Widget,
                 ),
               ],
             ),
@@ -131,7 +167,9 @@ class _WebShellState extends State<WebShell> {
 
     return Container(
       height: 64,
-      padding: EdgeInsets.symmetric(horizontal: expanded ? AppSpacing.lg : AppSpacing.sm),
+      padding: EdgeInsets.symmetric(
+        horizontal: expanded ? AppSpacing.lg : AppSpacing.sm,
+      ),
       child: Row(
         children: [
           ClipOval(
@@ -142,24 +180,32 @@ class _WebShellState extends State<WebShell> {
                 color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: currentNgo?.logoUrl != null && currentNgo!.logoUrl!.isNotEmpty
+              child:
+                  currentNgo?.logoUrl != null && currentNgo!.logoUrl!.isNotEmpty
                   ? (currentNgo.logoUrl!.startsWith('data:image')
-                      ? Image.memory(
-                          dart_convert.base64Decode(currentNgo.logoUrl!.split(',').last),
-                          fit: BoxFit.cover,
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: currentNgo.logoUrl!,
-                          fit: BoxFit.cover,
-                        ))
+                        ? Image.memory(
+                            dart_convert.base64Decode(
+                              currentNgo.logoUrl!.split(',').last,
+                            ),
+                            fit: BoxFit.cover,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: currentNgo.logoUrl!,
+                            fit: BoxFit.cover,
+                          ))
                   : Image.asset(AppConstants.logoPath, fit: BoxFit.contain),
             ),
           ),
           if (expanded) ...[
             AppSpacing.hGapSm,
             Expanded(
-              child: Text(currentNgo?.name ?? 'HRAS', style: AppTextStyles.titleMedium(color: Theme.of(context).primaryColor),
-                overflow: TextOverflow.ellipsis),
+              child: Text(
+                currentNgo?.name ?? 'HRAS',
+                style: AppTextStyles.titleMedium(
+                  color: Theme.of(context).primaryColor,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             // Toggle sidebar
             InkWell(
@@ -167,8 +213,13 @@ class _WebShellState extends State<WebShell> {
               borderRadius: AppTokens.borderRadiusSm,
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.xs),
-                child: Icon(Icons.menu_open_rounded, size: AppTokens.iconSm,
-                  color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                child: Icon(
+                  Icons.menu_open_rounded,
+                  size: AppTokens.iconSm,
+                  color: isDark
+                      ? AppColors.darkTextHint
+                      : AppColors.lightTextHint,
+                ),
               ),
             ),
           ],
@@ -186,7 +237,9 @@ class _WebShellState extends State<WebShell> {
   Widget _buildNavItem(_SidebarItem item, bool isDark, bool expanded) {
     final isActive = widget.currentIndex == item.index;
     final activeColor = AppColors.primary;
-    final inactiveColor = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final inactiveColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
     final bgColor = isActive
         ? activeColor.withValues(alpha: isDark ? 0.15 : 0.08)
         : Colors.transparent;
@@ -209,19 +262,28 @@ class _WebShellState extends State<WebShell> {
               vertical: AppSpacing.sm + 2,
             ),
             child: Row(
-              mainAxisAlignment: expanded ? MainAxisAlignment.start : MainAxisAlignment.center,
+              mainAxisAlignment: expanded
+                  ? MainAxisAlignment.start
+                  : MainAxisAlignment.center,
               children: [
-                Icon(item.icon, size: AppTokens.iconMd,
-                  color: isActive ? activeColor : inactiveColor),
+                Icon(
+                  item.icon,
+                  size: AppTokens.iconMd,
+                  color: isActive ? activeColor : inactiveColor,
+                ),
                 if (expanded) ...[
                   AppSpacing.hGapMd,
-                  Text(item.label, style: AppTextStyles.bodyMedium(
-                    color: isActive ? activeColor : inactiveColor,
-                  )),
+                  Text(
+                    item.label,
+                    style: AppTextStyles.bodyMedium(
+                      color: isActive ? activeColor : inactiveColor,
+                    ),
+                  ),
                   if (isActive) ...[
                     const Spacer(),
                     Container(
-                      width: 4, height: 20,
+                      width: 4,
+                      height: 20,
                       decoration: BoxDecoration(
                         color: activeColor,
                         borderRadius: AppTokens.borderRadiusPill,
@@ -239,7 +301,8 @@ class _WebShellState extends State<WebShell> {
 
   Widget _buildTopBar(bool isDark, bool isWide) {
     final items = _items;
-    final currentLabel = items.where((i) => i.index == widget.currentIndex).isNotEmpty
+    final currentLabel =
+        items.where((i) => i.index == widget.currentIndex).isNotEmpty
         ? items.firstWhere((i) => i.index == widget.currentIndex).label
         : 'Dashboard';
 
@@ -254,8 +317,13 @@ class _WebShellState extends State<WebShell> {
           const Spacer(),
           // Theme / notifications area
           IconButton(
-            icon: Icon(Icons.notifications_none_rounded, size: AppTokens.iconMd,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+            icon: Icon(
+              Icons.notifications_none_rounded,
+              size: AppTokens.iconMd,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
             onPressed: () {},
             tooltip: 'Notifications',
           ),
@@ -273,8 +341,12 @@ class _WebShellState extends State<WebShell> {
                 CircleAvatar(
                   radius: 18,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  child: Text(widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : 'U',
-                    style: AppTextStyles.labelLarge(color: AppColors.primary)),
+                  child: Text(
+                    widget.userName.isNotEmpty
+                        ? widget.userName[0].toUpperCase()
+                        : 'U',
+                    style: AppTextStyles.labelLarge(color: AppColors.primary),
+                  ),
                 ),
                 AppSpacing.hGapSm,
                 Expanded(
@@ -282,10 +354,19 @@ class _WebShellState extends State<WebShell> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(widget.userName, style: AppTextStyles.labelSmall(),
-                        overflow: TextOverflow.ellipsis),
-                      Text(widget.isAdmin ? 'Admin' : 'Volunteer',
-                        style: AppTextStyles.caption(color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint)),
+                      Text(
+                        widget.userName,
+                        style: AppTextStyles.labelSmall(),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        widget.isAdmin ? 'Admin' : 'Volunteer',
+                        style: AppTextStyles.caption(
+                          color: isDark
+                              ? AppColors.darkTextHint
+                              : AppColors.lightTextHint,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -294,7 +375,11 @@ class _WebShellState extends State<WebShell> {
                   borderRadius: AppTokens.borderRadiusSm,
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.xs),
-                    child: Icon(Icons.logout_rounded, size: AppTokens.iconSm, color: AppColors.error),
+                    child: Icon(
+                      Icons.logout_rounded,
+                      size: AppTokens.iconSm,
+                      color: AppColors.error,
+                    ),
                   ),
                 ),
               ],
@@ -305,7 +390,11 @@ class _WebShellState extends State<WebShell> {
                 borderRadius: AppTokens.borderRadiusSm,
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.xs),
-                  child: Icon(Icons.logout_rounded, size: AppTokens.iconSm, color: AppColors.error),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    size: AppTokens.iconSm,
+                    color: AppColors.error,
+                  ),
                 ),
               ),
             ),
@@ -318,5 +407,9 @@ class _SidebarItem {
   final String label;
   final int index;
 
-  const _SidebarItem({required this.icon, required this.label, required this.index});
+  const _SidebarItem({
+    required this.icon,
+    required this.label,
+    required this.index,
+  });
 }

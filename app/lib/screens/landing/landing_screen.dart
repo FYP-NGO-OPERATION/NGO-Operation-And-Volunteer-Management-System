@@ -29,9 +29,19 @@ class LandingScreen extends StatelessWidget {
             surfaceTintColor: Colors.transparent,
             title: Row(
               children: [
-                ClipOval(child: Image.asset(AppConstants.logoPath, width: 32, height: 32, fit: BoxFit.contain)),
+                ClipOval(
+                  child: Image.asset(
+                    AppConstants.logoPath,
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.contain,
+                  ),
+                ),
                 AppSpacing.hGapSm,
-                Text('HRAS', style: AppTextStyles.titleLarge(color: AppColors.primary)),
+                Text(
+                  'HRAS',
+                  style: AppTextStyles.titleLarge(color: AppColors.primary),
+                ),
               ],
             ),
             actions: [
@@ -39,34 +49,70 @@ class LandingScreen extends StatelessWidget {
               if (!Responsive.isMobile(context)) ...[
                 TextButton(
                   onPressed: () {},
-                  child: Text('About', style: AppTextStyles.labelLarge(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                  child: Text(
+                    'About',
+                    style: AppTextStyles.labelLarge(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Campaigns', style: AppTextStyles.labelLarge(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                  child: Text(
+                    'Campaigns',
+                    style: AppTextStyles.labelLarge(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Contact', style: AppTextStyles.labelLarge(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                  child: Text(
+                    'Contact',
+                    style: AppTextStyles.labelLarge(
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
+                  ),
                 ),
                 AppSpacing.hGapSm,
               ],
               TextButton(
-                onPressed: () => Navigator.push(context, AppAnimations.fadeRoute(const LoginScreen())),
-                child: Text('Sign In', style: AppTextStyles.labelLarge(color: AppColors.primary)),
+                onPressed: () => Navigator.push(
+                  context,
+                  AppAnimations.fadeRoute(const LoginScreen()),
+                ),
+                child: Text(
+                  'Sign In',
+                  style: AppTextStyles.labelLarge(color: AppColors.primary),
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(context, AppAnimations.slideUpRoute(const RegisterScreen())),
+                  onPressed: () => Navigator.push(
+                    context,
+                    AppAnimations.slideUpRoute(const RegisterScreen()),
+                  ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size.zero,
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.sm,
+                    ),
                   ),
-                  child: Text('Join Us', style: AppTextStyles.button(color: Colors.white)),
+                  child: Text(
+                    'Join Us',
+                    style: AppTextStyles.button(color: Colors.white),
+                  ),
                 ),
               ),
             ],

@@ -96,7 +96,8 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) throw 'Google sign-in was cancelled';
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -129,6 +130,59 @@ class AuthService {
       );
       await user.reauthenticateWithCredential(credential);
       await user.delete();
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  /// Verify Phone Number (Sends SMS OTP)
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    required Function(PhoneAuthCredential) verificationCompleted,
+    required Function(FirebaseAuthException) verificationFailed,
+    required Function(String, int?) codeSent,
+    required Function(String) codeAutoRetrievalTimeout,
+  }) async {
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+        timeout: const Duration(seconds: 60),
+      );
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  /// Verify OTP and Link/Sign In
+  Future<UserCredential> verifyOTP({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+
+      // If user is already signed in (e.g., via email), link the phone credential
+      if (_auth.currentUser != null) {
+        // Only link if not already linked
+        bool isLinked = _auth.currentUser!.providerData.any(
+          (info) => info.providerId == 'phone',
+        );
+        if (!isLinked) {
+          return await _auth.currentUser!.linkWithCredential(credential);
+        }
+        // If already linked, just reauthenticate or return current user
+        // We simulate returning UserCredential by just returning a dummy or throwing if needed.
+        // Actually, signInWithCredential works even if already linked if we want to sign in.
+      }
+
+      return await _auth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
       throw _handleAuthError(e);
     }

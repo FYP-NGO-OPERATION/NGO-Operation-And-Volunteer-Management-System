@@ -31,7 +31,9 @@ class AnnouncementListScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CreateAnnouncementScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const CreateAnnouncementScreen(),
+                  ),
                 );
               },
             ),
@@ -54,7 +56,7 @@ class AnnouncementListScreen extends StatelessWidget {
             return EmptyStateWidget(
               icon: Icons.campaign_outlined,
               title: 'No Announcements Yet',
-              subtitle: isAdmin 
+              subtitle: isAdmin
                   ? 'Tap the + button to post your first update.'
                   : 'There are no official updates from the NGO yet.',
             );
@@ -68,7 +70,8 @@ class AnnouncementListScreen extends StatelessWidget {
               return _AnnouncementCard(
                 announcement: announcement,
                 isAdmin: isAdmin,
-                onDelete: () => announcementService.deleteAnnouncement(announcement.id),
+                onDelete: () =>
+                    announcementService.deleteAnnouncement(announcement.id),
               );
             },
           );
@@ -94,9 +97,14 @@ class _AnnouncementCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Announcement'),
-        content: const Text('Are you sure you want to delete this announcement?'),
+        content: const Text(
+          'Are you sure you want to delete this announcement?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -118,7 +126,10 @@ class _AnnouncementCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.primary.withOpacity(0.15), width: 1.5),
+        side: BorderSide(
+          color: AppColors.primary.withOpacity(0.15),
+          width: 1.5,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -156,7 +167,11 @@ class _AnnouncementCard extends StatelessWidget {
                       backgroundColor: AppColors.primary,
                       child: Text(
                         announcement.authorName[0].toUpperCase(),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -167,38 +182,64 @@ class _AnnouncementCard extends StatelessWidget {
                       children: [
                         Text(
                           announcement.authorName,
-                          style: AppTextStyles.titleMedium().copyWith(fontWeight: FontWeight.bold),
+                          style: AppTextStyles.titleMedium().copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                          DateFormat('MMM dd, yyyy • hh:mm a').format(announcement.createdAt),
-                          style: AppTextStyles.labelSmall(color: AppColors.textHint),
+                          DateFormat(
+                            'MMM dd, yyyy • hh:mm a',
+                          ).format(announcement.createdAt),
+                          style: AppTextStyles.labelSmall(
+                            color: AppColors.textHint,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(0.2),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.campaign, color: AppColors.primary, size: 14),
+                        const Icon(
+                          Icons.campaign,
+                          color: AppColors.primary,
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
-                        Text('Update', style: AppTextStyles.labelSmall(color: AppColors.primary).copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Update',
+                          style: AppTextStyles.labelSmall(
+                            color: AppColors.primary,
+                          ).copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
                   if (isAdmin)
                     PopupMenuButton(
-                      icon: const Icon(Icons.more_vert, color: AppColors.textHint),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        color: AppColors.textHint,
+                      ),
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: 'delete',
-                          child: Text('Delete', style: TextStyle(color: AppColors.error)),
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(color: AppColors.error),
+                          ),
                         ),
                       ],
                       onSelected: (val) {
@@ -209,10 +250,10 @@ class _AnnouncementCard extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                announcement.title, 
+                announcement.title,
                 style: AppTextStyles.headlineSmall().copyWith(
-                  fontWeight: FontWeight.w900, 
-                )
+                  fontWeight: FontWeight.w900,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
@@ -235,7 +276,9 @@ class _AnnouncementCard extends StatelessWidget {
                     errorWidget: (context, url, error) => Container(
                       height: 200,
                       color: AppColors.neutral200,
-                      child: const Center(child: Icon(Icons.error, color: AppColors.error)),
+                      child: const Center(
+                        child: Icon(Icons.error, color: AppColors.error),
+                      ),
                     ),
                   ),
                 ),
@@ -246,14 +289,22 @@ class _AnnouncementCard extends StatelessWidget {
                   onPressed: () async {
                     final uri = Uri.parse(announcement.videoUrl!);
                     if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     }
                   },
                   icon: const Icon(Icons.play_circle_fill, color: Colors.red),
-                  label: const Text('Watch Reference Video', style: TextStyle(color: Colors.red)),
+                  label: const Text(
+                    'Watch Reference Video',
+                    style: TextStyle(color: Colors.red),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),

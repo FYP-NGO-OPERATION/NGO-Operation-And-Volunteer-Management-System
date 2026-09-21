@@ -13,7 +13,10 @@ class DataSeederService {
   }
 
   /// Seed sample campaigns for demo
-  static Future<int> seedCampaigns(String createdByUid, String createdByName) async {
+  static Future<int> seedCampaigns(
+    String createdByUid,
+    String createdByName,
+  ) async {
     final campaigns = _getSampleCampaigns(createdByUid, createdByName);
     int count = 0;
 
@@ -30,20 +33,30 @@ class DataSeederService {
   /// Update a user's profile with demo skills and address
   static Future<void> enrichUserProfile(String uid) async {
     await _db.collection('users').doc(uid).update({
-      'skills': ['medical', 'first aid', 'teaching', 'driving', 'food distribution'],
+      'skills': [
+        'medical',
+        'first aid',
+        'teaching',
+        'driving',
+        'food distribution',
+      ],
       'address': 'Multan, Punjab',
       'phone': '03001234567',
     });
   }
 
   /// Generate realistic sample campaigns as raw maps
-  static List<Map<String, dynamic>> _getSampleCampaigns(String createdBy, String createdByName) {
+  static List<Map<String, dynamic>> _getSampleCampaigns(
+    String createdBy,
+    String createdByName,
+  ) {
     final now = DateTime.now();
     return [
       {
         'id': '',
         'title': 'Winter Clothes Distribution 2026',
-        'description': 'Distributing warm clothes, blankets, and essentials to underprivileged families in South Punjab. '
+        'description':
+            'Distributing warm clothes, blankets, and essentials to underprivileged families in South Punjab. '
             'Join us in making this winter warmer for those in need. We aim to serve 500+ families across Multan division.',
         'type': CampaignType.winterDrive.name,
         'status': CampaignStatus.active.name,
@@ -67,7 +80,8 @@ class DataSeederService {
       {
         'id': '',
         'title': 'Free Medical Camp - Basti Malook',
-        'description': 'Free medical checkup camp for residents of Basti Malook and surrounding areas. '
+        'description':
+            'Free medical checkup camp for residents of Basti Malook and surrounding areas. '
             'Services include general checkup, blood pressure screening, blood sugar test, and free medicine distribution. '
             'Doctors and medical students are encouraged to volunteer.',
         'type': CampaignType.medical.name,
@@ -92,7 +106,8 @@ class DataSeederService {
       {
         'id': '',
         'title': 'Ramadan Ration Drive 2026',
-        'description': 'Monthly ration package distribution for deserving families during the holy month of Ramadan. '
+        'description':
+            'Monthly ration package distribution for deserving families during the holy month of Ramadan. '
             'Each package contains 10kg flour, 5kg rice, 2kg sugar, cooking oil, dates, and other essentials.',
         'type': CampaignType.ramadan.name,
         'status': CampaignStatus.active.name,
@@ -116,7 +131,8 @@ class DataSeederService {
       {
         'id': '',
         'title': 'Tree Plantation Drive - Multan',
-        'description': 'Join HRAS in planting 1000 trees across Multan city parks and schools. '
+        'description':
+            'Join HRAS in planting 1000 trees across Multan city parks and schools. '
             'Help make our city greener and fight climate change one tree at a time.',
         'type': CampaignType.plantation.name,
         'status': CampaignStatus.active.name,
@@ -140,7 +156,8 @@ class DataSeederService {
       {
         'id': '',
         'title': 'Orphanage Visit & Support Program',
-        'description': 'Visit to Dar-ul-Atfal orphanage with gifts, clothes, and educational supplies. '
+        'description':
+            'Visit to Dar-ul-Atfal orphanage with gifts, clothes, and educational supplies. '
             'Spend quality time with the children and bring smiles to their faces.',
         'type': CampaignType.orphanage.name,
         'status': CampaignStatus.completed.name,

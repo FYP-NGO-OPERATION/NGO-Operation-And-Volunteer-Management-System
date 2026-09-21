@@ -93,7 +93,9 @@ class UserModel {
       'joinedAt': Timestamp.fromDate(joinedAt),
       'isActive': isActive,
       'campaignsJoined': campaignsJoined,
-      'lastActiveAt': lastActiveAt != null ? Timestamp.fromDate(lastActiveAt!) : null,
+      'lastActiveAt': lastActiveAt != null
+          ? Timestamp.fromDate(lastActiveAt!)
+          : null,
       'badges': badges,
       'fcmToken': fcmToken,
       'isIdVerified': isIdVerified,

@@ -13,7 +13,8 @@ class RouteOptimizationScreen extends StatefulWidget {
   const RouteOptimizationScreen({super.key});
 
   @override
-  State<RouteOptimizationScreen> createState() => _RouteOptimizationScreenState();
+  State<RouteOptimizationScreen> createState() =>
+      _RouteOptimizationScreenState();
 }
 
 class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
@@ -32,20 +33,25 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
 
   Future<void> _fetchCampaignLocations() async {
     try {
-      final snap = await FirebaseFirestore.instance.collection('campaigns').where('status', isEqualTo: 'active').get();
+      final snap = await FirebaseFirestore.instance
+          .collection('campaigns')
+          .where('status', isEqualTo: 'active')
+          .get();
       List<LatLng> fetchedStops = [];
-      
+
       loc.Location location = loc.Location();
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
       }
-      
-      final pos = serviceEnabled ? await LocationService.getCurrentLocation() : null;
+
+      final pos = serviceEnabled
+          ? await LocationService.getCurrentLocation()
+          : null;
       if (pos != null) {
-        fetchedStops.add(LatLng(pos.latitude, pos.longitude)); 
+        fetchedStops.add(LatLng(pos.latitude, pos.longitude));
       } else {
-        fetchedStops.add(const LatLng(24.8607, 67.0011)); 
+        fetchedStops.add(const LatLng(24.8607, 67.0011));
       }
 
       for (var doc in snap.docs) {
@@ -77,7 +83,8 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
     final aLat = a.latitude * pi / 180;
     final bLat = b.latitude * pi / 180;
 
-    final x = sin(dLat / 2) * sin(dLat / 2) +
+    final x =
+        sin(dLat / 2) * sin(dLat / 2) +
         sin(dLon / 2) * sin(dLon / 2) * cos(aLat) * cos(bLat);
     final y = 2 * atan2(sqrt(x), sqrt(1 - x));
     return earthRadius * y;
@@ -87,12 +94,16 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
     if (_stops.length < 2) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No active campaigns found with location data to optimize.')),
+          const SnackBar(
+            content: Text(
+              'No active campaigns found with location data to optimize.',
+            ),
+          ),
         );
       }
       return;
     }
-    
+
     setState(() => _isOptimizing = true);
     // Simulate complex calculation for UX
     await Future.delayed(const Duration(seconds: 1));
@@ -136,10 +147,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
     if (route.isNotEmpty && mounted) {
       final bounds = LatLngBounds.fromPoints(route);
       _mapController.fitCamera(
-        CameraFit.bounds(
-          bounds: bounds,
-          padding: const EdgeInsets.all(50.0),
-        ),
+        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50.0)),
       );
     }
   }
@@ -148,14 +156,21 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
     if (_optimizedRoute.length < 2) return;
     final origin = _optimizedRoute.first;
     final dest = _optimizedRoute.last;
-    final waypoints = _optimizedRoute.sublist(1, _optimizedRoute.length - 1).map((p) => '${p.latitude},${p.longitude}').join('|');
-    
-    final url = Uri.parse('https://www.google.com/maps/dir/?api=1&origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&waypoints=$waypoints');
+    final waypoints = _optimizedRoute
+        .sublist(1, _optimizedRoute.length - 1)
+        .map((p) => '${p.latitude},${p.longitude}')
+        .join('|');
+
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&waypoints=$waypoints',
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open Google Maps.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open Google Maps.')),
+        );
       }
     }
   }
@@ -175,7 +190,7 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                   _totalDistance = 0.0;
                 });
               },
-            )
+            ),
         ],
       ),
       body: Column(
@@ -193,12 +208,17 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Traveling Salesman Problem (TSP)', style: AppTextStyles.titleMedium()),
+                          Text(
+                            'Traveling Salesman Problem (TSP)',
+                            style: AppTextStyles.titleMedium(),
+                          ),
                           Text(
                             _optimizedRoute.isEmpty
                                 ? 'Optimize the delivery route for ${max(0, _stops.length - 1)} stops.'
                                 : 'Optimized Distance: ${_totalDistance.toStringAsFixed(2)} km',
-                            style: AppTextStyles.bodyMedium(color: Colors.blueGrey),
+                            style: AppTextStyles.bodyMedium(
+                              color: Colors.blueGrey,
+                            ),
                           ),
                         ],
                       ),
@@ -214,16 +234,30 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                   children: [
                     if (_optimizedRoute.isNotEmpty)
                       ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
                         icon: const Icon(Icons.map, color: Colors.white),
-                        label: const Text('Google Maps', style: TextStyle(color: Colors.white)),
+                        label: const Text(
+                          'Google Maps',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         onPressed: _openInGoogleMaps,
                       ),
                     ElevatedButton.icon(
                       icon: _isOptimizing
-                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Icon(Icons.play_arrow),
-                      label: Text(_isOptimizing ? 'Calculating...' : 'Optimize'),
+                      label: Text(
+                        _isOptimizing ? 'Calculating...' : 'Optimize',
+                      ),
                       onPressed: _isOptimizing ? null : _runTSPOptimization,
                     ),
                   ],
@@ -235,12 +269,15 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
             child: FlutterMap(
               mapController: _mapController,
               options: MapOptions(
-                initialCenter: _stops.isNotEmpty ? _stops[0] : const LatLng(30.3753, 69.3451),
+                initialCenter: _stops.isNotEmpty
+                    ? _stops[0]
+                    : const LatLng(30.3753, 69.3451),
                 initialZoom: _stops.isNotEmpty ? 13.0 : 5.5,
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                  urlTemplate:
+                      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
                   subdomains: const ['a', 'b', 'c', 'd'],
                   userAgentPackageName: 'com.hras.volunteer',
                 ),
@@ -266,7 +303,10 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
                         backgroundColor: isDepot ? Colors.red : Colors.green,
                         child: Text(
                           isDepot ? 'D' : '$idx',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
@@ -305,12 +345,17 @@ class _RouteOptimizationScreenState extends State<RouteOptimizationScreen> {
             'createdAt': FieldValue.serverTimestamp(),
           });
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('3 Fake Campaigns Added!')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('3 Fake Campaigns Added!')),
+            );
             _fetchCampaignLocations();
           }
         },
         icon: const Icon(Icons.add_location_alt, color: Colors.white),
-        label: const Text('Add 3 Fake Campaigns', style: TextStyle(color: Colors.white)),
+        label: const Text(
+          'Add 3 Fake Campaigns',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.purple,
       ),
     );

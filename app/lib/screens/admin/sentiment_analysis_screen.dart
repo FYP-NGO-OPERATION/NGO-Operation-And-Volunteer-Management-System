@@ -29,18 +29,27 @@ class SentimentAnalysisScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collectionGroup('feedbacks').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collectionGroup('feedbacks')
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No authentic feedback data available.'));
+            return const Center(
+              child: Text('No authentic feedback data available.'),
+            );
           }
 
-          final feedbacks = snapshot.data!.docs.map((doc) => FeedbackModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
-          
+          final feedbacks = snapshot.data!.docs
+              .map(
+                (doc) =>
+                    FeedbackModel.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .toList();
+
           int positive = 0, neutral = 0, negative = 0;
           for (var f in feedbacks) {
             if (f.rating >= 4) {
@@ -87,7 +96,11 @@ class SentimentAnalysisScreen extends StatelessWidget {
                             value: posPct,
                             title: '${posPct.toInt()}%',
                             radius: 60,
-                            titleStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                            titleStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         if (negPct > 0)
                           PieChartSectionData(
@@ -95,7 +108,11 @@ class SentimentAnalysisScreen extends StatelessWidget {
                             value: negPct,
                             title: '${negPct.toInt()}%',
                             radius: 50,
-                            titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                            titleStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         if (neuPct > 0)
                           PieChartSectionData(
@@ -103,7 +120,11 @@ class SentimentAnalysisScreen extends StatelessWidget {
                             value: neuPct,
                             title: '${neuPct.toInt()}%',
                             radius: 40,
-                            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                            titleStyle: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                           ),
                       ],
                     ),
@@ -121,17 +142,22 @@ class SentimentAnalysisScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 32),
-                Text('Recent Authentic Classifications', style: AppTextStyles.titleMedium()),
+                Text(
+                  'Recent Authentic Classifications',
+                  style: AppTextStyles.titleMedium(),
+                ),
                 const SizedBox(height: 16),
                 ...feedbacks.take(10).map((f) {
                   final sentiment = _getSentiment(f.rating);
                   final score = _getConfidence(f.rating);
-                  final Color color = sentiment == 'Positive' 
-                      ? Colors.green 
+                  final Color color = sentiment == 'Positive'
+                      ? Colors.green
                       : (sentiment == 'Negative' ? Colors.red : Colors.amber);
-                  final IconData icon = sentiment == 'Positive' 
+                  final IconData icon = sentiment == 'Positive'
                       ? Icons.sentiment_very_satisfied
-                      : (sentiment == 'Negative' ? Icons.sentiment_very_dissatisfied : Icons.sentiment_neutral);
+                      : (sentiment == 'Negative'
+                            ? Icons.sentiment_very_dissatisfied
+                            : Icons.sentiment_neutral);
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
@@ -140,9 +166,20 @@ class SentimentAnalysisScreen extends StatelessWidget {
                         backgroundColor: color.withValues(alpha: 0.2),
                         child: Icon(icon, color: color),
                       ),
-                      title: Text('"${f.comment}"', style: const TextStyle(fontStyle: FontStyle.italic)),
-                      subtitle: Text('Score: ${(score * 100).toStringAsFixed(1)}% | ${f.rating} Stars'),
-                      trailing: Text(sentiment, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+                      title: Text(
+                        '"${f.comment}"',
+                        style: const TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                      subtitle: Text(
+                        'Score: ${(score * 100).toStringAsFixed(1)}% | ${f.rating} Stars',
+                      ),
+                      trailing: Text(
+                        sentiment,
+                        style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   );
                 }),
@@ -158,7 +195,11 @@ class SentimentAnalysisScreen extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 16, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 4),
         Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],

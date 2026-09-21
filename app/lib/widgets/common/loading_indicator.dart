@@ -26,11 +26,14 @@ class LoadingIndicator extends StatelessWidget {
           ),
           if (message != null) ...[
             AppSpacing.vGapLg,
-            Text(message!, style: AppTextStyles.bodyMedium(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextSecondary
-                  : AppColors.lightTextSecondary,
-            )),
+            Text(
+              message!,
+              style: AppTextStyles.bodyMedium(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
+              ),
+            ),
           ],
         ],
       ),

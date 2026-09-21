@@ -8,13 +8,15 @@ class InventoryService {
 
   // Create or Update
   Future<void> saveItem(InventoryItemModel item) async {
-    final docRef = _firestore.collection('inventory').doc(item.id.isEmpty ? _uuid.v4() : item.id);
-    
+    final docRef = _firestore
+        .collection('inventory')
+        .doc(item.id.isEmpty ? _uuid.v4() : item.id);
+
     final updatedItem = item.copyWith(
       id: docRef.id,
       lastUpdated: DateTime.now(),
     );
-    
+
     await docRef.set(updatedItem.toMap(), SetOptions(merge: true));
   }
 
@@ -25,10 +27,10 @@ class InventoryService {
         .where('ngoId', isEqualTo: ngoId)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => InventoryItemModel.fromMap(doc.data()))
-          .toList();
-    });
+          return snapshot.docs
+              .map((doc) => InventoryItemModel.fromMap(doc.data()))
+              .toList();
+        });
   }
 
   // Delete

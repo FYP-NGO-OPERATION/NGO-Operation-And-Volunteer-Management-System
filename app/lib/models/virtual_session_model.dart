@@ -37,7 +37,8 @@ class VirtualSessionModel {
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       meetingLink: map['meetingLink'] ?? '',
-      sessionDate: (map['sessionDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      sessionDate:
+          (map['sessionDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdBy: map['createdBy'] ?? '',
       createdByName: map['createdByName'] ?? 'Admin',
       ngoId: map['ngoId'] ?? '',

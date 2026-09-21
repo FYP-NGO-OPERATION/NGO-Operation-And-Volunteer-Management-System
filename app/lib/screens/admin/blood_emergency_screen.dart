@@ -16,7 +16,16 @@ class BloodEmergencyScreen extends StatefulWidget {
 
 class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
   String? _selectedBloodGroup;
-  final List<String> _bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  final List<String> _bloodGroups = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+  ];
   final _messageController = TextEditingController();
   bool _isLoading = false;
 
@@ -28,25 +37,34 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
 
   void _sendEmergencyAlert() async {
     if (_selectedBloodGroup == null || _messageController.text.trim().isEmpty) {
-      SnackbarHelper.showError(context, 'Please select a blood group and enter a message.');
+      SnackbarHelper.showError(
+        context,
+        'Please select a blood group and enter a message.',
+      );
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      // In a real app, this would call a Cloud Function or backend to query users with 
+      // In a real app, this would call a Cloud Function or backend to query users with
       // this blood group and send an FCM push notification.
       // For FYP demonstration, we simulate the broadcast:
-      
-      await Future.delayed(const Duration(seconds: 2)); // Simulate network request
+
+      await Future.delayed(
+        const Duration(seconds: 2),
+      ); // Simulate network request
 
       if (mounted) {
-        SnackbarHelper.showSuccess(context, '🚨 Emergency Alert sent to all $_selectedBloodGroup donors!');
+        SnackbarHelper.showSuccess(
+          context,
+          '🚨 Emergency Alert sent to all $_selectedBloodGroup donors!',
+        );
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted) SnackbarHelper.showError(context, 'Failed to send alert: $e');
+      if (mounted)
+        SnackbarHelper.showError(context, 'Failed to send alert: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -56,7 +74,10 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Blood Emergency', style: AppTextStyles.titleLarge(color: Colors.white)),
+        title: Text(
+          'Blood Emergency',
+          style: AppTextStyles.titleLarge(color: Colors.white),
+        ),
         backgroundColor: Colors.red.shade700,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -70,7 +91,9 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
             Text(
               'Broadcast Urgent Request',
               textAlign: TextAlign.center,
-              style: AppTextStyles.headlineMedium().copyWith(fontWeight: FontWeight.bold),
+              style: AppTextStyles.headlineMedium().copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             AppSpacing.vGapSm,
             const Text(
@@ -88,7 +111,13 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
                 prefixIcon: Icon(Icons.search, color: Colors.red),
               ),
               items: _bloodGroups.map((bg) {
-                return DropdownMenuItem(value: bg, child: Text(bg, style: const TextStyle(fontWeight: FontWeight.bold)));
+                return DropdownMenuItem(
+                  value: bg,
+                  child: Text(
+                    bg,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                );
               }).toList(),
               onChanged: (val) => setState(() => _selectedBloodGroup = val),
             ),
@@ -99,7 +128,8 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
               maxLines: 4,
               decoration: const InputDecoration(
                 labelText: 'Emergency Message',
-                hintText: 'e.g., Urgent need of O- blood at City Hospital for an accident victim. Please reach out ASAP.',
+                hintText:
+                    'e.g., Urgent need of O- blood at City Hospital for an accident victim. Please reach out ASAP.',
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),

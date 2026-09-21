@@ -20,15 +20,37 @@ class AppSpacing {
   // Padding presets
   static const EdgeInsets cardPadding = EdgeInsets.all(lg);
   static const EdgeInsets cardPaddingCompact = EdgeInsets.all(md);
-  static const EdgeInsets pagePadding = EdgeInsets.symmetric(horizontal: lg, vertical: lg);
-  static const EdgeInsets pagePaddingWide = EdgeInsets.symmetric(horizontal: xl, vertical: lg);
-  static const EdgeInsets sectionPadding = EdgeInsets.symmetric(vertical: section);
-  static const EdgeInsets formFieldPadding = EdgeInsets.symmetric(horizontal: lg, vertical: md);
+  static const EdgeInsets pagePadding = EdgeInsets.symmetric(
+    horizontal: lg,
+    vertical: lg,
+  );
+  static const EdgeInsets pagePaddingWide = EdgeInsets.symmetric(
+    horizontal: xl,
+    vertical: lg,
+  );
+  static const EdgeInsets sectionPadding = EdgeInsets.symmetric(
+    vertical: section,
+  );
+  static const EdgeInsets formFieldPadding = EdgeInsets.symmetric(
+    horizontal: lg,
+    vertical: md,
+  );
   static const double formFieldGap = lg;
-  static const EdgeInsets inputPadding = EdgeInsets.symmetric(horizontal: lg, vertical: 14);
-  static const EdgeInsets listItemPadding = EdgeInsets.symmetric(horizontal: lg, vertical: md);
+  static const EdgeInsets inputPadding = EdgeInsets.symmetric(
+    horizontal: lg,
+    vertical: 14,
+  );
+  static const EdgeInsets listItemPadding = EdgeInsets.symmetric(
+    horizontal: lg,
+    vertical: md,
+  );
   static const EdgeInsets dialogPadding = EdgeInsets.all(xl);
-  static const EdgeInsets bottomSheetPadding = EdgeInsets.fromLTRB(xl, xl, xl, sectionLg);
+  static const EdgeInsets bottomSheetPadding = EdgeInsets.fromLTRB(
+    xl,
+    xl,
+    xl,
+    sectionLg,
+  );
 
   // Margins
   static const EdgeInsets cardMargin = EdgeInsets.only(bottom: sm);

@@ -10,8 +10,10 @@ class CampaignService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   // ─── Collection References ───
-  CollectionReference<Map<String, dynamic>> get _campaigns => _db.collection('campaigns');
-  CollectionReference<Map<String, dynamic>> get _expenses => _db.collection('expenses');
+  CollectionReference<Map<String, dynamic>> get _campaigns =>
+      _db.collection('campaigns');
+  CollectionReference<Map<String, dynamic>> get _expenses =>
+      _db.collection('expenses');
 
   // ═══════════════════════════════════════════
   // ─── CAMPAIGN CRUD ───
@@ -32,14 +34,18 @@ class CampaignService {
 
     // Upload Video if provided
     if (videoFile != null) {
-      final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/video.mp4');
+      final ref = FirebaseStorage.instance.ref().child(
+        'campaigns/${docRef.id}/video.mp4',
+      );
       await ref.putFile(videoFile);
       videoUrl = await ref.getDownloadURL();
     }
 
     // Upload Document if provided
     if (documentFile != null) {
-      final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/document.pdf');
+      final ref = FirebaseStorage.instance.ref().child(
+        'campaigns/${docRef.id}/document.pdf',
+      );
       await ref.putFile(documentFile);
       documentUrl = await ref.getDownloadURL();
     }
@@ -47,7 +53,9 @@ class CampaignService {
     // Upload Gallery Images if provided
     if (galleryFiles != null && galleryFiles.isNotEmpty) {
       for (int i = 0; i < galleryFiles.length; i++) {
-        final ref = FirebaseStorage.instance.ref().child('campaigns/${docRef.id}/gallery_$i.jpg');
+        final ref = FirebaseStorage.instance.ref().child(
+          'campaigns/${docRef.id}/gallery_$i.jpg',
+        );
         await ref.putFile(galleryFiles[i]);
         final url = await ref.getDownloadURL();
         galleryUrls.add(url);
@@ -89,22 +97,28 @@ class CampaignService {
         .where('ngoId', isEqualTo: ngoId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CampaignModel.fromMap(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => CampaignModel.fromMap(doc.data()))
+              .toList(),
+        );
   }
 
   /// Get campaigns by status for a specific NGO
-  Stream<List<CampaignModel>> getCampaignsByStatus(CampaignStatus status, String ngoId) {
+  Stream<List<CampaignModel>> getCampaignsByStatus(
+    CampaignStatus status,
+    String ngoId,
+  ) {
     return _campaigns
         .where('ngoId', isEqualTo: ngoId)
         .where('status', isEqualTo: status.name)
         .snapshots()
         .map((snapshot) {
-          final list = snapshot.docs
-              .map((doc) => CampaignModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          final list =
+              snapshot.docs
+                  .map((doc) => CampaignModel.fromMap(doc.data()))
+                  .toList()
+                ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return list;
         });
   }
@@ -130,7 +144,10 @@ class CampaignService {
   }
 
   /// Update campaign status
-  Future<void> updateCampaignStatus(String campaignId, CampaignStatus status) async {
+  Future<void> updateCampaignStatus(
+    String campaignId,
+    CampaignStatus status,
+  ) async {
     await _campaigns.doc(campaignId).update({
       'status': status.name,
       'updatedAt': FieldValue.serverTimestamp(),
@@ -150,19 +167,27 @@ class CampaignService {
     final batch = _db.batch();
 
     // 1. Delete related expenses
-    final expenseDocs = await _expenses.where('campaignId', isEqualTo: campaignId).get();
+    final expenseDocs = await _expenses
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in expenseDocs.docs) {
       batch.delete(doc.reference);
     }
 
     // 2. Delete related donations
-    final donationDocs = await _db.collection('donations').where('campaignId', isEqualTo: campaignId).get();
+    final donationDocs = await _db
+        .collection('donations')
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in donationDocs.docs) {
       batch.delete(doc.reference);
     }
 
     // 3. Delete related volunteers and decrement their counters
-    final volunteerDocs = await _db.collection('campaign_volunteers').where('campaignId', isEqualTo: campaignId).get();
+    final volunteerDocs = await _db
+        .collection('campaign_volunteers')
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in volunteerDocs.docs) {
       final userId = doc.data()['userId'] as String?;
       if (userId != null) {
@@ -174,19 +199,28 @@ class CampaignService {
     }
 
     // 4. Delete related beneficiaries
-    final beneficiaryDocs = await _db.collection('beneficiaries').where('campaignId', isEqualTo: campaignId).get();
+    final beneficiaryDocs = await _db
+        .collection('beneficiaries')
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in beneficiaryDocs.docs) {
       batch.delete(doc.reference);
     }
 
     // 5. Delete related distributions
-    final distributionDocs = await _db.collection('distributions').where('campaignId', isEqualTo: campaignId).get();
+    final distributionDocs = await _db
+        .collection('distributions')
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in distributionDocs.docs) {
       batch.delete(doc.reference);
     }
 
     // 6. Delete related photos (Firestore AND Storage)
-    final photoDocs = await _db.collection('campaign_photos').where('campaignId', isEqualTo: campaignId).get();
+    final photoDocs = await _db
+        .collection('campaign_photos')
+        .where('campaignId', isEqualTo: campaignId)
+        .get();
     for (var doc in photoDocs.docs) {
       final imageUrl = doc.data()['imageUrl'] as String?;
       if (imageUrl != null && imageUrl.isNotEmpty) {
@@ -272,20 +306,24 @@ class CampaignService {
 
   /// Get expenses for a campaign
   Stream<List<ExpenseModel>> getExpensesStream(String campaignId) {
-    return _expenses
-        .where('campaignId', isEqualTo: campaignId)
-        .snapshots()
-        .map((snapshot) {
-          final list = snapshot.docs
-              .map((doc) => ExpenseModel.fromMap(doc.data()))
-              .toList()
-            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return list;
-        });
+    return _expenses.where('campaignId', isEqualTo: campaignId).snapshots().map(
+      (snapshot) {
+        final list =
+            snapshot.docs
+                .map((doc) => ExpenseModel.fromMap(doc.data()))
+                .toList()
+              ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return list;
+      },
+    );
   }
 
   /// Delete an expense
-  Future<void> deleteExpense(String expenseId, String campaignId, double amount) async {
+  Future<void> deleteExpense(
+    String expenseId,
+    String campaignId,
+    double amount,
+  ) async {
     await _expenses.doc(expenseId).delete();
     // Subtract from campaign total
     await _campaigns.doc(campaignId).update({
@@ -307,10 +345,12 @@ class CampaignService {
 
     final lowerQuery = query.toLowerCase();
     return allCampaigns
-        .where((c) =>
-            c.title.toLowerCase().contains(lowerQuery) ||
-            c.description.toLowerCase().contains(lowerQuery) ||
-            c.location.toLowerCase().contains(lowerQuery))
+        .where(
+          (c) =>
+              c.title.toLowerCase().contains(lowerQuery) ||
+              c.description.toLowerCase().contains(lowerQuery) ||
+              c.location.toLowerCase().contains(lowerQuery),
+        )
         .toList();
   }
 
@@ -327,6 +367,8 @@ class CampaignService {
       query = query.where('ngoId', isEqualTo: ngoId);
     }
     final snapshot = await query.orderBy('createdAt', descending: true).get();
-    return snapshot.docs.map((doc) => CampaignModel.fromMap(doc.data())).toList();
+    return snapshot.docs
+        .map((doc) => CampaignModel.fromMap(doc.data()))
+        .toList();
   }
 }

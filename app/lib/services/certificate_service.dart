@@ -81,9 +81,16 @@ class CertificateService {
                   children: [
                     pw.Column(
                       children: [
-                        pw.Container(width: 150, height: 1, color: PdfColors.black),
+                        pw.Container(
+                          width: 150,
+                          height: 1,
+                          color: PdfColors.black,
+                        ),
                         pw.SizedBox(height: 5),
-                        pw.Text('Date: $dateStr', style: const pw.TextStyle(fontSize: 14)),
+                        pw.Text(
+                          'Date: $dateStr',
+                          style: const pw.TextStyle(fontSize: 14),
+                        ),
                       ],
                     ),
                     pw.Column(
@@ -96,16 +103,26 @@ class CertificateService {
                           ),
                           child: pw.Text(
                             badgeText.split(' ')[0],
-                            style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              color: PdfColors.white,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
                     pw.Column(
                       children: [
-                        pw.Container(width: 150, height: 1, color: PdfColors.black),
+                        pw.Container(
+                          width: 150,
+                          height: 1,
+                          color: PdfColors.black,
+                        ),
                         pw.SizedBox(height: 5),
-                        pw.Text('Authorized by: $ngoName', style: const pw.TextStyle(fontSize: 14)),
+                        pw.Text(
+                          'Authorized by: $ngoName',
+                          style: const pw.TextStyle(fontSize: 14),
+                        ),
                       ],
                     ),
                   ],

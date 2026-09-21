@@ -37,8 +37,10 @@ class AppAnimations {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final tween = Tween(begin: const Offset(0, 0.1), end: Offset.zero)
-            .chain(CurveTween(curve: easeOut));
+        final tween = Tween(
+          begin: const Offset(0, 0.1),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: easeOut));
         return SlideTransition(
           position: animation.drive(tween),
           child: FadeTransition(opacity: animation, child: child),
@@ -52,8 +54,10 @@ class AppAnimations {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final tween = Tween(begin: const Offset(0.2, 0), end: Offset.zero)
-            .chain(CurveTween(curve: easeOut));
+        final tween = Tween(
+          begin: const Offset(0.2, 0),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: easeOut));
         return SlideTransition(
           position: animation.drive(tween),
           child: FadeTransition(opacity: animation, child: child),
@@ -67,8 +71,10 @@ class AppAnimations {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final scaleTween = Tween(begin: 0.92, end: 1.0)
-            .chain(CurveTween(curve: easeOut));
+        final scaleTween = Tween(
+          begin: 0.92,
+          end: 1.0,
+        ).chain(CurveTween(curve: easeOut));
         return ScaleTransition(
           scale: animation.drive(scaleTween),
           child: FadeTransition(opacity: animation, child: child),
@@ -114,8 +120,11 @@ class AnimatedCounter extends StatelessWidget {
   final String suffix;
 
   const AnimatedCounter({
-    super.key, required this.value, this.style,
-    this.prefix = '', this.suffix = '',
+    super.key,
+    required this.value,
+    this.style,
+    this.prefix = '',
+    this.suffix = '',
   });
 
   @override
@@ -124,7 +133,8 @@ class AnimatedCounter extends StatelessWidget {
       tween: IntTween(begin: 0, end: value),
       duration: AppAnimations.slow,
       curve: AppAnimations.easeOut,
-      builder: (context, val, child) => Text('$prefix$val$suffix', style: style),
+      builder: (context, val, child) =>
+          Text('$prefix$val$suffix', style: style),
     );
   }
 }
@@ -135,23 +145,35 @@ class ShimmerBox extends StatefulWidget {
   final double height;
   final double borderRadius;
 
-  const ShimmerBox({super.key, required this.width, required this.height, this.borderRadius = 8});
+  const ShimmerBox({
+    super.key,
+    required this.width,
+    required this.height,
+    this.borderRadius = 8,
+  });
 
   @override
   State<ShimmerBox> createState() => _ShimmerBoxState();
 }
 
-class _ShimmerBoxState extends State<ShimmerBox> with SingleTickerProviderStateMixin {
+class _ShimmerBoxState extends State<ShimmerBox>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,13 +182,22 @@ class _ShimmerBoxState extends State<ShimmerBox> with SingleTickerProviderStateM
       animation: _controller,
       builder: (context, child) {
         return Container(
-          width: widget.width, height: widget.height,
+          width: widget.width,
+          height: widget.height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
             gradient: LinearGradient(
               colors: isDark
-                  ? [const Color(0xFF1A1D1B), const Color(0xFF252926), const Color(0xFF1A1D1B)]
-                  : [const Color(0xFFE5E5E5), const Color(0xFFF5F5F5), const Color(0xFFE5E5E5)],
+                  ? [
+                      const Color(0xFF1A1D1B),
+                      const Color(0xFF252926),
+                      const Color(0xFF1A1D1B),
+                    ]
+                  : [
+                      const Color(0xFFE5E5E5),
+                      const Color(0xFFF5F5F5),
+                      const Color(0xFFE5E5E5),
+                    ],
               stops: [0.0, _controller.value, 1.0],
               begin: const Alignment(-1.0, -0.3),
               end: const Alignment(1.0, 0.3),

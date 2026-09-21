@@ -17,37 +17,81 @@ class AppTokens {
   static final BorderRadius borderRadiusMd = BorderRadius.circular(radiusMd);
   static final BorderRadius borderRadiusLg = BorderRadius.circular(radiusLg);
   static final BorderRadius borderRadiusXl = BorderRadius.circular(radiusXl);
-  static final BorderRadius borderRadiusPill = BorderRadius.circular(radiusPill);
+  static final BorderRadius borderRadiusPill = BorderRadius.circular(
+    radiusPill,
+  );
 
   // ─── SHADOWS ───
   static final List<BoxShadow> shadowSoft = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.04),
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+    ),
   ];
 
   static final List<BoxShadow> shadowMedium = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 4)),
-    BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 1)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.06),
+      blurRadius: 8,
+      offset: const Offset(0, 4),
+    ),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.02),
+      blurRadius: 2,
+      offset: const Offset(0, 1),
+    ),
   ];
 
   static final List<BoxShadow> shadowStrong = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 24, offset: const Offset(0, 8)),
-    BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.1),
+      blurRadius: 12,
+      offset: const Offset(0, 6),
+    ),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.04),
+      blurRadius: 4,
+      offset: const Offset(0, 2),
+    ),
   ];
 
   static final List<BoxShadow> shadowFloating = [
-    BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 40, offset: const Offset(0, 16)),
-    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4)),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.15),
+      blurRadius: 20,
+      offset: const Offset(0, 8),
+    ),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.05),
+      blurRadius: 8,
+      offset: const Offset(0, 4),
+    ),
   ];
 
   static List<BoxShadow> shadowGlow(Color color) => [
-    BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 4)),
+    BoxShadow(
+      color: color.withValues(alpha: 0.3),
+      blurRadius: 10,
+      offset: const Offset(0, 4),
+    ),
   ];
 
   // ─── BORDERS ───
-  static BorderSide borderLight = BorderSide(color: Colors.grey.withValues(alpha: 0.15));
-  static BorderSide borderMedium = BorderSide(color: Colors.grey.withValues(alpha: 0.3));
-  static const BorderSide borderFocus = BorderSide(color: Color(0xFF1A6B3C), width: 2);
-  static const BorderSide borderDanger = BorderSide(color: Color(0xFFDC2626), width: 1.5);
+  static BorderSide borderLight = BorderSide(
+    color: Colors.grey.withValues(alpha: 0.15),
+  );
+  static BorderSide borderMedium = BorderSide(
+    color: Colors.grey.withValues(alpha: 0.3),
+  );
+  static const BorderSide borderFocus = BorderSide(
+    color: Color(0xFF1A6B3C),
+    width: 2,
+  );
+  static const BorderSide borderDanger = BorderSide(
+    color: Color(0xFFDC2626),
+    width: 1.5,
+  );
 
   // ─── OPACITY ───
   static const double opacityDisabled = 0.38;

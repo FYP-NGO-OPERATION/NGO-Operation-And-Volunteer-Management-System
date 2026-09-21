@@ -23,7 +23,9 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(title: Text('About Us', style: AppTextStyles.titleLarge())),
+      appBar: AppBar(
+        title: Text('About Us', style: AppTextStyles.titleLarge()),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Center(
@@ -41,14 +43,28 @@ class AboutUsScreen extends StatelessWidget {
                     boxShadow: AppTokens.shadowGlow(AppColors.primary),
                   ),
                   child: ClipOval(
-                    child: Image.asset(AppConstants.logoPath, width: 72, height: 72, fit: BoxFit.contain),
+                    child: Image.asset(
+                      AppConstants.logoPath,
+                      width: 72,
+                      height: 72,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 AppSpacing.vGapXl,
-                Text('HRAS', style: AppTextStyles.displayMedium(color: AppColors.primary)),
+                Text(
+                  'HRAS',
+                  style: AppTextStyles.displayMedium(color: AppColors.primary),
+                ),
                 AppSpacing.vGapSm,
-                Text(AppConstants.appTagline,
-                  style: AppTextStyles.bodyLarge(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
+                Text(
+                  AppConstants.appTagline,
+                  style: AppTextStyles.bodyLarge(
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
+                ),
                 AppSpacing.vGapXxl,
 
                 // Mission Card
@@ -58,7 +74,11 @@ class AboutUsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkCardBg : Colors.white,
                     borderRadius: AppTokens.borderRadiusMd,
-                    border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.darkDivider
+                          : AppColors.lightDivider,
+                    ),
                     boxShadow: AppTokens.shadowSoft,
                   ),
                   child: Column(
@@ -72,10 +92,17 @@ class AboutUsScreen extends StatelessWidget {
                               color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: AppTokens.borderRadiusSm,
                             ),
-                            child: Icon(Icons.flag_rounded, color: AppColors.primary, size: AppTokens.iconMd),
+                            child: Icon(
+                              Icons.flag_rounded,
+                              color: AppColors.primary,
+                              size: AppTokens.iconMd,
+                            ),
                           ),
                           AppSpacing.hGapMd,
-                          Text('Our Mission', style: AppTextStyles.titleMedium()),
+                          Text(
+                            'Our Mission',
+                            style: AppTextStyles.titleMedium(),
+                          ),
                         ],
                       ),
                       AppSpacing.vGapMd,
@@ -84,7 +111,10 @@ class AboutUsScreen extends StatelessWidget {
                         'We believe in the power of collective volunteerism to transform lives '
                         'and build a better future for everyone.',
                         style: AppTextStyles.bodyMedium(
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -92,7 +122,10 @@ class AboutUsScreen extends StatelessWidget {
                 AppSpacing.vGapXxl,
 
                 // Official Bank Details
-                Text('Official Donation Accounts', style: AppTextStyles.titleLarge()),
+                Text(
+                  'Official Donation Accounts',
+                  style: AppTextStyles.titleLarge(),
+                ),
                 AppSpacing.vGapLg,
                 Container(
                   width: double.infinity,
@@ -100,33 +133,57 @@ class AboutUsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: AppTokens.borderRadiusMd,
-                    border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: AppColors.success.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.account_balance, color: AppColors.success),
+                          const Icon(
+                            Icons.account_balance,
+                            color: AppColors.success,
+                          ),
                           AppSpacing.hGapMd,
-                          Text('JazzCash / Easypaisa', style: AppTextStyles.titleMedium()),
+                          Text(
+                            'JazzCash / Easypaisa',
+                            style: AppTextStyles.titleMedium(),
+                          ),
                         ],
                       ),
                       AppSpacing.vGapMd,
-                      Text('Account Title: HRAS Foundation', style: AppTextStyles.bodyMedium().copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Account Title: HRAS Foundation',
+                        style: AppTextStyles.bodyMedium().copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       AppSpacing.vGapXs,
                       Row(
                         children: [
                           Expanded(
-                            child: Text('Account No: 0300-1234567', style: AppTextStyles.bodyLarge()),
+                            child: Text(
+                              'Account No: 0300-1234567',
+                              style: AppTextStyles.bodyLarge(),
+                            ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.copy, color: AppColors.success, size: 20),
+                            icon: const Icon(
+                              Icons.copy,
+                              color: AppColors.success,
+                              size: 20,
+                            ),
                             tooltip: 'Copy Account Number',
                             onPressed: () {
-                              Clipboard.setData(const ClipboardData(text: '03001234567'));
+                              Clipboard.setData(
+                                const ClipboardData(text: '03001234567'),
+                              );
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Account number copied!')),
+                                const SnackBar(
+                                  content: Text('Account number copied!'),
+                                ),
                               );
                             },
                           ),
@@ -141,24 +198,40 @@ class AboutUsScreen extends StatelessWidget {
                 Text('Connect With Us', style: AppTextStyles.titleLarge()),
                 AppSpacing.vGapLg,
                 _SocialButton(
-                  iconWidget: FaIcon(FontAwesomeIcons.instagram, color: const Color(0xFFE1306C), size: 28),
+                  iconWidget: FaIcon(
+                    FontAwesomeIcons.instagram,
+                    color: const Color(0xFFE1306C),
+                    size: 28,
+                  ),
                   label: 'Instagram',
                   color: const Color(0xFFE1306C),
-                  onTap: () => _launchUrl('https://www.instagram.com/hras_hamesharaheinapkesaath'),
+                  onTap: () => _launchUrl(
+                    'https://www.instagram.com/hras_hamesharaheinapkesaath',
+                  ),
                 ),
                 AppSpacing.vGapMd,
                 _SocialButton(
-                  iconWidget: Icon(Icons.facebook, color: const Color(0xFF1877F2), size: 28),
+                  iconWidget: Icon(
+                    Icons.facebook,
+                    color: const Color(0xFF1877F2),
+                    size: 28,
+                  ),
                   label: 'Facebook',
                   color: const Color(0xFF1877F2),
-                  onTap: () => _launchUrl('https://www.facebook.com/share/18JqaHAKdM/'),
+                  onTap: () =>
+                      _launchUrl('https://www.facebook.com/share/18JqaHAKdM/'),
                 ),
                 AppSpacing.vGapMd,
                 _SocialButton(
-                  iconWidget: FaIcon(FontAwesomeIcons.tiktok, color: isDark ? Colors.white : Colors.black, size: 28),
+                  iconWidget: FaIcon(
+                    FontAwesomeIcons.tiktok,
+                    color: isDark ? Colors.white : Colors.black,
+                    size: 28,
+                  ),
                   label: 'TikTok',
                   color: isDark ? Colors.white : Colors.black,
-                  onTap: () => _launchUrl('https://www.tiktok.com/@hras_official'),
+                  onTap: () =>
+                      _launchUrl('https://www.tiktok.com/@hras_official'),
                 ),
 
                 AppSpacing.vGapXxl,
@@ -170,7 +243,11 @@ class AboutUsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkCardBg : Colors.white,
                     borderRadius: AppTokens.borderRadiusMd,
-                    border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.darkDivider
+                          : AppColors.lightDivider,
+                    ),
                     boxShadow: AppTokens.shadowSoft,
                   ),
                   child: Column(
@@ -184,10 +261,17 @@ class AboutUsScreen extends StatelessWidget {
                               color: AppColors.info.withValues(alpha: 0.1),
                               borderRadius: AppTokens.borderRadiusSm,
                             ),
-                            child: Icon(Icons.rocket_launch_rounded, color: AppColors.info, size: AppTokens.iconMd),
+                            child: Icon(
+                              Icons.rocket_launch_rounded,
+                              color: AppColors.info,
+                              size: AppTokens.iconMd,
+                            ),
                           ),
                           AppSpacing.hGapMd,
-                          Text('App Features', style: AppTextStyles.titleMedium()),
+                          Text(
+                            'App Features',
+                            style: AppTextStyles.titleMedium(),
+                          ),
                         ],
                       ),
                       AppSpacing.vGapMd,
@@ -197,13 +281,29 @@ class AboutUsScreen extends StatelessWidget {
                       AppSpacing.vGapSm,
                       _featureItem('Donation Tracking', true, isDark),
                       AppSpacing.vGapSm,
-                      _featureItem('Smart Volunteer-Campaign Matching', FeatureFlags.isSmartMatchingEnabled, isDark),
+                      _featureItem(
+                        'Smart Volunteer-Campaign Matching',
+                        FeatureFlags.isSmartMatchingEnabled,
+                        isDark,
+                      ),
                       AppSpacing.vGapSm,
-                      _featureItem('Push Notifications (FCM)', FeatureFlags.isPushNotificationsEnabled, isDark),
+                      _featureItem(
+                        'Push Notifications (FCM)',
+                        FeatureFlags.isPushNotificationsEnabled,
+                        isDark,
+                      ),
                       AppSpacing.vGapSm,
-                      _featureItem('QR Attendance System', FeatureFlags.isQrAttendanceEnabled, isDark),
+                      _featureItem(
+                        'QR Attendance System',
+                        FeatureFlags.isQrAttendanceEnabled,
+                        isDark,
+                      ),
                       AppSpacing.vGapSm,
-                      _featureItem('Analytics Dashboard', FeatureFlags.isAnalyticsEnabled, isDark),
+                      _featureItem(
+                        'Analytics Dashboard',
+                        FeatureFlags.isAnalyticsEnabled,
+                        isDark,
+                      ),
                       AppSpacing.vGapSm,
                       _featureItem('Google Sign-In', true, isDark),
                       AppSpacing.vGapSm,
@@ -219,7 +319,10 @@ class AboutUsScreen extends StatelessWidget {
                 // Phase Badge
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.md,
+                    horizontal: AppSpacing.lg,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.08),
                     borderRadius: AppTokens.borderRadiusMd,
@@ -231,7 +334,9 @@ class AboutUsScreen extends StatelessWidget {
                       AppSpacing.hGapSm,
                       Text(
                         'Running: ${FeatureFlags.phaseLabel}',
-                        style: AppTextStyles.labelMedium(color: AppColors.primary),
+                        style: AppTextStyles.labelMedium(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -242,7 +347,11 @@ class AboutUsScreen extends StatelessWidget {
                 Text(
                   'Version ${AppConstants.appVersion}\n${AppConstants.appName}',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.caption(color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+                  style: AppTextStyles.caption(
+                    color: isDark
+                        ? AppColors.darkTextHint
+                        : AppColors.lightTextHint,
+                  ),
                 ),
               ],
             ),
@@ -256,7 +365,8 @@ class AboutUsScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 8, height: 8,
+          width: 8,
+          height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isActive ? AppColors.success : AppColors.neutral400,
@@ -264,19 +374,30 @@ class AboutUsScreen extends StatelessWidget {
         ),
         AppSpacing.hGapMd,
         Expanded(
-          child: Text(title, style: AppTextStyles.bodyMedium(
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          )),
+          child: Text(
+            title,
+            style: AppTextStyles.bodyMedium(
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
+          ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 2,
+          ),
           decoration: BoxDecoration(
-            color: (isActive ? AppColors.success : AppColors.neutral400).withValues(alpha: 0.1),
+            color: (isActive ? AppColors.success : AppColors.neutral400)
+                .withValues(alpha: 0.1),
             borderRadius: AppTokens.borderRadiusPill,
           ),
           child: Text(
             isActive ? '● LIVE' : '○ PLANNED',
-            style: AppTextStyles.labelSmall(color: isActive ? AppColors.success : AppColors.neutral400),
+            style: AppTextStyles.labelSmall(
+              color: isActive ? AppColors.success : AppColors.neutral400,
+            ),
           ),
         ),
       ],
@@ -304,9 +425,14 @@ class _SocialButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: AppTokens.borderRadiusMd,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.lg,
+        ),
         decoration: BoxDecoration(
-          border: Border.all(color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
+          border: Border.all(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
           borderRadius: AppTokens.borderRadiusMd,
         ),
         child: Row(
@@ -315,8 +441,11 @@ class _SocialButton extends StatelessWidget {
             AppSpacing.hGapLg,
             Text(label, style: AppTextStyles.titleMedium()),
             const Spacer(),
-            Icon(Icons.arrow_forward_ios, size: AppTokens.iconXs,
-              color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: AppTokens.iconXs,
+              color: isDark ? AppColors.darkTextHint : AppColors.lightTextHint,
+            ),
           ],
         ),
       ),
