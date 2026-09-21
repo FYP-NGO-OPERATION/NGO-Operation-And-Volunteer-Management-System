@@ -70,11 +70,30 @@ void main() async {
   // ─── SSL Certificate Pinning ───
   HttpOverrides.global = SecureHttpOverrides();
 
-  // ─── Global Error Handling ───
-  // Catches unhandled Flutter framework errors (widget build failures, etc.)
+  // ─── Global Error Handling (Error Boundaries) ───
+  // Intercepts the "Gray Screen of Death" for unhandled widget exceptions.
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    debugPrint('⚠️ FlutterError: ${details.exceptionAsString()}');
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              'Oops! An unexpected error occurred.\nOur team has been notified.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    debugPrint('⚠️ FlutterError: ${details.exceptionAsString()}');
+    debugPrint('⚠️ FlutterError Log: ${details.exceptionAsString()}');
   };
 
   // Catches unhandled async errors from platform channels, isolates, etc.

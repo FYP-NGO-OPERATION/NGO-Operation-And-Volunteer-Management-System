@@ -15,7 +15,7 @@ class CloudinaryService {
     try {
       return await uploadImageBytes(await imageFile.readAsBytes());
     } catch (e) {
-      print('Cloudinary Exception: $e');
+      debugPrint('Cloudinary Exception: $e');
       return null;
     }
   }
@@ -44,14 +44,14 @@ class CloudinaryService {
       final jsonResponse = jsonDecode(responseData);
 
       if (response.statusCode == 200) {
-        print('Cloudinary Upload Success: ${jsonResponse['secure_url']}');
+        debugPrint('Cloudinary Upload Success: ${jsonResponse['secure_url']}');
         return jsonResponse['secure_url'];
       } else {
-        print('Cloudinary Error: ${jsonResponse['error']['message']}');
+        debugPrint('Cloudinary Error: ${jsonResponse['error']['message']}');
         return null;
       }
     } catch (e) {
-      print('Cloudinary Exception: $e');
+      debugPrint('Cloudinary Exception: $e');
       return null;
     }
   }

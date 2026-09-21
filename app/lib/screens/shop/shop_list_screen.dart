@@ -199,12 +199,16 @@ class _ShopListScreenState extends State<ShopListScreen> {
                           AppSpacing.vGapXs,
                           SizedBox(
                             width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: outOfStock ? null : () => _addToCart(product),
-                              icon: const Icon(Icons.add_shopping_cart, size: 16),
-                              label: const Text('Add'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Semantics(
+                              label: 'Add ${product.name} to cart for ${product.price.toStringAsFixed(2)} Rupees',
+                              button: true,
+                              child: ElevatedButton.icon(
+                                onPressed: outOfStock ? null : () => _addToCart(product),
+                                icon: const Icon(Icons.add_shopping_cart, size: 16),
+                                label: const Text('Add'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                ),
                               ),
                             ),
                           ),

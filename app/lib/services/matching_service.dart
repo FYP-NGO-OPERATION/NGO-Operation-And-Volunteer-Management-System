@@ -50,9 +50,8 @@ class MatchingService {
       try {
         throw Exception('Cloud Functions not configured. Fallback to local.');
       } catch (e) {
-        print(
-          '[HRAS] Cloud Function Matching Failed: $e. Falling back to local.',
-        );
+        debugPrint(
+            'Failed to geocode ngo address: $e (Falling back to exact city string match)');
         // Fallback to local logic
       }
     }

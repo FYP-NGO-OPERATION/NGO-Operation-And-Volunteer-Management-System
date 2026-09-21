@@ -216,23 +216,27 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (!_isAdmin && isMoney) ...[
-                      Container(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning.withValues(alpha: 0.1),
-                          borderRadius: AppTokens.borderRadiusMd,
-                          border: Border.all(color: AppColors.warning),
-                        ),
-                        child: const Text(
-                          'Please transfer your funds to our official JazzCash/Easypaisa number: 0300-1234567, then enter the Transaction ID (TID) below.',
-                          style: TextStyle(
-                            color: AppColors.warning,
-                            fontWeight: FontWeight.bold,
+                      Semantics(
+                        label: 'Payment instructions. Please transfer your funds to our official JazzCash or Easypaisa number: 0 3 0 0, 1 2 3 4 5 6 7, then enter the Transaction ID below.',
+                        child: Container(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.1),
+                            borderRadius: AppTokens.borderRadiusMd,
+                            border: Border.all(color: AppColors.warning),
+                          ),
+                          child: const Text(
+                            'Please transfer your funds to our official JazzCash/Easypaisa number: 0300-1234567, then enter the Transaction ID (TID) below.',
+                            style: TextStyle(
+                              color: AppColors.warning,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ],
+
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(

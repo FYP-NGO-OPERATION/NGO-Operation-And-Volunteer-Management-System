@@ -116,7 +116,7 @@ class PdfReportService {
       await file.writeAsBytes(bytes, flush: true);
       await OpenFile.open(file.path);
     } catch (e) {
-      print('Error saving/opening PDF: $e');
+      debugPrint('Error saving/opening PDF: $e');
       rethrow;
     }
   }
@@ -387,7 +387,7 @@ class PdfReportService {
     required DateTime date,
     required String receiptId,
   }) async {
-    print('Stub for generateDonationReceipt');
+    debugPrint('Stub for generateDonationReceipt');
   }
 
   static Future<void> generateAndPrintCampaignReport({
@@ -464,7 +464,7 @@ class PdfReportService {
       await file.writeAsBytes(bytes, flush: true);
       await OpenFile.open(file.path);
     } catch (e) {
-      print('Error saving/opening PDF: $e');
+      debugPrint('Error saving/opening PDF: $e');
       rethrow;
     }
   }

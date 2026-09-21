@@ -174,7 +174,7 @@ class _AdminLayoutState extends State<AdminLayout> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: ),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.logout, color: Colors.orange, size: 40),
@@ -191,7 +191,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 'Are you sure you want to log out of your account?',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -205,7 +205,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         side: BorderSide(
-                          color: AppColors.primary.withOpacity(0.5),
+                          color: AppColors.primary.withValues(alpha: ),
                         ),
                       ),
                       onPressed: () => Navigator.pop(context, false),
@@ -443,7 +443,7 @@ class _AdminLayoutState extends State<AdminLayout> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: ),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -464,7 +464,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 'Are you sure you want to close the app?',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -478,7 +478,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         side: BorderSide(
-                          color: AppColors.primary.withOpacity(0.5),
+                          color: AppColors.primary.withValues(alpha: ),
                         ),
                       ),
                       onPressed: () => Navigator.pop(context, false),
@@ -975,14 +975,14 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
               boxShadow: [
                 BoxShadow(
                   color: widget.isDark
-                      ? Colors.tealAccent.withOpacity(0.2)
-                      : const Color(0xFF2E7D32).withOpacity(0.25),
+                      ? Colors.tealAccent.withValues(alpha: )
+                      : const Color(0xFF2E7D32).withValues(alpha: ),
                   blurRadius: 16,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(widget.isDark ? 0.35 : 0.08),
+                  color: Colors.black.withValues(alpha: ),
                   blurRadius: 12,
                   offset: const Offset(0, 8),
                 ),
@@ -1058,7 +1058,7 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                             color: starColor,
                             boxShadow: [
                               BoxShadow(
-                                color: starColor.withOpacity(0.9),
+                                color: starColor.withValues(alpha: ),
                                 blurRadius: size * 2.0,
                                 spreadRadius: size * 0.8,
                               ),
@@ -1072,8 +1072,8 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                   Positioned.fill(
                     child: Container(
                       color: widget.isDark
-                          ? Colors.black.withOpacity(0.15)
-                          : Colors.white.withOpacity(0.08),
+                          ? Colors.black.withValues(alpha: )
+                          : Colors.white.withValues(alpha: ),
                     ),
                   ),
                   // Content
@@ -1125,7 +1125,7 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                           ),
                           child: CircleAvatar(
                             radius: 38,
-                            backgroundColor: Colors.white.withOpacity(0.15),
+                            backgroundColor: Colors.white.withValues(alpha: ),
                             backgroundImage:
                                 widget.user?.profileImageUrl != null
                                 ? CachedNetworkImageProvider(
@@ -1158,7 +1158,7 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
                         Text(
                           'HRAS Admin',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.85),
+                            color: Colors.white.withValues(alpha: ),
                             fontSize: 14,
                           ),
                         ),

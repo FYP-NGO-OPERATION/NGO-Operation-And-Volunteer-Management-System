@@ -93,7 +93,7 @@ class VirtualSessionProvider extends ChangeNotifier {
     try {
       await _service.markAttendance(sessionId, userId, userName);
     } catch (e) {
-      print("Error marking attendance: $e");
+      debugPrint("Error marking attendance: $e");
     }
   }
 }
