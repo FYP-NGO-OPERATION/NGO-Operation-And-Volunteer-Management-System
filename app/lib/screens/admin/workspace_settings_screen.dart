@@ -5,12 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../providers/ngo_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../models/ngo_model.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-import '../../theme/app_spacing.dart';
-import 'ai_settings_screen.dart';
 
 class WorkspaceSettingsScreen extends StatefulWidget {
   const WorkspaceSettingsScreen({super.key});

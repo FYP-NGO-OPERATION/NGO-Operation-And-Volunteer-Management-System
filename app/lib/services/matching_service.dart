@@ -131,8 +131,9 @@ class MatchingService {
         }
       }
       if (matches >= campaign.requiredSkills.length &&
-          campaign.requiredSkills.isNotEmpty)
+          campaign.requiredSkills.isNotEmpty) {
         return 1.0;
+      }
       if (matches > 0) return 0.8;
     }
 
@@ -183,8 +184,9 @@ class MatchingService {
   }
 
   static String _generateReason(double s, double l, double a) {
-    if (s >= 0.7 && l >= 0.8)
+    if (s >= 0.7 && l >= 0.8) {
       return 'Perfectly matches your skills and is located near you.';
+    }
     if (s >= 0.7) return 'Strong match for your declared skills.';
     if (l >= 0.8) return 'This campaign is happening in your area.';
     if (a >= 0.8) return 'Based on your previous volunteer activity.';

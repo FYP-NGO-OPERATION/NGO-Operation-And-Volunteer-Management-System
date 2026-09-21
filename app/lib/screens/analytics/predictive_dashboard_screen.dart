@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:easy_localization/easy_localization.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
@@ -83,7 +82,7 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
             AppSpacing.vGapMd,
             ..._predictions
                 .map((p) => _buildPredictionCard(p, isDark))
-                .toList(),
+                ,
           ],
         ),
       ),
@@ -228,9 +227,9 @@ class _PredictiveDashboardScreenState extends State<PredictiveDashboardScreen> {
 
   Widget _buildPredictionCard(Map<String, dynamic> data, bool isDark) {
     Color riskColor;
-    if (data['riskScore'] > 80)
+    if (data['riskScore'] > 80) {
       riskColor = AppColors.error;
-    else if (data['riskScore'] > 50)
+    } else if (data['riskScore'] > 50)
       riskColor = AppColors.warning;
     else
       riskColor = AppColors.success;

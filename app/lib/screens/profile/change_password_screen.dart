@@ -151,8 +151,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   prefixIcon: Icon(Icons.lock_reset),
                 ),
                 validator: (val) {
-                  if (val != _newPasswordController.text)
+                  if (val != _newPasswordController.text) {
                     return 'Passwords do not match';
+                  }
                   return null;
                 },
               ),

@@ -81,10 +81,11 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
         }
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isSearching = false);
     }
@@ -109,8 +110,9 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied)
+        if (permission == LocationPermission.denied) {
           throw Exception('Location permissions are denied');
+        }
       }
 
       if (permission == LocationPermission.deniedForever) {
@@ -120,10 +122,11 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
       final position = await Geolocator.getCurrentPosition();
       _mapController.move(LatLng(position.latitude, position.longitude), 15);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _isSearching = false);
     }
@@ -386,8 +389,9 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                           ),
                           onSubmitted: _searchLocation,
                           onChanged: (val) {
-                            if (val.isEmpty)
+                            if (val.isEmpty) {
                               setState(() => _searchResults = []);
+                            }
                           },
                         ),
                       ),
@@ -538,12 +542,13 @@ class _LiveMissionMapScreenState extends State<LiveMissionMapScreen> {
                                     }
                                   } catch (e) {
                                     setState(() => _isSaving = false);
-                                    if (mounted)
+                                    if (mounted) {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(content: Text('Error: $e')),
                                       );
+                                    }
                                   }
                                 },
                           child: _isSaving

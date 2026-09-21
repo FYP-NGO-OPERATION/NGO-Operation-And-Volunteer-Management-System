@@ -10,7 +10,6 @@ import '../../theme/app_tokens.dart';
 import '../../utils/responsive.dart';
 import '../../services/pdf_report_service.dart';
 import '../../enums/app_enums.dart';
-import '../../models/campaign_model.dart';
 import '../../providers/ngo_provider.dart';
 import '../../services/csv_export_service.dart';
 import 'components/ai_insights_card.dart';
@@ -446,10 +445,11 @@ class AnalyticsScreen extends StatelessWidget {
     int successful = 0;
     int unsuccessful = 0;
     for (var c in completedCampaigns) {
-      if (c.isSuccessful)
+      if (c.isSuccessful) {
         successful++;
-      else
+      } else {
         unsuccessful++;
+      }
     }
 
     final total = successful + unsuccessful;

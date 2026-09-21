@@ -110,11 +110,13 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
         uploadedBy: user.uid,
         uploaderName: user.name,
       );
-      if (mounted)
+      if (mounted) {
         SnackbarHelper.showSuccess(context, 'Photo uploaded successfully!');
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         SnackbarHelper.showError(context, 'Failed to upload photo: $e');
+      }
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -147,8 +149,9 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
         await _galleryService.deletePhoto(photo);
         if (mounted) SnackbarHelper.showInfo(context, 'Photo deleted');
       } catch (e) {
-        if (mounted)
+        if (mounted) {
           SnackbarHelper.showError(context, 'Failed to delete photo');
+        }
       }
     }
   }

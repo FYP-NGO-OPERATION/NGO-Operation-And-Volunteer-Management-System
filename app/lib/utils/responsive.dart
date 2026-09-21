@@ -48,8 +48,9 @@ class Responsive {
   static double formWidth(BuildContext context) {
     final width = screenWidth(context);
     if (width < AppConstants.mobileBreakpoint) return width;
-    if (width < AppConstants.tabletBreakpoint)
+    if (width < AppConstants.tabletBreakpoint) {
       return AppConstants.maxContentWidth;
+    }
     return AppConstants.maxContentWidth;
   }
 

@@ -155,8 +155,9 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                       prefixIcon: Icons.numbers,
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
-                        if (int.tryParse(val) == null || int.parse(val) < 1)
+                        if (int.tryParse(val) == null || int.parse(val) < 1) {
                           return 'Invalid';
+                        }
                         return null;
                       },
                     ),
@@ -188,8 +189,9 @@ class _AddDistributionScreenState extends State<AddDistributionScreen> {
                 prefixIcon: Icons.people_alt,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
-                  if (int.tryParse(val) == null || int.parse(val) < 1)
+                  if (int.tryParse(val) == null || int.parse(val) < 1) {
                     return 'Invalid';
+                  }
                   return null;
                 },
               ),

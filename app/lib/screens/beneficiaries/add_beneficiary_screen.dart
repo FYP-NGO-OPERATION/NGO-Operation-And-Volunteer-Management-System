@@ -121,8 +121,9 @@ class _AddBeneficiaryScreenState extends State<AddBeneficiaryScreen> {
                       prefixIcon: Icons.group,
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
-                        if (int.tryParse(val) == null || int.parse(val) < 1)
+                        if (int.tryParse(val) == null || int.parse(val) < 1) {
                           return 'Invalid';
+                        }
                         return null;
                       },
                     ),

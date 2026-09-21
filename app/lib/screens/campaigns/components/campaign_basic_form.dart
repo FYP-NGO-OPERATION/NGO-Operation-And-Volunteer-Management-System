@@ -13,7 +13,7 @@ class CampaignBasicForm extends StatelessWidget {
   final Function(CampaignType?) onTypeChanged;
 
   const CampaignBasicForm({
-    Key? key,
+    super.key,
     required this.titleController,
     required this.descriptionController,
     required this.categoryController,
@@ -21,7 +21,7 @@ class CampaignBasicForm extends StatelessWidget {
     required this.requiredSkillsController,
     required this.selectedType,
     required this.onTypeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class CampaignBasicForm extends StatelessWidget {
         Text('Campaign Type', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         DropdownButtonFormField<CampaignType>(
-          value: selectedType,
+          initialValue: selectedType,
           decoration: const InputDecoration(prefixIcon: Icon(Icons.category)),
           items: CampaignType.values.map((type) {
             return DropdownMenuItem(

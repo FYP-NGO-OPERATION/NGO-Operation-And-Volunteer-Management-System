@@ -14,7 +14,6 @@ import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'dart:typed_data';
 
 class AddExpenseScreen extends StatefulWidget {
   final String campaignId;
@@ -100,11 +99,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           );
         }
       } else {
-        if (mounted)
+        if (mounted) {
           SnackbarHelper.showError(
             context,
             'Could not detect an amount clearly.',
           );
+        }
       }
     } catch (e) {
       if (mounted) SnackbarHelper.showError(context, 'AI OCR Failed: $e');

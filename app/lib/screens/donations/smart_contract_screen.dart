@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../config/app_colors.dart';
-import '../../theme/app_text_styles.dart';
 
 class SmartContractScreen extends StatelessWidget {
   final String contractAddress;

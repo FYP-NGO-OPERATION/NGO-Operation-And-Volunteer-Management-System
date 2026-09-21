@@ -1,6 +1,4 @@
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/app_colors.dart';
@@ -23,7 +21,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CampaignInfoTab extends StatelessWidget {
   final CampaignModel campaign;
 
-  const CampaignInfoTab({Key? key, required this.campaign}) : super(key: key);
+  const CampaignInfoTab({super.key, required this.campaign});
 
   Color get _themeColor {
     switch (campaign.type) {
@@ -1102,7 +1100,7 @@ class _LiveTrackingCardState extends State<_LiveTrackingCard> {
           ),
         ),
         value: _isTracking,
-        activeColor: AppColors.error,
+        activeThumbColor: AppColors.error,
         onChanged: (val) => _toggleTracking(),
       ),
     );

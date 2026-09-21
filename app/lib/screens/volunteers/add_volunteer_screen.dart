@@ -12,10 +12,10 @@ class AddVolunteerScreen extends StatefulWidget {
   final String campaignTitle;
 
   const AddVolunteerScreen({
-    Key? key,
+    super.key,
     required this.campaignId,
     required this.campaignTitle,
-  }) : super(key: key);
+  });
 
   @override
   State<AddVolunteerScreen> createState() => _AddVolunteerScreenState();

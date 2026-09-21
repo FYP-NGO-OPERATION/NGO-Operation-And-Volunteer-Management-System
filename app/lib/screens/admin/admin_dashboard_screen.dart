@@ -20,7 +20,7 @@ import '../../utils/cleanup_test_data.dart';
 class AdminDashboardScreen extends StatefulWidget {
   final void Function(int)? onNavigate;
 
-  const AdminDashboardScreen({Key? key, this.onNavigate}) : super(key: key);
+  const AdminDashboardScreen({super.key, this.onNavigate});
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();

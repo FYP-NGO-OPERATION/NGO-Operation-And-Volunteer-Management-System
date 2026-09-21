@@ -61,7 +61,7 @@ class _AdminManageStoreScreenState extends State<AdminManageStoreScreen> {
                 if (!isEditing) {
                    await _firestore.collection('announcements').add({
                       'title': 'New Item in Store!',
-                      'description': '\ is now available.',
+                      'description': ' is now available.',
                       'timestamp': FieldValue.serverTimestamp(),
                       'sendNotification': true, // Our trigger will catch this
                    });
@@ -113,9 +113,11 @@ class _AdminManageStoreScreenState extends State<AdminManageStoreScreen> {
         stream: _firestore.collection('products').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError) return Center(child: Text('Error: \'));
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: \'));
 
-          final docs = snapshot.data?.docs ?? [];
+          
+          }final docs = snapshot.data?.docs ?? [];
           if (docs.isEmpty) return const Center(child: Text('No products available.'));
 
           return ListView.builder(
@@ -130,7 +132,7 @@ class _AdminManageStoreScreenState extends State<AdminManageStoreScreen> {
                   child: product.imageUrl.isEmpty ? const Icon(Icons.image) : null,
                 ),
                 title: Text(product.name),
-                subtitle: Text('Stock: \ | Price: \$\'),
+                subtitle: Text('Stock:  | Price: \$\'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

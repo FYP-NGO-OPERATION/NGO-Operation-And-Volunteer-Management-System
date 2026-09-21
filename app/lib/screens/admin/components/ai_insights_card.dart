@@ -41,7 +41,7 @@ class _AiInsightsCardState extends State<AiInsightsCard> {
           'HRAS_DEFAULT_ID';
 
       final apiKey = await GeminiConfigService.getApiKey(ngoId);
-      if (apiKey == null || apiKey.isEmpty) {
+      if (apiKey.isEmpty) {
         setState(() => _error = 'AI API key is not configured.');
         return;
       }

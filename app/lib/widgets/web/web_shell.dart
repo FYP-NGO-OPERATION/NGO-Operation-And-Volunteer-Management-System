@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:convert' as dart_convert;
-import '../../config/feature_flags.dart';
 import '../../providers/ngo_provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';

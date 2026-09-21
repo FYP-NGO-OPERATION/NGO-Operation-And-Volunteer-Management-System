@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/ngo_model.dart';
 import '../../services/ngo_service.dart';
-import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 
 class ManageNgosScreen extends StatefulWidget {

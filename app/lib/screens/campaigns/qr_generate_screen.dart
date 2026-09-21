@@ -1,10 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/app_tokens.dart';
 import '../../services/qr_service.dart';
 
 /// Admin screen to generate a QR code for campaign attendance.

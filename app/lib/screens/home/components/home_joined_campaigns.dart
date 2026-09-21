@@ -17,10 +17,10 @@ class HomeJoinedCampaigns extends StatelessWidget {
   final Function(int) onTabChange;
 
   const HomeJoinedCampaigns({
-    Key? key,
+    super.key,
     required this.userId,
     required this.onTabChange,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +226,7 @@ class HomeJoinedCampaigns extends StatelessWidget {
                       },
                     ),
                   );
-                }).toList(),
+                }),
               ],
             );
           },

@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/app_tokens.dart';
-import '../../theme/app_animations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/campaign_provider.dart';
 import '../../providers/ngo_provider.dart';
@@ -51,11 +49,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     String phone = widget.phoneNumber;
     if (!phone.startsWith('+')) {
       phone =
-          '+92' +
-          phone.replaceFirst(
+          '+92${phone.replaceFirst(
             RegExp(r'^0'),
             '',
-          ); // Simple fallback for PK numbers
+          )}'; // Simple fallback for PK numbers
     }
 
     final success = await auth.verifyPhoneNumber(phone);

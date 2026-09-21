@@ -6,12 +6,9 @@ import '../../providers/ngo_provider.dart';
 import '../../widgets/common/custom_text_field.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../utils/snackbar_helper.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import '../../config/app_colors.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 
@@ -87,8 +84,9 @@ class _CreateNgoScreenState extends State<CreateNgoScreen> {
           const Duration(milliseconds: 500),
         ); // Simulate upload
       } catch (e) {
-        if (mounted)
+        if (mounted) {
           SnackbarHelper.showError(context, 'Failed to process logo: $e');
+        }
         setState(() => _isUploadingLogo = false);
         return;
       }

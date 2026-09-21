@@ -9,7 +9,7 @@ import '../../../../providers/campaign_provider.dart';
 import '../../../../utils/responsive.dart';
 
 class HomeStatsGrid extends StatelessWidget {
-  const HomeStatsGrid({Key? key}) : super(key: key);
+  const HomeStatsGrid({super.key});
 
   @override
   Widget build(BuildContext context) {

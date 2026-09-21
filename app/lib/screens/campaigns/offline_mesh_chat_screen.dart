@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import '../../config/app_colors.dart';
-import '../../theme/app_text_styles.dart';
 import '../../providers/auth_provider.dart';
 
 class OfflineMeshChatScreen extends StatefulWidget {
@@ -195,7 +193,7 @@ class _OfflineMeshChatScreenState extends State<OfflineMeshChatScreen> {
               Switch(
                 value: !_isOfflineMode,
                 onChanged: (_) => _toggleNetwork(),
-                activeColor: Colors.greenAccent,
+                activeThumbColor: Colors.greenAccent,
                 inactiveThumbColor: Colors.blueAccent,
                 inactiveTrackColor: Colors.blue.withOpacity(0.5),
               ),

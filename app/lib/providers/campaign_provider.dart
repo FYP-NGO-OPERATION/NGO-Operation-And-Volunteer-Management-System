@@ -304,7 +304,7 @@ class CampaignProvider extends ChangeNotifier {
 
   // ─── Initialize — subscribe to real-time updates ───
   void init(String ngoId) {
-    _setLoading(true);
+    setLoading(true);
     _campaignsSubscription?.cancel();
     _campaignsSubscription = _campaignService
         .getCampaignsStream(ngoId)
@@ -354,17 +354,17 @@ class CampaignProvider extends ChangeNotifier {
     List<File>? galleryFiles,
   }) async {
     try {
-      _setLoading(true);
+      setLoading(true);
       await _campaignService.createCampaign(
         campaign,
         videoFile: videoFile,
         documentFile: documentFile,
         galleryFiles: galleryFiles,
       );
-      _setLoading(false);
+      setLoading(false);
       return true;
     } catch (e) {
-      _setError('Failed to create campaign: $e');
+      setError('Failed to create campaign: $e');
       return false;
     }
   }
@@ -372,12 +372,12 @@ class CampaignProvider extends ChangeNotifier {
   // ─── Update Campaign ───
   Future<bool> updateCampaign(CampaignModel campaign) async {
     try {
-      _setLoading(true);
+      setLoading(true);
       await _campaignService.updateCampaign(campaign);
-      _setLoading(false);
+      setLoading(false);
       return true;
     } catch (e) {
-      _setError('Failed to update campaign: $e');
+      setError('Failed to update campaign: $e');
       return false;
     }
   }
@@ -388,7 +388,7 @@ class CampaignProvider extends ChangeNotifier {
       await _campaignService.updateCampaignStatus(campaignId, status);
       return true;
     } catch (e) {
-      _setError('Failed to update status: $e');
+      setError('Failed to update status: $e');
       return false;
     }
   }
@@ -396,12 +396,12 @@ class CampaignProvider extends ChangeNotifier {
   // ─── Delete Campaign ───
   Future<bool> deleteCampaign(String campaignId) async {
     try {
-      _setLoading(true);
+      setLoading(true);
       await _campaignService.deleteCampaign(campaignId);
-      _setLoading(false);
+      setLoading(false);
       return true;
     } catch (e) {
-      _setError('Failed to delete campaign: $e');
+      setError('Failed to delete campaign: $e');
       return false;
     }
   }
@@ -418,13 +418,13 @@ class CampaignProvider extends ChangeNotifier {
   }
 
   // ─── Helpers ───
-  void _setLoading(bool value) {
+  void setLoading(bool value) {
     _isLoading = value;
     _error = null;
     notifyListeners();
   }
 
-  void _setError(String message) {
+  void setError(String message) {
     _error = message;
     _isLoading = false;
     notifyListeners();

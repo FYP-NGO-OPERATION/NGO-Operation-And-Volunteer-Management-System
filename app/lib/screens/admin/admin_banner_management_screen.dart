@@ -8,7 +8,6 @@ import '../../models/banner_model.dart';
 import '../../services/banner_service.dart';
 import '../../services/cloudinary_service.dart';
 import '../../utils/snackbar_helper.dart';
-import '../../theme/app_text_styles.dart';
 import '../../config/app_colors.dart';
 
 class AdminBannerManagementScreen extends StatefulWidget {
@@ -63,15 +62,18 @@ class _AdminBannerManagementScreenState
           createdAt: DateTime.now(),
         );
         await _bannerService.createBanner(newBanner);
-        if (mounted)
+        if (mounted) {
           SnackbarHelper.showSuccess(context, 'Banner uploaded successfully');
+        }
       } else {
-        if (mounted)
+        if (mounted) {
           SnackbarHelper.showError(context, 'Failed to upload image');
+        }
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         SnackbarHelper.showError(context, 'Error uploading banner: $e');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -95,7 +97,7 @@ class _AdminBannerManagementScreenState
                   children: [
                     DropdownButtonFormField<String>(
                       isExpanded: true,
-                      value: type,
+                      initialValue: type,
                       items: const [
                         DropdownMenuItem(value: 'none', child: Text('No Link')),
                         DropdownMenuItem(
@@ -123,12 +125,13 @@ class _AdminBannerManagementScreenState
                             .collection('campaigns')
                             .get(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData)
+                          if (!snapshot.hasData) {
                             return const CircularProgressIndicator();
+                          }
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            value: docs.any((d) => d.id == idController.text)
+                            initialValue: docs.any((d) => d.id == idController.text)
                                 ? idController.text
                                 : null,
                             hint: const Text('Select Campaign'),
@@ -150,12 +153,13 @@ class _AdminBannerManagementScreenState
                             .collection('virtual_sessions')
                             .get(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData)
+                          if (!snapshot.hasData) {
                             return const CircularProgressIndicator();
+                          }
                           final docs = snapshot.data!.docs;
                           return DropdownButtonFormField<String>(
                             isExpanded: true,
-                            value: docs.any((d) => d.id == idController.text)
+                            initialValue: docs.any((d) => d.id == idController.text)
                                 ? idController.text
                                 : null,
                             hint: const Text('Select Session'),
@@ -337,7 +341,7 @@ class _AdminBannerManagementScreenState
                                                 Navigator.pop(ctx, true),
                                             child: const Text(
                                               'Delete',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: Colors.red,
                                               ),
                                             ),

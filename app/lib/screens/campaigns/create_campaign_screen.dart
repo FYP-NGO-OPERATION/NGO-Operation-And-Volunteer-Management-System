@@ -46,7 +46,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   bool get _isEditing => widget.campaign != null;
 
   File? _highlightVideo;
-  List<File> _galleryImages = [];
+  final List<File> _galleryImages = [];
   File? _projectRecordPdf;
   final ImagePicker _imagePicker = ImagePicker();
 

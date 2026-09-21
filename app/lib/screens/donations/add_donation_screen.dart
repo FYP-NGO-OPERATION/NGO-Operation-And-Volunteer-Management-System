@@ -42,8 +42,8 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
 
   DonationCategory _selectedCategory = DonationCategory.money;
   PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
-  String _allocationPolicy = 'campaign_specific';
-  bool _refundableIfTargetMet = false;
+  final String _allocationPolicy = 'campaign_specific';
+  final bool _refundableIfTargetMet = false;
   DateTime _receivedDate = DateTime.now();
 
   bool _isLoading = false;
@@ -269,7 +269,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<DonationCategory>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.category),
                       ),
@@ -310,7 +310,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                         color: AppColors.textSecondary,
                       ),
                       value: _isAnonymous,
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       onChanged: (v) => setState(() => _isAnonymous = v),
                     ),
                     AppSpacing.vGapLg,
@@ -333,7 +333,7 @@ class _AddDonationScreenState extends State<AddDonationScreen> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<PaymentMethod>(
-                        value: _selectedPaymentMethod,
+                        initialValue: _selectedPaymentMethod,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.payment),
                         ),

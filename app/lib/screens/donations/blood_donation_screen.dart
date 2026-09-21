@@ -321,7 +321,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       items: _bloodGroups
                           .map(
                             (g) => DropdownMenuItem(value: g, child: Text(g)),

@@ -9,7 +9,6 @@ import '../../models/volunteer_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/volunteer_service.dart';
 import '../../enums/app_enums.dart';
-import '../../enums/app_enums.dart';
 import '../../utils/snackbar_helper.dart';
 import 'add_volunteer_screen.dart';
 
@@ -276,8 +275,9 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
                 );
               }
             } catch (e) {
-              if (mounted)
+              if (mounted) {
                 SnackbarHelper.showError(context, 'Failed to approve: $e');
+              }
             }
           },
         ),
@@ -297,8 +297,9 @@ class _VolunteerListScreenState extends State<VolunteerListScreen> {
                 );
               }
             } catch (e) {
-              if (mounted)
+              if (mounted) {
                 SnackbarHelper.showError(context, 'Failed to reject: $e');
+              }
             }
           },
         ),

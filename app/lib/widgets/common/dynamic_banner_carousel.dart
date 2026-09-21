@@ -68,8 +68,9 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        if (context.mounted)
+        if (context.mounted) {
           SnackbarHelper.showError(context, 'Could not launch URL');
+        }
       }
     } else if (banner.targetType == 'campaign' && banner.targetId != null) {
       try {
@@ -84,12 +85,14 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
             ),
           );
         } else {
-          if (context.mounted)
+          if (context.mounted) {
             SnackbarHelper.showError(context, 'Campaign not found');
+          }
         }
       } catch (e) {
-        if (context.mounted)
+        if (context.mounted) {
           SnackbarHelper.showError(context, 'Error loading campaign');
+        }
       }
     } else if (banner.targetType == 'session' && banner.targetId != null) {
       try {
@@ -104,12 +107,14 @@ class _DynamicBannerCarouselState extends State<DynamicBannerCarousel> {
             ),
           );
         } else {
-          if (context.mounted)
+          if (context.mounted) {
             SnackbarHelper.showError(context, 'Session not found');
+          }
         }
       } catch (e) {
-        if (context.mounted)
+        if (context.mounted) {
           SnackbarHelper.showError(context, 'Error loading session');
+        }
       }
     }
   }

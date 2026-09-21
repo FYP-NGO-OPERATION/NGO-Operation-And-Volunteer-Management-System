@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/app_tokens.dart';
 
 /// Premium empty state with icon, title, subtitle, and optional action
 class EmptyStateWidget extends StatelessWidget {

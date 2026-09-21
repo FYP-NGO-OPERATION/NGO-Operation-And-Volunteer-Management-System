@@ -22,7 +22,7 @@ class CampaignLogisticsForm extends StatelessWidget {
   final VoidCallback onClearEventDate;
 
   const CampaignLogisticsForm({
-    Key? key,
+    super.key,
     required this.locationController,
     required this.latitudeController,
     required this.longitudeController,
@@ -39,7 +39,7 @@ class CampaignLogisticsForm extends StatelessWidget {
     required this.onStatusChanged,
     required this.onClearEndDate,
     required this.onClearEventDate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +179,7 @@ class CampaignLogisticsForm extends StatelessWidget {
           Text('Status', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           DropdownButtonFormField<CampaignStatus>(
-            value: selectedStatus,
+            initialValue: selectedStatus,
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.flag_circle),
             ),

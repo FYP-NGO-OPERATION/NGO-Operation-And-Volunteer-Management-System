@@ -11,8 +11,7 @@ import '../../../../models/campaign_model.dart';
 
 class LandingFeaturesSection extends StatelessWidget {
   final bool isDark;
-  const LandingFeaturesSection({Key? key, required this.isDark})
-    : super(key: key);
+  const LandingFeaturesSection({super.key, required this.isDark});
 
   @override
   Widget build(BuildContext context) {

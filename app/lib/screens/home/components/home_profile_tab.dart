@@ -7,7 +7,6 @@ import '../../../../theme/app_text_styles.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_tokens.dart';
 import '../../../../services/certificate_service.dart';
-import '../../../../services/auth_service.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../profile/edit_profile_screen.dart';
 import '../../profile/change_password_screen.dart';
@@ -267,7 +266,7 @@ class HomeProfileTab extends StatelessWidget {
                 trailing: Switch(
                   value: themeProvider.isDarkMode,
                   onChanged: (value) => themeProvider.toggleTheme(),
-                  activeColor: Colors.purple,
+                  activeThumbColor: Colors.purple,
                 ),
               );
             },
@@ -275,7 +274,7 @@ class HomeProfileTab extends StatelessWidget {
           const Divider(height: 32),
           _buildSettingsTile(
             context,
-            title: 'language'.tr() + ' / زبان',
+            title: '${'language'.tr()} / زبان',
             subtitle: context.locale.languageCode == 'en'
                 ? 'switch_to_urdu'.tr()
                 : 'switch_to_english'.tr(),

@@ -145,8 +145,9 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
   void _sendMessage() async {
     final user = Provider.of<AuthProvider>(context, listen: false).user;
     if (user == null ||
-        (_messageCtrl.text.trim().isEmpty && _selectedImage == null))
+        (_messageCtrl.text.trim().isEmpty && _selectedImage == null)) {
       return;
+    }
 
     setState(() => _isSending = true);
 
@@ -542,10 +543,11 @@ class _CampaignChatTabState extends State<CampaignChatTab> {
               try {
                 await _chatService.deleteMessage(msg.campaignId, msg.id);
               } catch (e) {
-                if (mounted)
+                if (mounted) {
                   ScaffoldMessenger.of(
                     context,
                   ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

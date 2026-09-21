@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/user_model.dart';
 import '../services/auth_service.dart';

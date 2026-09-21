@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/ngo_provider.dart';
-import '../../models/ngo_model.dart';
 import '../../utils/snackbar_helper.dart';
 
 class PlatformRequestsScreen extends StatefulWidget {
@@ -83,11 +82,12 @@ class _PlatformRequestsScreenState extends State<PlatformRequestsScreen> {
                                 ngo.id,
                                 'rejected',
                               );
-                              if (context.mounted)
+                              if (context.mounted) {
                                 SnackbarHelper.showError(
                                   context,
                                   'Request Rejected',
                                 );
+                              }
                             },
                             child: const Text(
                               'Reject',
@@ -101,11 +101,12 @@ class _PlatformRequestsScreenState extends State<PlatformRequestsScreen> {
                                 ngo.id,
                                 'approved',
                               );
-                              if (context.mounted)
+                              if (context.mounted) {
                                 SnackbarHelper.showSuccess(
                                   context,
                                   'NGO Approved!',
                                 );
+                              }
                             },
                             child: const Text('Approve'),
                           ),

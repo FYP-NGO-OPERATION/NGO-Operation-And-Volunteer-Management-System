@@ -9,7 +9,7 @@ import '../../../../theme/app_tokens.dart';
 import '../../../../utils/responsive.dart';
 
 class LandingFooterSection extends StatelessWidget {
-  const LandingFooterSection({Key? key}) : super(key: key);
+  const LandingFooterSection({super.key});
 
   @override
   Widget build(BuildContext context) {

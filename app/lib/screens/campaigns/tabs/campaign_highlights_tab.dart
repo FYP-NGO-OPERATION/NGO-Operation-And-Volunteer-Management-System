@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/campaign_model.dart';
 import '../../../config/app_colors.dart';
-import '../pdf_viewer_screen.dart';
 
 class CampaignHighlightsTab extends StatefulWidget {
   final CampaignModel campaign;

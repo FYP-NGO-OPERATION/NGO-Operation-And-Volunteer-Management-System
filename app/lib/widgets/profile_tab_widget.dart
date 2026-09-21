@@ -151,7 +151,7 @@ class ProfileTab extends StatelessWidget {
           const Divider(height: 32),
           _buildSettingsTile(
             context,
-            title: 'language'.tr() + ' / زبان',
+            title: '${'language'.tr()} / زبان',
             subtitle: context.locale.languageCode == 'en'
                 ? 'switch_to_urdu'.tr()
                 : 'switch_to_english'.tr(),

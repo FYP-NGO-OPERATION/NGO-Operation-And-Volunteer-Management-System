@@ -466,11 +466,12 @@ class SessionListScreen extends StatelessWidget {
                                                     user.uid,
                                                     user.name,
                                                   );
-                                                  if (context.mounted)
+                                                  if (context.mounted) {
                                                     _launchUrl(
                                                       context,
                                                       session.meetingLink,
                                                     );
+                                                  }
                                                 }
                                               : null,
                                           icon: const Icon(

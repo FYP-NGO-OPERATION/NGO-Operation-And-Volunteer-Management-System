@@ -17,10 +17,10 @@ class CampaignRecordTab extends StatelessWidget {
   final bool isAdmin;
 
   const CampaignRecordTab({
-    Key? key,
+    super.key,
     required this.campaign,
     required this.isAdmin,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -309,11 +309,12 @@ class CampaignRecordTab extends StatelessWidget {
                                               d,
                                               DonationStatus.approved,
                                             );
-                                        if (context.mounted)
+                                        if (context.mounted) {
                                           SnackbarHelper.showSuccess(
                                             context,
                                             'Donation Approved',
                                           );
+                                        }
                                       },
                                       style: OutlinedButton.styleFrom(
                                         foregroundColor: AppColors.success,
@@ -335,11 +336,12 @@ class CampaignRecordTab extends StatelessWidget {
                                               d,
                                               DonationStatus.rejected,
                                             );
-                                        if (context.mounted)
+                                        if (context.mounted) {
                                           SnackbarHelper.showError(
                                             context,
                                             'Donation Rejected',
                                           );
+                                        }
                                       },
                                       style: OutlinedButton.styleFrom(
                                         foregroundColor: AppColors.error,

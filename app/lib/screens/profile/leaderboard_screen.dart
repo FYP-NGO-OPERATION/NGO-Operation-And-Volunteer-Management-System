@@ -146,7 +146,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           overflow: TextOverflow.ellipsis,
         ),
         Text(
-          '\ pts',
+          ' pts',
           style: TextStyle(
             color: color,
             fontWeight: FontWeight.w600,
@@ -302,7 +302,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                                   ),
                                 ),
                                 Text(
-                                  '#\ • \ pts',
+                                  '# •  pts',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,

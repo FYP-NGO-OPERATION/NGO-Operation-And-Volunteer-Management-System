@@ -26,8 +26,7 @@ import '../../../../widgets/common/dynamic_banner_carousel.dart';
 class HomeDashboardTab extends StatefulWidget {
   final Function(int) onTabChange;
 
-  const HomeDashboardTab({Key? key, required this.onTabChange})
-    : super(key: key);
+  const HomeDashboardTab({super.key, required this.onTabChange});
 
   @override
   State<HomeDashboardTab> createState() => _HomeDashboardTabState();
@@ -169,8 +168,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                           .where('status', isEqualTo: 'active')
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                           return const SizedBox.shrink();
+                        }
                         return Column(
                           children: snapshot.data!.docs
                               .map(
@@ -246,8 +246,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                     StreamBuilder<List<IncidentModel>>(
                       stream: IncidentService().getActiveIncidents(),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData || snapshot.data!.isEmpty)
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
                           return const SizedBox.shrink();
+                        }
                         return Column(
                           children: [
                             GestureDetector(
@@ -327,8 +328,9 @@ class _HomeDashboardTabState extends State<HomeDashboardTab> {
                       final upcomingSessions = sessionProvider.sessions
                           .where((s) => s.isUpcoming)
                           .toList();
-                      if (upcomingSessions.isEmpty)
+                      if (upcomingSessions.isEmpty) {
                         return const SizedBox.shrink();
+                      }
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,9 +7,6 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_tokens.dart';
 import '../../theme/app_animations.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/campaign_provider.dart';
-import '../../providers/ngo_provider.dart';
-import '../../providers/virtual_session_provider.dart';
 import '../../utils/validators.dart';
 import '../../utils/responsive.dart';
 import '../../utils/snackbar_helper.dart';
@@ -18,8 +15,6 @@ import '../../widgets/common/custom_text_field.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'otp_verification_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../services/ngo_service.dart';
 
 /// Premium login screen
 class LoginScreen extends StatefulWidget {
@@ -298,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
                                   width: 20,
                                   height: 20,
-                                  errorBuilder: (_, __, ___) =>
+                                  errorBuilder: (_, _, _) =>
                                       const Icon(Icons.g_mobiledata, size: 24),
                                 ),
                                 label: Text(

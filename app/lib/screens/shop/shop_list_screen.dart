@@ -9,7 +9,7 @@ import '../../utils/snackbar_helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/shop_service.dart';
-import '../../services/sos_service.dart'; // used as generic trigger, or I'll implement proper logic
+// used as generic trigger, or I'll implement proper logic
 
 class ShopListScreen extends StatefulWidget {
   const ShopListScreen({super.key});
@@ -21,7 +21,7 @@ class ShopListScreen extends StatefulWidget {
 class _ShopListScreenState extends State<ShopListScreen> {
   int _cartCount = 0;
   double _cartTotal = 0.0;
-  List<ProductModel> _cartItems = [];
+  final List<ProductModel> _cartItems = [];
 
   void _addToCart(ProductModel product) {
     if (product.stock <= 0) {
@@ -33,7 +33,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
       _cartTotal += product.price;
       _cartItems.add(product);
     });
-    SnackbarHelper.showSuccess(context, '\ added to cart!');
+    SnackbarHelper.showSuccess(context, ' added to cart!');
   }
 
   void _checkout() async {
@@ -66,7 +66,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Checkout Successful'),
-            content: Text('Thank you for your purchase! You bought \ items for \$\. Proceeds will go to the NGO.'),
+            content: Text('Thank you for your purchase! You bought  items for \$. Proceeds will go to the NGO.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -192,8 +192,8 @@ class _ShopListScreenState extends State<ShopListScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('\{product.price.toStringAsFixed(2)}', style: AppTextStyles.titleMedium(color: AppColors.primary)),
-                              Text('\ left', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                              Text('{product.price.toStringAsFixed(2)}', style: AppTextStyles.titleMedium(color: AppColors.primary)),
+                              Text(' left', style: const TextStyle(fontSize: 10, color: Colors.grey)),
                             ],
                           ),
                           AppSpacing.vGapXs,

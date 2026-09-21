@@ -28,11 +28,11 @@ class HomeSpeedDial extends StatelessWidget {
   final NgoModel? currentNgo;
 
   const HomeSpeedDial({
-    Key? key,
+    super.key,
     required this.isAdmin,
     required this.isSuperAdmin,
     this.currentNgo,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

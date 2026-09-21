@@ -133,7 +133,7 @@ class SessionDetailsScreen extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: entries.length,
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, _) => const Divider(),
       itemBuilder: (context, index) {
         final userId = entries[index].key;
         final userName = entries[index].value;

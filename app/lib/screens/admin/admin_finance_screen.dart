@@ -164,8 +164,9 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
           .limit(20)
           .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
+        }
 
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) return const Text('No expenses logged yet.');
@@ -221,23 +222,23 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
       return;
     }
 
-    final _formKey = GlobalKey<FormState>();
-    final _itemCtrl = TextEditingController();
-    final _qtyCtrl = TextEditingController(text: '1');
-    final _priceCtrl = TextEditingController();
-    String _selectedCampaignId = campaigns.first.id;
+    final formKey = GlobalKey<FormState>();
+    final itemCtrl = TextEditingController();
+    final qtyCtrl = TextEditingController(text: '1');
+    final priceCtrl = TextEditingController();
+    String selectedCampaignId = campaigns.first.id;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Log New Expense'),
         content: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedCampaignId,
+                initialValue: selectedCampaignId,
                 decoration: const InputDecoration(labelText: 'Select Campaign'),
                 items: campaigns
                     .map(
@@ -245,11 +246,11 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                           DropdownMenuItem(value: c.id, child: Text(c.title)),
                     )
                     .toList(),
-                onChanged: (v) => _selectedCampaignId = v!,
+                onChanged: (v) => selectedCampaignId = v!,
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _itemCtrl,
+                controller: itemCtrl,
                 decoration: const InputDecoration(
                   labelText: 'Item Name (e.g. 50 Tents)',
                 ),
@@ -260,7 +261,7 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      controller: _qtyCtrl,
+                      controller: qtyCtrl,
                       decoration: const InputDecoration(labelText: 'Quantity'),
                       keyboardType: TextInputType.number,
                     ),
@@ -268,7 +269,7 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
-                      controller: _priceCtrl,
+                      controller: priceCtrl,
                       decoration: const InputDecoration(
                         labelText: 'Unit Price',
                       ),
@@ -288,9 +289,9 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                final qty = int.parse(_qtyCtrl.text);
-                final price = double.parse(_priceCtrl.text);
+              if (formKey.currentState!.validate()) {
+                final qty = int.parse(qtyCtrl.text);
+                final price = double.parse(priceCtrl.text);
                 final total = qty * price;
 
                 final user = Provider.of<AuthProvider>(
@@ -303,8 +304,8 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
                     .doc();
                 final expense = ExpenseModel(
                   id: docRef.id,
-                  campaignId: _selectedCampaignId,
-                  itemName: _itemCtrl.text,
+                  campaignId: selectedCampaignId,
+                  itemName: itemCtrl.text,
                   category: ExpenseCategory.other,
                   quantity: qty,
                   unitPrice: price,
@@ -318,15 +319,15 @@ class _AdminFinanceScreenState extends State<AdminFinanceScreen> {
 
                 await FirebaseFirestore.instance
                     .collection('campaigns')
-                    .doc(_selectedCampaignId)
+                    .doc(selectedCampaignId)
                     .update({'totalExpenses': FieldValue.increment(total)});
 
                 // Allocate funds via UTXO logic
                 final allocationService = FundAllocationService();
                 await allocationService.allocateExpense(
-                  campaignId: _selectedCampaignId,
+                  campaignId: selectedCampaignId,
                   expenseTotal: total,
-                  expenseName: _itemCtrl.text,
+                  expenseName: itemCtrl.text,
                 );
 
                 Navigator.pop(ctx);

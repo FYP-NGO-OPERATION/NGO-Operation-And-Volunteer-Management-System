@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert' as dart_convert;
-import 'dart:math' as math;
-import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,7 +26,6 @@ import 'components/campaign_search_delegate.dart';
 import 'components/home_speed_dial.dart';
 import '../shop/shop_list_screen.dart';
 import '../profile/leaderboard_screen.dart';
-import '../chatbot/chatbot_screen.dart';
 import '../disaster/disaster_map_screen.dart';
 import '../campaigns/route_optimization_screen.dart';
 import '../announcements/announcement_list_screen.dart';

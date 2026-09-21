@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
@@ -15,8 +14,9 @@ class ActivityTimelineScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
-    if (user == null)
+    if (user == null) {
       return const Scaffold(body: Center(child: Text('Not logged in')));
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text('activity_timeline'.tr()), centerTitle: true),

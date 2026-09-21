@@ -4,7 +4,6 @@ import '../../../../config/app_colors.dart';
 import '../../../../config/feature_flags.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../../theme/app_spacing.dart';
-import '../../../../theme/app_tokens.dart';
 import '../../../../models/user_model.dart';
 import '../../../../providers/ngo_provider.dart';
 import '../../campaigns/create_campaign_screen.dart';
@@ -21,11 +20,11 @@ class HomeQuickActions extends StatelessWidget {
   final Function(int) onTabChange;
 
   const HomeQuickActions({
-    Key? key,
+    super.key,
     required this.user,
     required this.ngoProvider,
     required this.onTabChange,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

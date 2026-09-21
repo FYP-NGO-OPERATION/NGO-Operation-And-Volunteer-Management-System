@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/virtual_session_model.dart';
-import 'package:uuid/uuid.dart';
 
 class VirtualSessionService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

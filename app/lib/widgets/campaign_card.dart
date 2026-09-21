@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -285,7 +283,7 @@ class CampaignCard extends StatelessWidget {
                           _buildStatItem(
                             Icons.volunteer_activism,
                             campaign.totalDonationsAmount > 0
-                                ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? (campaign.totalDonationsAmount / 1000).toStringAsFixed(1) + 'k' : campaign.totalDonationsAmount.toInt()}'
+                                ? 'Rs.${campaign.totalDonationsAmount >= 1000 ? '${(campaign.totalDonationsAmount / 1000).toStringAsFixed(1)}k' : campaign.totalDonationsAmount.toInt()}'
                                 : '${campaign.totalDonationsCount}',
                             'Donations',
                             AppColors.warning,

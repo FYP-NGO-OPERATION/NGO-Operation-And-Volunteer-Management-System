@@ -9,7 +9,7 @@ import '../../auth/login_screen.dart';
 import '../../auth/register_screen.dart';
 
 class LandingHeroSection extends StatelessWidget {
-  const LandingHeroSection({Key? key}) : super(key: key);
+  const LandingHeroSection({super.key});
 
   @override
   Widget build(BuildContext context) {

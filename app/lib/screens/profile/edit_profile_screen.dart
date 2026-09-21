@@ -279,7 +279,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               AppSpacing.vGapLg,
               DropdownButtonFormField<String>(
-                value: _selectedBloodGroup,
+                initialValue: _selectedBloodGroup,
                 decoration: const InputDecoration(
                   labelText: 'Blood Group',
                   prefixIcon: Icon(Icons.bloodtype, color: Colors.red),

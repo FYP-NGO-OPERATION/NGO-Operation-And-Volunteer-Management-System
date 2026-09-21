@@ -11,7 +11,7 @@ class CampaignMediaPicker extends StatelessWidget {
   final Function(int) onRemoveGalleryImage;
 
   const CampaignMediaPicker({
-    Key? key,
+    super.key,
     required this.highlightVideo,
     required this.projectRecordPdf,
     required this.galleryImages,
@@ -19,7 +19,7 @@ class CampaignMediaPicker extends StatelessWidget {
     required this.onPickPdf,
     required this.onPickGalleryImages,
     required this.onRemoveGalleryImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

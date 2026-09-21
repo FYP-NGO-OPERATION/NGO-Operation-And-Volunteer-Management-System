@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../../providers/campaign_provider.dart';
 import '../../models/campaign_model.dart';
 import '../../config/app_colors.dart';

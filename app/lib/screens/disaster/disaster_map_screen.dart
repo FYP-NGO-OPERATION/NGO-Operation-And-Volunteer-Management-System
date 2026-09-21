@@ -4,14 +4,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../../providers/disaster_provider.dart';
 import '../../config/app_colors.dart';
-import '../../theme/app_text_styles.dart';
 import '../../models/incident_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/snackbar_helper.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../services/location_service.dart';
-import 'package:location/location.dart' as loc;
 import 'package:url_launcher/url_launcher.dart';
 
 class DisasterMapScreen extends StatefulWidget {
@@ -164,11 +160,12 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                                                   .externalApplication,
                                             );
                                           } else {
-                                            if (ctx.mounted)
+                                            if (ctx.mounted) {
                                               SnackbarHelper.showError(
                                                 ctx,
                                                 'Could not open Google Maps.',
                                               );
+                                            }
                                           }
                                         },
                                         child: const Text(
@@ -273,11 +270,12 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                 bool serviceEnabled =
                     await Geolocator.isLocationServiceEnabled();
                 if (!serviceEnabled) {
-                  if (ctx.mounted)
+                  if (ctx.mounted) {
                     SnackbarHelper.showError(
                       ctx,
                       'Please enable GPS/Location in your phone settings.',
                     );
+                  }
                   return;
                 }
 
@@ -286,29 +284,32 @@ class _DisasterMapScreenState extends State<DisasterMapScreen> {
                 if (permission == LocationPermission.denied) {
                   permission = await Geolocator.requestPermission();
                   if (permission == LocationPermission.denied) {
-                    if (ctx.mounted)
+                    if (ctx.mounted) {
                       SnackbarHelper.showError(
                         ctx,
                         'Location permissions are denied',
                       );
+                    }
                     return;
                   }
                 }
 
                 if (permission == LocationPermission.deniedForever) {
-                  if (ctx.mounted)
+                  if (ctx.mounted) {
                     SnackbarHelper.showError(
                       ctx,
                       'Location permissions are permanently denied, we cannot request permissions.',
                     );
+                  }
                   return;
                 }
 
-                if (ctx.mounted)
+                if (ctx.mounted) {
                   SnackbarHelper.showSuccess(
                     ctx,
                     'Fetching your live location... Please wait.',
                   );
+                }
 
                 final pos = await Geolocator.getCurrentPosition(
                   desiredAccuracy: LocationAccuracy.high,

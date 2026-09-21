@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
-import '../../config/app_colors.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/common/custom_button.dart';
 
@@ -63,8 +60,9 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         SnackbarHelper.showError(context, 'Failed to send alert: $e');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -104,7 +102,7 @@ class _BloodEmergencyScreenState extends State<BloodEmergencyScreen> {
             AppSpacing.vGapXxl,
 
             DropdownButtonFormField<String>(
-              value: _selectedBloodGroup,
+              initialValue: _selectedBloodGroup,
               decoration: const InputDecoration(
                 labelText: 'Required Blood Group',
                 border: OutlineInputBorder(),

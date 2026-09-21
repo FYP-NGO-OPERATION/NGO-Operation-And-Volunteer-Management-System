@@ -4,7 +4,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../providers/disaster_provider.dart';
-import '../../providers/auth_provider.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../models/incident_model.dart';
