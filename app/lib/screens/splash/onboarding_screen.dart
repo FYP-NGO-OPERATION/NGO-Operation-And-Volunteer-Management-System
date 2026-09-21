@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/secure_storage_service.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_animations.dart';
 import '../auth/login_screen.dart';
@@ -43,8 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ];
 
   void _finishOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('has_seen_onboarding', true);
+    await SecureStorageService.writeBool('has_seen_onboarding', true);
     if (mounted) {
       Navigator.pushReplacement(
         context,

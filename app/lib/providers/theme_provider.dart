@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/secure_storage_service.dart';
 import '../config/app_constants.dart';
 
 /// Manages dark/light theme with persistent storage.
@@ -15,8 +15,7 @@ class ThemeProvider extends ChangeNotifier {
 
   /// Load saved theme preference
   Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    _isDarkMode = prefs.getBool(AppConstants.keyDarkMode) ?? false;
+    _isDarkMode = await SecureStorageService.readBool('isDark', defaultValue: false);
     notifyListeners();
   }
 
@@ -24,15 +23,13 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> toggleTheme() async {
     _isDarkMode = !_isDarkMode;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(AppConstants.keyDarkMode, _isDarkMode);
+    await SecureStorageService.writeBool('isDark', _isDarkMode);
   }
 
   /// Set specific theme mode
-  Future<void> setDarkMode(bool value) async {
-    _isDarkMode = value;
+  Future<void> setDarkMode(bool isDark) async {
+    _isDarkMode = isDark;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(AppConstants.keyDarkMode, value);
+    await SecureStorageService.writeBool('isDark', isDark);
   }
 }

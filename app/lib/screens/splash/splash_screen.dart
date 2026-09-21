@@ -10,7 +10,8 @@ import '../../theme/app_tokens.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/responsive.dart';
 import '../../services/notification_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/secure_storage_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../services/ngo_service.dart';
 import '../landing/landing_screen.dart';
 import '../home/home_screen.dart';
@@ -116,15 +117,13 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (widget.inviteNgoId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('pending_invite_ngo_id', widget.inviteNgoId!);
+      await SecureStorageService.writeString('pending_invite_ngo_id', widget.inviteNgoId!);
     }
 
     if (!mounted) return;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = await authProvider.checkAuthState();
-    final prefs = await SharedPreferences.getInstance();
-    final hasSeenOnboarding = prefs.getBool('showHome') ?? false;
+    final hasSeenOnboarding = await SecureStorageService.readBool('showHome', defaultValue: false);
     if (!mounted) return;
 
     Widget nextScreen;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
@@ -12,7 +13,7 @@ import '../../widgets/common/custom_text_field.dart';
 import '../../utils/snackbar_helper.dart';
 import '../home/home_screen.dart';
 import '../../widgets/admin/admin_layout.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/secure_storage_service.dart';
 import '../../services/ngo_service.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -94,14 +95,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       listen: false,
     );
 
-    final prefs = await SharedPreferences.getInstance();
-    final pendingNgoId = prefs.getString('pending_invite_ngo_id');
+    final pendingNgoId = await SecureStorageService.readString('pending_invite_ngo_id');
 
     if (pendingNgoId != null && authProvider.user != null) {
       final targetNgo = await NgoService().getNgo(pendingNgoId);
       if (targetNgo != null) {
         await ngoProvider.selectNgo(authProvider.user!, targetNgo);
-        await prefs.remove('pending_invite_ngo_id');
+        await SecureStorageService.delete('pending_invite_ngo_id');
         await authProvider.checkAuthState();
       }
     }

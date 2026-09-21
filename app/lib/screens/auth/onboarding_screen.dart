@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/secure_storage_service.dart';
 import 'login_screen.dart';
 import '../../config/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -23,8 +23,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _finishOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('showHome', true);
+    await SecureStorageService.writeBool('showHome', true);
 
     if (mounted) {
       Navigator.pushReplacement(
