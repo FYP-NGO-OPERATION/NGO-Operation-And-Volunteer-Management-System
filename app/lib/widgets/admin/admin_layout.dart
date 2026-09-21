@@ -950,7 +950,7 @@ class _AnimatedDrawerHeaderState extends State<_AnimatedDrawerHeader>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 6),
-    )..repeat();
+    )..forward();
   }
 
   @override

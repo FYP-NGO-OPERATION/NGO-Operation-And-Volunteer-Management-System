@@ -32,6 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _referralCodeController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _acceptedTerms = false;
 
   late AnimationController _fadeCtrl;
   late Animation<double> _fadeAnim;
@@ -64,6 +65,11 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_acceptedTerms) {
+      SnackbarHelper.showError(context, 'You must accept the Terms of Service & Privacy Policy.');
+      return;
+    }
+    
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     authProvider.clearError();
     final cleanPhone = _phoneController.text.replaceAll('-', '');
@@ -234,6 +240,38 @@ class _RegisterScreenState extends State<RegisterScreen>
                         ),
                       ),
                       AppSpacing.vGapXxl,
+
+                      FormField<bool>(
+                        validator: (_) => _acceptedTerms ? null : 'Required',
+                        builder: (state) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              title: const Text(
+                                'I agree to the Terms of Service & Privacy Policy (GDPR Compliance)',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                              value: _acceptedTerms,
+                              onChanged: (val) {
+                                setState(() {
+                                  _acceptedTerms = val ?? false;
+                                });
+                              },
+                            ),
+                            if (state.hasError)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12.0),
+                                child: Text(
+                                  state.errorText!,
+                                  style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      AppSpacing.vGapLg,
 
                       Consumer<AuthProvider>(
                         builder: (context, auth, _) => CustomButton(

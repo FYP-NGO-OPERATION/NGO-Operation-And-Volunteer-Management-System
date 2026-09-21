@@ -129,6 +129,10 @@ class AuthService {
         password: password,
       );
       await user.reauthenticateWithCredential(credential);
+
+      // GDPR Compliance: Scrub all PII from Firestore before deleting Auth user
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+
       await user.delete();
     } on FirebaseAuthException catch (e) {
       throw _handleAuthError(e);

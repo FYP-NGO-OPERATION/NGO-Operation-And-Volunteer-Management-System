@@ -10,6 +10,12 @@
 	<string>This app requires access to your photo library to upload campaign photos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires microphone access when recording videos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to track volunteer distributions and disasters on the map.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires background location tracking during active campaigns for volunteer safety and logistics coordination.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires background location tracking during active campaigns for volunteer safety and logistics coordination.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>

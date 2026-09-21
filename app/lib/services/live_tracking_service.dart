@@ -10,6 +10,7 @@ class LiveTrackingService {
   StreamSubscription<Position>? _positionStream;
   String? _currentCampaignId;
   String? _currentUserId;
+  Timer? _killSwitchTimer;
 
   bool get isTracking => _positionStream != null;
 
@@ -63,9 +64,18 @@ class LiveTrackingService {
     // Initial update
     Position initialPos = await Geolocator.getCurrentPosition();
     _updateLocationInFirestore(initialPos, userName);
+
+    // Battery & Thermal Protection: 4-hour automatic kill-switch
+    _killSwitchTimer?.cancel();
+    _killSwitchTimer = Timer(const Duration(hours: 4), () {
+      stopTracking();
+    });
   }
 
   Future<void> stopTracking() async {
+    _killSwitchTimer?.cancel();
+    _killSwitchTimer = null;
+
     if (_positionStream != null) {
       await _positionStream!.cancel();
       _positionStream = null;
@@ -125,6 +135,7 @@ class LiveTrackingService {
 
   @override
   void dispose() {
+    _killSwitchTimer?.cancel();
     _positionStream?.cancel();
     super.dispose();
   }
